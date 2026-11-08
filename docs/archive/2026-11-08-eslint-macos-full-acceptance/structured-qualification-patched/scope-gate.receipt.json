@@ -1,0 +1,20 @@
+{
+  "owner": "scope-gate",
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "test",
+    "--",
+    "--maxWorkers=1",
+    "--minWorkers=1",
+    "--reporter=json",
+    "--outputFile=D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\structured-qualification-patched\\scope-gate.vitest.json"
+  ],
+  "cwd": "D:\\code\\SpecForge\\.lint-shortpath-a01\\packages\\scope-gate",
+  "context_sha256": "6718af96ad6d72872663e3feadf61af12de0cdc94afdd0ba7e1b02a71ab1908b",
+  "started_utc": "2026-11-08T12:37:39.019Z",
+  "finished_utc": "2026-11-08T12:38:19.705Z",
+  "exit": 0,
+  "stdout_sha256": "c908d3d8932ebcf6e882667a2650c288979016fe0577a781376c0a00ca068248",
+  "stderr_sha256": "5616a7046b5a79841dd1630796e4c88295962ddd7a59b9b23c27da03aa034548"
+}

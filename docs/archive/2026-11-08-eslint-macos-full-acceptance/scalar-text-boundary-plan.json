@@ -1,0 +1,1409 @@
+{
+  "utc": "2026-11-08T08:52:57.451Z",
+  "source": "Exact fresh complete lint diagnostics; only reported String calls/bare template expressions, all AST-classified before writes.",
+  "required": "Full typed build; owner regressions over primitive conversions, opaque/cyclic objects and throwing coercion; invalid permissions/governance inputs must stay rejected; all suites. No rules weakened or source scope removed.",
+  "members": [
+    {
+      "file": "packages/daemon-core/src/tools/ToolDispatcher.ts",
+      "expressions": [
+        {
+          "expression": "value ?? ''",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "args.from_state ?? ''",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "args.to_state ?? ''",
+          "helper": "scalarText"
+        }
+      ],
+      "policy": "Semantic text keeps all primitive conversions and original null/default evaluation; non-JSON objects/functions fail closed with fixed input-free TypeError. Diagnostic text retains primitive detail and replaces opaque objects/functions with fixed descriptors; never JSON-serializes unknown diagnostics."
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-artifact-write.ts",
+      "expressions": [
+        {
+          "expression": "defaultModuleRaw",
+          "helper": "diagnosticScalarText"
+        },
+        {
+          "expression": "explicitModuleReference",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "explicitModuleReference",
+          "helper": "diagnosticScalarText"
+        },
+        {
+          "expression": "chosen",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "value ?? ''",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "value.project_integration_effect ?? ''",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "value ?? ''",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "args['artifact_name'] ?? ''",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "args['content_encoding'] ?? 'utf8'",
+          "helper": "scalarText"
+        }
+      ],
+      "policy": "Semantic text keeps all primitive conversions and original null/default evaluation; non-JSON objects/functions fail closed with fixed input-free TypeError. Diagnostic text retains primitive detail and replaces opaque objects/functions with fixed descriptors; never JSON-serializes unknown diagnostics."
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-changed-files-audit.ts",
+      "expressions": [
+        {
+          "expression": "value ?? ''",
+          "helper": "scalarText"
+        }
+      ],
+      "policy": "Semantic text keeps all primitive conversions and original null/default evaluation; non-JSON objects/functions fail closed with fixed input-free TypeError. Diagnostic text retains primitive detail and replaces opaque objects/functions with fixed descriptors; never JSON-serializes unknown diagnostics."
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-git-agent-lock-acquire.ts",
+      "expressions": [
+        {
+          "expression": "args['lock_name'] || ''",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "args['owner'] || ''",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "args['work_item_id']",
+          "helper": "scalarText"
+        }
+      ],
+      "policy": "Semantic text keeps all primitive conversions and original null/default evaluation; non-JSON objects/functions fail closed with fixed input-free TypeError. Diagnostic text retains primitive detail and replaces opaque objects/functions with fixed descriptors; never JSON-serializes unknown diagnostics."
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-git-agent-lock-release.ts",
+      "expressions": [
+        {
+          "expression": "args['lock_name'] || ''",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "args['owner']",
+          "helper": "scalarText"
+        }
+      ],
+      "policy": "Semantic text keeps all primitive conversions and original null/default evaluation; non-JSON objects/functions fail closed with fixed input-free TypeError. Diagnostic text retains primitive detail and replaces opaque objects/functions with fixed descriptors; never JSON-serializes unknown diagnostics."
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-git-auth-profile-config.ts",
+      "expressions": [
+        {
+          "expression": "args['method'] || 'none'",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "args['profile_name'] || ''",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "args['provider']",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "args['ssh_key_path']",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "args['ssh_host_alias']",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "args['token_env_var']",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "args['git_user_name']",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "args['git_user_email']",
+          "helper": "scalarText"
+        }
+      ],
+      "policy": "Semantic text keeps all primitive conversions and original null/default evaluation; non-JSON objects/functions fail closed with fixed input-free TypeError. Diagnostic text retains primitive detail and replaces opaque objects/functions with fixed descriptors; never JSON-serializes unknown diagnostics."
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-git-branch-create.ts",
+      "expressions": [
+        {
+          "expression": "args['work_item_id'] || ''",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "args['branch_name'] || ''",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "args['base_branch'] || 'main'",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "args['bootstrap_plan_sha256']",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "args['bootstrap_confirmation_quote'] || ''",
+          "helper": "scalarText"
+        }
+      ],
+      "policy": "Semantic text keeps all primitive conversions and original null/default evaluation; non-JSON objects/functions fail closed with fixed input-free TypeError. Diagnostic text retains primitive detail and replaces opaque objects/functions with fixed descriptors; never JSON-serializes unknown diagnostics."
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-git-branch-plan.ts",
+      "expressions": [
+        {
+          "expression": "args['work_item_id'] || ''",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "args['title'] || ''",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "args['work_item_type'] || 'feature'",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "context?.directory || context?.worktree || process.cwd()",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "args['base_branch'] || ''",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "args['branch_name'] || ''",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "args['expected_head'] || ''",
+          "helper": "scalarText"
+        }
+      ],
+      "policy": "Semantic text keeps all primitive conversions and original null/default evaluation; non-JSON objects/functions fail closed with fixed input-free TypeError. Diagnostic text retains primitive detail and replaces opaque objects/functions with fixed descriptors; never JSON-serializes unknown diagnostics."
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-git-changed-files-audit.ts",
+      "expressions": [
+        {
+          "expression": "args['work_item_id'] || ''",
+          "helper": "scalarText"
+        }
+      ],
+      "policy": "Semantic text keeps all primitive conversions and original null/default evaluation; non-JSON objects/functions fail closed with fixed input-free TypeError. Diagnostic text retains primitive detail and replaces opaque objects/functions with fixed descriptors; never JSON-serializes unknown diagnostics."
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-git-checkpoint-commit.ts",
+      "expressions": [
+        {
+          "expression": "args['message'] || ''",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "args['default_branch'] || 'main'",
+          "helper": "scalarText"
+        }
+      ],
+      "policy": "Semantic text keeps all primitive conversions and original null/default evaluation; non-JSON objects/functions fail closed with fixed input-free TypeError. Diagnostic text retains primitive detail and replaces opaque objects/functions with fixed descriptors; never JSON-serializes unknown diagnostics."
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-git-code-permission-guard.ts",
+      "expressions": [
+        {
+          "expression": "args['action'] || 'check'",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "args['default_branch'] || 'main'",
+          "helper": "scalarText"
+        }
+      ],
+      "policy": "Semantic text keeps all primitive conversions and original null/default evaluation; non-JSON objects/functions fail closed with fixed input-free TypeError. Diagnostic text retains primitive detail and replaces opaque objects/functions with fixed descriptors; never JSON-serializes unknown diagnostics."
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-git-merge-plan.ts",
+      "expressions": [
+        {
+          "expression": "args['work_item_id'] || ''",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "args['default_branch']",
+          "helper": "scalarText"
+        }
+      ],
+      "policy": "Semantic text keeps all primitive conversions and original null/default evaluation; non-JSON objects/functions fail closed with fixed input-free TypeError. Diagnostic text retains primitive detail and replaces opaque objects/functions with fixed descriptors; never JSON-serializes unknown diagnostics."
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-git-merge-run.ts",
+      "expressions": [
+        {
+          "expression": "args['work_item_id'] || ''",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "args['remote_name']",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "args['message']",
+          "helper": "scalarText"
+        }
+      ],
+      "policy": "Semantic text keeps all primitive conversions and original null/default evaluation; non-JSON objects/functions fail closed with fixed input-free TypeError. Diagnostic text retains primitive detail and replaces opaque objects/functions with fixed descriptors; never JSON-serializes unknown diagnostics."
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-git-post-merge-verify.ts",
+      "expressions": [
+        {
+          "expression": "args['work_item_id'] || ''",
+          "helper": "scalarText"
+        }
+      ],
+      "policy": "Semantic text keeps all primitive conversions and original null/default evaluation; non-JSON objects/functions fail closed with fixed input-free TypeError. Diagnostic text retains primitive detail and replaces opaque objects/functions with fixed descriptors; never JSON-serializes unknown diagnostics."
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-git-pr-plan.ts",
+      "expressions": [
+        {
+          "expression": "args['source_branch']",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "args['target_branch']",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "args['remote_name']",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "args['provider']",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "args['title']",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "args['body']",
+          "helper": "scalarText"
+        }
+      ],
+      "policy": "Semantic text keeps all primitive conversions and original null/default evaluation; non-JSON objects/functions fail closed with fixed input-free TypeError. Diagnostic text retains primitive detail and replaces opaque objects/functions with fixed descriptors; never JSON-serializes unknown diagnostics."
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-git-preflight.ts",
+      "expressions": [
+        {
+          "expression": "args['default_branch'] || 'main'",
+          "helper": "scalarText"
+        }
+      ],
+      "policy": "Semantic text keeps all primitive conversions and original null/default evaluation; non-JSON objects/functions fail closed with fixed input-free TypeError. Diagnostic text retains primitive detail and replaces opaque objects/functions with fixed descriptors; never JSON-serializes unknown diagnostics."
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-git-project-adopt.ts",
+      "expressions": [
+        {
+          "expression": "args['default_branch']",
+          "helper": "scalarText"
+        }
+      ],
+      "policy": "Semantic text keeps all primitive conversions and original null/default evaluation; non-JSON objects/functions fail closed with fixed input-free TypeError. Diagnostic text retains primitive detail and replaces opaque objects/functions with fixed descriptors; never JSON-serializes unknown diagnostics."
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-git-push-branch.ts",
+      "expressions": [
+        {
+          "expression": "args['remote_name']",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "args['branch_name']",
+          "helper": "scalarText"
+        }
+      ],
+      "policy": "Semantic text keeps all primitive conversions and original null/default evaluation; non-JSON objects/functions fail closed with fixed input-free TypeError. Diagnostic text retains primitive detail and replaces opaque objects/functions with fixed descriptors; never JSON-serializes unknown diagnostics."
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-git-release-tag-create.ts",
+      "expressions": [
+        {
+          "expression": "args['tag_name'] || ''",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "args['target_ref']",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "args['message']",
+          "helper": "scalarText"
+        }
+      ],
+      "policy": "Semantic text keeps all primitive conversions and original null/default evaluation; non-JSON objects/functions fail closed with fixed input-free TypeError. Diagnostic text retains primitive detail and replaces opaque objects/functions with fixed descriptors; never JSON-serializes unknown diagnostics."
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-git-release-tag-plan.ts",
+      "expressions": [
+        {
+          "expression": "args['tag_name'] || ''",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "args['target_ref']",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "args['message']",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "args['remote_name']",
+          "helper": "scalarText"
+        }
+      ],
+      "policy": "Semantic text keeps all primitive conversions and original null/default evaluation; non-JSON objects/functions fail closed with fixed input-free TypeError. Diagnostic text retains primitive detail and replaces opaque objects/functions with fixed descriptors; never JSON-serializes unknown diagnostics."
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-git-remote-config.ts",
+      "expressions": [
+        {
+          "expression": "args['remote_name']",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "args['fetch_url']",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "args['push_url']",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "args['auth_profile']",
+          "helper": "scalarText"
+        }
+      ],
+      "policy": "Semantic text keeps all primitive conversions and original null/default evaluation; non-JSON objects/functions fail closed with fixed input-free TypeError. Diagnostic text retains primitive detail and replaces opaque objects/functions with fixed descriptors; never JSON-serializes unknown diagnostics."
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-git-remote-probe.ts",
+      "expressions": [
+        {
+          "expression": "args['remote_name']",
+          "helper": "scalarText"
+        }
+      ],
+      "policy": "Semantic text keeps all primitive conversions and original null/default evaluation; non-JSON objects/functions fail closed with fixed input-free TypeError. Diagnostic text retains primitive detail and replaces opaque objects/functions with fixed descriptors; never JSON-serializes unknown diagnostics."
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-git-stacked-branch-plan.ts",
+      "expressions": [
+        {
+          "expression": "args['parent_branch'] || ''",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "args['child_branch'] || ''",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "args['work_item_id']",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "args['child_work_item_id']",
+          "helper": "scalarText"
+        }
+      ],
+      "policy": "Semantic text keeps all primitive conversions and original null/default evaluation; non-JSON objects/functions fail closed with fixed input-free TypeError. Diagnostic text retains primitive detail and replaces opaque objects/functions with fixed descriptors; never JSON-serializes unknown diagnostics."
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-git-worktree-create.ts",
+      "expressions": [
+        {
+          "expression": "args['branch_name'] || ''",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "args['base_ref']",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "args['worktree_path']",
+          "helper": "scalarText"
+        }
+      ],
+      "policy": "Semantic text keeps all primitive conversions and original null/default evaluation; non-JSON objects/functions fail closed with fixed input-free TypeError. Diagnostic text retains primitive detail and replaces opaque objects/functions with fixed descriptors; never JSON-serializes unknown diagnostics."
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-git-worktree-plan.ts",
+      "expressions": [
+        {
+          "expression": "args['branch_name'] || ''",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "args['base_ref']",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "args['worktree_path']",
+          "helper": "scalarText"
+        }
+      ],
+      "policy": "Semantic text keeps all primitive conversions and original null/default evaluation; non-JSON objects/functions fail closed with fixed input-free TypeError. Diagnostic text retains primitive detail and replaces opaque objects/functions with fixed descriptors; never JSON-serializes unknown diagnostics."
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-hard-stop-resolve.ts",
+      "expressions": [
+        {
+          "expression": "args['authorization_type'] ?? ''",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "value ?? ''",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "args['work_item_id'] ?? ''",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "args['resolution_type'] ?? ''",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "args['user_response_quote'] ?? ''",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "args['hard_stop_id'] ?? ''",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "args['reason'] ?? ''",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "args['authorization_reason'] ?? args['reason'] ?? ''",
+          "helper": "scalarText"
+        }
+      ],
+      "policy": "Semantic text keeps all primitive conversions and original null/default evaluation; non-JSON objects/functions fail closed with fixed input-free TypeError. Diagnostic text retains primitive detail and replaces opaque objects/functions with fixed descriptors; never JSON-serializes unknown diagnostics."
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-knowledge-base.ts",
+      "expressions": [
+        {
+          "expression": "args['entry_id']",
+          "helper": "diagnosticScalarText"
+        }
+      ],
+      "policy": "Semantic text keeps all primitive conversions and original null/default evaluation; non-JSON objects/functions fail closed with fixed input-free TypeError. Diagnostic text retains primitive detail and replaces opaque objects/functions with fixed descriptors; never JSON-serializes unknown diagnostics."
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-safe-bash.ts",
+      "expressions": [
+        {
+          "expression": "value ?? ''",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "context?.agent ?? 'unknown'",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "args['blocked_step'] ?? 'protected_path_shell_access'",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "args['resume_step'] ?? 'repeat evidence collection with a controlled read tool'",
+          "helper": "scalarText"
+        }
+      ],
+      "policy": "Semantic text keeps all primitive conversions and original null/default evaluation; non-JSON objects/functions fail closed with fixed input-free TypeError. Diagnostic text retains primitive detail and replaces opaque objects/functions with fixed descriptors; never JSON-serializes unknown diagnostics."
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-v11-close-gate.ts",
+      "expressions": [
+        {
+          "expression": "input.args['recovery_reason'] ?? ''",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "input.args['recovery_reason'] ?? ''",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "args['action'] ?? 'close'",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "args['action'] ?? 'close'",
+          "helper": "scalarText"
+        }
+      ],
+      "policy": "Semantic text keeps all primitive conversions and original null/default evaluation; non-JSON objects/functions fail closed with fixed input-free TypeError. Diagnostic text retains primitive detail and replaces opaque objects/functions with fixed descriptors; never JSON-serializes unknown diagnostics."
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-v11-code-permission.ts",
+      "expressions": [
+        {
+          "expression": "args['recovery_reason'] ?? ''",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "args['revision_reason'] ?? ''",
+          "helper": "scalarText"
+        }
+      ],
+      "policy": "Semantic text keeps all primitive conversions and original null/default evaluation; non-JSON objects/functions fail closed with fixed input-free TypeError. Diagnostic text retains primitive detail and replaces opaque objects/functions with fixed descriptors; never JSON-serializes unknown diagnostics."
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-v11-decision.ts",
+      "expressions": [
+        {
+          "expression": "value ?? ''",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "args['comments'] ?? ''",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "args['user_response_quote'] ?? ''",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "args['auto_approval_policy_id'] ?? ''",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "args['reason'] ?? ''",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "validation.facts?.workflowPath ?? requestedWorkflowPath ?? workflowFacts.workflowPath ?? ''",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "args['user_response_quote'] ?? ''",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "args['auto_approval_policy_id'] ?? ''",
+          "helper": "scalarText"
+        }
+      ],
+      "policy": "Semantic text keeps all primitive conversions and original null/default evaluation; non-JSON objects/functions fail closed with fixed input-free TypeError. Diagnostic text retains primitive detail and replaces opaque objects/functions with fixed descriptors; never JSON-serializes unknown diagnostics."
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-v11-gate-run.ts",
+      "expressions": [
+        {
+          "expression": "value ?? ''",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "gateType ?? ''",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "value",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "value",
+          "helper": "scalarText"
+        }
+      ],
+      "policy": "Semantic text keeps all primitive conversions and original null/default evaluation; non-JSON objects/functions fail closed with fixed input-free TypeError. Diagnostic text retains primitive detail and replaces opaque objects/functions with fixed descriptors; never JSON-serializes unknown diagnostics."
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-v11-handoff.ts",
+      "expressions": [
+        {
+          "expression": "value ?? ''",
+          "helper": "scalarText"
+        }
+      ],
+      "policy": "Semantic text keeps all primitive conversions and original null/default evaluation; non-JSON objects/functions fail closed with fixed input-free TypeError. Diagnostic text retains primitive detail and replaces opaque objects/functions with fixed descriptors; never JSON-serializes unknown diagnostics."
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/agent-handoff-v11.ts",
+      "expressions": [
+        {
+          "expression": "obj.schema_version",
+          "helper": "diagnosticScalarText"
+        }
+      ],
+      "policy": "Semantic text keeps all primitive conversions and original null/default evaluation; non-JSON objects/functions fail closed with fixed input-free TypeError. Diagnostic text retains primitive detail and replaces opaque objects/functions with fixed descriptors; never JSON-serializes unknown diagnostics."
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/artifact-schema-validation.ts",
+      "expressions": [
+        {
+          "expression": "canonicalWorkflowPath ?? ''",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "manifestWorkflowPath ?? ''",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "parsed.project_integration_effect ?? ''",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "promotion.from_contract_id ?? ''",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "promotion.to_contract_id ?? ''",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "promotion.migration_conclusion ?? ''",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "promotion.compatibility ?? ''",
+          "helper": "scalarText"
+        }
+      ],
+      "policy": "Semantic text keeps all primitive conversions and original null/default evaluation; non-JSON objects/functions fail closed with fixed input-free TypeError. Diagnostic text retains primitive detail and replaces opaque objects/functions with fixed descriptors; never JSON-serializes unknown diagnostics."
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/blocked-write-classification.ts",
+      "expressions": [
+        {
+          "expression": "value ?? 'modify'",
+          "helper": "scalarText"
+        }
+      ],
+      "policy": "Semantic text keeps all primitive conversions and original null/default evaluation; non-JSON objects/functions fail closed with fixed input-free TypeError. Diagnostic text retains primitive detail and replaces opaque objects/functions with fixed descriptors; never JSON-serializes unknown diagnostics."
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/candidate-generation-integrity.ts",
+      "expressions": [
+        {
+          "expression": "baseSpecVersion ?? 'missing'",
+          "helper": "diagnosticScalarText"
+        },
+        {
+          "expression": "precondition ?? 'missing'",
+          "helper": "diagnosticScalarText"
+        }
+      ],
+      "policy": "Semantic text keeps all primitive conversions and original null/default evaluation; non-JSON objects/functions fail closed with fixed input-free TypeError. Diagnostic text retains primitive detail and replaces opaque objects/functions with fixed descriptors; never JSON-serializes unknown diagnostics."
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/close-gate.ts",
+      "expressions": [
+        {
+          "expression": "value",
+          "helper": "diagnosticScalarText"
+        },
+        {
+          "expression": "value ?? ''",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "wi?.work_item_id ?? ''",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "formalVersionReport?.status ?? 'missing'",
+          "helper": "diagnosticScalarText"
+        },
+        {
+          "expression": "pmgStatus ?? 'not_present'",
+          "helper": "diagnosticScalarText"
+        },
+        {
+          "expression": "report.gate_id ?? ''",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "issue ?? ''",
+          "helper": "scalarText"
+        }
+      ],
+      "policy": "Semantic text keeps all primitive conversions and original null/default evaluation; non-JSON objects/functions fail closed with fixed input-free TypeError. Diagnostic text retains primitive detail and replaces opaque objects/functions with fixed descriptors; never JSON-serializes unknown diagnostics."
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/code-contract-verifier.ts",
+      "expressions": [
+        {
+          "expression": "raw.path ?? ''",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "raw.operation ?? 'modify'",
+          "helper": "scalarText"
+        }
+      ],
+      "policy": "Semantic text keeps all primitive conversions and original null/default evaluation; non-JSON objects/functions fail closed with fixed input-free TypeError. Diagnostic text retains primitive detail and replaces opaque objects/functions with fixed descriptors; never JSON-serializes unknown diagnostics."
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/contract-authoring.ts",
+      "expressions": [
+        {
+          "expression": "value ?? ''",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "value ?? ''",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "value ?? ''",
+          "helper": "scalarText"
+        }
+      ],
+      "policy": "Semantic text keeps all primitive conversions and original null/default evaluation; non-JSON objects/functions fail closed with fixed input-free TypeError. Diagnostic text retains primitive detail and replaces opaque objects/functions with fixed descriptors; never JSON-serializes unknown diagnostics."
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/contract-integrity.ts",
+      "expressions": [
+        {
+          "expression": "value ?? ''",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "entry.id ?? ''",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "entry.owner_module ?? ''",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "candidate.owner_module ?? ''",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "entry.owner_module ?? ''",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "entry.enforcement ?? ''",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "entry.operation ?? 'replace'",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "promotion.from_contract_id ?? ''",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "promotion.to_contract_id ?? ''",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "promotion.migration_conclusion ?? ''",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "promotion.compatibility ?? ''",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "promotion.from_contract_id ?? ''",
+          "helper": "scalarText"
+        }
+      ],
+      "policy": "Semantic text keeps all primitive conversions and original null/default evaluation; non-JSON objects/functions fail closed with fixed input-free TypeError. Diagnostic text retains primitive detail and replaces opaque objects/functions with fixed descriptors; never JSON-serializes unknown diagnostics."
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/contracts-registry.ts",
+      "expressions": [
+        {
+          "expression": "entry.id ?? ''",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "entry.owner_module ?? ''",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "entry.enforcement ?? ''",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "pattern ?? ''",
+          "helper": "scalarText"
+        }
+      ],
+      "policy": "Semantic text keeps all primitive conversions and original null/default evaluation; non-JSON objects/functions fail closed with fixed input-free TypeError. Diagnostic text retains primitive detail and replaces opaque objects/functions with fixed descriptors; never JSON-serializes unknown diagnostics."
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/gate-runner-v11.ts",
+      "expressions": [
+        {
+          "expression": "manifest.project_integration_effect ?? ''",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "value ?? ''",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "value ?? ''",
+          "helper": "scalarText"
+        }
+      ],
+      "policy": "Semantic text keeps all primitive conversions and original null/default evaluation; non-JSON objects/functions fail closed with fixed input-free TypeError. Diagnostic text retains primitive detail and replaces opaque objects/functions with fixed descriptors; never JSON-serializes unknown diagnostics."
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/governance-invariants-v11.ts",
+      "expressions": [
+        {
+          "expression": "candidatePath ?? ''",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "value ?? ''",
+          "helper": "scalarText"
+        }
+      ],
+      "policy": "Semantic text keeps all primitive conversions and original null/default evaluation; non-JSON objects/functions fail closed with fixed input-free TypeError. Diagnostic text retains primitive detail and replaces opaque objects/functions with fixed descriptors; never JSON-serializes unknown diagnostics."
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/governance-trace-model.ts",
+      "expressions": [
+        {
+          "expression": "value ?? ''",
+          "helper": "scalarText"
+        }
+      ],
+      "policy": "Semantic text keeps all primitive conversions and original null/default evaluation; non-JSON objects/functions fail closed with fixed input-free TypeError. Diagnostic text retains primitive detail and replaces opaque objects/functions with fixed descriptors; never JSON-serializes unknown diagnostics."
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/hard-stop-resolution-log.ts",
+      "expressions": [
+        {
+          "expression": "value ?? ''",
+          "helper": "scalarText"
+        }
+      ],
+      "policy": "Semantic text keeps all primitive conversions and original null/default evaluation; non-JSON objects/functions fail closed with fixed input-free TypeError. Diagnostic text retains primitive detail and replaces opaque objects/functions with fixed descriptors; never JSON-serializes unknown diagnostics."
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/implementation-baseline.ts",
+      "expressions": [
+        {
+          "expression": "value ?? ''",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "value ?? ''",
+          "helper": "diagnosticScalarText"
+        }
+      ],
+      "policy": "Semantic text keeps all primitive conversions and original null/default evaluation; non-JSON objects/functions fail closed with fixed input-free TypeError. Diagnostic text retains primitive detail and replaces opaque objects/functions with fixed descriptors; never JSON-serializes unknown diagnostics."
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/merge-runner-v11.ts",
+      "expressions": [
+        {
+          "expression": "value ?? ''",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "value ?? ''",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "value ?? ''",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "value ?? ''",
+          "helper": "scalarText"
+        }
+      ],
+      "policy": "Semantic text keeps all primitive conversions and original null/default evaluation; non-JSON objects/functions fail closed with fixed input-free TypeError. Diagnostic text retains primitive detail and replaces opaque objects/functions with fixed descriptors; never JSON-serializes unknown diagnostics."
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/project-governance-v2.ts",
+      "expressions": [
+        {
+          "expression": "value ?? ''",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "workflowType ?? ''",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "workflowPath ?? ''",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "(entry as { path?: unknown } | null)?.path ?? ''",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "input.frozenMode ?? ''",
+          "helper": "scalarText"
+        }
+      ],
+      "policy": "Semantic text keeps all primitive conversions and original null/default evaluation; non-JSON objects/functions fail closed with fixed input-free TypeError. Diagnostic text retains primitive detail and replaces opaque objects/functions with fixed descriptors; never JSON-serializes unknown diagnostics."
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/regenerable-artifact-governance.ts",
+      "expressions": [
+        {
+          "expression": "decision.reason ?? 'confirmed ignore decision'",
+          "helper": "scalarText"
+        }
+      ],
+      "policy": "Semantic text keeps all primitive conversions and original null/default evaluation; non-JSON objects/functions fail closed with fixed input-free TypeError. Diagnostic text retains primitive detail and replaces opaque objects/functions with fixed descriptors; never JSON-serializes unknown diagnostics."
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/semantic-closure-builder.ts",
+      "expressions": [
+        {
+          "expression": "value ?? ''",
+          "helper": "scalarText"
+        }
+      ],
+      "policy": "Semantic text keeps all primitive conversions and original null/default evaluation; non-JSON objects/functions fail closed with fixed input-free TypeError. Diagnostic text retains primitive detail and replaces opaque objects/functions with fixed descriptors; never JSON-serializes unknown diagnostics."
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/semantic-closure-core.ts",
+      "expressions": [
+        {
+          "expression": "manifest.schema_version ?? '<missing>'",
+          "helper": "scalarText"
+        }
+      ],
+      "policy": "Semantic text keeps all primitive conversions and original null/default evaluation; non-JSON objects/functions fail closed with fixed input-free TypeError. Diagnostic text retains primitive detail and replaces opaque objects/functions with fixed descriptors; never JSON-serializes unknown diagnostics."
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/spec-migration-trace-contract.ts",
+      "expressions": [
+        {
+          "expression": "value ?? ''",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "entry.type ?? ''",
+          "helper": "scalarText"
+        }
+      ],
+      "policy": "Semantic text keeps all primitive conversions and original null/default evaluation; non-JSON objects/functions fail closed with fixed input-free TypeError. Diagnostic text retains primitive detail and replaces opaque objects/functions with fixed descriptors; never JSON-serializes unknown diagnostics."
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/state-coordinator-v11.ts",
+      "expressions": [
+        {
+          "expression": "(entry as Record<string, unknown>).target_path ?? ''",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "record.candidate_path ?? ''",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "record.target_path ?? ''",
+          "helper": "scalarText"
+        }
+      ],
+      "policy": "Semantic text keeps all primitive conversions and original null/default evaluation; non-JSON objects/functions fail closed with fixed input-free TypeError. Diagnostic text retains primitive detail and replaces opaque objects/functions with fixed descriptors; never JSON-serializes unknown diagnostics."
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/verification-governance-contract.ts",
+      "expressions": [
+        {
+          "expression": "value ?? ''",
+          "helper": "scalarText"
+        }
+      ],
+      "policy": "Semantic text keeps all primitive conversions and original null/default evaluation; non-JSON objects/functions fail closed with fixed input-free TypeError. Diagnostic text retains primitive detail and replaces opaque objects/functions with fixed descriptors; never JSON-serializes unknown diagnostics."
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/verification-report-contract.ts",
+      "expressions": [
+        {
+          "expression": "command.execution_kind",
+          "helper": "scalarText"
+        },
+        {
+          "expression": "command.verification_type",
+          "helper": "scalarText"
+        }
+      ],
+      "policy": "Semantic text keeps all primitive conversions and original null/default evaluation; non-JSON objects/functions fail closed with fixed input-free TypeError. Diagnostic text retains primitive detail and replaces opaque objects/functions with fixed descriptors; never JSON-serializes unknown diagnostics."
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/write-guard-authorization-log.ts",
+      "expressions": [
+        {
+          "expression": "value ?? ''",
+          "helper": "scalarText"
+        }
+      ],
+      "policy": "Semantic text keeps all primitive conversions and original null/default evaluation; non-JSON objects/functions fail closed with fixed input-free TypeError. Diagnostic text retains primitive detail and replaces opaque objects/functions with fixed descriptors; never JSON-serializes unknown diagnostics."
+    },
+    {
+      "file": "packages/workflow-runtime/src/loaders/WorkflowDefinitionLoader.ts",
+      "expressions": [
+        {
+          "expression": "def.schema_version",
+          "helper": "diagnosticScalarText"
+        },
+        {
+          "expression": "stateObj.schema_version",
+          "helper": "diagnosticScalarText"
+        },
+        {
+          "expression": "gateObj.schema_version",
+          "helper": "diagnosticScalarText"
+        },
+        {
+          "expression": "gateObj.type",
+          "helper": "diagnosticScalarText"
+        },
+        {
+          "expression": "gateObj.mode",
+          "helper": "diagnosticScalarText"
+        },
+        {
+          "expression": "gateObj.failPolicy",
+          "helper": "diagnosticScalarText"
+        }
+      ],
+      "policy": "Semantic text keeps all primitive conversions and original null/default evaluation; non-JSON objects/functions fail closed with fixed input-free TypeError. Diagnostic text retains primitive detail and replaces opaque objects/functions with fixed descriptors; never JSON-serializes unknown diagnostics."
+    }
+  ],
+  "files": [
+    {
+      "file": "packages/daemon-core/src/tools/ToolDispatcher.ts",
+      "before": "f01b5b3a9864f7df531f808870edcf15519bedb6e9c27dab9bd1ca5b1f6af681",
+      "after": "a9b0f31f72f0ae5838d28c30898f1af5e975b5ed3c7d451b7a7f4710f834df43"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-artifact-write.ts",
+      "before": "f50186a75b9f42a7ba396ef97e079bb79e59df79abc07e78921bb275f10d0e04",
+      "after": "04c1c1c131359015537c09aefdabb42abfa1e256b431b7ee77773cda855d874f"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-changed-files-audit.ts",
+      "before": "da57dbfa68ecc8403603dc9aea15c277c00f77316dbeafa7557ffc2a45b6fe75",
+      "after": "8688f4aec03ff34734d3ba5c2a670f8265b35f266b94aa4d3f3656ea501685b3"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-git-agent-lock-acquire.ts",
+      "before": "73e09208a0e55b0d66574b7ea50ea6a1704b5fcfec3a24c5516b5fca43a94aad",
+      "after": "96dc98d52e763c9252fd428b1fa7c61fdfa36dbf8afad01f9809f0449d426d12"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-git-agent-lock-release.ts",
+      "before": "093189f21ab9cdd536bec0fdc89cdb0971550a2c2b49ca76e4e94f5bbbf471e4",
+      "after": "83ef2d9f0c4012227600024093bf032019c2c420507170ada1631aae9c91e6cc"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-git-auth-profile-config.ts",
+      "before": "51c71c25ac6ba0c1cb8b4249e2762c040bf87e614eb3baa4ac29761969298667",
+      "after": "8d0df25abde3a54ec6f68030f2451fb909d7bcea3f5513086d85f071556dc980"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-git-branch-create.ts",
+      "before": "36a8bc4e4fa2bc4026234bed748adf2e46c4046e96b812f00d88c2ebab3c98d8",
+      "after": "f2f72da8962758c45224598b68cd77bb45748c18f85fa373dae8d71fba22621e"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-git-branch-plan.ts",
+      "before": "a0e7c56d8d950581abd298c898d1dd1812e2b7a321128071bb1c0dbb8b351c5c",
+      "after": "fea3ab332a9a54713890a8775ed5c7b623fcb947709c610cd643e96681426e89"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-git-changed-files-audit.ts",
+      "before": "ca45476a15d1137f033524ecf0c14e70f1a08204ba487bd4920890ca17615cea",
+      "after": "a5bdba4abaf776e0803cf5eb1e55be21f47a6cf4a40dfa18ac1a0e574fa393c0"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-git-checkpoint-commit.ts",
+      "before": "7240e886b4e07a04153f488179b7ae85bc4f52ffefa84806f8797656751263e7",
+      "after": "dfa1e692b853c3cdd1fbafd08cdb06b22f9cf39688980d66e7d5ba7d6efe3d78"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-git-code-permission-guard.ts",
+      "before": "7c7d2d968ef030d0153e6be149b57d9254e740f88ac847beaa97a2fda141cd88",
+      "after": "ad64e3b12cda23c7ad23d9aa4811885f1470f1d254dd662707b99fcb941241a3"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-git-merge-plan.ts",
+      "before": "564902574b67bb5f420ddbc5d4e30a0a08fe4965b74054882cf42de01b32f15a",
+      "after": "855b803e6985cc684d8ea6690353e9d22b5352b981ec602bbe80bcd899b42682"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-git-merge-run.ts",
+      "before": "fd2b2ecfda5d4357ca2d24a686ccf52d5e3427c30d3c99f7410f37aa66f8efdd",
+      "after": "42168a8b459dc97623c0cd679d77830afc032d707de61a4f44f43049e09412e1"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-git-post-merge-verify.ts",
+      "before": "fcb872a1fd9002b421f2eaaedb11e09027996573a559da2c1a210ef0f97f2fcb",
+      "after": "b6da499756bcaa202f58018f70b5fdbf57193dd84913d478fcb6ad7cb0df9d3e"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-git-pr-plan.ts",
+      "before": "103fd1b70eec12f302124f0e6cce0528d24365d585657fd8f5b020da187c72c2",
+      "after": "3052ab82c74906a829125170d788aa1c5093b02ff5afd557742d429df6c80d4e"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-git-preflight.ts",
+      "before": "47f7fbe120048305b5919a8fa2179f48a37e3675a5547c2a736c8a5c0f473a1b",
+      "after": "68a7fc943fee7618e2ba5b62315ce60729c094bcbc7ff32ca8f012f3e7531d26"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-git-project-adopt.ts",
+      "before": "335257fcead17adf8945db2aa57f702b7545db02725fd5862353c54708bc7a70",
+      "after": "410713234088aafc28c4ee2318d44e7f42a902f8fd855f14b643687bce331636"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-git-push-branch.ts",
+      "before": "15225b9825c277e4f8fd978a03fea8c13cb69513484c24d8ee2f7ad6e1f67102",
+      "after": "96a0e0e7ab8862386b439ec5cb99c8a884c95ee0bd004b727b60a4c7b602d95a"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-git-release-tag-create.ts",
+      "before": "806f532acbc3ca047983d03392c6ff2719485ca8ec257e56f91e95b392974b57",
+      "after": "01aa7fd325278f0476c5c1f5406da73dee4da2f3c5c5a03649c5a959783a544e"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-git-release-tag-plan.ts",
+      "before": "bc901a1b21c0473794abd7dc84b9e925eb8100d5341e12c2faa68463827e9a61",
+      "after": "0ef0fc72605e2b49667eafed5874dd5d632f7302e0e535966421c73dffdf7a69"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-git-remote-config.ts",
+      "before": "c7b6ff09001e01956e12edd6dd5073c938886c09a5ac9e08214497dbd141a40b",
+      "after": "e7a39e65d80622286cf34c4ef9a796bae706f6d29e7c6c7e15043957788bed42"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-git-remote-probe.ts",
+      "before": "841bac48732bbb2ce9ed19b1825e524452d86e8a0379806a2fdb8665560d8513",
+      "after": "569e1ef1e8396bb901a1e1fa3b68dcfe5679b6c7bc1e04bae5ee92d134fa2fc9"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-git-stacked-branch-plan.ts",
+      "before": "599635e3d37cba292afddb2163fa0c42225d2107cbe0d9ea172cb9d50805a9e2",
+      "after": "a1eb04e716d68f0f72d25d093ced84b1aae5e766affe6cda7b896db87ce31f64"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-git-worktree-create.ts",
+      "before": "a138111ceff74970c42d33a4c94cd3191bc9be0cb892bada53f2150cb889be14",
+      "after": "320dfbb853b4a2be11295ac98aafdad865f0fccefeaa51220323409eb320e1bb"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-git-worktree-plan.ts",
+      "before": "415a18075a775386069e30492d7bc9be4e287c3a170cec72b902d8856751b34a",
+      "after": "5ec0ead719211fb84a90615095040da8d3c0b8cc4ea6f76abab3787962940473"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-hard-stop-resolve.ts",
+      "before": "7922c58c069678293d176881fd27d465b38e1b146a42f6d3524ec36ea314bb05",
+      "after": "056141410b62e9077f12448bf3ebddb7ed43fd959e42b17feaf8846357492fd0"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-knowledge-base.ts",
+      "before": "b59138c64cb80d1a6cac8fdf40afca64be3dbab58f7305c9440914e98a3f431e",
+      "after": "a6358abcd9ee5c36a7ed9e10499acc1479abd6d9b97b693ce14b255c7da8a2ea"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-safe-bash.ts",
+      "before": "f29e2404ab519e839c03a2e90055a51f3406b3d77d187764d2b7c75c0c9ff6c0",
+      "after": "ea24defd6dd909524ed880020bb6adafded643c5f115044806e264cdf7df1d31"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-v11-close-gate.ts",
+      "before": "f9f5817692da8dbd3be17ea10777f21155579dccf9f899afb886706e96519a68",
+      "after": "51602b7d70627124f33c9ef3a060ef1ed1bb30d13298cbb4ebff7b73952bba39"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-v11-code-permission.ts",
+      "before": "468e746f0cec4d46045f97c6fc31bf53da3fe8d9c1c0939f9a06753a065520a7",
+      "after": "c2c01a7d11c7d71533f4977a0aa2f0b2ad3c4f790a66e365f11255b96b8b3909"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-v11-decision.ts",
+      "before": "80c2edd44a7cbad3cb390fbf4fcfbdff8df8d2773c81a5bb169c8d70989245ea",
+      "after": "992b0a5725262c73351c7309e282e138e1df4b4ab64663407181328a9f561f19"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-v11-gate-run.ts",
+      "before": "d22ed635548e70df122d540004b0e78e57be1f64e376f5080ef90b98b9c17abd",
+      "after": "aebd8e28f969242bfdbed128928ffd6c4183b7629ed35fe7a4a3871bc57ac2e7"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-v11-handoff.ts",
+      "before": "a1df393ba53f088291aa3e5dc6bfd2899836e5defd8c1e0137173391c335623b",
+      "after": "ae8e9ec38b8e8098567dcadaa42067a4a29286973a961307ade7dfc8c9712418"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/agent-handoff-v11.ts",
+      "before": "1dd212b3ed94e56a041da86ddcddd89bc214ad331e662f953463bdf0cf0adeaf",
+      "after": "a4b77a58cfab9aa09d2862afc975d61d1ceffcc0db9c5c3b60673669b337dcca"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/artifact-schema-validation.ts",
+      "before": "8b85895edaa525ef1960de072ffb23195b17b2082bed4a52a774b38a51806e40",
+      "after": "7708b72beb273df422572f9e44bc99826fe31a6707a70bbb95a00947ae3e1902"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/blocked-write-classification.ts",
+      "before": "e69212b2af2249b2979ee3d1757e49141953c1f200c055a5c9c5336d3b3aaba9",
+      "after": "0f4375209d89d254cda9d76bee43f53788b67df11bc0c86d77a3f3c9cd130e41"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/candidate-generation-integrity.ts",
+      "before": "62cf07b4a0af67af57982f66d2ef67e30481035e3b1f77ce3b3ee8c78b150818",
+      "after": "ca9ad4d17bc4f67debcf50bf80b63b33b1c4f1c37f034d18ef4a96dcc946c10f"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/close-gate.ts",
+      "before": "4ab75dc73d4160b6face72640cd38ee16aa3fa8b048504f1cb484e41bcd0d5c6",
+      "after": "1667987ff8738964381172f9d6af3c55d7ad3ca098e8191eae4f1995a8312a5a"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/code-contract-verifier.ts",
+      "before": "20165ede8fe7b407f408768b6f28e881a1e6bd9551c2c13cae4d2598df58c516",
+      "after": "5998d9585a271105e20cef5b517a7e615201d89f2a2f961932642fbdee1f1058"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/contract-authoring.ts",
+      "before": "e0ef80bfedf89d27d2581f096451a3b979e9bc6471a6195ba58e53065dff1f15",
+      "after": "7481013c97756ed7288654b5be53d642ec23edf738766c5ba56d756cd4edaa30"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/contract-integrity.ts",
+      "before": "e67bd03ca4b774b617618ef8f91234ca0a60d619aff782a4e7e14e8a42178a16",
+      "after": "f5dad6959be3e1665f92ab68a50b04683ad34a0a0924580949638172e774d0cf"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/contracts-registry.ts",
+      "before": "c8014db17671129d885a467d4ee326edaa6e4850990ee53b9761569790cd631d",
+      "after": "aeca7641b7153bcc1aeee2c7d08dba3ded41721607a474e74d7da0e7d29439af"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/gate-runner-v11.ts",
+      "before": "f6fad9c086a54e923984f862f44f2e6cf442ee2d662d901d79f85969f57d5fd2",
+      "after": "18c06054b1968811616c28da780aa595976e6b4f9cac90effdea651849942740"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/governance-invariants-v11.ts",
+      "before": "689fd1974d7bec83d24a6f45911bea87f5f5fc6e4dec75a5861587192ffc7377",
+      "after": "1b30b1998ac24c4110509a3f2165e81601ff7a9d2cf7f23c5a5fbe6720bd48bc"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/governance-trace-model.ts",
+      "before": "e1573aff505caea6b3c9d777c41a0910ab4811d45c693d71aa4161e9dc397b49",
+      "after": "24b6558bd14419ec10df7272c2f64088dc500f86c09749316b7f542e69e6a45d"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/hard-stop-resolution-log.ts",
+      "before": "a1fe4b2cf859569662fa1263ed6c9841e8b64dfc2d836e7490b7daa6d4d329a2",
+      "after": "990810ba3eb3961e28a61b3990038b12a138fce0f7556233525a86c62d2ae708"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/implementation-baseline.ts",
+      "before": "090cc5bb56c4cf5b31d98e546d51d2aef659b4c328f48cd7eb9baba48fed5274",
+      "after": "13ded69b63454857f0fa1d91d79384e109c52a7d581fba6570c4131b5d68dda3"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/merge-runner-v11.ts",
+      "before": "83838ec96178cd5759847dc85b6fb13ea478ca8082317d7181e20f93ce0d75f9",
+      "after": "8db623368e47f5874afd42e6186a7c416c0325166a9c7a62b70d17b8e8b6e282"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/project-governance-v2.ts",
+      "before": "22d742f39e0544e074ab6c0df1791225d7225b5444bd2bbede3d7433fbc08c33",
+      "after": "993e9d19da0cbb72d385b6b3c802dce58e48968bfd57634c4a470e8d067cba30"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/regenerable-artifact-governance.ts",
+      "before": "c4bf92e316b10ac6035032dff18fc48d6c493886d278319337caede8ff9563d2",
+      "after": "65999f135a219c2eadea8d3470ab6862972d629310b6d89dad4abd0e38ea7d88"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/semantic-closure-builder.ts",
+      "before": "3547c3838bbbe096c1b0448858b01b2decd0f4c266a698a51540515068a330ad",
+      "after": "d13750f54f11f54549f1878c9677c5ef2b8e77de4f41690248310379fc98a72d"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/semantic-closure-core.ts",
+      "before": "f6b2c0502e093c1b90f28bea31a5ad98f071c3956131777e1efcea5b90372226",
+      "after": "9d6f5b45460d5c1476120e947b48beab12fba43c04ba9195a03722e4df12864e"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/spec-migration-trace-contract.ts",
+      "before": "569ada39e624673e3a70949708c6f171620fc111f7ce8ef1559bf9418ab2ccab",
+      "after": "2d1094e2ff073ffc8285955e8cc0c218920914e336df9c2d627ba56e6e079cfe"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/state-coordinator-v11.ts",
+      "before": "904f08936236aedb52ad608cb08e1dc9a7bcb69d58b2eaeca735bba3163f55a5",
+      "after": "a68deaf6333c7e342874466afbdde42af01bebe30fc375d40c265014723d3d17"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/verification-governance-contract.ts",
+      "before": "30d7f3fa1878c6d1d2a3ca1ad04aeae1842d34f0290fc0f84ead7a531f65c064",
+      "after": "f2457555e03667e77415433a2479b03d75d34c4f58de69156c8083ab9164a797"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/verification-report-contract.ts",
+      "before": "222cb5409d64471d0a66737d48bc83f1a175680dc2b64cceaebe12e653a0735e",
+      "after": "1cfce63535f35b52164165ae1319e2daa5867f63089d509d35ecc80a313d49b9"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/write-guard-authorization-log.ts",
+      "before": "cc5b1d9786407e4008249ca057d896137368ba165b5d8b82ac2c4444a5e4cc3a",
+      "after": "38c40f4b3e235345f268bf9299218ad359fef23872b02f0d3697c1c11daefcfe"
+    },
+    {
+      "file": "packages/workflow-runtime/src/loaders/WorkflowDefinitionLoader.ts",
+      "before": "8be7853cd349391d33205058e54c84f4648e94647b667d26a4b6549970360f9f",
+      "after": "8845daeb0f5599c8a9cd34945f00a0bfba2309c593b60ddd0a5ce7e43404ffc8"
+    },
+    {
+      "file": "packages/types/src/scalar-text.ts",
+      "before": "ABSENT",
+      "after": "cbfe7769f05a797496f7f17830c5ecccfb95004823efad4f0e4ef0a16ad05c87"
+    },
+    {
+      "file": "packages/types/src/index.ts",
+      "before": "6b28e72f7e2abe40be3bc99b85e1f7f92cc626abf6de636070e90ceacb37cc80",
+      "after": "579e5a1f24fd3b32aea0ec2fe0d169f49be8b2661cd9e61e560aad330cb7ef33"
+    }
+  ]
+}

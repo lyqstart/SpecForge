@@ -1,0 +1,1086 @@
+{
+  "utc": "2026-11-08T07:12:42.864Z",
+  "members": [
+    {
+      "workspace": ".",
+      "name": "specforge",
+      "scripts": {
+        "build": "node scripts/run-root-task.mjs build",
+        "test": "node scripts/run-root-task.mjs test",
+        "test:root": "node scripts/run-root-tests.mjs current",
+        "test:root:environmental": "node scripts/run-root-tests.mjs environmental",
+        "test:root:registry": "node scripts/run-root-tests.mjs validate",
+        "lint": "node scripts/run-root-task.mjs lint",
+        "clean": "bun scripts/clean-workspace.ts",
+        "render-workflows": "node scripts/run-root-task.mjs render-workflows",
+        "check-workflows": "node scripts/run-root-task.mjs check-workflows",
+        "lint:layout": "bun scripts/lint/check-hardcoded-paths.ts",
+        "typecheck:validator-contract": "tsc --noEmit -p scripts/tsconfig.validation-contract.json",
+        "typecheck:release-owner-snapshot": "tsc --noEmit -p scripts/tsconfig.release-owner-snapshot.json",
+        "typecheck:installer": "tsc --noEmit -p scripts/tsconfig.installer.json",
+        "build:release-runtimes": "bun scripts/build-release-runtime-artifacts.ts",
+        "build:release-manifest": "bun scripts/build-release-manifest.ts",
+        "precheck:release": "bun scripts/run-current-release-precheck.ts",
+        "bootstrap:project": "node scripts/project-session-bootstrap.mjs",
+        "test:project-bootstrap": "bun run --cwd packages/daemon-core test -- tests/unit/project-session-bootstrap.test.ts"
+      },
+      "declared_devDependencies": {
+        "@types/node": "^25.6.2",
+        "@types/proper-lockfile": "^4.1.4",
+        "@typescript-eslint/eslint-plugin": "^8.59.2",
+        "@typescript-eslint/parser": "^8.59.3",
+        "@vitest/coverage-v8": "4.1.5",
+        "eslint": "^9.39.4",
+        "eslint-config-prettier": "^10.1.8",
+        "eslint-plugin-import": "^2.32.0",
+        "fast-check": "^4.8.0",
+        "globals": "^17.6.0",
+        "proper-lockfile": "^4.1.2",
+        "typescript": "^6.0.3",
+        "vitest": "4.1.5"
+      },
+      "tools": {
+        "eslint": {
+          "version": "9.39.4",
+          "path": "D:\\code\\SpecForge\\node_modules\\.bun\\eslint@9.39.4+5698b56318839d84\\node_modules\\eslint\\package.json",
+          "peerDependencies": {
+            "jiti": "*"
+          }
+        },
+        "@typescript-eslint/eslint-plugin": {
+          "version": "8.59.3",
+          "path": "D:\\code\\SpecForge\\node_modules\\.bun\\@typescript-eslint+eslint-plugin@8.59.3+f2d3552e71ef8101\\node_modules\\@typescript-eslint\\eslint-plugin\\package.json",
+          "peerDependencies": {
+            "eslint": "^8.57.0 || ^9.0.0 || ^10.0.0",
+            "typescript": ">=4.8.4 <6.1.0",
+            "@typescript-eslint/parser": "^8.59.3"
+          }
+        },
+        "@typescript-eslint/parser": {
+          "version": "8.59.3",
+          "path": "D:\\code\\SpecForge\\node_modules\\.bun\\@typescript-eslint+parser@8.59.3+5a145dda63a6407e\\node_modules\\@typescript-eslint\\parser\\package.json",
+          "peerDependencies": {
+            "eslint": "^8.57.0 || ^9.0.0 || ^10.0.0",
+            "typescript": ">=4.8.4 <6.1.0"
+          }
+        },
+        "typescript": {
+          "version": "6.0.3",
+          "path": "D:\\code\\SpecForge\\node_modules\\.bun\\typescript@6.0.3\\node_modules\\typescript\\package.json"
+        },
+        "eslint-plugin-prettier": {
+          "unavailable": true,
+          "code": "MODULE_NOT_FOUND"
+        },
+        "prettier": {
+          "unavailable": true,
+          "code": "MODULE_NOT_FOUND"
+        },
+        "@eslint/js": {
+          "unavailable": true,
+          "code": "MODULE_NOT_FOUND"
+        },
+        "eslint-plugin-import": {
+          "version": "2.32.0",
+          "path": "D:\\code\\SpecForge\\node_modules\\.bun\\eslint-plugin-import@2.32.0+5698b56318839d84\\node_modules\\eslint-plugin-import\\package.json",
+          "peerDependencies": {
+            "eslint": "^2 || ^3 || ^4 || ^5 || ^6 || ^7.2.0 || ^8 || ^9"
+          }
+        }
+      },
+      "configs": []
+    },
+    {
+      "workspace": "packages/types",
+      "name": "@specforge/types",
+      "scripts": {
+        "build": "tsc",
+        "clean": "bun ../../scripts/clean-workspace.ts --package types"
+      },
+      "declared_devDependencies": {
+        "typescript": "^5.8.2"
+      },
+      "tools": {
+        "eslint": {
+          "version": "9.39.4",
+          "path": "D:\\code\\SpecForge\\node_modules\\.bun\\eslint@9.39.4+5698b56318839d84\\node_modules\\eslint\\package.json",
+          "peerDependencies": {
+            "jiti": "*"
+          }
+        },
+        "@typescript-eslint/eslint-plugin": {
+          "version": "8.59.3",
+          "path": "D:\\code\\SpecForge\\node_modules\\.bun\\@typescript-eslint+eslint-plugin@8.59.3+f2d3552e71ef8101\\node_modules\\@typescript-eslint\\eslint-plugin\\package.json",
+          "peerDependencies": {
+            "eslint": "^8.57.0 || ^9.0.0 || ^10.0.0",
+            "typescript": ">=4.8.4 <6.1.0",
+            "@typescript-eslint/parser": "^8.59.3"
+          }
+        },
+        "@typescript-eslint/parser": {
+          "version": "8.59.3",
+          "path": "D:\\code\\SpecForge\\node_modules\\.bun\\@typescript-eslint+parser@8.59.3+5a145dda63a6407e\\node_modules\\@typescript-eslint\\parser\\package.json",
+          "peerDependencies": {
+            "eslint": "^8.57.0 || ^9.0.0 || ^10.0.0",
+            "typescript": ">=4.8.4 <6.1.0"
+          }
+        },
+        "typescript": {
+          "version": "5.9.3",
+          "path": "D:\\code\\SpecForge\\node_modules\\.bun\\typescript@5.9.3\\node_modules\\typescript\\package.json"
+        },
+        "eslint-plugin-prettier": {
+          "unavailable": true,
+          "code": "MODULE_NOT_FOUND"
+        },
+        "prettier": {
+          "unavailable": true,
+          "code": "MODULE_NOT_FOUND"
+        },
+        "@eslint/js": {
+          "unavailable": true,
+          "code": "MODULE_NOT_FOUND"
+        },
+        "eslint-plugin-import": {
+          "version": "2.32.0",
+          "path": "D:\\code\\SpecForge\\node_modules\\.bun\\eslint-plugin-import@2.32.0+5698b56318839d84\\node_modules\\eslint-plugin-import\\package.json",
+          "peerDependencies": {
+            "eslint": "^2 || ^3 || ^4 || ^5 || ^6 || ^7.2.0 || ^8 || ^9"
+          }
+        }
+      },
+      "configs": []
+    },
+    {
+      "workspace": "packages/version-unification",
+      "name": "@specforge/version-unification",
+      "scripts": {
+        "test": "vitest run",
+        "test:watch": "vitest",
+        "build": "tsc",
+        "lint": "eslint src --ext .ts",
+        "clean": "bun ../../scripts/clean-workspace.ts --package version-unification"
+      },
+      "declared_devDependencies": {
+        "vitest": "^4.1.5"
+      },
+      "tools": {
+        "eslint": {
+          "version": "9.39.4",
+          "path": "D:\\code\\SpecForge\\node_modules\\.bun\\eslint@9.39.4+5698b56318839d84\\node_modules\\eslint\\package.json",
+          "peerDependencies": {
+            "jiti": "*"
+          }
+        },
+        "@typescript-eslint/eslint-plugin": {
+          "version": "8.59.3",
+          "path": "D:\\code\\SpecForge\\node_modules\\.bun\\@typescript-eslint+eslint-plugin@8.59.3+f2d3552e71ef8101\\node_modules\\@typescript-eslint\\eslint-plugin\\package.json",
+          "peerDependencies": {
+            "eslint": "^8.57.0 || ^9.0.0 || ^10.0.0",
+            "typescript": ">=4.8.4 <6.1.0",
+            "@typescript-eslint/parser": "^8.59.3"
+          }
+        },
+        "@typescript-eslint/parser": {
+          "version": "8.59.3",
+          "path": "D:\\code\\SpecForge\\node_modules\\.bun\\@typescript-eslint+parser@8.59.3+5a145dda63a6407e\\node_modules\\@typescript-eslint\\parser\\package.json",
+          "peerDependencies": {
+            "eslint": "^8.57.0 || ^9.0.0 || ^10.0.0",
+            "typescript": ">=4.8.4 <6.1.0"
+          }
+        },
+        "typescript": {
+          "version": "6.0.3",
+          "path": "D:\\code\\SpecForge\\node_modules\\.bun\\typescript@6.0.3\\node_modules\\typescript\\package.json"
+        },
+        "eslint-plugin-prettier": {
+          "unavailable": true,
+          "code": "MODULE_NOT_FOUND"
+        },
+        "prettier": {
+          "unavailable": true,
+          "code": "MODULE_NOT_FOUND"
+        },
+        "@eslint/js": {
+          "unavailable": true,
+          "code": "MODULE_NOT_FOUND"
+        },
+        "eslint-plugin-import": {
+          "version": "2.32.0",
+          "path": "D:\\code\\SpecForge\\node_modules\\.bun\\eslint-plugin-import@2.32.0+5698b56318839d84\\node_modules\\eslint-plugin-import\\package.json",
+          "peerDependencies": {
+            "eslint": "^2 || ^3 || ^4 || ^5 || ^6 || ^7.2.0 || ^8 || ^9"
+          }
+        }
+      },
+      "configs": []
+    },
+    {
+      "workspace": "packages/configuration",
+      "name": "@specforge/configuration",
+      "scripts": {
+        "build": "tsc",
+        "watch": "tsc --watch",
+        "clean": "bun ../../scripts/clean-workspace.ts --package configuration",
+        "lint": "eslint src --ext .ts",
+        "lint:fix": "eslint src --ext .ts --fix",
+        "format": "prettier --write src tests",
+        "format:check": "prettier --check src tests",
+        "test": "vitest run",
+        "test:watch": "vitest",
+        "test:coverage": "vitest run --coverage"
+      },
+      "declared_devDependencies": {
+        "@types/node": "^20.11.0",
+        "@typescript-eslint/eslint-plugin": "^6.21.0",
+        "@typescript-eslint/parser": "^6.21.0",
+        "@vitest/coverage-v8": "^1.2.0",
+        "eslint": "^8.56.0",
+        "eslint-config-prettier": "^9.1.0",
+        "eslint-plugin-prettier": "^5.1.3",
+        "prettier": "^3.2.0",
+        "typescript": "^5.3.3",
+        "vitest": "^1.2.0"
+      },
+      "tools": {
+        "eslint": {
+          "version": "8.57.1",
+          "path": "D:\\code\\SpecForge\\node_modules\\.bun\\eslint@8.57.1+b26c77de378bcceb\\node_modules\\eslint\\package.json"
+        },
+        "@typescript-eslint/eslint-plugin": {
+          "version": "6.21.0",
+          "path": "D:\\code\\SpecForge\\node_modules\\.bun\\@typescript-eslint+eslint-plugin@6.21.0+d48378fca3009074\\node_modules\\@typescript-eslint\\eslint-plugin\\package.json",
+          "peerDependencies": {
+            "@typescript-eslint/parser": "^6.0.0 || ^6.0.0-alpha",
+            "eslint": "^7.0.0 || ^8.0.0"
+          }
+        },
+        "@typescript-eslint/parser": {
+          "version": "6.21.0",
+          "path": "D:\\code\\SpecForge\\node_modules\\.bun\\@typescript-eslint+parser@6.21.0+d9676c4c49c7bc60\\node_modules\\@typescript-eslint\\parser\\package.json",
+          "peerDependencies": {
+            "eslint": "^7.0.0 || ^8.0.0"
+          }
+        },
+        "typescript": {
+          "version": "5.9.3",
+          "path": "D:\\code\\SpecForge\\node_modules\\.bun\\typescript@5.9.3\\node_modules\\typescript\\package.json"
+        },
+        "eslint-plugin-prettier": {
+          "version": "5.5.5",
+          "path": "D:\\code\\SpecForge\\node_modules\\.bun\\eslint-plugin-prettier@5.5.5+6cac437b4b104062\\node_modules\\eslint-plugin-prettier\\package.json",
+          "peerDependencies": {
+            "@types/eslint": ">=8.0.0",
+            "eslint": ">=8.0.0",
+            "eslint-config-prettier": ">= 7.0.0 <10.0.0 || >=10.1.0",
+            "prettier": ">=3.0.0"
+          }
+        },
+        "prettier": {
+          "version": "3.8.3",
+          "path": "D:\\code\\SpecForge\\node_modules\\.bun\\prettier@3.8.3\\node_modules\\prettier\\package.json"
+        },
+        "@eslint/js": {
+          "unavailable": true,
+          "code": "MODULE_NOT_FOUND"
+        },
+        "eslint-plugin-import": {
+          "version": "2.32.0",
+          "path": "D:\\code\\SpecForge\\node_modules\\.bun\\eslint-plugin-import@2.32.0+5698b56318839d84\\node_modules\\eslint-plugin-import\\package.json",
+          "peerDependencies": {
+            "eslint": "^2 || ^3 || ^4 || ^5 || ^6 || ^7.2.0 || ^8 || ^9"
+          }
+        }
+      },
+      "configs": [
+        {
+          "file": ".eslintrc.json",
+          "sha256": "ec70b307850b5def5dfe0d97de404dd970135c8aa599f1627a32e6547db83423",
+          "text": "{\r\n  \"root\": true,\r\n  \"parser\": \"@typescript-eslint/parser\",\r\n  \"plugins\": [\"@typescript-eslint\", \"prettier\"],\r\n  \"extends\": [\r\n    \"eslint:recommended\",\r\n    \"plugin:@typescript-eslint/recommended\",\r\n    \"plugin:prettier/recommended\"\r\n  ],\r\n  \"env\": {\r\n    \"node\": true,\r\n    \"es2020\": true\r\n  },\r\n  \"parserOptions\": {\r\n    \"ecmaVersion\": 2020,\r\n    \"sourceType\": \"module\"\r\n  },\r\n  \"rules\": {\r\n    \"prettier/prettier\": \"error\",\r\n    \"@typescript-eslint/explicit-function-return-type\": \"off\",\r\n    \"@typescript-eslint/no-explicit-any\": \"off\",\r\n    \"@typescript-eslint/no-unused-vars\": [\"error\", { \"argsIgnorePattern\": \"^_\" }]\r\n  },\r\n  \"ignorePatterns\": [\"dist\", \"node_modules\", \"coverage\"]\r\n}\r\n"
+        },
+        {
+          "file": ".prettierrc",
+          "sha256": "e7fe29d8df5d979677757f609161c6b3229b2551f169af206c361bf3fe4ddc1e",
+          "text": "{\r\n  \"semi\": true,\r\n  \"trailingComma\": \"es5\",\r\n  \"singleQuote\": true,\r\n  \"printWidth\": 100,\r\n  \"tabWidth\": 2,\r\n  \"useTabs\": false,\r\n  \"arrowParens\": \"avoid\",\r\n  \"endOfLine\": \"lf\"\r\n}\r\n"
+        }
+      ]
+    },
+    {
+      "workspace": "packages/service-management",
+      "name": "@specforge/service-management",
+      "scripts": {
+        "build": "tsc",
+        "watch": "tsc --watch",
+        "clean": "bun ../../scripts/clean-workspace.ts --package service-management",
+        "lint": "eslint src --ext .ts",
+        "lint:fix": "eslint src --ext .ts --fix",
+        "format": "prettier --write src tests",
+        "format:check": "prettier --check src tests",
+        "test": "vitest run",
+        "test:watch": "vitest",
+        "test:coverage": "vitest run --coverage"
+      },
+      "declared_devDependencies": {
+        "@types/node": "^22.13.14",
+        "@typescript-eslint/eslint-plugin": "^8.28.0",
+        "@typescript-eslint/parser": "^8.28.0",
+        "@vitest/coverage-v8": "^3.0.7",
+        "eslint": "^8.57.1",
+        "eslint-config-prettier": "^10.0.1",
+        "eslint-plugin-prettier": "^5.2.3",
+        "fast-check": "^4.8.0",
+        "prettier": "^3.5.3",
+        "proper-lockfile": "^4.1.2",
+        "typescript": "^5.8.2",
+        "vitest": "^3.0.7"
+      },
+      "tools": {
+        "eslint": {
+          "version": "8.57.1",
+          "path": "D:\\code\\SpecForge\\node_modules\\.bun\\eslint@8.57.1+b26c77de378bcceb\\node_modules\\eslint\\package.json"
+        },
+        "@typescript-eslint/eslint-plugin": {
+          "version": "8.59.3",
+          "path": "D:\\code\\SpecForge\\node_modules\\.bun\\@typescript-eslint+eslint-plugin@8.59.3+c661d3909ff68fc0\\node_modules\\@typescript-eslint\\eslint-plugin\\package.json",
+          "peerDependencies": {
+            "eslint": "^8.57.0 || ^9.0.0 || ^10.0.0",
+            "typescript": ">=4.8.4 <6.1.0",
+            "@typescript-eslint/parser": "^8.59.3"
+          }
+        },
+        "@typescript-eslint/parser": {
+          "version": "8.59.3",
+          "path": "D:\\code\\SpecForge\\node_modules\\.bun\\@typescript-eslint+parser@8.59.3+d9676c4c49c7bc60\\node_modules\\@typescript-eslint\\parser\\package.json",
+          "peerDependencies": {
+            "eslint": "^8.57.0 || ^9.0.0 || ^10.0.0",
+            "typescript": ">=4.8.4 <6.1.0"
+          }
+        },
+        "typescript": {
+          "version": "5.9.3",
+          "path": "D:\\code\\SpecForge\\node_modules\\.bun\\typescript@5.9.3\\node_modules\\typescript\\package.json"
+        },
+        "eslint-plugin-prettier": {
+          "version": "5.5.5",
+          "path": "D:\\code\\SpecForge\\node_modules\\.bun\\eslint-plugin-prettier@5.5.5+d1b52cbdd44e4a71\\node_modules\\eslint-plugin-prettier\\package.json",
+          "peerDependencies": {
+            "@types/eslint": ">=8.0.0",
+            "eslint": ">=8.0.0",
+            "eslint-config-prettier": ">= 7.0.0 <10.0.0 || >=10.1.0",
+            "prettier": ">=3.0.0"
+          }
+        },
+        "prettier": {
+          "version": "3.8.3",
+          "path": "D:\\code\\SpecForge\\node_modules\\.bun\\prettier@3.8.3\\node_modules\\prettier\\package.json"
+        },
+        "@eslint/js": {
+          "unavailable": true,
+          "code": "MODULE_NOT_FOUND"
+        },
+        "eslint-plugin-import": {
+          "version": "2.32.0",
+          "path": "D:\\code\\SpecForge\\node_modules\\.bun\\eslint-plugin-import@2.32.0+5698b56318839d84\\node_modules\\eslint-plugin-import\\package.json",
+          "peerDependencies": {
+            "eslint": "^2 || ^3 || ^4 || ^5 || ^6 || ^7.2.0 || ^8 || ^9"
+          }
+        }
+      },
+      "configs": []
+    },
+    {
+      "workspace": "packages/host-profile",
+      "name": "@specforge/host-profile",
+      "scripts": {
+        "build": "tsc",
+        "test": "vitest run",
+        "clean": "bun ../../scripts/clean-workspace.ts --package host-profile"
+      },
+      "declared_devDependencies": {
+        "@types/node": "^25.6.2",
+        "vitest": "^4.1.5"
+      },
+      "tools": {
+        "eslint": {
+          "version": "9.39.4",
+          "path": "D:\\code\\SpecForge\\node_modules\\.bun\\eslint@9.39.4+5698b56318839d84\\node_modules\\eslint\\package.json",
+          "peerDependencies": {
+            "jiti": "*"
+          }
+        },
+        "@typescript-eslint/eslint-plugin": {
+          "version": "8.59.3",
+          "path": "D:\\code\\SpecForge\\node_modules\\.bun\\@typescript-eslint+eslint-plugin@8.59.3+f2d3552e71ef8101\\node_modules\\@typescript-eslint\\eslint-plugin\\package.json",
+          "peerDependencies": {
+            "eslint": "^8.57.0 || ^9.0.0 || ^10.0.0",
+            "typescript": ">=4.8.4 <6.1.0",
+            "@typescript-eslint/parser": "^8.59.3"
+          }
+        },
+        "@typescript-eslint/parser": {
+          "version": "8.59.3",
+          "path": "D:\\code\\SpecForge\\node_modules\\.bun\\@typescript-eslint+parser@8.59.3+5a145dda63a6407e\\node_modules\\@typescript-eslint\\parser\\package.json",
+          "peerDependencies": {
+            "eslint": "^8.57.0 || ^9.0.0 || ^10.0.0",
+            "typescript": ">=4.8.4 <6.1.0"
+          }
+        },
+        "typescript": {
+          "version": "6.0.3",
+          "path": "D:\\code\\SpecForge\\node_modules\\.bun\\typescript@6.0.3\\node_modules\\typescript\\package.json"
+        },
+        "eslint-plugin-prettier": {
+          "unavailable": true,
+          "code": "MODULE_NOT_FOUND"
+        },
+        "prettier": {
+          "unavailable": true,
+          "code": "MODULE_NOT_FOUND"
+        },
+        "@eslint/js": {
+          "unavailable": true,
+          "code": "MODULE_NOT_FOUND"
+        },
+        "eslint-plugin-import": {
+          "version": "2.32.0",
+          "path": "D:\\code\\SpecForge\\node_modules\\.bun\\eslint-plugin-import@2.32.0+5698b56318839d84\\node_modules\\eslint-plugin-import\\package.json",
+          "peerDependencies": {
+            "eslint": "^2 || ^3 || ^4 || ^5 || ^6 || ^7.2.0 || ^8 || ^9"
+          }
+        }
+      },
+      "configs": []
+    },
+    {
+      "workspace": "packages/observability",
+      "name": "@specforge/observability",
+      "scripts": {
+        "build": "tsc",
+        "build:watch": "tsc --watch",
+        "clean": "bun ../../scripts/clean-workspace.ts --package observability",
+        "lint": "eslint src/**/*.ts tests/**/*.ts",
+        "lint:fix": "eslint src/**/*.ts tests/**/*.ts --fix",
+        "format": "prettier --write \"src/**/*.ts\" \"tests/**/*.ts\"",
+        "format:check": "prettier --check \"src/**/*.ts\" \"tests/**/*.ts\"",
+        "test": "vitest run",
+        "test:watch": "vitest",
+        "test:coverage": "vitest run --coverage",
+        "test:property": "vitest run tests/property/",
+        "test:unit": "vitest run tests/unit/",
+        "test:integration": "vitest run tests/integration/",
+        "dev": "concurrently \"bun run build:watch\" \"bun run test:watch\""
+      },
+      "declared_devDependencies": {
+        "@types/node": "^20.0.0",
+        "@types/uuid": "^10.0.0",
+        "@typescript-eslint/eslint-plugin": "^7.0.0",
+        "@typescript-eslint/parser": "^7.0.0",
+        "@vitest/coverage-v8": "^1.0.0",
+        "concurrently": "^8.0.0",
+        "eslint": "^8.0.0",
+        "eslint-config-prettier": "^9.0.0",
+        "eslint-plugin-import": "^2.0.0",
+        "fast-check": "^3.0.0",
+        "prettier": "^3.0.0",
+        "rimraf": "^5.0.0",
+        "typescript": "^5.0.0",
+        "vitest": "^1.0.0"
+      },
+      "tools": {
+        "eslint": {
+          "version": "8.57.1",
+          "path": "D:\\code\\SpecForge\\node_modules\\.bun\\eslint@8.57.1+b26c77de378bcceb\\node_modules\\eslint\\package.json"
+        },
+        "@typescript-eslint/eslint-plugin": {
+          "version": "7.18.0",
+          "path": "D:\\code\\SpecForge\\node_modules\\.bun\\@typescript-eslint+eslint-plugin@7.18.0+8ab3403b8662203d\\node_modules\\@typescript-eslint\\eslint-plugin\\package.json",
+          "peerDependencies": {
+            "@typescript-eslint/parser": "^7.0.0",
+            "eslint": "^8.56.0"
+          }
+        },
+        "@typescript-eslint/parser": {
+          "version": "7.18.0",
+          "path": "D:\\code\\SpecForge\\node_modules\\.bun\\@typescript-eslint+parser@7.18.0+d9676c4c49c7bc60\\node_modules\\@typescript-eslint\\parser\\package.json",
+          "peerDependencies": {
+            "eslint": "^8.56.0"
+          }
+        },
+        "typescript": {
+          "version": "5.9.3",
+          "path": "D:\\code\\SpecForge\\node_modules\\.bun\\typescript@5.9.3\\node_modules\\typescript\\package.json"
+        },
+        "eslint-plugin-prettier": {
+          "unavailable": true,
+          "code": "MODULE_NOT_FOUND"
+        },
+        "prettier": {
+          "version": "3.8.3",
+          "path": "D:\\code\\SpecForge\\node_modules\\.bun\\prettier@3.8.3\\node_modules\\prettier\\package.json"
+        },
+        "@eslint/js": {
+          "unavailable": true,
+          "code": "MODULE_NOT_FOUND"
+        },
+        "eslint-plugin-import": {
+          "version": "2.32.0",
+          "path": "D:\\code\\SpecForge\\node_modules\\.bun\\eslint-plugin-import@2.32.0+b26c77de378bcceb\\node_modules\\eslint-plugin-import\\package.json",
+          "peerDependencies": {
+            "eslint": "^2 || ^3 || ^4 || ^5 || ^6 || ^7.2.0 || ^8 || ^9"
+          }
+        }
+      },
+      "configs": [
+        {
+          "file": ".eslintrc.json",
+          "sha256": "3ffb1e16823ed1204295d28522ebe8a644c1f9872c53997b0cd22f0dd532607c",
+          "text": "{\r\n  \"root\": true,\r\n  \"parser\": \"@typescript-eslint/parser\",\r\n  \"plugins\": [\"@typescript-eslint\", \"import\"],\r\n  \"extends\": [\r\n    \"eslint:recommended\",\r\n    \"plugin:@typescript-eslint/recommended\",\r\n    \"plugin:import/recommended\",\r\n    \"plugin:import/typescript\",\r\n    \"prettier\"\r\n  ],\r\n  \"env\": {\r\n    \"node\": true,\r\n    \"es2022\": true\r\n  },\r\n  \"parserOptions\": {\r\n    \"ecmaVersion\": \"latest\",\r\n    \"sourceType\": \"module\",\r\n    \"project\": \"./tsconfig.json\"\r\n  },\r\n  \"rules\": {\r\n    \"@typescript-eslint/no-unused-vars\": [\"error\", { \"argsIgnorePattern\": \"^_\" }],\r\n    \"@typescript-eslint/no-explicit-any\": \"error\",\r\n    \"@typescript-eslint/explicit-function-return-type\": [\"error\", { \"allowExpressions\": true }],\r\n    \"@typescript-eslint/no-floating-promises\": \"error\",\r\n    \"@typescript-eslint/await-thenable\": \"error\",\r\n    \"import/order\": [\r\n      \"error\",\r\n      {\r\n        \"groups\": [\"builtin\", \"external\", \"internal\", \"parent\", \"sibling\", \"index\"],\r\n        \"newlines-between\": \"always\",\r\n        \"alphabetize\": { \"order\": \"asc\", \"caseInsensitive\": true }\r\n      }\r\n    ],\r\n    \"import/no-unresolved\": \"error\",\r\n    \"import/no-cycle\": \"error\",\r\n    \"no-console\": [\"error\", { \"allow\": [\"warn\", \"error\"] }]\r\n  },\r\n  \"settings\": {\r\n    \"import/resolver\": {\r\n      \"typescript\": {\r\n        \"project\": \"./tsconfig.json\"\r\n      }\r\n    }\r\n  }\r\n}"
+        },
+        {
+          "file": ".prettierrc.json",
+          "sha256": "b9a9c2ceba5c4ed1448ee91947f207b6db3cc78da1ebc4605f8fee2f0e9f1443",
+          "text": "{\r\n  \"semi\": true,\r\n  \"trailingComma\": \"es5\",\r\n  \"singleQuote\": false,\r\n  \"printWidth\": 100,\r\n  \"tabWidth\": 2,\r\n  \"useTabs\": false,\r\n  \"bracketSpacing\": true,\r\n  \"arrowParens\": \"always\",\r\n  \"endOfLine\": \"lf\"\r\n}"
+        }
+      ]
+    },
+    {
+      "workspace": "packages/permission-engine",
+      "name": "@specforge/permission-engine",
+      "scripts": {
+        "build": "tsc",
+        "build:watch": "tsc --watch",
+        "clean": "bun ../../scripts/clean-workspace.ts --package permission-engine",
+        "lint": "eslint src/**/*.ts tests/**/*.ts",
+        "lint:fix": "eslint src/**/*.ts tests/**/*.ts --fix",
+        "format": "prettier --write \"src/**/*.ts\" \"tests/**/*.ts\"",
+        "format:check": "prettier --check \"src/**/*.ts\" \"tests/**/*.ts\"",
+        "test": "vitest run",
+        "test:watch": "vitest",
+        "test:coverage": "vitest run --coverage",
+        "test:property": "vitest run tests/property/",
+        "test:unit": "vitest run tests/unit/",
+        "test:integration": "vitest run tests/integration/",
+        "dev": "concurrently \"bun run build:watch\" \"bun run test:watch\""
+      },
+      "declared_devDependencies": {
+        "@types/node": "^20.0.0",
+        "@typescript-eslint/eslint-plugin": "^7.0.0",
+        "@typescript-eslint/parser": "^7.0.0",
+        "@vitest/coverage-v8": "^1.0.0",
+        "concurrently": "^8.0.0",
+        "eslint": "^8.0.0",
+        "eslint-config-prettier": "^9.0.0",
+        "eslint-plugin-import": "^2.0.0",
+        "fast-check": "^3.0.0",
+        "prettier": "^3.0.0",
+        "rimraf": "^5.0.0",
+        "typescript": "^5.0.0",
+        "vitest": "^1.0.0"
+      },
+      "tools": {
+        "eslint": {
+          "version": "8.57.1",
+          "path": "D:\\code\\SpecForge\\node_modules\\.bun\\eslint@8.57.1+b26c77de378bcceb\\node_modules\\eslint\\package.json"
+        },
+        "@typescript-eslint/eslint-plugin": {
+          "version": "7.18.0",
+          "path": "D:\\code\\SpecForge\\node_modules\\.bun\\@typescript-eslint+eslint-plugin@7.18.0+8ab3403b8662203d\\node_modules\\@typescript-eslint\\eslint-plugin\\package.json",
+          "peerDependencies": {
+            "@typescript-eslint/parser": "^7.0.0",
+            "eslint": "^8.56.0"
+          }
+        },
+        "@typescript-eslint/parser": {
+          "version": "7.18.0",
+          "path": "D:\\code\\SpecForge\\node_modules\\.bun\\@typescript-eslint+parser@7.18.0+d9676c4c49c7bc60\\node_modules\\@typescript-eslint\\parser\\package.json",
+          "peerDependencies": {
+            "eslint": "^8.56.0"
+          }
+        },
+        "typescript": {
+          "version": "5.9.3",
+          "path": "D:\\code\\SpecForge\\node_modules\\.bun\\typescript@5.9.3\\node_modules\\typescript\\package.json"
+        },
+        "eslint-plugin-prettier": {
+          "unavailable": true,
+          "code": "MODULE_NOT_FOUND"
+        },
+        "prettier": {
+          "version": "3.8.3",
+          "path": "D:\\code\\SpecForge\\node_modules\\.bun\\prettier@3.8.3\\node_modules\\prettier\\package.json"
+        },
+        "@eslint/js": {
+          "unavailable": true,
+          "code": "MODULE_NOT_FOUND"
+        },
+        "eslint-plugin-import": {
+          "version": "2.32.0",
+          "path": "D:\\code\\SpecForge\\node_modules\\.bun\\eslint-plugin-import@2.32.0+b26c77de378bcceb\\node_modules\\eslint-plugin-import\\package.json",
+          "peerDependencies": {
+            "eslint": "^2 || ^3 || ^4 || ^5 || ^6 || ^7.2.0 || ^8 || ^9"
+          }
+        }
+      },
+      "configs": [
+        {
+          "file": "eslint.config.js",
+          "sha256": "4ffcfafeb45bdf884606794dd131d402ed9ad28b52a77f01b0dae574ba6e3e88",
+          "text": "import eslint from '@eslint/js';\nimport tseslint from '@typescript-eslint/eslint-plugin';\nimport tsParser from '@typescript-eslint/parser';\nimport importPlugin from 'eslint-plugin-import';\nimport globals from 'globals';\n\nexport default [\n  eslint.configs.recommended,\n  {\n    files: ['**/*.ts'],\n    languageOptions: {\n      parser: tsParser,\n      parserOptions: {\n        ecmaVersion: 'latest',\n        sourceType: 'module',\n        project: './tsconfig.json'\n      },\n      globals: {\n        ...globals.node,\n        ...globals.es2022\n      }\n    },\n    plugins: {\n      '@typescript-eslint': tseslint,\n      'import': importPlugin\n    },\n    rules: {\n      '@typescript-eslint/no-unused-vars': ['error', { 'argsIgnorePattern': '^_' }],\n      '@typescript-eslint/no-explicit-any': 'warn',\n      '@typescript-eslint/explicit-function-return-type': 'off',\n      '@typescript-eslint/explicit-module-boundary-types': 'off',\n      'import/order': [\n        'error',\n        {\n          'groups': ['builtin', 'external', 'internal', 'parent', 'sibling', 'index'],\n          'newlines-between': 'always',\n          'alphabetize': { 'order': 'asc', 'caseInsensitive': true }\n        }\n      ],\n      'import/no-unresolved': 'off' // Temporarily disable due to TypeScript resolver issues\n    }\n  }\n];"
+        },
+        {
+          "file": ".prettierrc.json",
+          "sha256": "5182e8f24f2f1a8a8cb3c8097105b6ddc6db5dd5b96a777bfcbc583a1f652041",
+          "text": "{\r\n  \"semi\": true,\r\n  \"trailingComma\": \"none\",\r\n  \"singleQuote\": true,\r\n  \"printWidth\": 100,\r\n  \"tabWidth\": 2,\r\n  \"useTabs\": false,\r\n  \"bracketSpacing\": true,\r\n  \"arrowParens\": \"avoid\",\r\n  \"endOfLine\": \"lf\"\r\n}"
+        }
+      ]
+    },
+    {
+      "workspace": "packages/opencode-adapter",
+      "name": "@specforge/opencode-adapter",
+      "scripts": {
+        "build": "tsc",
+        "watch": "tsc --watch",
+        "clean": "bun ../../scripts/clean-workspace.ts --package opencode-adapter",
+        "lint": "eslint src --ext .ts",
+        "lint:fix": "eslint src --ext .ts --fix",
+        "format": "prettier --write src tests",
+        "format:check": "prettier --check src tests",
+        "test": "vitest run",
+        "test:watch": "vitest",
+        "test:coverage": "vitest run --coverage",
+        "prepack": "npm run build"
+      },
+      "declared_devDependencies": {
+        "@types/node": "^22.13.14",
+        "@typescript-eslint/eslint-plugin": "^8.28.0",
+        "@typescript-eslint/parser": "^8.28.0",
+        "@vitest/coverage-v8": "^3.0.7",
+        "eslint": "^8.57.1",
+        "eslint-config-prettier": "^10.0.1",
+        "eslint-plugin-prettier": "^5.2.3",
+        "fast-check": "^4.8.0",
+        "prettier": "^3.5.3",
+        "typescript": "^5.8.2",
+        "vitest": "^3.0.7"
+      },
+      "tools": {
+        "eslint": {
+          "version": "8.57.1",
+          "path": "D:\\code\\SpecForge\\node_modules\\.bun\\eslint@8.57.1+b26c77de378bcceb\\node_modules\\eslint\\package.json"
+        },
+        "@typescript-eslint/eslint-plugin": {
+          "version": "8.59.3",
+          "path": "D:\\code\\SpecForge\\node_modules\\.bun\\@typescript-eslint+eslint-plugin@8.59.3+c661d3909ff68fc0\\node_modules\\@typescript-eslint\\eslint-plugin\\package.json",
+          "peerDependencies": {
+            "eslint": "^8.57.0 || ^9.0.0 || ^10.0.0",
+            "typescript": ">=4.8.4 <6.1.0",
+            "@typescript-eslint/parser": "^8.59.3"
+          }
+        },
+        "@typescript-eslint/parser": {
+          "version": "8.59.3",
+          "path": "D:\\code\\SpecForge\\node_modules\\.bun\\@typescript-eslint+parser@8.59.3+d9676c4c49c7bc60\\node_modules\\@typescript-eslint\\parser\\package.json",
+          "peerDependencies": {
+            "eslint": "^8.57.0 || ^9.0.0 || ^10.0.0",
+            "typescript": ">=4.8.4 <6.1.0"
+          }
+        },
+        "typescript": {
+          "version": "5.9.3",
+          "path": "D:\\code\\SpecForge\\node_modules\\.bun\\typescript@5.9.3\\node_modules\\typescript\\package.json"
+        },
+        "eslint-plugin-prettier": {
+          "version": "5.5.5",
+          "path": "D:\\code\\SpecForge\\node_modules\\.bun\\eslint-plugin-prettier@5.5.5+d1b52cbdd44e4a71\\node_modules\\eslint-plugin-prettier\\package.json",
+          "peerDependencies": {
+            "@types/eslint": ">=8.0.0",
+            "eslint": ">=8.0.0",
+            "eslint-config-prettier": ">= 7.0.0 <10.0.0 || >=10.1.0",
+            "prettier": ">=3.0.0"
+          }
+        },
+        "prettier": {
+          "version": "3.8.3",
+          "path": "D:\\code\\SpecForge\\node_modules\\.bun\\prettier@3.8.3\\node_modules\\prettier\\package.json"
+        },
+        "@eslint/js": {
+          "unavailable": true,
+          "code": "MODULE_NOT_FOUND"
+        },
+        "eslint-plugin-import": {
+          "version": "2.32.0",
+          "path": "D:\\code\\SpecForge\\node_modules\\.bun\\eslint-plugin-import@2.32.0+5698b56318839d84\\node_modules\\eslint-plugin-import\\package.json",
+          "peerDependencies": {
+            "eslint": "^2 || ^3 || ^4 || ^5 || ^6 || ^7.2.0 || ^8 || ^9"
+          }
+        }
+      },
+      "configs": [
+        {
+          "file": ".eslintrc.json",
+          "sha256": "f3473c526338691714340bf3646b7b8123c82254dba2a052b0c1be445ca78b28",
+          "text": "{\r\n  \"root\": true,\r\n  \"parser\": \"@typescript-eslint/parser\",\r\n  \"plugins\": [\"@typescript-eslint\"],\r\n  \"extends\": [\r\n    \"eslint:recommended\",\r\n    \"plugin:@typescript-eslint/recommended\",\r\n    \"plugin:@typescript-eslint/recommended-requiring-type-checking\",\r\n    \"plugin:prettier/recommended\"\r\n  ],\r\n  \"parserOptions\": {\r\n    \"ecmaVersion\": 2022,\r\n    \"sourceType\": \"module\",\r\n    \"project\": \"./tsconfig.json\"\r\n  },\r\n  \"env\": {\r\n    \"node\": true,\r\n    \"es2022\": true\r\n  },\r\n  \"rules\": {\r\n    \"@typescript-eslint/explicit-function-return-type\": \"off\",\r\n    \"@typescript-eslint/no-explicit-any\": \"off\",\r\n    \"@typescript-eslint/no-unused-vars\": [\r\n      \"error\",\r\n      {\r\n        \"argsIgnorePattern\": \"^_\",\r\n        \"varsIgnorePattern\": \"^_\"\r\n      }\r\n    ],\r\n    \"@typescript-eslint/no-unsafe-assignment\": \"off\",\r\n    \"@typescript-eslint/no-unsafe-member-access\": \"off\",\r\n    \"@typescript-eslint/no-unsafe-call\": \"off\",\r\n    \"@typescript-eslint/no-unsafe-return\": \"off\",\r\n    \"@typescript-eslint/restrict-template-expressions\": \"off\"\r\n  },\r\n  \"ignorePatterns\": [\"dist/\", \"node_modules/\", \"*.d.ts\"]\r\n}"
+        },
+        {
+          "file": ".prettierrc.json",
+          "sha256": "bec502cfe158b88be8b6315044c10f7f109bb43beef90d432dbdcdc53960a035",
+          "text": "{\r\n  \"semi\": true,\r\n  \"singleQuote\": true,\r\n  \"tabWidth\": 2,\r\n  \"useTabs\": false,\r\n  \"trailingComma\": \"es5\",\r\n  \"bracketSpacing\": true,\r\n  \"arrowParens\": \"avoid\",\r\n  \"printWidth\": 100,\r\n  \"endOfLine\": \"lf\"\r\n}"
+        }
+      ]
+    },
+    {
+      "workspace": "packages/scope-gate",
+      "name": "@specforge/scope-gate",
+      "scripts": {
+        "build": "rimraf dist && tsc",
+        "build:esbuild": "node esbuild.config.js",
+        "build:all": "bun run build && bun run build:esbuild",
+        "build:watch": "tsc --watch",
+        "clean": "bun ../../scripts/clean-workspace.ts --package scope-gate",
+        "lint": "eslint src/**/*.ts tests/**/*.ts",
+        "lint:fix": "eslint src/**/*.ts tests/**/*.ts --fix",
+        "format": "prettier --write \"src/**/*.ts\" \"tests/**/*.ts\"",
+        "format:check": "prettier --check \"src/**/*.ts\" \"tests/**/*.ts\"",
+        "test": "vitest run",
+        "test:watch": "vitest",
+        "test:coverage": "vitest run --coverage",
+        "test:property": "vitest run tests/property/",
+        "test:unit": "vitest run tests/unit/",
+        "test:integration": "vitest run tests/integration/",
+        "dev": "concurrently \"bun run build:watch\" \"bun run test:watch\""
+      },
+      "declared_devDependencies": {
+        "@types/node": "^20.0.0",
+        "@typescript-eslint/eslint-plugin": "^7.0.0",
+        "@typescript-eslint/parser": "^7.0.0",
+        "@vitest/coverage-v8": "^1.0.0",
+        "concurrently": "^8.0.0",
+        "esbuild": "^0.20.0",
+        "eslint": "^8.0.0",
+        "eslint-config-prettier": "^9.0.0",
+        "eslint-plugin-import": "^2.0.0",
+        "fast-check": "^3.0.0",
+        "prettier": "^3.0.0",
+        "rimraf": "^5.0.0",
+        "typescript": "^5.0.0",
+        "vitest": "^1.0.0"
+      },
+      "tools": {
+        "eslint": {
+          "version": "8.57.1",
+          "path": "D:\\code\\SpecForge\\node_modules\\.bun\\eslint@8.57.1+b26c77de378bcceb\\node_modules\\eslint\\package.json"
+        },
+        "@typescript-eslint/eslint-plugin": {
+          "version": "7.18.0",
+          "path": "D:\\code\\SpecForge\\node_modules\\.bun\\@typescript-eslint+eslint-plugin@7.18.0+8ab3403b8662203d\\node_modules\\@typescript-eslint\\eslint-plugin\\package.json",
+          "peerDependencies": {
+            "@typescript-eslint/parser": "^7.0.0",
+            "eslint": "^8.56.0"
+          }
+        },
+        "@typescript-eslint/parser": {
+          "version": "7.18.0",
+          "path": "D:\\code\\SpecForge\\node_modules\\.bun\\@typescript-eslint+parser@7.18.0+d9676c4c49c7bc60\\node_modules\\@typescript-eslint\\parser\\package.json",
+          "peerDependencies": {
+            "eslint": "^8.56.0"
+          }
+        },
+        "typescript": {
+          "version": "5.9.3",
+          "path": "D:\\code\\SpecForge\\node_modules\\.bun\\typescript@5.9.3\\node_modules\\typescript\\package.json"
+        },
+        "eslint-plugin-prettier": {
+          "unavailable": true,
+          "code": "MODULE_NOT_FOUND"
+        },
+        "prettier": {
+          "version": "3.8.3",
+          "path": "D:\\code\\SpecForge\\node_modules\\.bun\\prettier@3.8.3\\node_modules\\prettier\\package.json"
+        },
+        "@eslint/js": {
+          "unavailable": true,
+          "code": "MODULE_NOT_FOUND"
+        },
+        "eslint-plugin-import": {
+          "version": "2.32.0",
+          "path": "D:\\code\\SpecForge\\node_modules\\.bun\\eslint-plugin-import@2.32.0+b26c77de378bcceb\\node_modules\\eslint-plugin-import\\package.json",
+          "peerDependencies": {
+            "eslint": "^2 || ^3 || ^4 || ^5 || ^6 || ^7.2.0 || ^8 || ^9"
+          }
+        }
+      },
+      "configs": [
+        {
+          "file": ".eslintrc.json",
+          "sha256": "3ffb1e16823ed1204295d28522ebe8a644c1f9872c53997b0cd22f0dd532607c",
+          "text": "{\r\n  \"root\": true,\r\n  \"parser\": \"@typescript-eslint/parser\",\r\n  \"plugins\": [\"@typescript-eslint\", \"import\"],\r\n  \"extends\": [\r\n    \"eslint:recommended\",\r\n    \"plugin:@typescript-eslint/recommended\",\r\n    \"plugin:import/recommended\",\r\n    \"plugin:import/typescript\",\r\n    \"prettier\"\r\n  ],\r\n  \"env\": {\r\n    \"node\": true,\r\n    \"es2022\": true\r\n  },\r\n  \"parserOptions\": {\r\n    \"ecmaVersion\": \"latest\",\r\n    \"sourceType\": \"module\",\r\n    \"project\": \"./tsconfig.json\"\r\n  },\r\n  \"rules\": {\r\n    \"@typescript-eslint/no-unused-vars\": [\"error\", { \"argsIgnorePattern\": \"^_\" }],\r\n    \"@typescript-eslint/no-explicit-any\": \"error\",\r\n    \"@typescript-eslint/explicit-function-return-type\": [\"error\", { \"allowExpressions\": true }],\r\n    \"@typescript-eslint/no-floating-promises\": \"error\",\r\n    \"@typescript-eslint/await-thenable\": \"error\",\r\n    \"import/order\": [\r\n      \"error\",\r\n      {\r\n        \"groups\": [\"builtin\", \"external\", \"internal\", \"parent\", \"sibling\", \"index\"],\r\n        \"newlines-between\": \"always\",\r\n        \"alphabetize\": { \"order\": \"asc\", \"caseInsensitive\": true }\r\n      }\r\n    ],\r\n    \"import/no-unresolved\": \"error\",\r\n    \"import/no-cycle\": \"error\",\r\n    \"no-console\": [\"error\", { \"allow\": [\"warn\", \"error\"] }]\r\n  },\r\n  \"settings\": {\r\n    \"import/resolver\": {\r\n      \"typescript\": {\r\n        \"project\": \"./tsconfig.json\"\r\n      }\r\n    }\r\n  }\r\n}"
+        },
+        {
+          "file": ".prettierrc.json",
+          "sha256": "e038b66ef35f76661e526349d4014ea11ae56ca2bf05c3d8c02a2270b9bb07e4",
+          "text": "{\r\n  \"semi\": true,\r\n  \"trailingComma\": \"es5\",\r\n  \"singleQuote\": true,\r\n  \"printWidth\": 100,\r\n  \"tabWidth\": 2,\r\n  \"useTabs\": false,\r\n  \"bracketSpacing\": true,\r\n  \"arrowParens\": \"always\",\r\n  \"endOfLine\": \"lf\"\r\n}"
+        }
+      ]
+    },
+    {
+      "workspace": "packages/workflow-runtime",
+      "name": "@specforge/workflow-runtime",
+      "scripts": {
+        "build": "bun ../../scripts/build-workflow-runtime.ts",
+        "build:watch": "tsc --watch",
+        "clean": "bun ../../scripts/clean-workspace.ts --package workflow-runtime",
+        "lint": "eslint src/**/*.ts tests/**/*.ts",
+        "lint:fix": "eslint src/**/*.ts tests/**/*.ts --fix",
+        "format": "prettier --write \"src/**/*.ts\" \"tests/**/*.ts\"",
+        "format:check": "prettier --check \"src/**/*.ts\" \"tests/**/*.ts\"",
+        "test": "vitest run",
+        "test:watch": "vitest",
+        "test:coverage": "vitest run --coverage",
+        "test:property": "vitest run tests/property/",
+        "test:unit": "vitest run tests/unit/",
+        "test:integration": "vitest run tests/integration/",
+        "dev": "concurrently \"bun run build:watch\" \"bun run test:watch\""
+      },
+      "declared_devDependencies": {
+        "@types/node": "^20.0.0",
+        "@types/uuid": "^10.0.0",
+        "@typescript-eslint/eslint-plugin": "^7.0.0",
+        "@typescript-eslint/parser": "^7.0.0",
+        "@vitest/coverage-v8": "^1.0.0",
+        "concurrently": "^8.0.0",
+        "eslint": "^8.0.0",
+        "eslint-config-prettier": "^9.0.0",
+        "eslint-plugin-import": "^2.0.0",
+        "prettier": "^3.0.0",
+        "rimraf": "^5.0.0",
+        "typescript": "^5.0.0",
+        "vitest": "^1.0.0"
+      },
+      "tools": {
+        "eslint": {
+          "version": "8.57.1",
+          "path": "D:\\code\\SpecForge\\node_modules\\.bun\\eslint@8.57.1+b26c77de378bcceb\\node_modules\\eslint\\package.json"
+        },
+        "@typescript-eslint/eslint-plugin": {
+          "version": "7.18.0",
+          "path": "D:\\code\\SpecForge\\node_modules\\.bun\\@typescript-eslint+eslint-plugin@7.18.0+8ab3403b8662203d\\node_modules\\@typescript-eslint\\eslint-plugin\\package.json",
+          "peerDependencies": {
+            "@typescript-eslint/parser": "^7.0.0",
+            "eslint": "^8.56.0"
+          }
+        },
+        "@typescript-eslint/parser": {
+          "version": "7.18.0",
+          "path": "D:\\code\\SpecForge\\node_modules\\.bun\\@typescript-eslint+parser@7.18.0+d9676c4c49c7bc60\\node_modules\\@typescript-eslint\\parser\\package.json",
+          "peerDependencies": {
+            "eslint": "^8.56.0"
+          }
+        },
+        "typescript": {
+          "version": "5.9.3",
+          "path": "D:\\code\\SpecForge\\node_modules\\.bun\\typescript@5.9.3\\node_modules\\typescript\\package.json"
+        },
+        "eslint-plugin-prettier": {
+          "unavailable": true,
+          "code": "MODULE_NOT_FOUND"
+        },
+        "prettier": {
+          "version": "3.8.3",
+          "path": "D:\\code\\SpecForge\\node_modules\\.bun\\prettier@3.8.3\\node_modules\\prettier\\package.json"
+        },
+        "@eslint/js": {
+          "unavailable": true,
+          "code": "MODULE_NOT_FOUND"
+        },
+        "eslint-plugin-import": {
+          "version": "2.32.0",
+          "path": "D:\\code\\SpecForge\\node_modules\\.bun\\eslint-plugin-import@2.32.0+b26c77de378bcceb\\node_modules\\eslint-plugin-import\\package.json",
+          "peerDependencies": {
+            "eslint": "^2 || ^3 || ^4 || ^5 || ^6 || ^7.2.0 || ^8 || ^9"
+          }
+        }
+      },
+      "configs": [
+        {
+          "file": ".eslintrc.json",
+          "sha256": "5edfc3dce2ca4a9c6279397cea9936d0c750075e0c0768e4869c809e2419ff1f",
+          "text": "{\r\n  \"root\": true,\r\n  \"parser\": \"@typescript-eslint/parser\",\r\n  \"parserOptions\": {\r\n    \"ecmaVersion\": 2022,\r\n    \"sourceType\": \"module\",\r\n    \"project\": \"./tsconfig.json\"\r\n  },\r\n  \"plugins\": [\"@typescript-eslint\", \"import\"],\r\n  \"extends\": [\r\n    \"eslint:recommended\",\r\n    \"plugin:@typescript-eslint/recommended\",\r\n    \"plugin:@typescript-eslint/recommended-requiring-type-checking\",\r\n    \"plugin:import/recommended\",\r\n    \"plugin:import/typescript\",\r\n    \"prettier\"\r\n  ],\r\n  \"rules\": {\r\n    \"@typescript-eslint/no-unused-vars\": [\"error\", { \"argsIgnorePattern\": \"^_\" }],\r\n    \"@typescript-eslint/no-explicit-any\": \"error\",\r\n    \"@typescript-eslint/explicit-function-return-type\": [\"error\", {\r\n      \"allowExpressions\": true,\r\n      \"allowTypedFunctionExpressions\": true\r\n    }],\r\n    \"@typescript-eslint/no-non-null-assertion\": \"error\",\r\n    \"@typescript-eslint/consistent-type-imports\": \"error\",\r\n    \"import/order\": [\"error\", {\r\n      \"groups\": [\"builtin\", \"external\", \"internal\", \"parent\", \"sibling\", \"index\"],\r\n      \"newlines-between\": \"always\",\r\n      \"alphabetize\": { \"order\": \"asc\", \"caseInsensitive\": true }\r\n    }],\r\n    \"import/no-unresolved\": \"error\",\r\n    \"import/no-cycle\": \"error\",\r\n    \"no-console\": [\"warn\", { \"allow\": [\"warn\", \"error\"] }]\r\n  },\r\n  \"settings\": {\r\n    \"import/resolver\": {\r\n      \"typescript\": {\r\n        \"project\": \"./tsconfig.json\"\r\n      }\r\n    }\r\n  }\r\n}"
+        }
+      ]
+    },
+    {
+      "workspace": "packages/cli",
+      "name": "@specforge/cli",
+      "scripts": {
+        "build": "tsc",
+        "watch": "tsc --watch",
+        "clean": "bun ../../scripts/clean-workspace.ts --package cli",
+        "lint": "eslint src --ext .ts",
+        "lint:fix": "eslint src --ext .ts --fix",
+        "format": "prettier --write src tests",
+        "format:check": "prettier --check src tests",
+        "test": "vitest run",
+        "test:watch": "vitest",
+        "test:coverage": "vitest run --coverage"
+      },
+      "declared_devDependencies": {
+        "@types/node": "^20.11.0",
+        "@types/proper-lockfile": "^4.1.4",
+        "@types/yargs": "^17.0.32",
+        "@typescript-eslint/eslint-plugin": "^6.21.0",
+        "@typescript-eslint/parser": "^6.21.0",
+        "@vitest/coverage-v8": "^1.2.0",
+        "eslint": "^8.56.0",
+        "eslint-config-prettier": "^9.1.0",
+        "eslint-plugin-prettier": "^5.1.3",
+        "fast-check": "^3.15.0",
+        "prettier": "^3.2.0",
+        "typescript": "^5.3.3",
+        "vitest": "^1.2.0"
+      },
+      "tools": {
+        "eslint": {
+          "version": "8.57.1",
+          "path": "D:\\code\\SpecForge\\node_modules\\.bun\\eslint@8.57.1+b26c77de378bcceb\\node_modules\\eslint\\package.json"
+        },
+        "@typescript-eslint/eslint-plugin": {
+          "version": "6.21.0",
+          "path": "D:\\code\\SpecForge\\node_modules\\.bun\\@typescript-eslint+eslint-plugin@6.21.0+d48378fca3009074\\node_modules\\@typescript-eslint\\eslint-plugin\\package.json",
+          "peerDependencies": {
+            "@typescript-eslint/parser": "^6.0.0 || ^6.0.0-alpha",
+            "eslint": "^7.0.0 || ^8.0.0"
+          }
+        },
+        "@typescript-eslint/parser": {
+          "version": "6.21.0",
+          "path": "D:\\code\\SpecForge\\node_modules\\.bun\\@typescript-eslint+parser@6.21.0+d9676c4c49c7bc60\\node_modules\\@typescript-eslint\\parser\\package.json",
+          "peerDependencies": {
+            "eslint": "^7.0.0 || ^8.0.0"
+          }
+        },
+        "typescript": {
+          "version": "5.9.3",
+          "path": "D:\\code\\SpecForge\\node_modules\\.bun\\typescript@5.9.3\\node_modules\\typescript\\package.json"
+        },
+        "eslint-plugin-prettier": {
+          "version": "5.5.5",
+          "path": "D:\\code\\SpecForge\\node_modules\\.bun\\eslint-plugin-prettier@5.5.5+6cac437b4b104062\\node_modules\\eslint-plugin-prettier\\package.json",
+          "peerDependencies": {
+            "@types/eslint": ">=8.0.0",
+            "eslint": ">=8.0.0",
+            "eslint-config-prettier": ">= 7.0.0 <10.0.0 || >=10.1.0",
+            "prettier": ">=3.0.0"
+          }
+        },
+        "prettier": {
+          "version": "3.8.3",
+          "path": "D:\\code\\SpecForge\\node_modules\\.bun\\prettier@3.8.3\\node_modules\\prettier\\package.json"
+        },
+        "@eslint/js": {
+          "unavailable": true,
+          "code": "MODULE_NOT_FOUND"
+        },
+        "eslint-plugin-import": {
+          "version": "2.32.0",
+          "path": "D:\\code\\SpecForge\\node_modules\\.bun\\eslint-plugin-import@2.32.0+5698b56318839d84\\node_modules\\eslint-plugin-import\\package.json",
+          "peerDependencies": {
+            "eslint": "^2 || ^3 || ^4 || ^5 || ^6 || ^7.2.0 || ^8 || ^9"
+          }
+        }
+      },
+      "configs": []
+    },
+    {
+      "workspace": "packages/daemon-core",
+      "name": "@specforge/daemon-core",
+      "scripts": {
+        "build": "tsc",
+        "watch": "tsc --watch",
+        "clean": "bun ../../scripts/clean-workspace.ts --package daemon-core",
+        "lint": "eslint src --ext .ts",
+        "lint:fix": "eslint src --ext .ts --fix",
+        "format": "prettier --write src tests",
+        "format:check": "prettier --check src tests",
+        "test": "vitest run",
+        "test:watch": "vitest",
+        "test:coverage": "vitest run --coverage"
+      },
+      "declared_devDependencies": {
+        "@types/node": "^22.13.14",
+        "@typescript-eslint/eslint-plugin": "^8.28.0",
+        "@typescript-eslint/parser": "^8.28.0",
+        "@vitest/coverage-v8": "^3.0.7",
+        "eslint": "^8.57.1",
+        "eslint-config-prettier": "^10.0.1",
+        "eslint-plugin-prettier": "^5.2.3",
+        "fast-check": "^4.8.0",
+        "prettier": "^3.5.3",
+        "vitest": "^3.0.7"
+      },
+      "tools": {
+        "eslint": {
+          "version": "8.57.1",
+          "path": "D:\\code\\SpecForge\\node_modules\\.bun\\eslint@8.57.1+b26c77de378bcceb\\node_modules\\eslint\\package.json"
+        },
+        "@typescript-eslint/eslint-plugin": {
+          "version": "8.59.3",
+          "path": "D:\\code\\SpecForge\\node_modules\\.bun\\@typescript-eslint+eslint-plugin@8.59.3+c661d3909ff68fc0\\node_modules\\@typescript-eslint\\eslint-plugin\\package.json",
+          "peerDependencies": {
+            "eslint": "^8.57.0 || ^9.0.0 || ^10.0.0",
+            "typescript": ">=4.8.4 <6.1.0",
+            "@typescript-eslint/parser": "^8.59.3"
+          }
+        },
+        "@typescript-eslint/parser": {
+          "version": "8.59.3",
+          "path": "D:\\code\\SpecForge\\node_modules\\.bun\\@typescript-eslint+parser@8.59.3+d9676c4c49c7bc60\\node_modules\\@typescript-eslint\\parser\\package.json",
+          "peerDependencies": {
+            "eslint": "^8.57.0 || ^9.0.0 || ^10.0.0",
+            "typescript": ">=4.8.4 <6.1.0"
+          }
+        },
+        "typescript": {
+          "version": "5.9.3",
+          "path": "D:\\code\\SpecForge\\node_modules\\.bun\\typescript@5.9.3\\node_modules\\typescript\\package.json"
+        },
+        "eslint-plugin-prettier": {
+          "version": "5.5.5",
+          "path": "D:\\code\\SpecForge\\node_modules\\.bun\\eslint-plugin-prettier@5.5.5+d1b52cbdd44e4a71\\node_modules\\eslint-plugin-prettier\\package.json",
+          "peerDependencies": {
+            "@types/eslint": ">=8.0.0",
+            "eslint": ">=8.0.0",
+            "eslint-config-prettier": ">= 7.0.0 <10.0.0 || >=10.1.0",
+            "prettier": ">=3.0.0"
+          }
+        },
+        "prettier": {
+          "version": "3.8.3",
+          "path": "D:\\code\\SpecForge\\node_modules\\.bun\\prettier@3.8.3\\node_modules\\prettier\\package.json"
+        },
+        "@eslint/js": {
+          "unavailable": true,
+          "code": "MODULE_NOT_FOUND"
+        },
+        "eslint-plugin-import": {
+          "version": "2.32.0",
+          "path": "D:\\code\\SpecForge\\node_modules\\.bun\\eslint-plugin-import@2.32.0+5698b56318839d84\\node_modules\\eslint-plugin-import\\package.json",
+          "peerDependencies": {
+            "eslint": "^2 || ^3 || ^4 || ^5 || ^6 || ^7.2.0 || ^8 || ^9"
+          }
+        }
+      },
+      "configs": [
+        {
+          "file": ".eslintrc.json",
+          "sha256": "5713d5e6e81c1753db5fd322cc84f066cb3292d1424f987d8f6479498bac80d7",
+          "text": "{\r\n  \"root\": true,\r\n  \"parser\": \"@typescript-eslint/parser\",\r\n  \"plugins\": [\"@typescript-eslint\"],\r\n  \"extends\": [\r\n    \"eslint:recommended\",\r\n    \"plugin:@typescript-eslint/recommended\",\r\n    \"plugin:@typescript-eslint/recommended-requiring-type-checking\",\r\n    \"plugin:prettier/recommended\"\r\n  ],\r\n  \"parserOptions\": {\r\n    \"ecmaVersion\": 2022,\r\n    \"sourceType\": \"module\",\r\n    \"project\": \"./tsconfig.json\"\r\n  },\r\n  \"env\": {\r\n    \"node\": true,\r\n    \"es2022\": true\r\n  },\r\n  \"rules\": {\r\n    \"@typescript-eslint/explicit-function-return-type\": \"off\",\r\n    \"@typescript-eslint/no-explicit-any\": \"off\",\r\n    \"@typescript-eslint/no-unused-vars\": [\r\n      \"error\",\r\n      {\r\n        \"argsIgnorePattern\": \"^_\",\r\n        \"varsIgnorePattern\": \"^_\"\r\n      }\r\n    ],\r\n    \"@typescript-eslint/no-unsafe-assignment\": \"off\",\r\n    \"@typescript-eslint/no-unsafe-member-access\": \"off\",\r\n    \"@typescript-eslint/no-unsafe-call\": \"off\",\r\n    \"@typescript-eslint/no-unsafe-return\": \"off\",\r\n    \"@typescript-eslint/restrict-template-expressions\": \"off\"\r\n  },\r\n  \"ignorePatterns\": [\"dist/\", \"node_modules/\", \"*.d.ts\"]\r\n}\r\n"
+        },
+        {
+          "file": ".prettierrc.json",
+          "sha256": "8ab71490f0f2a165e9edd9e609baefd0b6bbc99142170a385da54c977e22e0b3",
+          "text": "{\r\n  \"semi\": true,\r\n  \"singleQuote\": true,\r\n  \"tabWidth\": 2,\r\n  \"useTabs\": false,\r\n  \"trailingComma\": \"es5\",\r\n  \"bracketSpacing\": true,\r\n  \"arrowParens\": \"avoid\",\r\n  \"printWidth\": 100,\r\n  \"endOfLine\": \"lf\"\r\n}\r\n"
+        }
+      ]
+    }
+  ]
+}

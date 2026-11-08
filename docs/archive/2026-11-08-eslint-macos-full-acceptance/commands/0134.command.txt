@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/format-with-ast-proof-v3.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "final-pure-format-semantic-tree-proof",
+  "expected_writes": "private pure formatting and immutable per-file equivalence proofs",
+  "started_utc": "2026-11-08T10:35:11.927Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\format-with-ast-proof-v3.cjs",
+      "sha256": "99e106fef1fe571b836ca5451e683d66a79a1d3d452b492a225d40e07d141e07",
+      "size": 3348,
+      "extension": ".cjs"
+    }
+  ]
+}

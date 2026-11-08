@@ -1,0 +1,7 @@
+{
+  "utc": "2026-11-08T12:25:20.211Z",
+  "commit": "05713b7337b3dc55f1f3ed563cf342439643657f",
+  "parent": "849fbf12ae8f5f9198f50da2c173e7ffa4f44f3c",
+  "branch": "codex/eslint-macos-shortpath-validation",
+  "frozen_manifest_sha256": "c344c16737b91598488c79b74e1b48297b2e793abfb14767460125fc4df6e641"
+}

@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/freeze-signal-candidate.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "freeze-final-signal-and-byte-lock-candidate",
+  "expected_writes": "Exact complete524 input freeze;4 reviewed delta and literal3f lock; actual former warning absent",
+  "started_utc": "2026-11-08T12:55:49.892Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\freeze-signal-candidate.cjs",
+      "sha256": "f835e7887b4a496deb6b0efc5bb6b2d63816938319451174952322fa72510ff5",
+      "size": 3007,
+      "extension": ".cjs"
+    }
+  ]
+}

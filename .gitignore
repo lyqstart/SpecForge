@@ -94,3 +94,20 @@ packages/observability/test-data/observability-req-[0-9]*/
 /docs/archive/2026-11-08-role-alignment/publication-live/
 /docs/archive/2026-11-08-crossplatform-consumer-audit/local-assets/
 /docs/archive/2026-11-08-crossplatform-consumer-audit/publication-live/
+
+/docs/archive/2026-11-08-eslint-macos-full-acceptance/local-assets/
+/docs/archive/2026-11-08-eslint-macos-full-acceptance/publication-live/
+
+# Owned short physical worktree for full lint acceptance.
+/.lint-review-a01/
+
+# Owned exact-HEAD comparison worktrees for this run.
+/.lint-original-a01/
+/.lint-toolchain-a01/
+
+
+# Owned same-candidate platform qualification repair worktree.
+/.lint-platform-a01/
+/.lint-shortpath-a01/
+/.lint-signal-a01/
+

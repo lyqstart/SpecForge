@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/commit-platform-candidate.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "commit-reviewed-platform-candidate",
+  "expected_writes": "New codex private validation branch and exact nine reviewed files only; root main unchanged",
+  "started_utc": "2026-11-08T12:07:16.035Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\commit-platform-candidate.cjs",
+      "sha256": "75b0e08e886872cd4be10c6ef8c882376af5df519227c901718ea807dae24a9d",
+      "size": 1602,
+      "extension": ".cjs"
+    }
+  ]
+}

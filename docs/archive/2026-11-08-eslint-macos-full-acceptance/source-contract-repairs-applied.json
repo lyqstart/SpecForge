@@ -1,0 +1,68 @@
+{
+  "utc": "2026-11-08T10:49:38.687Z",
+  "input_sha256": "386c0d2723765e7adec38fe96e7d91dcc6fc955a98aa702ef6834226b0a4554c",
+  "reason": "0136 actual 12 test failures: retain meaningful semantic code requirements across quote/wrapping/trailing-comma changes, strengthen snapshot argument assertion to actual AST call, synchronize existing duplicated knowledge validation projection exactly. Negative parser canaries reject changed values/operators/array holes/comments/callees.",
+  "required_verification": "All affected files, full build/lint, complete frozen platform suite",
+  "members": [
+    {
+      "file": "tests/helpers/source-structure.ts",
+      "before": "ABSENT",
+      "after": "a7fb7c4870c10e4f324bbe39f4df9f80883e6b44ef7c5af390ec5fb2907bd429"
+    },
+    {
+      "file": "packages/scope-gate/tests/current-permission-write-guard-boundary.test.ts",
+      "before": "2bca514d2a8352750ce2d3f2d5795e50f0d6b2e0c3c9bbf2f3ffde5affdae462",
+      "after": "485491739e2eea053db8b08b6ded01c69d09969806789c0f90702001460fd944"
+    },
+    {
+      "file": "packages/daemon-core/tests/design-governance-orchestrator-closure.test.ts",
+      "before": "3b862df3397fb967cf5f3b7a5eab7420f928b509e0caf6bd35f917b13d818740",
+      "after": "ee398a688598c0e7bdd07db4db5bca706e1a6a2519c8e44d529361c15a41c411"
+    },
+    {
+      "file": "packages/daemon-core/tests/v11-final-governance-regression.test.ts",
+      "before": "2b717f28f5abd726e97cd61cea31d723dabfbaecd8faa3fdca6cf94a2a150938",
+      "after": "f4dd1f82a0cfcb9890644de51edfb4b07ad52682dde47606ed25a65341d2cf41"
+    },
+    {
+      "file": "packages/daemon-core/tests/v6-authority-consumer-alignment.test.ts",
+      "before": "793647132e81ff5933a12d14d0557de21390365f53c8cefe3eb38a4ebd6a96b0",
+      "after": "6fa89fcc20d6999436b2c002b346b385050ab0a89e61e810236fde0a634289b8"
+    },
+    {
+      "file": "packages/daemon-core/tests/unit/candidate-gate-historical-attempt-reconcile.test.ts",
+      "before": "e11d0ba8db8f67af58b353d16baa8fad4ffde090c1393b554a1fbe34ec8cad9e",
+      "after": "50e14ec15fce6525e435bb99500b2123afd848bab2ecbd3ea571be80cdc00c0b"
+    },
+    {
+      "file": "packages/daemon-core/tests/unit/candidate-runtime-truth-contract.test.ts",
+      "before": "6484c2c406e2e1a393cbb963ced9197a0740e888e7a54db6f1ebe4df5760f51d",
+      "after": "e1f88529289777299951fcd3b9a3abbb0404e3e19b8aaaffa6901ab70a9a502a"
+    },
+    {
+      "file": "packages/daemon-core/tests/unit/current-project-layout-boundary.test.ts",
+      "before": "544b8b7a0317d7c87212e877f41620a0aa0c4e9bcd1d96c39eb9229020c9c37c",
+      "after": "a2930706d37f6e7e7895973855d55ab808fcb01b35d9d1a21f44cf2f13dc22ce"
+    },
+    {
+      "file": "packages/daemon-core/tests/unit/err155-159-contract-governance-recovery.test.ts",
+      "before": "01d14c0b921a7b626acafaaf1ef5583f930ac95c2b7180aefee7ba3e348d405b",
+      "after": "822e35d088a8bc916a6f12ce500861fa234d7490d03367a36126321de0208079"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/architecture-governance-v7-regression.test.ts",
+      "before": "4b02d4afd3654b68672006196f829cca4406b8ec384e73b07b719f0ad3894eae",
+      "after": "93f86ccfefeb1125997018ff8ed8648652cd9cbd2cd96dc4e9b4c2dafe75ed94"
+    },
+    {
+      "file": "setup/userlevel-opencode/tools/lib/sf_knowledge_base_core.ts",
+      "before": "ae63044fa9eb965b3b6a390bebccb4b105451037af39dc3ebcef858939611381",
+      "after": "41d418520d9408cdad1d79008285fae5d00104457f0d4f903dd4a34f01f03596"
+    },
+    {
+      "file": "packages/daemon-core/tests/unit/source-structure-contract.test.ts",
+      "before": "ABSENT",
+      "after": "3750c36eaf9d2adfa2436f4d06546115255bbfd8a7120e9151b962c4e3f3c12d"
+    }
+  ]
+}

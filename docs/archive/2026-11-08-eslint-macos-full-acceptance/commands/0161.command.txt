@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/format-with-ast-proof-v6.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "freeze-final-doc-lint-pure-format",
+  "expected_writes": "private pure formatting and per-file semantic equality",
+  "started_utc": "2026-11-08T11:12:26.995Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\format-with-ast-proof-v6.cjs",
+      "sha256": "d8d7f09f7f484e713cb76769ead75a5106e6236d21ad664bfd2063a0673eb2f6",
+      "size": 3348,
+      "extension": ".cjs"
+    }
+  ]
+}

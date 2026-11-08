@@ -1,0 +1,14 @@
+{
+  "utc": "2026-11-08T10:35:18.274Z",
+  "algorithm": "TypeScript forEachChild tree; canonical identifiers/literal cooked values and tagged-template raw values, operator/modifier kinds; unwrap redundant ParenthesizedExpression/Type; ignore trivia/positions only. Both parse diagnostics empty.",
+  "scope": "Exact original three Prettier-enabled package source scopes; no import sorting, type or behavior edits.",
+  "files": [
+    {
+      "file": "packages/daemon-core/src/tools/lib/filesystem-diff.ts",
+      "before_sha256": "9dcc9a667fc0ff3f87cc8a2e6780ca52143a387a9be7ad96dced1efd46628598",
+      "after_sha256": "19f947d4d54f868d9e8f02a5bd33e1b307b4776af04dff735d43677321b2d129",
+      "semantic_sha256": "b02e61f6820b1320eb5bec02064d79b68effeddf09683c52ed9697f24df60c0a"
+    }
+  ],
+  "result": "PASS_ALL_SEMANTIC_TREES_EQUAL"
+}

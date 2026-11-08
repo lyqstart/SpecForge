@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "D:/code/SpecForge/docs/archive/2026-11-08-eslint-macos-full-acceptance/inventory-final-shortpath-message-surfaces.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge\\.lint-shortpath-a01",
+  "purpose": "final057-message-inventory",
+  "expected_writes": "Read-only final057 all1147 current consumer sources and6251 syntax candidates",
+  "started_utc": "2026-11-08T12:36:02.879Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\inventory-final-shortpath-message-surfaces.cjs",
+      "sha256": "803c0861172ec53124deae23233e2cde542ffe7158bae91363c9a8f82c7f63bd",
+      "size": 4574,
+      "extension": ".cjs"
+    }
+  ]
+}

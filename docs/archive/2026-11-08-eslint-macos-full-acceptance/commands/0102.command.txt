@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/inspect-workflow-type-boundary.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "inspect-workflow-semantic-negative-fixture-boundaries-v3",
+  "expected_writes": "evidence-only-semantic-inventory-not-typecheck-pass",
+  "started_utc": "2026-11-08T09:20:45.505Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\inspect-workflow-type-boundary.cjs",
+      "sha256": "2cec263ccffa7be30ae45c250e420dc065c71e43d3ca63597ea517dc738424a1",
+      "size": 3956,
+      "extension": ".cjs"
+    }
+  ]
+}

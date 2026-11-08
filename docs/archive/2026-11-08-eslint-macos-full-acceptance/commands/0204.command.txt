@@ -1,0 +1,23 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/collect-structured-qualification.cjs",
+    "toolchain"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "toolchain-full-structured-collection",
+  "expected_writes": "Reporter-only full equal-argument case/suite inventory supplement; isolated toolchain existing profile",
+  "started_utc": "2026-11-08T12:09:29.288Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\collect-structured-qualification.cjs",
+      "sha256": "3cdd7f5a5b9430c9d34d582faaa028d6c0f15fabd3830af33d751b38a9528c72",
+      "size": 2729,
+      "extension": ".cjs"
+    }
+  ]
+}

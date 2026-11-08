@@ -1,0 +1,18 @@
+{
+  "utc": "2026-11-08T08:55:14.417Z",
+  "input_sha256": "d6580e754c8e408bacb0259adf6600235f6bc05ea737a761770eb931ecf14d63",
+  "reason": "Actual opaque-coercion and early timer-untracking defects; real regression paths without provider/model calls.",
+  "required_verification": "New actual Vitest cases plus all owner suites and lint.",
+  "members": [
+    {
+      "file": "packages/workflow-runtime/tests/unit/scalar-json-boundary.test.ts",
+      "before": "ABSENT",
+      "after": "d5c10a949ca5a6e6d309989b285dc175f8c015fed02949fdca0bd537e2376a4d"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/delay-timer-owner.test.ts",
+      "before": "ABSENT",
+      "after": "b2931915af2a09ec45c4db6ee9dad274f1296822a2a7f16d872c11b777c4ccd3"
+    }
+  ]
+}

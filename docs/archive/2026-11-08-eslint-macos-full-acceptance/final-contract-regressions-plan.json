@@ -1,0 +1,26 @@
+{
+  "id": "final-contract-regressions",
+  "reason": "Keep the actual runtime-reference protection under CI regression; preserve the distinct new incomplete-lock-capability diagnostic instead of misreporting a competing daemon.",
+  "required_verification": "Full build, ESLint, workspace and actual three-platform CI",
+  "files": [
+    {
+      "file": "packages/scope-gate/tests/eslint-runtime-binding-contract.test.ts",
+      "content": "import path from 'node:path';\n\nimport { ESLint } from 'eslint';\nimport { describe, expect, it } from 'vitest';\n\nconst root = path.resolve(import.meta.dirname, '../../..');\nconst eslint = new ESLint({ cwd: root, overrideConfigFile: path.join(root, 'eslint.config.mjs') });\nconst cases = [\n  { name: 'unbound write', text: \"import { beforeEach } from 'vitest'; beforeEach(() => { capturedEvents = []; });\", expected: ['unbound'] },\n  { name: 'bound capture', text: \"import { beforeEach } from 'vitest'; let capturedEvents: unknown[] = []; beforeEach(() => { capturedEvents = []; }); void capturedEvents;\", expected: [] },\n  { name: 'type import used as value', text: \"import type { Model } from './fixture'; Model.create();\", expected: ['typeOnly'] },\n  { name: 'type query', text: \"import type { Model } from './fixture'; type Shape = typeof Model; export type { Shape };\", expected: [] },\n  { name: 'optional host probe', text: \"export const present = typeof optionalHost !== 'undefined';\", expected: [] },\n  { name: 'unbound call', text: 'export const result = missingFactory();', expected: ['unbound'] },\n];\n\ndescribe('actual ESLint runtime value bindings', () => {\n  it.each(cases)('$name', async ({ text, expected }) => {\n    const results = await eslint.lintText(text, { filePath: path.join(root, 'packages/configuration/src/runtime-reference-canary.ts') });\n    const messages = results.flatMap(result => result.messages);\n    expect(messages.filter(message => message.fatal)).toEqual([]);\n    const actual = messages.filter(message => message.ruleId === 'specforge/no-unbound-runtime-reference');\n    expect(actual.map(message => message.messageId).sort()).toEqual(expected.slice().sort());\n  });\n});\n"
+    },
+    {
+      "file": "packages/daemon-core/src/daemon/HandshakeManager.ts",
+      "changes": [
+        {"from":"function lockFlag(value: unknown): number {","to":"class FileLockCapabilityError extends Error {\n  constructor() { super('FILE_LOCK_CAPABILITY_INCOMPLETE'); }\n}\nfunction lockFlag(value: unknown): number {"},
+        {"from":"throw new Error('FILE_LOCK_CAPABILITY_INCOMPLETE');","to":"throw new FileLockCapabilityError();"},
+        {"from":"      } catch {\n        // Lock acquisition failed - another instance is running","to":"      } catch (error) {\n        // Release ownership before reporting the actual capability or lock failure."},
+        {"from":"        this.lockFd = null;\n        throw new Error('Another Daemon instance is already running');","to":"        this.lockFd = null;\n        if (error instanceof FileLockCapabilityError) throw error;\n        throw new Error('Another Daemon instance is already running');"}
+      ]
+    },
+    {
+      "file": "packages/daemon-core/tests/unit/optional-file-lock-owner.test.ts",
+      "changes": [
+        {"from":"    native.exclusive = undefined;\n    await expect(manager.enforceSingleInstance()).rejects.toThrow('already running');","to":"    native.exclusive = undefined;\n    await expect(manager.enforceSingleInstance()).rejects.toThrow('FILE_LOCK_CAPABILITY_INCOMPLETE');"}
+      ]
+    }
+  ]
+}

@@ -1,0 +1,190 @@
+[root-test-registry] {"CURRENT_HERMETIC":51,"CURRENT_ENVIRONMENTAL":1,"MIGRATED_DUPLICATE":14,"HISTORICAL_EVIDENCE":122}
+[root-test-registry] mode=current selected=51
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.5 [39m[90m/home/runner/work/SpecForge/SpecForge[39m
+
+[90mstdout[2m | tests/integration/service-management/upgrade-restart-cycle.test.ts[2m > [22m[2mUpgrade restart cycle[2m > [22m[2mshould integrate GracefulShutdownHandler with upgrade cycle
+[22m[39m[GracefulShutdown] Starting shutdown: upgrade-restart-test
+[GracefulShutdown] Executing priority: stop-accepting (2 tasks)
+
+[90mstdout[2m | tests/integration/service-management/upgrade-restart-cycle.test.ts[2m > [22m[2mUpgrade restart cycle[2m > [22m[2mshould integrate GracefulShutdownHandler with upgrade cycle
+[22m[39m[GracefulShutdown] Shutdown sequence completed successfully
+[GracefulShutdown] Resources disposed
+
+[90mstdout[2m | tests/integration/service-management/upgrade-restart-cycle.test.ts[2m > [22m[2mUpgrade restart cycle[2m > [22m[2mshould integrate GracefulShutdownHandler with upgrade cycle
+[22m[39m[GracefulShutdown] Resources disposed
+
+ [32m✓[39m tests/integration/service-management/upgrade-restart-cycle.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 34[2mms[22m[39m
+ [32m✓[39m tests/property/planner.property.test.ts [2m([22m[2m44 tests[22m[2m)[22m[32m 105[2mms[22m[39m
+ [32m✓[39m tests/unit/installer/commit.test.ts [2m([22m[2m18 tests[22m[2m)[22m[32m 59[2mms[22m[39m
+[90mstdout[2m | tests/integration/cli-daemon-integration.test.ts[2m > [22m[2mCLI ↔ Daemon Integration[2m > [22m[2mAsync Command Contract - Property 18[2m > [22m[2mshould support --wait flag by polling job status
+[22m[39m✓ Job job-123 completed
+
+[90mstdout[2m | tests/integration/cli-daemon-integration.test.ts[2m > [22m[2mCLI ↔ Daemon Integration[2m > [22m[2mEnd-to-End Integration Scenarios[2m > [22m[2mshould handle async command with --wait flag
+[22m[39m✓ Job job-123 completed
+
+ [32m✓[39m tests/integration/cli-daemon-integration.test.ts [2m([22m[2m30 tests[22m[2m)[22m[32m 169[2mms[22m[39m
+ [32m✓[39m tests/unit/installer/state.test.ts [2m([22m[2m19 tests[22m[2m)[22m[32m 74[2mms[22m[39m
+ [32m✓[39m tests/e2e/feature-spec-e2e.test.ts [2m([22m[2m17 tests[22m[2m)[22m[32m 168[2mms[22m[39m
+ [32m✓[39m tests/unit/installer/manifest_validate.test.ts [2m([22m[2m23 tests[22m[2m)[22m[32m 54[2mms[22m[39m
+ [32m✓[39m tests/unit/installer/opencode_merge_v2.test.ts [2m([22m[2m23 tests[22m[2m)[22m[32m 53[2mms[22m[39m
+ [32m✓[39m tests/unit/installer/verify_new.test.ts [2m([22m[2m19 tests[22m[2m)[22m[32m 68[2mms[22m[39m
+ [32m✓[39m tests/unit/installer/preflight.test.ts [2m([22m[2m16 tests[22m[2m)[22m[32m 72[2mms[22m[39m
+ [32m✓[39m tests/property/manifest.property.test.ts [2m([22m[2m6 tests[22m[2m)[22m[33m 754[2mms[22m[39m
+ [32m✓[39m tests/integration/service-management/precheck-blocking.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+ [32m✓[39m tests/property/opencode_merge.property.test.ts [2m([22m[2m7 tests[22m[2m)[22m[33m 2118[2mms[22m[39m
+       [33m[2m✓[22m[39m Property 11a: non-sf-* agent entries remain unchanged after merge [33m 341[2mms[22m[39m
+       [33m[2m✓[22m[39m Property 11b: top-level non-agent config fields remain unchanged after merge [33m 314[2mms[22m[39m
+       [33m[2m✓[22m[39m Property 11c: sf-* entries reflect current DesiredState after merge [33m 333[2mms[22m[39m
+       [33m[2m✓[22m[39m Property 12d: MergeFieldPolicy overwrites all fields when preserveUserOverrides=false [33m 316[2mms[22m[39m
+ [32m✓[39m tests/integration/service-management/dependency-order-real.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+ [32m✓[39m tests/property/version-unification-property-14.property.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 253[2mms[22m[39m
+ [32m✓[39m tests/property/version-unification-property-18.property.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 289[2mms[22m[39m
+ [32m✓[39m tests/unit/installer/upgrade.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 47[2mms[22m[39m
+[90mstdout[2m | tests/integration/service-management/graceful-shutdown-real.test.ts[2m > [22m[2mGraceful shutdown real[2m > [22m[2mshould execute tasks in priority order: stop-accepting → drain → flush → close → release
+[22m[39m[GracefulShutdown] Starting shutdown: test-priority-order
+[GracefulShutdown] Executing priority: stop-accepting (1 tasks)
+
+[90mstdout[2m | tests/integration/service-management/graceful-shutdown-real.test.ts[2m > [22m[2mGraceful shutdown real[2m > [22m[2mshould execute tasks in priority order: stop-accepting → drain → flush → close → release
+[22m[39m[GracefulShutdown] Executing priority: drain (1 tasks)
+
+[90mstdout[2m | tests/integration/service-management/graceful-shutdown-real.test.ts[2m > [22m[2mGraceful shutdown real[2m > [22m[2mshould execute tasks in priority order: stop-accepting → drain → flush → close → release
+[22m[39m[GracefulShutdown] Executing priority: flush (1 tasks)
+
+[90mstdout[2m | tests/integration/service-management/graceful-shutdown-real.test.ts[2m > [22m[2mGraceful shutdown real[2m > [22m[2mshould execute tasks in priority order: stop-accepting → drain → flush → close → release
+[22m[39m[GracefulShutdown] Executing priority: close (1 tasks)
+
+[90mstdout[2m | tests/integration/service-management/graceful-shutdown-real.test.ts[2m > [22m[2mGraceful shutdown real[2m > [22m[2mshould execute tasks in priority order: stop-accepting → drain → flush → close → release
+[22m[39m[GracefulShutdown] Executing priority: release (1 tasks)
+
+[90mstdout[2m | tests/integration/service-management/graceful-shutdown-real.test.ts[2m > [22m[2mGraceful shutdown real[2m > [22m[2mshould execute tasks in priority order: stop-accepting → drain → flush → close → release
+[22m[39m[GracefulShutdown] Shutdown sequence completed successfully
+[GracefulShutdown] Resources disposed
+
+[90mstdout[2m | tests/integration/service-management/graceful-shutdown-real.test.ts[2m > [22m[2mGraceful shutdown real[2m > [22m[2mshould execute tasks in priority order: stop-accepting → drain → flush → close → release
+[22m[39m[GracefulShutdown] Resources disposed
+
+[90mstdout[2m | tests/integration/service-management/graceful-shutdown-real.test.ts[2m > [22m[2mGraceful shutdown real[2m > [22m[2mshould persist all events acknowledged before t_stop to events.jsonl
+[22m[39m[GracefulShutdown] Starting shutdown: SIGTERM
+[GracefulShutdown] Executing priority: flush (1 tasks)
+
+[90mstdout[2m | tests/integration/service-management/graceful-shutdown-real.test.ts[2m > [22m[2mGraceful shutdown real[2m > [22m[2mshould persist all events acknowledged before t_stop to events.jsonl
+[22m[39m[GracefulShutdown] Shutdown sequence completed successfully
+[GracefulShutdown] Resources disposed
+
+[90mstdout[2m | tests/integration/service-management/graceful-shutdown-real.test.ts[2m > [22m[2mGraceful shutdown real[2m > [22m[2mshould persist all events acknowledged before t_stop to events.jsonl
+[22m[39m[GracefulShutdown] Resources disposed
+
+[90mstdout[2m | tests/integration/service-management/graceful-shutdown-real.test.ts[2m > [22m[2mGraceful shutdown real[2m > [22m[2mshould warn when a task exceeds taskTimeoutMs but continue executing other tasks
+[22m[39m[GracefulShutdown] Starting shutdown: task-timeout-test
+[GracefulShutdown] Executing priority: drain (1 tasks)
+
+[90mstdout[2m | tests/integration/service-management/graceful-shutdown-real.test.ts[2m > [22m[2mGraceful shutdown real[2m > [22m[2mshould warn when a task exceeds taskTimeoutMs but continue executing other tasks
+[22m[39m[GracefulShutdown] Executing priority: flush (1 tasks)
+
+[90mstdout[2m | tests/integration/service-management/graceful-shutdown-real.test.ts[2m > [22m[2mGraceful shutdown real[2m > [22m[2mshould warn when a task exceeds taskTimeoutMs but continue executing other tasks
+[22m[39m[GracefulShutdown] Shutdown sequence completed successfully
+[GracefulShutdown] Resources disposed
+
+[90mstdout[2m | tests/integration/service-management/graceful-shutdown-real.test.ts[2m > [22m[2mGraceful shutdown real[2m > [22m[2mshould warn when a task exceeds taskTimeoutMs but continue executing other tasks
+[22m[39m[GracefulShutdown] Resources disposed
+
+[90mstdout[2m | tests/integration/service-management/graceful-shutdown-real.test.ts[2m > [22m[2mGraceful shutdown real[2m > [22m[2mshould call process.exit(1) when totalShutdownTimeoutMs is exceeded
+[22m[39m[GracefulShutdown] Starting shutdown: total-timeout-test
+[GracefulShutdown] Executing priority: drain (1 tasks)
+
+ [32m✓[39m tests/property/intent_routing.property.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 95[2mms[22m[39m
+[90mstdout[2m | tests/integration/service-management/graceful-shutdown-real.test.ts[2m > [22m[2mGraceful shutdown real[2m > [22m[2mshould call process.exit(1) when totalShutdownTimeoutMs is exceeded
+[22m[39m[GracefulShutdown] Shutdown sequence completed successfully
+[GracefulShutdown] Resources disposed
+
+[90mstdout[2m | tests/integration/service-management/graceful-shutdown-real.test.ts[2m > [22m[2mGraceful shutdown real[2m > [22m[2mshould call process.exit(1) when totalShutdownTimeoutMs is exceeded
+[22m[39m[GracefulShutdown] Resources disposed
+
+[90mstdout[2m | tests/integration/service-management/graceful-shutdown-real.test.ts[2m > [22m[2mGraceful shutdown real[2m > [22m[2mshould execute shutdown tasks only once when trigger is called multiple times
+[22m[39m[GracefulShutdown] Starting shutdown: first
+[GracefulShutdown] Executing priority: drain (1 tasks)
+
+[90mstdout[2m | tests/integration/service-management/graceful-shutdown-real.test.ts[2m > [22m[2mGraceful shutdown real[2m > [22m[2mshould execute shutdown tasks only once when trigger is called multiple times
+[22m[39m[GracefulShutdown] Shutdown sequence completed successfully
+[GracefulShutdown] Resources disposed
+
+[90mstdout[2m | tests/integration/service-management/graceful-shutdown-real.test.ts[2m > [22m[2mGraceful shutdown real[2m > [22m[2mshould execute shutdown tasks only once when trigger is called multiple times
+[22m[39m[GracefulShutdown] Resources disposed
+
+[90mstdout[2m | tests/integration/service-management/graceful-shutdown-real.test.ts[2m > [22m[2mGraceful shutdown real[2m > [22m[2mshould execute all tasks registered at the same priority level in parallel
+[22m[39m[GracefulShutdown] Starting shutdown: parallel-test
+[GracefulShutdown] Executing priority: drain (3 tasks)
+
+[90mstdout[2m | tests/integration/service-management/graceful-shutdown-real.test.ts[2m > [22m[2mGraceful shutdown real[2m > [22m[2mshould execute all tasks registered at the same priority level in parallel
+[22m[39m[GracefulShutdown] Shutdown sequence completed successfully
+[GracefulShutdown] Resources disposed
+
+[90mstdout[2m | tests/integration/service-management/graceful-shutdown-real.test.ts[2m > [22m[2mGraceful shutdown real[2m > [22m[2mshould execute all tasks registered at the same priority level in parallel
+[22m[39m[GracefulShutdown] Resources disposed
+
+[90mstdout[2m | tests/integration/service-management/graceful-shutdown-real.test.ts[2m > [22m[2mGraceful shutdown real[2m > [22m[2mshould trigger shutdown when receiving SIGTERM via attachToProcess
+[22m[39m[GracefulShutdown] Starting shutdown: Received SIGTERM signal
+[GracefulShutdown] Executing priority: drain (1 tasks)
+
+[90mstdout[2m | tests/integration/service-management/graceful-shutdown-real.test.ts[2m > [22m[2mGraceful shutdown real[2m > [22m[2mshould trigger shutdown when receiving SIGTERM via attachToProcess
+[22m[39m[GracefulShutdown] Shutdown sequence completed successfully
+[GracefulShutdown] Resources disposed
+
+[90mstdout[2m | tests/integration/service-management/graceful-shutdown-real.test.ts[2m > [22m[2mGraceful shutdown real[2m > [22m[2mshould trigger shutdown when receiving SIGTERM via attachToProcess
+[22m[39m[GracefulShutdown] Resources disposed
+
+ [32m✓[39m tests/integration/service-management/graceful-shutdown-real.test.ts [2m([22m[2m7 tests[22m[2m)[22m[33m 329[2mms[22m[39m
+ [32m✓[39m tests/unit/installer/atomic.test.ts [2m([22m[2m22 tests[22m[2m)[22m[32m 48[2mms[22m[39m
+ [32m✓[39m tests/unit/installer/manifest_write.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 32[2mms[22m[39m
+ [32m✓[39m tests/unit/installer/opencode_merge.test.ts [2m([22m[2m12 tests[22m[2m)[22m[33m 1158[2mms[22m[39m
+       [33m[2m✓[22m[39m multiple backups should not overwrite each other (different timestamps) [33m 1107[2mms[22m[39m
+ [32m✓[39m tests/integration/cli_flow.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 150[2mms[22m[39m
+ [32m✓[39m tests/property/atomic.property.test.ts [2m([22m[2m5 tests[22m[2m)[22m[33m 515[2mms[22m[39m
+ [32m✓[39m tests/unit/installer/deploy-version-unification.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 38[2mms[22m[39m
+ [32m✓[39m tests/unit/installer/verify.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 49[2mms[22m[39m
+ [32m✓[39m tests/unit/installer/opencode_verify.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 19[2mms[22m[39m
+ [32m✓[39m tests/unit/installer/state_pending_deletes.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 37[2mms[22m[39m
+ [32m✓[39m tests/unit/installer/cmdVerify.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 43[2mms[22m[39m
+ [32m✓[39m tests/unit/installer/cmdInstall.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 137[2mms[22m[39m
+ [32m✓[39m tests/property/semver.property.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 63[2mms[22m[39m
+[90mstdout[2m | tests/integration/version-guard-1000-files.test.ts[2m > [22m[2mCI Version Guard performance[2m > [22m[2mshould complete CI guard within 30 seconds for 1000 files
+[22m[39m[version-guard-1000-files] Scanned 100 files in 9ms
+[version-guard-1000-files] Violations: 0
+[version-guard-1000-files] Infra error: rule 'code-version-literal' threw: TypeError: hunks.added is not iterable
+    at Object.check (/home/runner/work/SpecForge/SpecForge/scripts/ci/version-guard/code-version-rule.ts:78:37)
+    at /home/runner/work/SpecForge/SpecForge/scripts/ci/version-guard.ts:152:23
+    at async Promise.all (index 0)
+    at runVersionGuard (/home/runner/work/SpecForge/SpecForge/scripts/ci/version-guard.ts:175:7)
+    at /home/runner/work/SpecForge/SpecForge/tests/integration/version-guard-1000-files.test.ts:147:43
+    at file:///home/runner/work/SpecForge/SpecForge/node_modules/.bun/@vitest+runner@4.1.5/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:20
+
+[90mstdout[2m | tests/integration/version-guard-1000-files.test.ts[2m > [22m[2mCI Version Guard performance[2m > [22m[2mshould handle edge case of all files changed
+[22m[39m[version-guard-edge] Scanned 500 files in 1ms
+
+ [32m✓[39m tests/integration/version-guard-1000-files.test.ts [2m([22m[2m2 tests[22m[2m)[22m[33m 545[2mms[22m[39m
+ [32m✓[39m tests/unit/verification-consumer-http.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 274[2mms[22m[39m
+ [32m✓[39m tests/unit/installer/parseArgs.test.ts [2m([22m[2m22 tests[22m[2m)[22m[32m 22[2mms[22m[39m
+ [32m✓[39m tests/helpers/generators.test.ts [2m([22m[2m7 tests[22m[2m)[22m[33m 390[2mms[22m[39m
+ [32m✓[39m tests/unit/installer/semver.test.ts [2m([22m[2m30 tests[22m[2m)[22m[32m 16[2mms[22m[39m
+ [32m✓[39m tests/unit/installer/canonicalize.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+ [32m✓[39m tests/unit/installer/cli_args.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 20[2mms[22m[39m
+ [32m✓[39m tests/unit/current-product-version-contract.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 114[2mms[22m[39m
+ [32m✓[39m tests/architecture/directory-layout.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+ [32m✓[39m tests/unit/installer/manifest_canonical_location.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 22[2mms[22m[39m
+ [32m✓[39m tests/e2e/tool-dispatcher-e2e.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 29[2mms[22m[39m
+ [32m✓[39m tests/unit/installer/verify-tool-schemas.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+ [32m✓[39m tests/unit/installer/installer_manifest_path_contract.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+ [32m✓[39m tests/unit/installer/command_path.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m tests/unit/installer/paths.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+ [32m✓[39m tests/unit/verifier-evidence-manifest-example.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+ [32m✓[39m tests/e2e/tool-http-shells.test.ts [2m([22m[2m205 tests[22m[2m)[22m[32m 58[2mms[22m[39m
+ [32m✓[39m tests/e2e/installer_reconcile_e2e.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+ [32m✓[39m tests/unit/ci-workflow-trigger.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m tests/unit/installer/orphan-skill-discovery.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 12[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m51 passed[39m[22m[90m (51)[39m
+[2m      Tests [22m [1m[32m753 passed[39m[22m[90m (753)[39m
+[2m   Start at [22m 12:32:52
+[2m   Duration [22m 7.60s[2m (transform 2.11s, setup 0ms, import 4.77s, tests 8.64s, environment 7ms)[22m
+

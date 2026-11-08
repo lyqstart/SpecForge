@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/verify-edit-plan-collector.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "verify-shared-canonical-edit-plan-owner",
+  "expected_writes": "ignored-owned-canary-and-public-evidence-only",
+  "started_utc": "2026-11-08T09:57:41.837Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\verify-edit-plan-collector.cjs",
+      "sha256": "6738a353acb1234fc5909f8de9528e8cc980f2a4a15729bcddd7364349761050",
+      "size": 1978,
+      "extension": ".cjs"
+    }
+  ]
+}

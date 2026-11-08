@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/probe-windows-short-path.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "bun-real-short-path-api-counterfactual",
+  "expected_writes": "Read-only existing Windows 8.3 alias compare actual Bun realpathSync native and promises",
+  "started_utc": "2026-11-08T12:19:21.016Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\probe-windows-short-path.cjs",
+      "sha256": "dc81c70a1574753b7f0e137449e055b635a9736536cc5f96b1703be53b635b08",
+      "size": 779,
+      "extension": ".cjs"
+    }
+  ]
+}

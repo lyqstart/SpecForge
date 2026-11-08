@@ -1,0 +1,15 @@
+{
+  "number": "035",
+  "name": "official-daemon-restart",
+  "executable": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-eslint-macos-A01-v5-patched\\temp\\sf-platform-acceptance-OcXHSX\\opencode\\sf-user\\bin\\specforge.exe",
+  "args": [
+    "daemon",
+    "restart",
+    "--json"
+  ],
+  "started_utc": "2026-11-08T13:09:18.098Z",
+  "finished_utc": "2026-11-08T13:09:19.112Z",
+  "inner_exit_code": 0,
+  "signal": null,
+  "spawn_error": null
+}

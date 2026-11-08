@@ -1,0 +1,1 @@
+$ vitest run tests/unit/scalar-json-boundary.test.ts tests/unit/delay-timer-owner.test.ts tests/unit/production-lint-boundaries.test.ts "--maxWorkers=1" "--minWorkers=1"

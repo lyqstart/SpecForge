@@ -1,0 +1,55 @@
+{
+  "utc": "2026-11-08T09:10:45.524Z",
+  "members": [
+    {
+      "name": "permission-engine",
+      "exit": 1,
+      "files": 48,
+      "errors": 4,
+      "warnings": 0,
+      "rules": {
+        "import/order": 3,
+        "@typescript-eslint/no-unused-vars": 1
+      }
+    },
+    {
+      "name": "workflow-runtime",
+      "exit": 1,
+      "files": 124,
+      "errors": 227,
+      "warnings": 4,
+      "rules": {
+        "import/order": 38,
+        "@typescript-eslint/consistent-type-imports": 4,
+        "import/no-duplicates": 4,
+        "@typescript-eslint/explicit-function-return-type": 20,
+        "@typescript-eslint/no-unsafe-argument": 42,
+        "@typescript-eslint/no-explicit-any": 61,
+        "@typescript-eslint/no-unsafe-assignment": 28,
+        "@typescript-eslint/no-unsafe-member-access": 23,
+        "@typescript-eslint/no-unsafe-return": 2,
+        "@typescript-eslint/no-unused-vars": 2,
+        "@typescript-eslint/only-throw-error": 1,
+        "@typescript-eslint/prefer-promise-reject-errors": 1,
+        "@typescript-eslint/no-unsafe-call": 1,
+        "@typescript-eslint/no-floating-promises": 1,
+        "@typescript-eslint/unbound-method": 3
+      }
+    },
+    {
+      "name": "daemon-core",
+      "exit": 1,
+      "files": 231,
+      "errors": 151,
+      "warnings": 0,
+      "rules": {
+        "prettier/prettier": 23,
+        "@typescript-eslint/no-unsafe-argument": 92,
+        "@typescript-eslint/no-redundant-type-constituents": 21,
+        "@typescript-eslint/no-unused-vars": 2,
+        "no-useless-escape": 12,
+        "@typescript-eslint/no-unnecessary-type-assertion": 1
+      }
+    }
+  ]
+}

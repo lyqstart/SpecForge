@@ -1,0 +1,65 @@
+{
+  "utc": "2026-11-08T08:09:35.066Z",
+  "actual_eslint": "9.39.4",
+  "actual_parser": "8.59.3",
+  "mode": "real ESLint API, no execution of canary source",
+  "results": [
+    {
+      "id": "original-write-only-reference-failure",
+      "expected": [
+        "unbound"
+      ],
+      "actual": [
+        {
+          "id": "unbound",
+          "message": "Runtime value capturedEvents has no binding in this lexical scope."
+        }
+      ],
+      "pass": true
+    },
+    {
+      "id": "correctly-bound-capture",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "id": "type-only-import-used-as-value",
+      "expected": [
+        "typeOnly"
+      ],
+      "actual": [
+        {
+          "id": "typeOnly",
+          "message": "Type-only import Model cannot provide a runtime value."
+        }
+      ],
+      "pass": true
+    },
+    {
+      "id": "type-query-is-type-only",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "id": "optional-host-probe",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "id": "missing-ordinary-call",
+      "expected": [
+        "unbound"
+      ],
+      "actual": [
+        {
+          "id": "unbound",
+          "message": "Runtime value missingFactory has no binding in this lexical scope."
+        }
+      ],
+      "pass": true
+    }
+  ]
+}

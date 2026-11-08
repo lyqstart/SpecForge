@@ -1,0 +1,199 @@
+diff --git a/packages/daemon-core/tests/fixtures/build-process-fixture.ts b/packages/daemon-core/tests/fixtures/build-process-fixture.ts
+index a0bea606..4225c30d 100644
+--- a/packages/daemon-core/tests/fixtures/build-process-fixture.ts
++++ b/packages/daemon-core/tests/fixtures/build-process-fixture.ts
+@@ -1,11 +1,13 @@
+ import { spawnSync } from 'node:child_process';
++import { existsSync } from 'node:fs';
+ import * as path from 'node:path';
+ 
+ /** Exercise an isolated Bun process with the same bundled module boundary as release. */
+ export function buildProcessFixture(source: string, root: string): string {
+   const target = path.join(root, 'process-fixture.js');
+-  const result = spawnSync(process.env.npm_execpath!, ['build', source, '--target=bun', `--outfile=${target}`],
++  const result = spawnSync(process.env.npm_execpath!, ['build', source, '--target=bun', `--outdir=${root}`, '--entry-naming=process-fixture.js'],
+     { encoding: 'utf8', windowsHide: true });
+   if (result.error || result.status !== 0) throw new Error(`PROCESS_FIXTURE_BUILD_FAILED:${result.status}:${result.error?.message ?? result.stderr}`);
++  if (!existsSync(target)) throw new Error('PROCESS_FIXTURE_ENTRY_MISSING');
+   return target;
+ }
+diff --git a/packages/daemon-core/tests/unit/runtime-history-integrity.test.ts b/packages/daemon-core/tests/unit/runtime-history-integrity.test.ts
+index 9c49be21..94060498 100644
+--- a/packages/daemon-core/tests/unit/runtime-history-integrity.test.ts
++++ b/packages/daemon-core/tests/unit/runtime-history-integrity.test.ts
+@@ -24,6 +24,12 @@ async function fixture() {
+   return {root,config,write,create,manager,state,events:resolver.resolveEventsPath(root),checkpoint:resolver.resolveStatePath(root),activation:path.join(resolver.resolveProjectRuntimeDir(root),'configuration-activation.json')};
+ }
+ describe('authoritative history integrity at configuration consumer',()=>{
++  it('bundles native/file assets beside the actual fresh-process entry instead of requiring a single output',()=>{
++    const root=fs.mkdtempSync(path.join(fs.realpathSync(os.tmpdir()),'sf-process-assets-'));roots.push(root);
++    const source=path.join(root,'asset-entry.ts');fs.writeFileSync(path.join(root,'image.png'),Buffer.from([137,80,78,71,13,10,26,10]));
++    fs.writeFileSync(source,"import asset from './image.png'; console.log(asset);\n");
++    const entry=buildProcessFixture(source,root);expect(fs.existsSync(entry)).toBe(true);expect(fs.readdirSync(root).some(name=>/^image-.+\.png$/.test(name))).toBe(true);
++  });
+   for(const fault of ['missing','invalid-schema','rotation']) {
+     it(`validates ${fault} in a real fresh child process and preserves original evidence`,async()=>{
+       const f=await fixture();const wal=f.state.getWal();
+diff --git a/packages/daemon-core/tests/unit/verification-source-snapshot.test.ts b/packages/daemon-core/tests/unit/verification-source-snapshot.test.ts
+index 6072dac2..1da61053 100644
+--- a/packages/daemon-core/tests/unit/verification-source-snapshot.test.ts
++++ b/packages/daemon-core/tests/unit/verification-source-snapshot.test.ts
+@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
+ import * as fs from 'node:fs/promises';
+ import path from 'node:path';
+ import os from 'node:os';
+-import { execFileSync } from 'node:child_process';
++import { execFileSync, spawnSync } from 'node:child_process';
+ import { captureVerificationSource, readFrozenVerificationInputs } from '../../src/verification/source-snapshot';
+ import { collectNodeCommandInputs, compileNodeCommand } from '../../src/verification/node-command-contract';
+ 
+@@ -17,6 +17,14 @@ async function fixture() {
+   await fs.writeFile(path.join(root, 'library.ts'), 'export const value = 1;\n');
+   git(root, ['add', 'library.ts']);
+   git(root, ['-c', 'user.name=Synthetic', '-c', 'user.email=synthetic@localhost.invalid', 'commit', '-q', '-m', 'synthetic baseline']);
++  const sourceEnvironment:NodeJS.ProcessEnv={};
++  for(const key of ['PATH','SystemRoot','WINDIR','TEMP','TMP','PATHEXT','SYSTEMDRIVE'])if(process.env[key]!==undefined)sourceEnvironment[key]=process.env[key];
++  Object.assign(sourceEnvironment,{GIT_OPTIONAL_LOCKS:'0',GIT_CONFIG_NOSYSTEM:'1',GIT_CONFIG_GLOBAL:process.platform==='win32'?'NUL':'/dev/null'});
++  const probe=(args:string[],env:NodeJS.ProcessEnv)=>{
++    const result=spawnSync('git',['--no-pager','-c','core.fsmonitor=false','-c','protocol.allow=never','-c','core.hooksPath='+(process.platform==='win32'?'NUL':'/dev/null'),'-c','gc.auto=0',...args],{cwd:root,env,encoding:'utf8',windowsHide:true,maxBuffer:65536});
++    return {exit:result.status,stdout:result.stdout,stderr:result.stderr,spawn_error_code:(result.error as NodeJS.ErrnoException|undefined)?.code};
++  };
++  console.log('QUALIFICATION_GIT_IDENTITY='+JSON.stringify({platform:process.platform,root,canonical:await fs.realpath(root),metadata_directory:(await fs.lstat(path.join(root,'.git'))).isDirectory(),plain:{top:probe(['rev-parse','--show-toplevel'],process.env),common:probe(['rev-parse','--git-common-dir'],process.env)},source_reader_environment:{top:probe(['rev-parse','--show-toplevel'],sourceEnvironment),common:probe(['rev-parse','--git-common-dir'],sourceEnvironment)}}));
+   return root;
+ }
+ afterEach(async () => {
+diff --git a/packages/scope-gate/tests/current-crossplatform-ci-contract.test.ts b/packages/scope-gate/tests/current-crossplatform-ci-contract.test.ts
+index 3e7a04a1..b9a54e74 100644
+--- a/packages/scope-gate/tests/current-crossplatform-ci-contract.test.ts
++++ b/packages/scope-gate/tests/current-crossplatform-ci-contract.test.ts
+@@ -1,8 +1,30 @@
+-import {readFileSync,existsSync} from 'node:fs';import path from 'node:path';
++import { existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, symlinkSync } from 'node:fs';
++import { tmpdir } from 'node:os';
++import path from 'node:path';
+ 
+-import {describe,it,expect} from 'vitest';
++import {describe,it,expect,afterEach} from 'vitest';
++
++import { qualifyTemporaryEnvironment } from '../../../scripts/lib/qualification-environment.mjs';
++const ownedTemporaryDirectories:Array<{owned:string;parent:string}>=[];
++afterEach(()=>{
++  for(const {owned,parent} of ownedTemporaryDirectories.splice(0)){
++    if(realpathSync(owned)!==owned||path.dirname(owned)!==parent||!path.basename(owned).startsWith('sf-qualification-temp-'))throw new Error('UNOWNED_TEMP_CLEANUP');
++    rmSync(owned,{recursive:true,force:true});
++  }
++});
+ const root=path.resolve(import.meta.dirname,'../../..'),read=(p:string): string =>readFileSync(path.join(root,p),'utf8').replace(/\r\n/g,'\n');
+ describe('current cross-platform CI deployment contract',()=>{
++  it('uses the same physical temporary target through an owned alias without changing product guards',()=>{
++    const parent=realpathSync(tmpdir()),owned=mkdtempSync(path.join(parent,'sf-qualification-temp-')),physical=path.join(owned,'physical'),alias=path.join(owned,'alias');
++    ownedTemporaryDirectories.push({owned,parent});
++    mkdirSync(physical);symlinkSync(physical,alias,process.platform==='win32'?'junction':'dir');
++    const result=qualifyTemporaryEnvironment(alias);
++    expect(result.canonical).toBe(realpathSync(physical));
++    expect(result.environment).toEqual({TMPDIR:result.canonical,TEMP:result.canonical,TMP:result.canonical});
++    expect(result.ancestors.some(item=>item.path===alias&&item.kind==='symlink')).toBe(true);
++    expect(()=>qualifyTemporaryEnvironment(path.join(owned,'missing'))).toThrow();
++    for(const file of ['scripts/test-workspace.ts','scripts/run-root-tests.mjs','scripts/run-ci-regression.mjs'])expect(read(file),file).toContain('...temporary.environment');
++  });
+   it('uses the official current release and isolated userlevel installer instead of retired tarball deployment',()=>{
+     const workflow=read('.github/workflows/distribution-smoke.yml');
+     expect(workflow).not.toContain('scripts/smoke-runner.ts');
+diff --git a/scripts/run-ci-regression.mjs b/scripts/run-ci-regression.mjs
+index e806d176..67965b18 100644
+--- a/scripts/run-ci-regression.mjs
++++ b/scripts/run-ci-regression.mjs
+@@ -1,4 +1,5 @@
+ import fs from 'node:fs';
++import { qualifyTemporaryEnvironment } from './lib/qualification-environment.mjs';
+ import path from 'node:path';
+ import os from 'node:os';
+ import crypto from 'node:crypto';
+@@ -13,8 +14,8 @@ const phases = Object.freeze({
+   root: ['run', 'test:root'],
+ });
+ const hash = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
+-function run(executable, args) {
+-  const result = spawnSync(executable, args, { cwd: root, windowsHide: true, maxBuffer: 32 * 1024 * 1024 });
++function run(executable, args, environment = process.env) {
++  const result = spawnSync(executable, args, { cwd: root, env: environment, windowsHide: true, maxBuffer: 32 * 1024 * 1024 });
+   return { ...result, stdout: result.stdout ?? Buffer.alloc(0), stderr: result.stderr ?? Buffer.alloc(0) };
+ }
+ function gitStatus() {
+@@ -25,6 +26,7 @@ function gitStatus() {
+ async function main() {
+   if (process.version !== 'v24.19.0') throw new Error('CI_NODE_VERSION_MISMATCH');
+   const phase = process.argv[2];
++  const temporary = qualifyTemporaryEnvironment();
+   if (!Object.hasOwn(phases, phase) || process.argv.length !== 3) throw new Error('CI_UNKNOWN_REGRESSION_PHASE');
+   const reportRoot = process.env.SPECFORGE_CI_REPORT_DIR;
+   if (!reportRoot || !path.isAbsolute(reportRoot)) throw new Error('CI_ABSOLUTE_REPORT_ROOT_REQUIRED');
+@@ -39,7 +41,7 @@ async function main() {
+   if (!path.isAbsolute(bun) || !fs.statSync(bun).isFile()) throw new Error('CI_BUN_IDENTITY_INVALID');
+   const version = run(bun, ['--version']);
+   if (version.status !== 0 || version.stdout.toString().trim() !== '1.3.14') throw new Error('CI_BUN_VERSION_MISMATCH');
+-  const context = { source_commit: head.stdout.toString().trim(), platform: process.platform, arch: process.arch, os_release: os.release(), node: process.version, node_path: process.execPath, node_sha256: hash(fs.readFileSync(process.execPath)), bun: version.stdout.toString().trim(), bun_path: bun, bun_sha256: hash(fs.readFileSync(bun)) };
++  const context = { temporary_directory: { requested: temporary.requested, canonical: temporary.canonical, ancestors: temporary.ancestors }, source_commit: head.stdout.toString().trim(), platform: process.platform, arch: process.arch, os_release: os.release(), node: process.version, node_path: process.execPath, node_sha256: hash(fs.readFileSync(process.execPath)), bun: version.stdout.toString().trim(), bun_path: bun, bun_sha256: hash(fs.readFileSync(bun)) };
+   const contextFile = path.join(reportRoot, 'context.json');
+   if (fs.existsSync(contextFile)) {
+     if (JSON.stringify(JSON.parse(fs.readFileSync(contextFile))) !== JSON.stringify(context)) throw new Error('CI_CONTEXT_DRIFT');
+@@ -49,7 +51,7 @@ async function main() {
+   const command = { phase, cwd: root, executable: bun, args: phases[phase], started_utc: new Date().toISOString(), context_sha256: hash(fs.readFileSync(contextFile)), expected_writes: 'RUNTIME_OBSERVER_WRITES:build/test outputs;EXTERNAL_EVIDENCE_WRITES:owned runner-temp report;no tracked source changes' };
+   fs.writeFileSync(path.join(directory, 'command.json'), JSON.stringify(command, null, 2) + '\n', { flag: 'wx' });
+   fs.writeFileSync(path.join(directory, 'entry-source.mjs'), fs.readFileSync(fileURLToPath(import.meta.url)), { flag: 'wx' });
+-  const result = run(bun, phases[phase]);
++  const result = run(bun, phases[phase], { ...process.env, ...temporary.environment });
+   fs.writeFileSync(path.join(directory, 'stdout.raw.log'), result.stdout, { flag: 'wx' });
+   fs.writeFileSync(path.join(directory, 'stderr.raw.log'), result.stderr, { flag: 'wx' });
+   const after = gitStatus();
+diff --git a/scripts/run-root-tests.mjs b/scripts/run-root-tests.mjs
+index e57bf8ed..efb830f0 100644
+--- a/scripts/run-root-tests.mjs
++++ b/scripts/run-root-tests.mjs
+@@ -1,4 +1,5 @@
+ import { spawnSync } from 'node:child_process';
++import { qualifyTemporaryEnvironment } from './lib/qualification-environment.mjs';
+ import { existsSync, readFileSync } from 'node:fs';
+ import path from 'node:path';
+ import { fileURLToPath } from 'node:url';
+@@ -105,13 +106,14 @@ export function selectRootTests(registry, mode, platform = process.platform) {
+ }
+ 
+ function runVitest(testPaths, passthroughArguments) {
++  const temporary = qualifyTemporaryEnvironment();
+   const vitestEntry = path.join(repositoryRoot, 'node_modules', 'vitest', 'vitest.mjs');
+   if (!existsSync(vitestEntry)) {
+     throw new Error(`ROOT_VITEST_NOT_INSTALLED: ${vitestEntry}`);
+   }
+   const result = spawnSync(process.execPath, [vitestEntry, 'run', ...testPaths, ...passthroughArguments], {
+     cwd: repositoryRoot,
+-    env: process.env,
++    env: { ...process.env, ...temporary.environment },
+     stdio: 'inherit',
+   });
+   if (result.error) throw result.error;
+diff --git a/scripts/test-workspace.ts b/scripts/test-workspace.ts
+index 3b195168..1c11cbfe 100644
+--- a/scripts/test-workspace.ts
++++ b/scripts/test-workspace.ts
+@@ -1,9 +1,11 @@
+ import path from 'node:path';
+ import { fileURLToPath } from 'node:url';
+ import { CURRENT_WORKSPACE_PACKAGES } from './lib/workspace-packages';
++import { qualifyTemporaryEnvironment } from './lib/qualification-environment.mjs';
+ 
+ const rootDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+ const bunExecutable = process.execPath;
++const temporary = qualifyTemporaryEnvironment();
+ 
+ console.log('[test-workspace] Deterministic sequential workspace regression start');
+ console.log(`[test-workspace] Bun executable: ${bunExecutable}`);
+@@ -31,7 +33,7 @@ for (const packageName of CURRENT_WORKSPACE_PACKAGES) {
+     cwd,
+     stdout: 'inherit',
+     stderr: 'inherit',
+-    env: process.env,
++    env: { ...process.env, ...temporary.environment },
+   });
+   const exitCode = result.exitCode ?? 1;
+   if (exitCode !== 0) {

@@ -1,0 +1,13 @@
+{
+  "run_id": "CODEX-SF-20261108-CROSSPLATFORM-CONSUMER-A01",
+  "mode": "CODEX_DIRECT",
+  "purpose": "prepare-nul-safe-final-readonly-observer",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES:ignored corrected observer and exact failure explanation",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-crossplatform-consumer-audit/publication-live/prepare-integrity-v2.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "started_utc": "2026-11-08T07:03:22.525Z",
+  "carrier_source_sha256": "e9228d76b550893f1781e6e8309b93c9ff554cf85cb9390e597e151a6bec142f"
+}

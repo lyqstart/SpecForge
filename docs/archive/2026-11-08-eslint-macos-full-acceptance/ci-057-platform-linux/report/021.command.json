@@ -1,0 +1,16 @@
+{
+  "number": "021",
+  "name": "current-help",
+  "executable": "/tmp/sf-platform-acceptance-qP3k93/opencode/sf-user/bin/specforge",
+  "args": [
+    "opencode-server",
+    "uninstall-service",
+    "--help",
+    "--json"
+  ],
+  "started_utc": "2026-11-08T12:26:40.420Z",
+  "finished_utc": "2026-11-08T12:26:40.515Z",
+  "inner_exit_code": 0,
+  "signal": null,
+  "spawn_error": null
+}

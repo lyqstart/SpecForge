@@ -1,0 +1,12 @@
+
+ RUN  v1.6.1 D:/code/SpecForge/.lint-review-a01/packages/scope-gate
+
+ ✓ tests/current-permission-write-guard-boundary.test.ts  (4 tests) 182ms
+ ✓ tests/current-crossplatform-ci-contract.test.ts  (3 tests) 9ms
+ ✓ tests/eslint-runtime-binding-contract.test.ts  (6 tests) 3730ms
+
+ Test Files  3 passed (3)
+      Tests  13 passed (13)
+   Start at  18:57:40
+   Duration  10.16s (transform 3.93s, setup 0ms, collect 5.13s, tests 3.92s, environment 1ms, prepare 484ms)
+

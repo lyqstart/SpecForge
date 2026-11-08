@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/recover-verified-signal-commit-receipt.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "recover-existing-verified-signal-commit-receipt",
+  "expected_writes": "No duplicate source commit; verify parent4 actualdelta, physical526 hashes and clean tree after exact lock attr index refresh",
+  "started_utc": "2026-11-08T12:57:56.453Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\recover-verified-signal-commit-receipt.cjs",
+      "sha256": "31dedd5700be609b7a031180980ea12e5ba3d4247775f9cf450308c2b08a3ac1",
+      "size": 1720,
+      "extension": ".cjs"
+    }
+  ]
+}

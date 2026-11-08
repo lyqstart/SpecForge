@@ -1,0 +1,18 @@
+{
+  "utc": "2026-11-08T13:41:39.202Z",
+  "mode": "final",
+  "public_files": 8713,
+  "public_bytes": 411134306,
+  "command_receipts": 314,
+  "numeric_inner_exit_receipts": 314,
+  "nonzero_preserved": 54,
+  "pending_commands": 0,
+  "receipt_hashes": "PASS",
+  "credential_signature_findings": [],
+  "oversized_public_files": [],
+  "excluded_private_roots": [
+    "local-assets/",
+    "publication-live/"
+  ],
+  "limitations": "Signature scan is supplementary; producer provenance and ignored private transport plus owner/key identity controls establish scope. No text-only claim about arbitrary compressed binary members or all dynamic branches."
+}

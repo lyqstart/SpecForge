@@ -1,0 +1,16 @@
+src/hard-rules.ts(23,17): error TS2339: Property 'agentRole' does not exist on type '{}'.
+src/hard-rules.ts(23,37): error TS2339: Property 'id' does not exist on type '{}'.
+src/hard-rules.ts(28,20): error TS2339: Property 'type' does not exist on type '{}'.
+src/hard-rules.ts(33,20): error TS2339: Property 'path' does not exist on type '{}'.
+src/hard-rules.ts(191,17): error TS2339: Property 'rules' does not exist on type '{}'.
+src/hard-rules.ts(192,39): error TS2339: Property 'rules' does not exist on type '{}'.
+src/hard-rules.ts(208,26): error TS18046: 'configRule' is of type 'unknown'.
+src/hard-rules.ts(215,26): error TS18046: 'configRule' is of type 'unknown'.
+src/hard-rules.ts(216,28): error TS18046: 'configRule' is of type 'unknown'.
+src/index.ts(83,7): error TS18046: 'eventLoggerConfig' is of type 'unknown'.
+src/index.ts(86,40): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'EventLoggerConfig'.
+src/index.ts(132,48): error TS2339: Property 'type' does not exist on type '{}'.
+src/index.ts(170,48): error TS2339: Property 'type' does not exist on type '{}'.
+src/index.ts(231,11): error TS2322: Type 'unknown' is not assignable to type 'Record<string, any> | undefined'.
+src/index.ts(321,9): error TS18046: 'eventLoggerConfig' is of type 'unknown'.
+src/index.ts(324,42): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'EventLoggerConfig'.

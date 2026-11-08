@@ -1,0 +1,35 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "scripts/prepare-current-release.ts"
+  ],
+  "cwd": "D:\\code\\SpecForge\\.lint-shortpath-a01",
+  "purpose": "shortpath-candidate-full-build-precheck",
+  "expected_writes": "All12 production compile, current native/runtime artifacts, manifest and official release precheck",
+  "started_utc": "2026-11-08T12:22:47.490Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\.lint-shortpath-a01\\scripts\\prepare-current-release.ts",
+      "sha256": "03cf4843c9f79a82ca515258106fe584612efed4bbbcf2bf45ae2c0e579296f1",
+      "size": 474,
+      "extension": ".ts"
+    }
+  ],
+  "finished_utc": "2026-11-08T12:23:37.669Z",
+  "carrier_exit_code": 0,
+  "inner_exit_code": 0,
+  "numeric_inner_exit_code_available": true,
+  "process_started": true,
+  "child_pid": 33352,
+  "spawn_error": null,
+  "signal": null,
+  "observed_writes": {
+    "repository_status_before": " D docs/archive/2026-11-07-verification-production/consumer-source-review/current/docs/archive/2026-11-07-verification-production/evidence-guidance-baseline/setup/userlevel-opencode/skills/superpowers-verification-before-completion/SKILL.md\n M packages/daemon-core/tests/unit/candidate-generation-integrity.test.ts\n M packages/scope-gate/tests/current-crossplatform-ci-contract.test.ts\n M scripts/lib/qualification-environment.mjs\n",
+    "repository_status_after": " D docs/archive/2026-11-07-verification-production/consumer-source-review/current/docs/archive/2026-11-07-verification-production/evidence-guidance-baseline/setup/userlevel-opencode/skills/superpowers-verification-before-completion/SKILL.md\n M packages/daemon-core/tests/unit/candidate-generation-integrity.test.ts\n M packages/scope-gate/tests/current-crossplatform-ci-contract.test.ts\n M scripts/lib/qualification-environment.mjs\n",
+    "other": "See expected writes and owner-specific receipt; status does not enumerate external runtime writes."
+  }
+}

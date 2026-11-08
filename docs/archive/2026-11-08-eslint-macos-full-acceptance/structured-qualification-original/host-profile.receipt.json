@@ -1,0 +1,19 @@
+{
+  "owner": "host-profile",
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "test",
+    "--",
+    "--maxWorkers=1",
+    "--reporter=json",
+    "--outputFile=D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\structured-qualification-original\\host-profile.vitest.json"
+  ],
+  "cwd": "D:\\code\\SpecForge\\.lint-original-a01\\packages\\host-profile",
+  "context_sha256": "c4bb09e6a79f94db49b9d8697e68049fbc348d707397b848627f5525193b8acd",
+  "started_utc": "2026-11-08T12:09:36.420Z",
+  "finished_utc": "2026-11-08T12:09:37.382Z",
+  "exit": 0,
+  "stdout_sha256": "2d9a1d7807e2ec875d3257ff0e3b170520c825ff07155234b20e5de25cdd08c5",
+  "stderr_sha256": "4907ede4da2a65d6819a0e0325cbae579529219028c64078ef8fc691be54213a"
+}

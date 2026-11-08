@@ -1,0 +1,271 @@
+{
+  "utc": "2026-11-08T07:39:47.953Z",
+  "functions": 231,
+  "contract": "Replace await-free async producer wrappers with typed promiseFromSync callbacks: same synchronous operation, Promise adoption and rejection; lexical this/arguments retained by arrow. No fake await, no disabled rule. Formal TypeScript API and regression tests required; arbitrary reflection/unsupported construction not claimed.",
+  "members": [
+    {
+      "file": "packages/workflow-runtime/src/AgentRunner.ts",
+      "before": "0e93f7a5d974ffa5298e677406b3df94de118a15ed2e625e8b35cf060172aa2c",
+      "after": "4ed9bacc05c5580af754dcd84f573368b654c4d38d499d677a4b545f8c47fb6d",
+      "functions": 1
+    },
+    {
+      "file": "packages/workflow-runtime/src/GateRunner.ts",
+      "before": "73c2a6a403452e012b18809aa03c8442a2b843acaee827a1bcf0539cba9b105e",
+      "after": "3e797d675e4f93d029f17457b9423e24a3b0fe3a53a890c33696d7765f083a32",
+      "functions": 2
+    },
+    {
+      "file": "packages/workflow-runtime/src/agent/LLMKernelIntegration.ts",
+      "before": "d05066469af7a3d54c7d7c68265ca1bf16dd613e26d603e0c6c16cfb5b4366b8",
+      "after": "f1a04dd7b1e8123eb281e932c56e5d0af530d1dd09c10b7493ec38cca7fb19ca",
+      "functions": 1
+    },
+    {
+      "file": "packages/workflow-runtime/src/event-subscription.ts",
+      "before": "810740a1aa51f0f2c3d738adabaa1a1c83e1690780c3714ee9e56ead7844d91f",
+      "after": "8d99fc7549e1b258c3c5b5fc7fbfbe16736e52db65abbd09aafeda58f4b20a58",
+      "functions": 1
+    },
+    {
+      "file": "packages/workflow-runtime/tests/acceptance.test.ts",
+      "before": "261edf2696dada5648fc8f11b7765e12321ca875fe630f1984a3f1889eca0de4",
+      "after": "1dbeb7de4f19767dbed9e247ef51716b5fbb4cb67c0664b1920c0820b21baab5",
+      "functions": 14
+    },
+    {
+      "file": "packages/workflow-runtime/tests/event-subscription.test.ts",
+      "before": "a3ee4dd610afe136c7492473c8984daf71d9406aea941237bdcc4b8e2e9604bc",
+      "after": "5036adc65b64061c6c61071b172c98a54f1f02215e5ffcaf1795d5a4c0061ea6",
+      "functions": 3
+    },
+    {
+      "file": "packages/workflow-runtime/tests/integration/agent-runner.test.ts",
+      "before": "7ec06c1c8d07c1d8e3328c49520cca4235ceddfd55c818b2317b36c23915f1f0",
+      "after": "dcc1a8127e5caf0adfae20dfdf9d215914bd9ba6e366669dd08a63af2045794d",
+      "functions": 1
+    },
+    {
+      "file": "packages/workflow-runtime/tests/integration/event-integration.test.ts",
+      "before": "5242b43edd5bb88bde239319f62701f6f440207781809316902bae47bf95ce4a",
+      "after": "1a5d4908db962e029bea216fc01028697429bb101baac8f13b6239b044659bd9",
+      "functions": 6
+    },
+    {
+      "file": "packages/workflow-runtime/tests/integration/workflow-e2e-property-29.test.ts",
+      "before": "1c7a0b893beb966a877758f6d63d90646ce908f02e766cdc69e39cdbe2a028ed",
+      "after": "c4456fe44b6b2b81dbcde110774b68dfc093fe18fad8d00c5933c8e56fc2b709",
+      "functions": 30
+    },
+    {
+      "file": "packages/workflow-runtime/tests/performance/workflow-performance.test.ts",
+      "before": "01c85a74cfb97127dd8e0083b93280a237d94019fb7f0f800ab0be086f55a3a6",
+      "after": "9bb14a40b2200a90eaa5ca7fa8c65862ac6cae3c7b64f5d768f66fa8ccc4640e",
+      "functions": 1
+    },
+    {
+      "file": "packages/workflow-runtime/tests/property/composite-gate-parallel.property.test.ts",
+      "before": "4eee1c56f3417f1cad888472f53b56f9f047881f5400db4428f6ae59924216fa",
+      "after": "b6177b230dda1227387f4ec2ad987b628728d41fd50ba4fe36a3c7dfeb6b1e66",
+      "functions": 6
+    },
+    {
+      "file": "packages/workflow-runtime/tests/property/composite-gate-property-4.parallel-execution.test.ts",
+      "before": "5ec5f57f3cdb547c4f09575c21b435884de4d347694ff0d37da429d80622ca35",
+      "after": "5d96ce2ab256345dc776f5126fd0679cc52dd9684e1f03d0b7bf5a9a27c0c38b",
+      "functions": 3
+    },
+    {
+      "file": "packages/workflow-runtime/tests/property/error-handling-property.test.ts",
+      "before": "120944e002e3b0b3bb960a83111f241ff2b08b90d784dff7f6e3949aec642774",
+      "after": "d1cd416aa0f60c56d6231e7fe5823cedd7022213bc5c7e21c67f6998e45583a2",
+      "functions": 7
+    },
+    {
+      "file": "packages/workflow-runtime/tests/property/fail-fast-parallel.property.test.ts",
+      "before": "49595bd34f5853d59b0d0ccd555800f27879ce192f6454685d366667456305d6",
+      "after": "853f5aaac34f34c3aa4fa479f6a377ebdc6758d2ed3f64610b5e026f7e32829a",
+      "functions": 1
+    },
+    {
+      "file": "packages/workflow-runtime/tests/property/gate-property-2.determinism.test.ts",
+      "before": "0b2f4019aee2592f2202500624f113f805b80664443686d28271d0cd4349774d",
+      "after": "f5968379db17ffba27f7a03f6b695cba1fcf1fd1dc5401f938259a134370e62d",
+      "functions": 1
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/AgentWorkflowEngine.evidence-guard.test.ts",
+      "before": "f357d7c5126ade305214d0924a63910c3e6eda52d513cdc557f98635664d3448",
+      "after": "09b1f82bb258c5690d6440c51f8b1bb245b92947a64ddd618a9bec3b07e0ac22",
+      "functions": 4
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/AgentWorkflowEngine.test.ts",
+      "before": "63975c75f753ee61e2f3f360a2ab82e14b67d40cf506e14da280f6933343371b",
+      "after": "a6c232c650660c2f7cbcae5843d506d7c5bafd211747c6314275b3d08e114bc4",
+      "functions": 1
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/CompositeGateCancellation.test.ts",
+      "before": "9eb223c6cc2757413a0705f98cc04fc957f1ef3a649639331e16b6b185eefcc5",
+      "after": "0589e49022600fcfc5025c86e8a6795f18d19d9ede6b9f51bbb0ff31398f5501",
+      "functions": 14
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/CompositeGateResultAggregation.test.ts",
+      "before": "4aaf7a77af2257115711602fd854c5551f851e5f5525e4dfdef464fbaaea1ec3",
+      "after": "bd8cc8ad20257fc81cae0082b49b6c88ce4bc96cc53a789077489cbcf90703b3",
+      "functions": 29
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/GateDefinition.test.ts",
+      "before": "cef582513de5c0db5d753832f86da0b6a20f446e3c4b23efa0778b1a1be3155d",
+      "after": "cd3d3d000b9c56f095db95f8f21c45e280b3e014e103a3b4ee3dad6e98bcd22d",
+      "functions": 2
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/GateRunner.test.ts",
+      "before": "1c6c13274c8eecf541b2076545dd552caa0e71c5140a28e26b39f6926413abdc",
+      "after": "81c9a093e163278097d9992dc10bdeb20bcd8ef92439979c7db076db9633d6f5",
+      "functions": 15
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/GateRunnerErrorHandling.test.ts",
+      "before": "cb5f3dcd872bd235a10cceeed6b27dd4c54f10b9ac258cb1570b453bf36c9af9",
+      "after": "92dbd341dd2c292ab74785cc74c7e6919e9fac833c2e08a84afe20beb06717a1",
+      "functions": 22
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/WorkflowEngine.test.ts",
+      "before": "42d4a45662c05768af8e9d59b133d07765b263481b4ef401ec66ffe1462d4bfb",
+      "after": "3559b734d7425ba1db2324a0ef44001319efaf7037f6e5baaab202b57216427b",
+      "functions": 13
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/WorkflowErrorHandling.test.ts",
+      "before": "967cc92824cf4526eabadca42c0c48f595129c2f3a3dfdecf836b486a22b61b8",
+      "after": "26352b11812239cb722baab7416d5429c234ac644e1e44651507b525d98a6a3d",
+      "functions": 11
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/engine.test.ts",
+      "before": "7cbefd58d1746169c25779d1b0a15cae2088fa839464ff40c1e1fe539df2047d",
+      "after": "9ede25069f0a8b2268c2fc27970b2e444feb7d0e96f3d556bf2d950f88982e0c",
+      "functions": 1
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/evidence-guard-v11.test.ts",
+      "before": "0c3c3895b69d8c9feb5871ae0204a992d46ce1795cccb13cb7c1f9e5e51abe80",
+      "after": "bece189233daa558e3a737632f821f56ae77fb27882ddd537ff6718f1778881c",
+      "functions": 1
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/retry.test.ts",
+      "before": "4bce3c7c8a585b02f577ccce1545c799d604fa7af1c348d1661553e9bdf74b09",
+      "after": "3d6f734bbf679fb4b2a8165b344413f9b83df323bfa1d799c23125bae73c8061",
+      "functions": 4
+    },
+    {
+      "file": "packages/daemon-core/src/daemon/Daemon.ts",
+      "before": "0cf58d6f876a4f4010d32369185a474eccdae34d94885a28313480e3a536e974",
+      "after": "b0a0fe006731cba458aafea629ac929f243281a10ad857f32259c3520eeb84a9",
+      "functions": 6
+    },
+    {
+      "file": "packages/daemon-core/src/extensions/ExtensionLoader.ts",
+      "before": "ab7e3ce21a29faf8568efa0da104aaf3eac8cdd8a783babb85a6e92aaf022fab",
+      "after": "a87993cf87aa25dd372f751a34adacc3cc693b6eb25eb5c65f4ca70abdbcfb00",
+      "functions": 3
+    },
+    {
+      "file": "packages/daemon-core/src/extensions/skill/SkillRegistry.ts",
+      "before": "46c239f8698602287724619fe767b02f3d969202d427c9a0a98714c5b9897642",
+      "after": "fb9c4d91d2418b69c9d8041c87895cda27c283443d8c0a067f7d0cd84b29d9a7",
+      "functions": 2
+    },
+    {
+      "file": "packages/daemon-core/src/http/HTTPServer.test.ts",
+      "before": "c50dae81228b8d26f138efbb20db5cdba1851b9cd3ec549bb58afa09e77f1af2",
+      "after": "93445aec7ffa3fadc3abf49358b5b5ce054e3a667fa7420ad81555cf6b8dc866",
+      "functions": 6
+    },
+    {
+      "file": "packages/daemon-core/src/http/HTTPServer.ts",
+      "before": "5a8019e0b0d614f8e22b6371ff1e357f94d022e3c71fd4d677759d4469370887",
+      "after": "84b2ef00c8edf16c0ee82dee06b29243ac9d0a3d9b97ebdadbb338a09b0223d0",
+      "functions": 2
+    },
+    {
+      "file": "packages/daemon-core/src/project/ProjectManager.ts",
+      "before": "c4b50b4a9cb3c8f39ee2992b449b9ef8523c9971a7d59719cdbbe33cf0340106",
+      "after": "de1f3a871d1b394211831354ef867724c8ef2d4999815624c3853c4472de2208",
+      "functions": 2
+    },
+    {
+      "file": "packages/daemon-core/src/session/SessionRegistry.ts",
+      "before": "74d82d74ce35af328218d213fcf27825810e29db971737098a7050cd32fab93b",
+      "after": "d0e379e4965b3aff88dc0139d87d2f97f8b0142133b980b9237806f4215cbcad",
+      "functions": 1
+    },
+    {
+      "file": "packages/daemon-core/src/state/StateManager.ts",
+      "before": "a7a7a067c6d322e596fe58c827dc0cd1b30c740824bf32c47660d10330b71ce1",
+      "after": "371772aea92487d2a880164ecb41de165ecd95e03f62687806db5fbd63d9f118",
+      "functions": 3
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-hard-stop-resolve.ts",
+      "before": "d65a0dd00d104d5759164252459692b39ceba84c6c812af84362ce0f8c0ad8f2",
+      "after": "63a2a19515e266bea5f4261623492cb0d132512b255015f67a31c7de9dc19f77",
+      "functions": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/new-project-governance-bootstrap.test.ts",
+      "before": "0482c146129775c1b3ea108d8dcc5f4eb73a0c44f34f340b94c07da24d1b39a4",
+      "after": "e4a67344b25b40d936ffa97296c80c1e0fda252251e383f34c4cda21b50230c1",
+      "functions": 5
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/rollback-runner-v11.ts",
+      "before": "e0381a2f06b26036b28947982e94acd64040f4bd76c8af7c3452809c4bc36112",
+      "after": "41aa8f4d7fefb38ddfd156744d6040bcc82fd619bb5b791c9adc4dd97063ab44",
+      "functions": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_project_init_core.test.ts",
+      "before": "5b03ca259396fa4022dbb65cc63e7e895faf2ae085cf235e5cd1b0d4155ce0cd",
+      "after": "0ff805139d4bd7e4b54dd9e2792ae6defedb0d2a0b6de3caa0c1d026fc0bcfaf",
+      "functions": 2
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_project_init_core.ts",
+      "before": "cfcab1ca65f02762e1c5f4a6d30b3a8b543cd4524d185c1d8ecaa05f41a3fac5",
+      "after": "1b7f413a0b327d44373e2b4d6262d17004373d68c6a334753f7313f735ccb982",
+      "functions": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/utils.ts",
+      "before": "fc93b27167094e55cf712238a42e3e7bc34fbe27471547aea9f0475a443be417",
+      "after": "c26d9b4cb8c6aae7a0352c72b5b6dc034f8b01c6fc58c85ca908fce54ea4ade7",
+      "functions": 1
+    },
+    {
+      "file": "packages/types/src/index.ts",
+      "before": "551f8f5cb10acb69588b5f34b04313419192bcea8a20cf7fbdc9a100ac627af7",
+      "after": "6b28e72f7e2abe40be3bc99b85e1f7f92cc626abf6de636070e90ceacb37cc80",
+      "functions": 0
+    },
+    {
+      "file": "packages/types/src/promise-contract.ts",
+      "before": "ABSENT",
+      "after": "58febf54be96f2e6534cd3e283c0032c962a1fdd489b80003ed499641751970b",
+      "functions": 0
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/promise-from-sync-contract.test.ts",
+      "before": "ABSENT",
+      "after": "694a991240dcdcd5df1151d7d5b79e8edcea0933099c358cbe475ef8d1102ef2",
+      "functions": 0
+    }
+  ]
+}

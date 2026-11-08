@@ -1,0 +1,43 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "test",
+    "--",
+    "tests/unit/production-lint-boundaries.test.ts",
+    "tests/unit/retry.test.ts",
+    "tests/unit/CompositeGateCancellation.test.ts",
+    "--maxWorkers=1",
+    "--minWorkers=1"
+  ],
+  "cwd": "D:\\code\\SpecForge\\.lint-review-a01\\packages\\workflow-runtime",
+  "purpose": "workflow-production-boundary-regressions",
+  "expected_writes": "private-fixture-tests-only",
+  "started_utc": "2026-11-08T08:50:26.501Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 3,
+      "path": "D:\\code\\SpecForge\\.lint-review-a01\\packages\\workflow-runtime\\tests\\unit\\production-lint-boundaries.test.ts",
+      "sha256": "d0e48b6e6a015fb94d173d86b931e1fc72bc79d8972e5302a89b5099e53ce4e1",
+      "size": 2820,
+      "extension": ".ts"
+    },
+    {
+      "argument_index": 4,
+      "path": "D:\\code\\SpecForge\\.lint-review-a01\\packages\\workflow-runtime\\tests\\unit\\retry.test.ts",
+      "sha256": "e867dcaf76a7214b1a9004885b6e556e98e0ce8192f87cc1fc53ea769d5bd093",
+      "size": 23571,
+      "extension": ".ts"
+    },
+    {
+      "argument_index": 5,
+      "path": "D:\\code\\SpecForge\\.lint-review-a01\\packages\\workflow-runtime\\tests\\unit\\CompositeGateCancellation.test.ts",
+      "sha256": "1c12a4597f9875020fddef77f71dd5a7dd536195bac37b6d8487d5a6610ae83b",
+      "size": 10921,
+      "extension": ".ts"
+    }
+  ]
+}

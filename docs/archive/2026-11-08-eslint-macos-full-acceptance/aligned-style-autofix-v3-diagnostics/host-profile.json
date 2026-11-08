@@ -1,0 +1,112 @@
+{
+  "summary": {
+    "name": "host-profile",
+    "started_utc": "2026-11-08T09:30:25.238Z",
+    "finished_utc": "2026-11-08T09:30:25.345Z",
+    "files": 9,
+    "errors": 0,
+    "warnings": 0,
+    "rules": {}
+  },
+  "results": [
+    {
+      "filePath": "D:\\code\\SpecForge\\.lint-review-a01\\packages\\host-profile\\src\\build-rules.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "D:\\code\\SpecForge\\.lint-review-a01\\packages\\host-profile\\src\\index.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "D:\\code\\SpecForge\\.lint-review-a01\\packages\\host-profile\\src\\probe-os.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "D:\\code\\SpecForge\\.lint-review-a01\\packages\\host-profile\\src\\probe-shells.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "D:\\code\\SpecForge\\.lint-review-a01\\packages\\host-profile\\src\\probe-tools.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "D:\\code\\SpecForge\\.lint-review-a01\\packages\\host-profile\\src\\probe-utils.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "D:\\code\\SpecForge\\.lint-review-a01\\packages\\host-profile\\src\\scanner.test.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "D:\\code\\SpecForge\\.lint-review-a01\\packages\\host-profile\\src\\scanner.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "D:\\code\\SpecForge\\.lint-review-a01\\packages\\host-profile\\src\\types.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/review-consumer-delta-v3.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "final-consumer-delta-ast-and-exact-fragments",
+  "expected_writes": "Complete AST structures for expressions; non-expression data/template fragments retained exactly and not treated as semantic equivalents",
+  "started_utc": "2026-11-08T12:15:06.942Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\review-consumer-delta-v3.cjs",
+      "sha256": "57f495a59cfd6023193726ab15546c2a3fe60879985e9fb9aadf53aba5536ead",
+      "size": 3419,
+      "extension": ".cjs"
+    }
+  ]
+}

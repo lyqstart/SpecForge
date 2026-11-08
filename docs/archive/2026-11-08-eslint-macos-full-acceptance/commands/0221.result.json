@@ -1,0 +1,28 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "install",
+    "--frozen-lockfile"
+  ],
+  "cwd": "D:\\code\\SpecForge\\.lint-shortpath-a01",
+  "purpose": "shortpath-worktree-frozen-install",
+  "expected_writes": "Independent final-fix dependency install, frozen same product lock",
+  "started_utc": "2026-11-08T12:21:09.043Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [],
+  "finished_utc": "2026-11-08T12:21:21.896Z",
+  "carrier_exit_code": 0,
+  "inner_exit_code": 0,
+  "numeric_inner_exit_code_available": true,
+  "process_started": true,
+  "child_pid": 29484,
+  "spawn_error": null,
+  "signal": null,
+  "observed_writes": {
+    "repository_status_before": " D docs/archive/2026-11-07-verification-production/consumer-source-review/current/docs/archive/2026-11-07-verification-production/evidence-guidance-baseline/setup/userlevel-opencode/skills/superpowers-verification-before-completion/SKILL.md\n",
+    "repository_status_after": " D docs/archive/2026-11-07-verification-production/consumer-source-review/current/docs/archive/2026-11-07-verification-production/evidence-guidance-baseline/setup/userlevel-opencode/skills/superpowers-verification-before-completion/SKILL.md\n",
+    "other": "See expected writes and owner-specific receipt; status does not enumerate external runtime writes."
+  }
+}

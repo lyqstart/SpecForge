@@ -1,0 +1,48 @@
+{
+  "utc": "2026-11-08T11:47:11.785Z",
+  "input_sha256": "60ff887a1229bd6b76890242adfcdce3f84a56e7fb45163689eb4971f1172ee2",
+  "reason": "0183 real original guard and actual pinned Bun reproduce aliased temporary-root rejection and outfile/multi-asset failure; Mac raw artifact shows those failures. Resolve trusted developer-test root physically in actual workspace/Root/CI owners and record requested/canonical ancestors in actual CI. Change only fixture bundler to support multiple real outputs; add live alias and actual asset-output regressions. No product src, path guard, role, permission, native/backend scope or schema changes.",
+  "required_verification": "Fresh platform-worktree build/lint/targeted regressions; actual full macOS Windows Linux workspace+Root and official install; final same-lock isolated patched leg against unchanged qualified baselines",
+  "members": [
+    {
+      "file": "scripts/lib/qualification-environment.mjs",
+      "before": "ABSENT",
+      "after": "89c3a0befebe0614c7b153107840aa357fef847e858b06d50ea4edf8c24004ef"
+    },
+    {
+      "file": "scripts/lib/qualification-environment.d.mts",
+      "before": "ABSENT",
+      "after": "9f7cb7f38227d35e4a6f3cddc7038e17f39402b77e7af25b33327ea9bb846b74"
+    },
+    {
+      "file": "scripts/test-workspace.ts",
+      "before": "ca07c9f9c24d5e07df939f435a0c611c313c0764e94ee1df8e11ecb3e54bce13",
+      "after": "b9d8a72f0ae05d3ec27249840f0a69ff917f08a3630fdb9b76e01985a8d99f2d"
+    },
+    {
+      "file": "scripts/run-root-tests.mjs",
+      "before": "35d93a02e3888e286d1076e06d44a48b1e581b3f2b6e7279ed5a3375c9ad5a9c",
+      "after": "8b9479e5aa148a3f2866217f27e0e4d3fc27360cee8b5bbc12b1e9ed95bf0e4d"
+    },
+    {
+      "file": "scripts/run-ci-regression.mjs",
+      "before": "7354e6a0e4b662cfb4591f93bb518acb7c092661fbaa1b28d18cbc8896a5735f",
+      "after": "91f1e86e93ea866caf0662edaa46fd4684f6e156d417927564892e6135275554"
+    },
+    {
+      "file": "packages/daemon-core/tests/fixtures/build-process-fixture.ts",
+      "before": "7ee209a24f8e0ce53d4f2298fb43a7f3c5b0134a7b718692a56241c0d526de75",
+      "after": "73059702ba2c7f924858bbb77c96c7eb791284a882b9ca913432f14a23acba79"
+    },
+    {
+      "file": "packages/scope-gate/tests/current-crossplatform-ci-contract.test.ts",
+      "before": "a601824b567d2cb99f63cae9f80e4b967b9d129f39125ee7ed5ea659a513f2b7",
+      "after": "2774d9ba6d3b8f3f6723578dee614f9a98ad97a1abe9e0fc3417e0266181fe2b"
+    },
+    {
+      "file": "packages/daemon-core/tests/unit/runtime-history-integrity.test.ts",
+      "before": "fbdd687d661a0f39ce71285f99724bf01efd229597acfb61c4a9492b7dcea8fe",
+      "after": "f67186672bfc5c8b44d45ef285bc9c2fffab5b57827ca65921947208140dc7cc"
+    }
+  ]
+}

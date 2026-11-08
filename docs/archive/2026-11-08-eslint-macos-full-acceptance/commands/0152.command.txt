@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/align-doc-lint-authority-regression.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "align-real-current-doc-lint-authority-contract",
+  "expected_writes": "one private authority test and comment-only dead algorithm cleanup",
+  "started_utc": "2026-11-08T11:00:46.208Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\align-doc-lint-authority-regression.cjs",
+      "sha256": "9b462b540d4bbe721edee2b938ac0b76625c980548c8963c613c91dd90ca52e1",
+      "size": 4010,
+      "extension": ".cjs"
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/repair-write-only-test-bindings.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "reconcile-all-unused-binding-reference-closures",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES:private exact write-only reference repairs;REPOSITORY_TRACKED_WRITES:ledger;EXTERNAL_EVIDENCE_WRITES:all98-file independent symbol audit",
+  "started_utc": "2026-11-08T08:04:39.666Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\repair-write-only-test-bindings.cjs",
+      "sha256": "5c6f1a1b7457f98bd4b5a1f154a65de4f4bc7b7827087ec750c84ea0b1dbcf86",
+      "size": 5977,
+      "extension": ".cjs"
+    }
+  ]
+}

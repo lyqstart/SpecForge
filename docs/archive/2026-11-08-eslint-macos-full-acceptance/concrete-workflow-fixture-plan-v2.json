@@ -1,0 +1,97 @@
+{
+  "utc": "2026-11-08T09:16:17.768Z",
+  "members": [
+    {
+      "file": "packages/daemon-core/src/http/HTTPServer.ts",
+      "type_only_module_emission_equal": true,
+      "before": "ed60c5b321c0199d8a3b96db7d01922b8f6772544e9d905d07b92951487df6a0",
+      "after": "334ad4f1340cb0c4911881c243803e5d48ed031fd42d3824dfa9549385449f4b"
+    },
+    {
+      "file": "packages/workflow-runtime/src/gates/BasicGates.ts",
+      "type_only_module_emission_equal": true,
+      "before": "2c742048c7082095ecaf6ff4125575cfab6c75280643082e9c7f13e468e1c6ee",
+      "after": "846cca4030fd1c88d00eb53db42bcf8f92421c3cbc17a6f6fac7cbe9468a8ba3"
+    },
+    {
+      "file": "packages/workflow-runtime/src/v11/runtime/JsonParser.ts",
+      "type_only_module_emission_equal": true,
+      "before": "50cdfe68ff6f72b3df5e029f1a33f778f0597e2152d56dec91dca839ed257ca9",
+      "after": "c7bb81753867d18b6de07b8fe99ebd9818c4855627517655117b1c600a486a3c"
+    },
+    {
+      "file": "packages/permission-engine/tests/property/permission-decision-traceability-property-10.test.ts",
+      "type_only_module_emission_equal": true,
+      "before": "cad4ce9514a50fa4b18a52afce10cc804a1ad18edf54bef6f9e1db6e987fd293",
+      "after": "7ff7fb5157c9830bca56f3e5d5dc612874bcd39c167293b1b42b861b8a9754ff"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/BasicGates.test.ts",
+      "type_only_module_emission_equal": false,
+      "before": "60caa11e698d044521e400bd15dd209e81404107897c863544c03c2614ecbb79",
+      "after": "707bcbb6831b618a767cb3d92cfc64c6c7db96194e0affe29cf5f7964bb01b43"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/AgentGateRunner.test.ts",
+      "type_only_module_emission_equal": true,
+      "before": "fe284c29ace12524a4ea7a2c7a11af06eed9ce9c5f6da5a389f7fcf1dce7bed0",
+      "after": "fca46e4f45063ba1eabc8207ff8fdd3ef076fbfba9a30c3aac3d781a0420ff17"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/integration/agent-runner.test.ts",
+      "type_only_module_emission_equal": true,
+      "before": "9b9b9fc2c149e97647cc7e66390910132e041a784c716173520f7c6bf6901da4",
+      "after": "e201b4626c73cf2a1c104430692ad4d944b3cab8417bc76996e2d94cd53909f8"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/performance/workflow-performance.test.ts",
+      "type_only_module_emission_equal": true,
+      "before": "cdd8212362dd4225a2f73ca41ab5f9df4e967ba1902485d76e78bd6fae762743",
+      "after": "f18cdb4d5d47bd4bb89e568f1d437aa90b897c5909944e8cb5bf19a7537ae34e"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/property/workflow-property-6.event-ordering.test.ts",
+      "type_only_module_emission_equal": true,
+      "before": "35f40be3f9903d699d0df3bfe29b0eb2ab4fcd816e063daa89a664b9d4d79fe8",
+      "after": "4c1a100e0cbf256424505fc14451521ddd0b2a4bfe3e056e487852ca6a4bde9d"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/GateRunner.test.ts",
+      "type_only_module_emission_equal": true,
+      "before": "81c9a093e163278097d9992dc10bdeb20bcd8ef92439979c7db076db9633d6f5",
+      "after": "ea94dde95a99f0d62e73383544268e4ce10b39f0b9a5113eb24fab1fea02e4fa"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/v11/unit/json-parser.test.ts",
+      "type_only_module_emission_equal": true,
+      "before": "73519dd5c9598398b2ab52add6fb876eb67fd601f4be559a7b77273584cf8d5e",
+      "after": "8b689ea239615a277e29d6443ac27a0d71733a2ae030e9d90ccc445b31b4f171"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/property/error-handling-property.test.ts",
+      "type_only_module_emission_equal": true,
+      "before": "10d542bc7f1ee05900d93f2ced793a102fba40afb6b4be4d9e4cd1e332398e7c",
+      "after": "67146380c3fccad941fa71729ef3ae79a902c096d5bd05f3fc69b5f974f2ab64"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/GateRunnerErrorHandling.test.ts",
+      "type_only_module_emission_equal": false,
+      "before": "327f2ade5ddf83364559747425f42a21dd2c442282d6fefcbe2c481ddeb983a0",
+      "after": "ddbcb779548b76ba1611e2c6f610de772995dbffbcc64ff7b4105183161c2e77"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/property/composite-gate-property-4.parallel-execution.test.ts",
+      "type_only_module_emission_equal": false,
+      "before": "688e21211bb9cb3b2139f4b5b5e4cdd3565a65e3f7a2f8514d2c78624c40d94e",
+      "after": "651de488eb422db4dd2a5f5212ef03f759dcced8fd57e60032ee5c85708696e9"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/AgentWorkflowEngine.test.ts",
+      "type_only_module_emission_equal": false,
+      "before": "97b2924f86f4ee26ea07a860cbe0700374badacf2347bd615d47e4edb0b4334f",
+      "after": "8c9d15c4efd12bd845ec199ed8c35c88dcdab3e267e95042675ae044f704c899"
+    }
+  ],
+  "facts": "Compiler revealed HTTPServerDeps still required absent global state/WAL: owner types become optional with identical emitted code. Basic Gate constructor types omitted fields they already read; declarations now reflect existing content/task/test fields, exact emitted JS unchanged. JSON input parser already rejects nonstrings: accepts unknown at type boundary with identical JS. Concrete context/results/states/circular fixtures remove any. Logger mocks preserve checked signature with satisfies. Agent-role test mocks public scheduler boundary and awaits full result, asserting actual role rather than private attempt. Nonserializable error test now throws an Error with the intended toJSON property, rather than throwing a function assignment.",
+  "required": "Full12 build; full Workflow and Permission regression; no-new-diagnostics check for intentional negative fixtures; complete ESLint."
+}

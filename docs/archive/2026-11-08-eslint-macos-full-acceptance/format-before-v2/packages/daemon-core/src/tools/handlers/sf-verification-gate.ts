@@ -1,0 +1,28 @@
+import { SPEC_DIR_NAME } from "@specforge/types/directory-layout";
+import { registerHandler } from '../ToolDispatcher';
+import { checkVerificationGate } from '../lib/sf_verification_gate_core';
+import { inspectVerificationEvidenceIntegrity } from '../lib/verification-evidence-integrity';
+import path from 'node:path';
+
+registerHandler('sf_verification_gate', async (args, context, deps) => {
+  if(args['mode']!==undefined||args['gate_mode']!==undefined||args['required_types']!==undefined)return {success:false,error:'VERIFICATION_GATE_OVERRIDE_NOT_CURRENT'};
+  const workItemId = args['work_item_id'] as string;
+  if (!workItemId) {
+    return { success: false, error: 'work_item_id required' };
+  }
+
+  const baseDir = (context?.directory as string) || (context?.worktree as string) || process.cwd();
+
+  try {
+    const result = await checkVerificationGate(
+      workItemId,
+      baseDir,
+      {}
+    );
+    const integrity=await inspectVerificationEvidenceIntegrity({projectRoot:baseDir,workItemDir:path.join(baseDir,SPEC_DIR_NAME,'work-items',workItemId),workItemId,executionEvidenceConsumer:deps.verificationRuntime});
+    if(integrity.invalidity_reasons.length)return {success:true,...result,status:'fail',blocking_issues:[...(result.blocking_issues??[]),...integrity.invalidity_reasons],next_action:'revise'};
+    return { success: true, ...result };
+  } catch (err) {
+    return { success: false, error: (err as Error).message };
+  }
+});

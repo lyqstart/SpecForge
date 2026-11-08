@@ -1,0 +1,24 @@
+node:internal/assert/utils:77
+    throw err;
+    ^
+
+AssertionError [ERR_ASSERTION]: UNSUPPORTED_UNBOUND_REFERENCE:packages/workflow-runtime/tests/unit/WorkflowErrorHandling.test.ts:callCount
+    at walk (D:\code\SpecForge\docs\archive\2026-11-08-eslint-macos-full-acceptance\repair-write-only-test-bindings.cjs:6:878)
+    at visitNode2 (D:\code\SpecForge\.lint-review-a01\node_modules\.bun\typescript@5.9.3\node_modules\typescript\lib\typescript.js:32449:18)
+    at forEachChildInPostfixUnaryExpression (D:\code\SpecForge\.lint-review-a01\node_modules\.bun\typescript@5.9.3\node_modules\typescript\lib\typescript.js:32644:12)
+    at Object.forEachChild (D:\code\SpecForge\.lint-review-a01\node_modules\.bun\typescript@5.9.3\node_modules\typescript\lib\typescript.js:32970:35)
+    at walk (D:\code\SpecForge\docs\archive\2026-11-08-eslint-macos-full-acceptance\repair-write-only-test-bindings.cjs:7:4)
+    at visitNode2 (D:\code\SpecForge\.lint-review-a01\node_modules\.bun\typescript@5.9.3\node_modules\typescript\lib\typescript.js:32449:18)
+    at forEachChildInExpressionStatement (D:\code\SpecForge\.lint-review-a01\node_modules\.bun\typescript@5.9.3\node_modules\typescript\lib\typescript.js:32679:12)
+    at Object.forEachChild (D:\code\SpecForge\.lint-review-a01\node_modules\.bun\typescript@5.9.3\node_modules\typescript\lib\typescript.js:32970:35)
+    at walk (D:\code\SpecForge\docs\archive\2026-11-08-eslint-macos-full-acceptance\repair-write-only-test-bindings.cjs:7:4)
+    at visitNodes (D:\code\SpecForge\.lint-review-a01\node_modules\.bun\typescript@5.9.3\node_modules\typescript\lib\typescript.js:32457:22) {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: false,
+  expected: true,
+  operator: '==',
+  diff: 'simple'
+}
+
+Node.js v24.19.0

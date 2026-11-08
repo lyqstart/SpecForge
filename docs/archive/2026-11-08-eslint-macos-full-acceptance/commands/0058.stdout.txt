@@ -1,0 +1,1 @@
+[{"mode":"old-separate-mixed","runtime_import_type_only":true,"stable":true,"binding_errors":1},{"mode":"aligned-inline","runtime_import_type_only":false,"stable":true,"binding_errors":0}]

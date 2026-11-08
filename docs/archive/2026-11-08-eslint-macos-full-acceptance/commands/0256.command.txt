@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/prove-checkout-lock-eol.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "prove-actual-checkout-lock-byte-mismatch",
+  "expected_writes": "Read-only exact two working locks and Git blob; no semantic equivalence relabelled as byte-identical A/B",
+  "started_utc": "2026-11-08T12:49:50.692Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\prove-checkout-lock-eol.cjs",
+      "sha256": "ad69854a0a85c310ba7a0b0fced1af897857a389cc4fb2e9bdb33fe88ec8c5cd",
+      "size": 1129,
+      "extension": ".cjs"
+    }
+  ]
+}

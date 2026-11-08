@@ -1,0 +1,23 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/collect-official-root-structure.cjs",
+    "original"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "original-correct-official-root-structured-report",
+  "expected_writes": "Node official Root entry structured supplement, preserve prior alternate Bun Runtime failure",
+  "started_utc": "2026-11-08T12:24:42.123Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\collect-official-root-structure.cjs",
+      "sha256": "c91344241b88b0b284e857de29bc704e0b87682e148f338554bc79a6d9a041bb",
+      "size": 1687,
+      "extension": ".cjs"
+    }
+  ]
+}

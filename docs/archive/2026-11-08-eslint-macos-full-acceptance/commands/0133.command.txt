@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "scripts/prepare-current-release.ts"
+  ],
+  "cwd": "D:\\code\\SpecForge\\.lint-review-a01",
+  "purpose": "complete-build-after-final-lint-boundaries",
+  "expected_writes": "private dist plus immutable raw receipts",
+  "started_utc": "2026-11-08T10:33:51.365Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\.lint-review-a01\\scripts\\prepare-current-release.ts",
+      "sha256": "03cf4843c9f79a82ca515258106fe584612efed4bbbcf2bf45ae2c0e579296f1",
+      "size": 474,
+      "extension": ".ts"
+    }
+  ]
+}

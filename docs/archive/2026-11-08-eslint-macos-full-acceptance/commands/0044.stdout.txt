@@ -1,0 +1,1 @@
+{"mode":"complete read-only reference-kind inventory","previous_source_writes":0}

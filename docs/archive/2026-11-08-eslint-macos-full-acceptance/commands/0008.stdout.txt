@@ -1,0 +1,1 @@
+{"failed_install":"PRESERVED","short_fixture":".lint-review-a01","hypothesis":"physical path boundary;not yet proven"}

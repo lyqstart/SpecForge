@@ -64,3 +64,5 @@ docs/archive/2026-10-19-config-activation-loss-evidence/** -text -diff
 # Keep frozen dependency inputs byte-identical on all hosts.
 bun.lock text eol=lf
 /.gitattributes text eol=lf
+
+/docs/archive/2026-11-08-eslint-macos-full-acceptance/** -text -diff

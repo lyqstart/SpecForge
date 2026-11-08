@@ -1,0 +1,140 @@
+
+ RUN  v1.6.1 D:/code/SpecForge/.lint-review-a01/packages/permission-engine
+
+ ✓ tests/property/plugin-permission-gate-property-28.test.ts  (24 tests) 61ms
+ ✓ tests/property/remote-access-guard-property-26.test.ts  (23 tests) 62ms
+stdout | tests/property/performance-validation-property.test.ts > Performance Validation: Permission Engine > 6.3.1: Permission Decision Latency > permission decision latency is consistent across different request types
+Permission Decision Latency Statistics:
+  Average: 0.029ms
+  Min: 0.007ms
+  Max: 0.839ms
+  P95: 0.055ms
+
+stdout | tests/property/performance-validation-property.test.ts > Performance Validation: Permission Engine > 6.3.2: Event Logging Overhead > event logging adds minimal overhead
+Event Logging Overhead Statistics:
+  Average: 0.069ms
+  Max: 1.939ms
+  P95: 0.130ms
+
+stdout | tests/property/performance-validation-property.test.ts > Performance Validation: Permission Engine > 6.3.2: Event Logging Overhead > logging overhead scales appropriately with payload size
+Logging overhead comparison:
+  Small payload: 0.057ms
+  Large payload: 0.020ms
+
+stdout | tests/property/performance-validation-property.test.ts > Performance Validation: Permission Engine > 6.3.2: Event Logging Overhead > batch event logging preserves every event within the per-event budget
+Batch vs Individual Logging:
+  Individual (50 ops): 0.814ms
+  Batch (50 ops): 0.803ms
+
+stdout | tests/property/performance-validation-property.test.ts > Performance Validation: Permission Engine > 6.3.3: Rule Loading and Caching Performance > rule evaluation cache provides significant speedup for repeated requests
+Cache Performance:
+  First evaluation (cache miss): 0.089ms
+  Average cached evaluation: 0.001ms
+  Max cached evaluation: 0.008ms
+  Speedup factor: 105.1x
+
+stdout | tests/property/performance-validation-property.test.ts > Performance Validation: Permission Engine > 6.3.3: Rule Loading and Caching Performance > cache handles many different request patterns efficiently
+Multiple Pattern Cache Performance:
+  Unique patterns: 100
+  Total evaluations: 500
+  Average time: 0.001ms
+  Max time: 0.003ms
+
+stdout | tests/property/performance-validation-property.test.ts > Performance Validation: Permission Engine > 6.3.3: Rule Loading and Caching Performance > cache can be cleared and rebuilt efficiently
+Cache Rebuild Performance:
+  Clear time: 0.074ms
+  Repopulate time (50 requests): 0.178ms
+
+stdout | tests/property/performance-validation-property.test.ts > Performance Validation: Permission Engine > 6.3.4: End-to-End Performance with Full Pipeline > full permission pipeline performs well under load
+Full Pipeline Performance:
+  Average: 0.042ms
+  Max: 0.362ms
+  P95: 0.091ms
+
+stdout | tests/property/performance-validation-property.test.ts > Performance Validation: Permission Engine > 6.3.4: End-to-End Performance with Full Pipeline > performance is consistent regardless of auth result
+Auth Result Performance:
+  Valid token avg: 0.028ms
+  Invalid token avg: 0.054ms
+
+ ✓ tests/property/performance-validation-property.test.ts  (12 tests) 47ms
+ ✓ tests/property/bearer-token-enforcement-property-16.test.ts  (12 tests) 4364ms
+ ✓ tests/property/permission-decision-traceability-property-10.test.ts  (6 tests) 4823ms
+stdout | tests/integration/e2e-permission-flow.test.ts > End-to-End Permission Flow > Complete Permission Flow > should complete full permission flow: auth check -> permission check -> event logging
+[DaemonIntegration] Initialized successfully
+[DaemonIntegration] Cleaned up
+
+stdout | tests/integration/e2e-permission-flow.test.ts > End-to-End Permission Flow > Complete Permission Flow > should deny unauthorized request in full flow
+[DaemonIntegration] Initialized successfully
+[DaemonIntegration] Cleaned up
+
+stdout | tests/integration/e2e-permission-flow.test.ts > End-to-End Permission Flow > Complete Permission Flow > should deny request with invalid token in full flow
+[DaemonIntegration] Initialized successfully
+[DaemonIntegration] Cleaned up
+
+stdout | tests/integration/e2e-permission-flow.test.ts > End-to-End Permission Flow > Three-Layer Permission Model Integration > should enforce hard rules in the complete flow
+[DaemonIntegration] Initialized successfully
+[DaemonIntegration] Cleaned up
+
+stdout | tests/integration/e2e-permission-flow.test.ts > End-to-End Permission Flow > Three-Layer Permission Model Integration > should allow non-hard-rule actions in the complete flow
+[DaemonIntegration] Initialized successfully
+[DaemonIntegration] Cleaned up
+
+stdout | tests/integration/e2e-permission-flow.test.ts > End-to-End Permission Flow > Request Context Propagation > should propagate client IP to permission context
+[DaemonIntegration] Initialized successfully
+[DaemonIntegration] Cleaned up
+
+stdout | tests/integration/e2e-permission-flow.test.ts > End-to-End Permission Flow > Request Context Propagation > should propagate request method and path to event logging
+[DaemonIntegration] Initialized successfully
+[DaemonIntegration] Cleaned up
+
+stdout | tests/integration/e2e-permission-flow.test.ts > End-to-End Permission Flow > Integration Result Structure > should return complete IntegrationResult structure
+[DaemonIntegration] Initialized successfully
+[DaemonIntegration] Cleaned up
+
+stdout | tests/integration/e2e-permission-flow.test.ts > End-to-End Permission Flow > Error Handling in Flow > should handle missing Permission Engine gracefully
+[DaemonIntegration] Initialized successfully
+[DaemonIntegration] Cleaned up
+[DaemonIntegration] Cleaned up
+
+stdout | tests/integration/e2e-permission-flow.test.ts > End-to-End Permission Flow > Error Handling in Flow > should handle uninitialized integration gracefully
+[DaemonIntegration] Cleaned up
+
+stdout | tests/integration/e2e-permission-flow.test.ts > Multi-Request Permission Flow > Sequential Requests > should handle multiple sequential requests with consistent results
+[DaemonIntegration] Initialized successfully
+[DaemonIntegration] Cleaned up
+
+stdout | tests/integration/e2e-permission-flow.test.ts > Multi-Request Permission Flow > Sequential Requests > should maintain state across multiple requests
+[DaemonIntegration] Initialized successfully
+[DaemonIntegration] Cleaned up
+
+ ✓ tests/integration/e2e-permission-flow.test.ts  (13 tests) 14ms
+stdout | tests/integration/e2e-permission-flow.test.ts > Multi-Request Permission Flow > Concurrent Requests > should handle concurrent requests without race conditions
+[DaemonIntegration] Initialized successfully
+[DaemonIntegration] Cleaned up
+
+ ✓ tests/integration/crash-recovery.test.ts  (25 tests) 22ms
+ ✓ tests/unit/bearer-token-validator.test.ts  (33 tests) 10ms
+ ✓ tests/unit/user-binding.test.ts  (31 tests) 174ms
+ ✓ tests/unit/two-step-confirmation.test.ts  (22 tests) 170ms
+ ✓ tests/unit/event-logging.test.ts  (13 tests) 16ms
+ ✓ tests/property/hard-rule-immutability-simple.test.ts  (6 tests) 10ms
+ ✓ tests/unit/plugin-permission-validator.test.ts  (24 tests) 20ms
+ ✓ tests/unit/permission-engine.test.ts  (34 tests) 15ms
+ ✓ tests/integration/remote-access-integration.test.ts  (15 tests) 12ms
+ ✓ tests/unit/plugin-loader-integration.test.ts  (17 tests) 14ms
+ ✓ tests/unit/api-key-manager.test.ts  (19 tests) 11ms
+ ✓ tests/unit/static-api-checker.test.ts  (16 tests) 8ms
+stdout | tests/unit/daemon-integration.test.ts > DaemonIntegration > cleanup > should clean up resources
+[DaemonIntegration] Cleaned up
+
+ ✓ tests/unit/daemon-integration.test.ts  (12 tests) 6ms
+ ✓ tests/unit/write-decision.test.ts  (12 tests) 4ms
+ ✓ tests/integration/plugin-loading-integration.test.ts  (6 tests) 7ms
+ ✓ tests/unit/unknown-permission-boundary.test.ts  (3 tests) 4ms
+ ✓ tests/unit/static-permission-logger-owner.test.ts  (1 test) 6ms
+
+ Test Files  23 passed (23)
+      Tests  379 passed (379)
+   Start at  16:58:16
+   Duration  23.01s (transform 696ms, setup 1ms, collect 4.48s, tests 9.88s, environment 4ms, prepare 4.04s)
+

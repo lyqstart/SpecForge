@@ -1,0 +1,89 @@
+{
+  "utc": "2026-11-08T08:17:44.337Z",
+  "typed_declared_member_accesses": 4,
+  "test_nonnull_checks": 58,
+  "skipped": [],
+  "members": [
+    {
+      "file": "packages/permission-engine/tests/unit/event-logging.test.ts",
+      "before": "bd4424aca9454ffb5ce947049a0fc43fa36bdea6e3aaff34ad9160a72c0353d7",
+      "after": "4c26b99e4f614f3b3e4b6cd5878e1d75747ccb8fc585ca99ca4f66511fd58199"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/acceptance.test.ts",
+      "before": "92ce72aef945ebc0449223036f4b8952f7e1eeb0705cf944bd4e990945deccdb",
+      "after": "434b56080247a962cdf6d879065f1f4b118eabd7faa66638aa20494b86da9a6c"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/setup.ts",
+      "before": "fe577205df6dd2b1d6b4df7e8d775ef1178d5d670f004f49e7cfb12b69a34ba3",
+      "after": "b07d6a5d7f0ba8ec93aeb10d6f2bb32f8006df42300052ccfb225675e98bc85d"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/integration/event-integration.test.ts",
+      "before": "325c131140f1f03b475ce705dd55922d3e7553e54b912f2c67e3f97428010641",
+      "after": "3c4f28b62994f6095db28ff96cccf0ed0bdfe2bdd5b4f1c5666a5143835f6d3d"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/performance/workflow-performance.test.ts",
+      "before": "57f6999bae2790ecd5a8c0a6b5420b8b55a596a6644a08010cfa02eede3d1368",
+      "after": "584e011f064dc0c3a73cc0a4b053c64596ff6e512fa99ad803ab107ff88664f8"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/property/workflow-property-6.event-ordering.test.ts",
+      "before": "a4bf9b1f5112eb8e3f28883b628b8dd86e83362eeb12614acfb1d76bc6d8ee29",
+      "after": "0a3c0acc3708b0d7f029915a4f1565885a3b78855d18308f74a9fecb45d80f73"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/AgentWorkflowEngine.evidence-guard.test.ts",
+      "before": "212c650cef0f428afda1c9af5e56ebd0ee01e2c89589baf42686440639d48b26",
+      "after": "073d68d7f4e26c980ea6e5d8d65d270605c87be8fd3cd1150f67270202cdcd13"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/CompositeGateSerializer.test.ts",
+      "before": "4aedd8a4f28bdbf134663d86851557a463f57634754caeb974773c98b92d9a55",
+      "after": "94533ee333adf270706e86f06e78cda70e477f9fc9f5b3a6a9a606c035bd003b"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/EventPublisher.test.ts",
+      "before": "2664c92c68ea7277d8ceb67251f4fbafaf4c542cd8d1f0c1c1f4ba237f758517",
+      "after": "cbfe37c6fd12200a5433aaa30cf7f86117048f42a610fa8af07c041cb4f8ecf7"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/GateRunnerErrorHandling.test.ts",
+      "before": "34495bec937f249e6e6ee6ed4674a6e0305584c461caed9653b52b4cc6b4b2fb",
+      "after": "1ad3f2a9ff9bb0fa9cd873e1b95ddae17e595f959f56f99474bf1a39c5eeb514"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/error-propagation.test.ts",
+      "before": "22db36dd94373c93e1887bfe34188cecaafe4a4117ded4f060193f5109385aa5",
+      "after": "d4e306f4d33e28b1b2be60f12ef8fdcab53e6ae8f472de6078d0d112f1a9c22a"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/rbac/seal-transitions.test.ts",
+      "before": "98ebd6768460a601d369daa0b6450fe14420fd71d6c19fd1f66eb1b93bf8edd4",
+      "after": "e3a05385f0a4675fa9b5576062aa02542c6f72166bb26e5c83d146ee1c38a5a9"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/v11/property/parsers.property.test.ts",
+      "before": "800874046acedcdf9a68f594c679380491fb33bd54c3f71ea048de77ca459821",
+      "after": "9c79d13b15c3fc131931184511f6c9824181ae11c3c7d762ada8197fb6d51e0b"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/v11/unit/close-gate.test.ts",
+      "before": "5eb430c7eb9f7061a0eccb2feded694afa146092c97232bcb3f2b4cc70cbeaa0",
+      "after": "f97e936400e2b268a2d52d933b2c671e7712ab8257b82a8b875ea9fb831538da"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/v11/unit/json-parser.test.ts",
+      "before": "4c81c12b0e0d7f97b1cb6ad2745df216630f32e68b95f81528ea28e5aee8b6d7",
+      "after": "50bb3f61a6481a42b979f4fc7436c6bb60a0741014cbd75ebe7a7bfba9c15498"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/required-test-value.ts",
+      "before": "ABSENT",
+      "after": "64c90cf3154af7b45a011185119aa2d1bc895bee5e45d4c537271ae760a0bbbe"
+    }
+  ],
+  "contract": "Only test inspection of a member actually found on its original concrete TypeScript type: bracket syntax retains compiler-known private member type, no any/never alias or synthetic return type. Test non-null assertions replaced with real null/undefined preconditions, preserving valid falsy values and once-only evaluation. Full regression still required."
+}

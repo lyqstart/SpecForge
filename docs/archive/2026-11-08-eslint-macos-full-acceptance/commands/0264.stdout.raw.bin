@@ -1,0 +1,103 @@
+
+ RUN  v3.2.4 D:/code/SpecForge/.lint-signal-a01/packages/service-management
+
+stdout | tests/unit/graceful-shutdown-handler.test.ts > GracefulShutdownHandler > Priority order execution > should execute tasks in correct priority order (stop-accepting → drain → flush → close → release)
+[GracefulShutdown] Resources disposed
+
+stdout | tests/unit/graceful-shutdown-handler.test.ts > GracefulShutdownHandler > Priority order execution > should execute same-priority tasks in reverse registration order (later registered runs first)
+[GracefulShutdown] Resources disposed
+
+stdout | tests/unit/graceful-shutdown-handler.test.ts > GracefulShutdownHandler > Priority order execution > should execute 5 priority stages in correct order with multiple tasks
+[GracefulShutdown] Resources disposed
+
+stdout | tests/unit/graceful-shutdown-handler.test.ts > GracefulShutdownHandler > Single task timeout (3s) > should not block subsequent tasks when a single task times out
+[GracefulShutdown] Resources disposed
+
+stdout | tests/unit/graceful-shutdown-handler.test.ts > GracefulShutdownHandler > Single task timeout (3s) > should warn but continue when task times out after 3s
+[GracefulShutdown] Resources disposed
+
+stdout | tests/unit/graceful-shutdown-handler.test.ts > GracefulShutdownHandler > Total shutdown timeout (10s) > should call process.exit(1) when total timeout of 10s is exceeded
+[GracefulShutdown] Resources disposed
+
+stdout | tests/unit/graceful-shutdown-handler.test.ts > GracefulShutdownHandler > Total shutdown timeout (10s) > should not exit early when tasks complete within timeout
+[GracefulShutdown] Resources disposed
+
+stdout | tests/unit/graceful-shutdown-handler.test.ts > GracefulShutdownHandler > Total shutdown timeout (10s) > should allow 10s total for all priorities combined
+[GracefulShutdown] Resources disposed
+
+stdout | tests/unit/graceful-shutdown-handler.test.ts > GracefulShutdownHandler > Idempotency > should only execute once when trigger is called multiple times
+[GracefulShutdown] Resources disposed
+
+stdout | tests/unit/graceful-shutdown-handler.test.ts > GracefulShutdownHandler > Idempotency > should report correct shutdown reason from first trigger
+[GracefulShutdown] Resources disposed
+
+stdout | tests/unit/graceful-shutdown-handler.test.ts > GracefulShutdownHandler > Idempotency > should set isShuttingDown() to true after first trigger
+[GracefulShutdown] Resources disposed
+
+stdout | tests/unit/graceful-shutdown-handler.test.ts > GracefulShutdownHandler > SIGTERM signal handling > should trigger shutdown when SIGTERM is received
+[GracefulShutdown] Resources disposed
+
+stdout | tests/unit/graceful-shutdown-handler.test.ts > GracefulShutdownHandler > SIGTERM signal handling > should not attach twice if already attached
+[GracefulShutdown] Resources disposed
+
+stdout | tests/unit/graceful-shutdown-handler.test.ts > GracefulShutdownHandler > SIGTERM signal handling > releases exact signal callbacks and preserves foreign listeners across repeated lifecycles
+[GracefulShutdown] Resources disposed
+
+stdout | tests/unit/graceful-shutdown-handler.test.ts > GracefulShutdownHandler > SIGTERM signal handling > releases exact signal callbacks and preserves foreign listeners across repeated lifecycles
+[GracefulShutdown] Resources disposed
+
+stdout | tests/unit/graceful-shutdown-handler.test.ts > GracefulShutdownHandler > SIGTERM signal handling > releases exact signal callbacks and preserves foreign listeners across repeated lifecycles
+[GracefulShutdown] Resources disposed
+
+stdout | tests/unit/graceful-shutdown-handler.test.ts > GracefulShutdownHandler > SIGTERM signal handling > releases exact signal callbacks and preserves foreign listeners across repeated lifecycles
+[GracefulShutdown] Resources disposed
+
+stdout | tests/unit/graceful-shutdown-handler.test.ts > GracefulShutdownHandler > SIGTERM signal handling > releases exact signal callbacks and preserves foreign listeners across repeated lifecycles
+[GracefulShutdown] Resources disposed
+
+stdout | tests/unit/graceful-shutdown-handler.test.ts > GracefulShutdownHandler > SIGTERM signal handling > releases exact signal callbacks and preserves foreign listeners across repeated lifecycles
+[GracefulShutdown] Resources disposed
+
+stdout | tests/unit/graceful-shutdown-handler.test.ts > GracefulShutdownHandler > SIGTERM signal handling > releases exact signal callbacks and preserves foreign listeners across repeated lifecycles
+[GracefulShutdown] Resources disposed
+
+stdout | tests/unit/graceful-shutdown-handler.test.ts > GracefulShutdownHandler > SIGTERM signal handling > releases exact signal callbacks and preserves foreign listeners across repeated lifecycles
+[GracefulShutdown] Resources disposed
+
+stdout | tests/unit/graceful-shutdown-handler.test.ts > GracefulShutdownHandler > SIGTERM signal handling > releases exact signal callbacks and preserves foreign listeners across repeated lifecycles
+[GracefulShutdown] Resources disposed
+
+stdout | tests/unit/graceful-shutdown-handler.test.ts > GracefulShutdownHandler > SIGTERM signal handling > releases exact signal callbacks and preserves foreign listeners across repeated lifecycles
+[GracefulShutdown] Resources disposed
+
+stdout | tests/unit/graceful-shutdown-handler.test.ts > GracefulShutdownHandler > SIGTERM signal handling > releases exact signal callbacks and preserves foreign listeners across repeated lifecycles
+[GracefulShutdown] Resources disposed
+
+stdout | tests/unit/graceful-shutdown-handler.test.ts > GracefulShutdownHandler > SIGTERM signal handling > releases exact signal callbacks and preserves foreign listeners across repeated lifecycles
+[GracefulShutdown] Resources disposed
+
+stdout | tests/unit/graceful-shutdown-handler.test.ts > GracefulShutdownHandler > SIGTERM signal handling > should log shutdown reason on SIGTERM
+[GracefulShutdown] Resources disposed
+
+stdout | tests/unit/graceful-shutdown-handler.test.ts > GracefulShutdownHandler > Resource cleanup > should have zero active tasks after shutdown completes
+[GracefulShutdown] Resources disposed
+
+stdout | tests/unit/graceful-shutdown-handler.test.ts > GracefulShutdownHandler > Resource cleanup > should have zero active timers after shutdown completes
+[GracefulShutdown] Resources disposed
+
+stdout | tests/unit/graceful-shutdown-handler.test.ts > GracefulShutdownHandler > Resource cleanup > should clean up timers when dispose is called
+[GracefulShutdown] Resources disposed
+
+stdout | tests/unit/graceful-shutdown-handler.test.ts > GracefulShutdownHandler > Error handling > should continue shutdown even if a task throws
+[GracefulShutdown] Resources disposed
+
+stdout | tests/unit/graceful-shutdown-handler.test.ts > GracefulShutdownHandler > Error handling > should provide AbortSignal to tasks
+[GracefulShutdown] Resources disposed
+
+ ✓ tests/unit/graceful-shutdown-handler.test.ts (22 tests) 33ms
+
+ Test Files  1 passed (1)
+      Tests  22 passed (22)
+   Start at  20:52:23
+   Duration  545ms (transform 75ms, setup 0ms, collect 91ms, tests 33ms, environment 0ms, prepare 154ms)
+

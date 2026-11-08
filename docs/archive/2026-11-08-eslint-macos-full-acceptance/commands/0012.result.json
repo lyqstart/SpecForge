@@ -1,0 +1,35 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "scripts/build-workspace.ts"
+  ],
+  "cwd": "D:\\code\\SpecForge\\.lint-review-a01",
+  "purpose": "build-frozen-fixture-before-typed-lint",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES:owned package dist;EXTERNAL_EVIDENCE_WRITES:all build pipes;no product workspace mutation",
+  "started_utc": "2026-11-08T07:21:58.708Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\.lint-review-a01\\scripts\\build-workspace.ts",
+      "sha256": "42f88fb9686fbcfbd0bdcdebc9b056536018ca778a61555c04b0671f88c12aca",
+      "size": 1441,
+      "extension": ".ts"
+    }
+  ],
+  "finished_utc": "2026-11-08T07:22:35.051Z",
+  "carrier_exit_code": 0,
+  "inner_exit_code": 0,
+  "numeric_inner_exit_code_available": true,
+  "process_started": true,
+  "child_pid": 24048,
+  "spawn_error": null,
+  "signal": null,
+  "observed_writes": {
+    "repository_status_before": " M bun.lock\n D docs/archive/2026-11-07-verification-production/consumer-source-review/current/docs/archive/2026-11-07-verification-production/evidence-guidance-baseline/setup/userlevel-opencode/skills/superpowers-verification-before-completion/SKILL.md\n M package.json\n M packages/cli/package.json\n M packages/configuration/package.json\n M packages/daemon-core/package.json\n M packages/host-profile/package.json\n M packages/observability/package.json\n M packages/opencode-adapter/package.json\n M packages/permission-engine/package.json\n M packages/scope-gate/package.json\n M packages/service-management/package.json\n M packages/types/package.json\n M packages/version-unification/package.json\n M packages/workflow-runtime/package.json\n M scripts/lint-workspace.ts\n?? eslint.config.mjs\n?? packages/daemon-core/tsconfig.eslint.json\n?? packages/observability/tsconfig.eslint.json\n?? packages/opencode-adapter/tsconfig.eslint.json\n?? packages/permission-engine/tsconfig.eslint.json\n?? packages/scope-gate/tsconfig.eslint.json\n?? packages/workflow-runtime/tsconfig.eslint.json\n?? scripts/lib/lint-workspace-policy.mjs\n?? scripts/lint-package.mjs\n",
+    "repository_status_after": " M bun.lock\n D docs/archive/2026-11-07-verification-production/consumer-source-review/current/docs/archive/2026-11-07-verification-production/evidence-guidance-baseline/setup/userlevel-opencode/skills/superpowers-verification-before-completion/SKILL.md\n M package.json\n M packages/cli/package.json\n M packages/configuration/package.json\n M packages/daemon-core/package.json\n M packages/host-profile/package.json\n M packages/observability/package.json\n M packages/opencode-adapter/package.json\n M packages/permission-engine/package.json\n M packages/scope-gate/package.json\n M packages/service-management/package.json\n M packages/types/package.json\n M packages/version-unification/package.json\n M packages/workflow-runtime/package.json\n M scripts/lint-workspace.ts\n?? eslint.config.mjs\n?? packages/daemon-core/tsconfig.eslint.json\n?? packages/observability/tsconfig.eslint.json\n?? packages/opencode-adapter/tsconfig.eslint.json\n?? packages/permission-engine/tsconfig.eslint.json\n?? packages/scope-gate/tsconfig.eslint.json\n?? packages/workflow-runtime/tsconfig.eslint.json\n?? scripts/lib/lint-workspace-policy.mjs\n?? scripts/lint-package.mjs\n",
+    "other": "See expected writes and owner-specific receipt; status does not enumerate external runtime writes."
+  }
+}

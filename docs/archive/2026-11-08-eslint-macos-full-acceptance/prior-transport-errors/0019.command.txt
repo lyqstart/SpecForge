@@ -1,0 +1,13 @@
+{
+  "run_id": "CODEX-SF-20261108-CROSSPLATFORM-CONSUMER-A01",
+  "mode": "CODEX_DIRECT",
+  "purpose": "close-actual-final-ci-and-publication",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES:ignored final exact-scope CI proof;all checks read-only",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-crossplatform-consumer-audit/publication-live/close-final-ci-v2.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "started_utc": "2026-11-08T07:07:55.234Z",
+  "carrier_source_sha256": "e9228d76b550893f1781e6e8309b93c9ff554cf85cb9390e597e151a6bec142f"
+}

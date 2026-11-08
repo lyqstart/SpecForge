@@ -1,0 +1,184 @@
+{
+  "utc": "2026-11-08T09:47:05.306Z",
+  "policy": "Actual checker infers existing signatures; rejects any and host/node_modules import paths, preserves exact type-erased JS and adds no semantic diagnostics. No return value, callback order, source/test scope or rule setting changes.",
+  "required": "Actual full lint and affected/current suites; no assertion that preexisting unrelated test semantic errors pass.",
+  "members": [
+    {
+      "file": "packages/workflow-runtime/tests/acceptance.test.ts",
+      "before": "d43dfa13275edaf86691f0e4c271f78e74835b94fdaae4c65d8689c843edd378",
+      "after": "09bda4324241a6f73a29dd12b36d411314031648722c299cd13aebb50766209d",
+      "contracts": [
+        {
+          "line": 441,
+          "inferred": "number",
+          "annotation": "number"
+        }
+      ]
+    },
+    {
+      "file": "packages/workflow-runtime/tests/event-subscription.test.ts",
+      "before": "b42b7758213fbd116b4cc7e8d3c3ab716e0c886721c86c8c22dd584f55d10953",
+      "after": "e955843464ec89193717e7ae2ec9f50b0602c843491bc47641ed74186fe43427",
+      "contracts": [
+        {
+          "line": 364,
+          "inferred": "void",
+          "annotation": "void"
+        },
+        {
+          "line": 207,
+          "inferred": "void",
+          "annotation": "void"
+        },
+        {
+          "line": 149,
+          "inferred": "void",
+          "annotation": "void"
+        },
+        {
+          "line": 83,
+          "inferred": "void",
+          "annotation": "void"
+        },
+        {
+          "line": 55,
+          "inferred": "void",
+          "annotation": "void"
+        }
+      ]
+    },
+    {
+      "file": "packages/workflow-runtime/tests/helpers/current-user-decision.ts",
+      "before": "644f4b91581ae7d84ec36c9a7577568e0d998a97d537fa7e3af206c11587e592",
+      "after": "add6fa9781c7504210e60c6994c8cdbb4593000c19bd7339bcc27f10c1be6bdb",
+      "contracts": [
+        {
+          "line": 1,
+          "inferred": "{ schema_version: string; decision_id: string; work_item_id: string; workflow_path: string; base_spec_version: string; candidate_manifest_path: string; manifest_hash: string; candidate_hash: string; gate_summary_path: string; gate_summary_hash: string; decision_status: string; decision_type: string; decided_by: string; decided_at: string; decision_scope: string; waivers: never[]; }",
+          "annotation": "{ schema_version: string; decision_id: string; work_item_id: string; workflow_path: string; base_spec_version: string; candidate_manifest_path: string; manifest_hash: string; candidate_hash: string; gate_summary_path: string; gate_summary_hash: string; decision_status: string; decision_type: string; decided_by: string; decided_at: string; decision_scope: string; waivers: never[]; }"
+        }
+      ]
+    },
+    {
+      "file": "packages/workflow-runtime/tests/performance/workflow-performance.test.ts",
+      "before": "f18cdb4d5d47bd4bb89e568f1d437aa90b897c5909944e8cb5bf19a7537ae34e",
+      "after": "aa678608beb1c5b535c31be31b4937e48892f85b31e8cd3d4b7138e2289aaf1c",
+      "contracts": [
+        {
+          "line": 61,
+          "inferred": "Promise<{ schema_version: \"1.0\"; passed: boolean; status: \"passed\"; reason: string; }>",
+          "annotation": "Promise<{ schema_version: \"1.0\"; passed: boolean; status: \"passed\"; reason: string; }>"
+        },
+        {
+          "line": 40,
+          "inferred": "{ count: number; avg: number; min: number; max: number; p50: number; p95: number; p99: number; } | null",
+          "annotation": "{ count: number; avg: number; min: number; max: number; p50: number; p95: number; p99: number; } | null"
+        }
+      ]
+    },
+    {
+      "file": "packages/workflow-runtime/tests/property/gate-property-2.determinism.test.ts",
+      "before": "f5968379db17ffba27f7a03f6b695cba1fcf1fd1dc5401f938259a134370e62d",
+      "after": "39053f9f43e6409fb92860d38257029e5ea08e4e45c9d5cba1c73ffd391ac3df",
+      "contracts": [
+        {
+          "line": 34,
+          "inferred": "fc.Arbitrary<string>",
+          "annotation": "fc.Arbitrary<string>"
+        }
+      ]
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/AgentWorkflowEngine.evidence-guard.test.ts",
+      "before": "c4d85f1c97bffcbeb104173e6cf8492aecc1a302f65650eeb7b6a0a86048c711",
+      "after": "2b342f435e9be9da078b3bb2d418575bba37a4f0e856aa36739a1659a4686d4f",
+      "contracts": [
+        {
+          "line": 408,
+          "inferred": "Promise<{ schema_version: \"1.0\"; passed: boolean; status: \"failed\"; reason: string; }>",
+          "annotation": "Promise<{ schema_version: \"1.0\"; passed: boolean; status: \"failed\"; reason: string; }>"
+        },
+        {
+          "line": 354,
+          "inferred": "Promise<{ schema_version: \"1.0\"; passed: boolean; status: \"not_enabled\"; reason: string; }>",
+          "annotation": "Promise<{ schema_version: \"1.0\"; passed: boolean; status: \"not_enabled\"; reason: string; }>"
+        },
+        {
+          "line": 33,
+          "inferred": "Promise<{ schema_version: \"1.0\"; passed: boolean; reason: string; }>",
+          "annotation": "Promise<{ schema_version: \"1.0\"; passed: boolean; reason: string; }>"
+        }
+      ]
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/CompositeGateSerializer.test.ts",
+      "before": "817ba42607a61ba220a6f5932b890d5f029dccea35c5a1644257aa6e02fb26ec",
+      "after": "59a52e69339cfaba7df397d2874331a6e67434b5a06f5267123ccf15d17247f4",
+      "contracts": [
+        {
+          "line": 201,
+          "inferred": "{ passed: boolean; reason: string; }",
+          "annotation": "{ passed: boolean; reason: string; }"
+        }
+      ]
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/WorkflowEngine.test.ts",
+      "before": "82d97b16a5f64c8725a8272f4d77295d2a8b802218d5add9d08de14e288781f7",
+      "after": "ff71b753a48be06111b17b00441db4d680f2407261ce17c90287f612e1cb3e46",
+      "contracts": [
+        {
+          "line": 355,
+          "inferred": "Promise<void>",
+          "annotation": "Promise<void>"
+        },
+        {
+          "line": 329,
+          "inferred": "never",
+          "annotation": "never"
+        },
+        {
+          "line": 304,
+          "inferred": "void",
+          "annotation": "void"
+        }
+      ]
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/current-definition-schema-boundary.test.ts",
+      "before": "1be7f1e96f78bc13587808e72483ff09c12fd7e00159ccc25532aca7a6a626c6",
+      "after": "a8279322e40a0a1708461165544c57673cf8cda3f07ee3d71c758474b385c5a0",
+      "contracts": [
+        {
+          "line": 8,
+          "inferred": "{ schema_version: string; id: string; displayName: string; intent: string; stateMachine: { schema_version: string; initial: string; states: { start: { schema_version: string; agent: string; gate: { schema_version: string; type: string; id: string; name: string; }; skills: never[]; }; }; }; artifacts: never[]; }",
+          "annotation": "{ schema_version: string; id: string; displayName: string; intent: string; stateMachine: { schema_version: string; initial: string; states: { start: { schema_version: string; agent: string; gate: { schema_version: string; type: string; id: string; name: string; }; skills: never[]; }; }; }; artifacts: never[]; }"
+        }
+      ]
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/evidence-guard-v11.test.ts",
+      "before": "f7c29f7897bbfdec28587b6db7d7063913d0cbab6f05fb57062c74f86c166dfe",
+      "after": "7b1e60dfe57bba089d2649b7ddf5bd07581e305fb9666622905ae24dd051180c",
+      "contracts": [
+        {
+          "line": 28,
+          "inferred": "Promise<{ schema_version: \"1.0\"; passed: boolean; reason: string; }>",
+          "annotation": "Promise<{ schema_version: \"1.0\"; passed: boolean; reason: string; }>"
+        }
+      ]
+    },
+    {
+      "file": "packages/workflow-runtime/tests/v11/e2e/v11-code-only-filesystem-e2e.test.ts",
+      "before": "1fb73b1a5e91d6da06c7358484150a71db5828f923a9742b9eef08f4568f97b1",
+      "after": "6aa7838a1990fff594b9b7a5aa57032dc4d73d3330dc086fca57f95d64341fcb",
+      "contracts": [
+        {
+          "line": 115,
+          "inferred": "import(\"@/v11/index\").CloseValidationResult",
+          "annotation": "ReturnType<CloseGate['validateFromFileSystem']>"
+        }
+      ]
+    }
+  ]
+}

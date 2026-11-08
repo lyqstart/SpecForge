@@ -1,0 +1,18 @@
+{
+  "utc": "2026-11-08T09:08:50.766Z",
+  "input_sha256": "1f34be8182f9f2dd681aab2ce9edad04f1c80a020faa6d734ef7cca65e67c757",
+  "reason": "Exercise actual optional-lock owner with synthetic fs capability plus real owned descriptors; every case retains PID fallback and no system capability is added. Test exact ASCII boundaries independently of original regex proof.",
+  "required_verification": "Real Vitest, existing handshake/EventBus/HTTP and full suite; no actual host flock capability is inferred from mocks.",
+  "members": [
+    {
+      "file": "packages/daemon-core/tests/unit/optional-file-lock-owner.test.ts",
+      "before": "ABSENT",
+      "after": "b36e486dc4a8ba58aa6e1a3022c17d3e0b5b951e9286b9cb741c416f74a70296"
+    },
+    {
+      "file": "packages/daemon-core/tests/unit/ascii-control-boundary.test.ts",
+      "before": "ABSENT",
+      "after": "723ce05e939907e6a4304b947ac818b37a182e91b1887736d561758aca3acc53"
+    }
+  ]
+}

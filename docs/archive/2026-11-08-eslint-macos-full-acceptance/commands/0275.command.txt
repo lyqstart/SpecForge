@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "D:/code/SpecForge/docs/archive/2026-11-08-eslint-macos-full-acceptance/export-signal-linux-source.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge\\.lint-signal-a01",
+  "purpose": "export-signal-linux-systemd-source",
+  "expected_writes": "Read-only hash-bound final6ec source, separate freshLinux fixture; old057 fixture preserved",
+  "started_utc": "2026-11-08T13:04:10.225Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\export-signal-linux-source.cjs",
+      "sha256": "445ad6a75ef5ffb8b2ad9db7e05ba180ac47187b25e1fa891b167c73ab407789",
+      "size": 1794,
+      "extension": ".cjs"
+    }
+  ]
+}

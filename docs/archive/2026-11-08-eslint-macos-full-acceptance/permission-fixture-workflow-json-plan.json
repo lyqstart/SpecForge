@@ -1,0 +1,82 @@
+{
+  "utc": "2026-11-08T08:54:29.346Z",
+  "members": [
+    {
+      "file": "packages/permission-engine/tests/integration/e2e-permission-flow.test.ts",
+      "before": "d9de3cd141161c81d7a7a2d6289209ae72a05f727db51b2e56d93c3e4e653451",
+      "after": "a42781692490a08055c7fa18f70a9f8967b691eecda7815b05ada83eaceb14d4"
+    },
+    {
+      "file": "packages/permission-engine/tests/unit/bearer-token-validator.test.ts",
+      "before": "c558a3d482a6d44c60610e24c0f6e4825868d2cb6cdc1d945df435c56e63f39d",
+      "after": "3b0b44edc02b096b489e2a4bdae136bd9f09eac802fcc6f7d17cc627e687c16d"
+    },
+    {
+      "file": "packages/permission-engine/tests/unit/event-logging.test.ts",
+      "before": "4c26b99e4f614f3b3e4b6cd5878e1d75747ccb8fc585ca99ca4f66511fd58199",
+      "after": "6f4a4e93da4becf49becb99d5b99b0eda2f8c687c50c5b599698fb7132825ba1"
+    },
+    {
+      "file": "packages/permission-engine/tests/unit/two-step-confirmation.test.ts",
+      "before": "403fa19ace2df85a567889e1b0e3e8daa119aa4f52a15a7442980c8c9b988989",
+      "after": "c0c9e6ecb00cf6c92f7b89eb914bee848d38bccc8de3190a52849a2f5fda52ea"
+    },
+    {
+      "file": "packages/permission-engine/tests/unit/plugin-permission-validator.test.ts",
+      "before": "298d3214eff9f751b3a7f45a73c851540c0e01b9c67c14a7ba05235c877153f1",
+      "after": "a48a0f6665260247966c890d8f9e5891a9207aee4af16c78b7ed7859d7fab416"
+    },
+    {
+      "file": "packages/permission-engine/src/services/plugin-permission-validator.ts",
+      "before": "5e30a66bb3b809810be809429acde55f7ad44d7e5839cd0ad6f64c41a8481da4",
+      "after": "c97b4bcf53ba11d0124a02cb296c7f8b9a8bb4e0f04cc0e912afedd62f563fab"
+    },
+    {
+      "file": "packages/permission-engine/tests/unit/daemon-integration.test.ts",
+      "before": "66eef4ed03987fab057ee85d95018078f39f4e377164e0060cd916763dce8ef8",
+      "after": "be28e47baa4b5ea2d777ca7ab254b038a83eff211335198316c562ec2476eaaf"
+    },
+    {
+      "file": "packages/workflow-runtime/src/WorkflowEngine.ts",
+      "before": "743003b6701ebf902294bd222e12ca4dceef4ac5013c983744ed9aadfad864b7",
+      "after": "9d385bb10ff11d8fa787a8d0700bd9f05eddeb9584047a540d699a084a772704"
+    },
+    {
+      "file": "packages/workflow-runtime/src/loaders/WorkflowDefinitionLoader.ts",
+      "before": "8845daeb0f5599c8a9cd34945f00a0bfba2309c593b60ddd0a5ce7e43404ffc8",
+      "after": "ec2d803430197ab68a3b08bcd03b35edd0c2a6bc9ac6f0c7d0d72fa1f39b7b7e"
+    },
+    {
+      "file": "packages/workflow-runtime/src/error-propagation.ts",
+      "before": "4e761c1d582f6c8df4e94988250c5aec690cbcc7a86e7284871e1ee6d1950dc4",
+      "after": "7cb73654bedb95f3a6ebf5049ac90d5e976b84742883cf689c9f463c91d02234"
+    },
+    {
+      "file": "packages/workflow-runtime/src/agent/LLMKernelIntegration.ts",
+      "before": "bbe1e1790a2ade83cd67f9d711ebe8f39c9aec10db33d96c19c70dfa162ae5f0",
+      "after": "4d883fe2526db550492d594bcf3d56f4c8663829dd391b09e1eb9bad550f18d9"
+    },
+    {
+      "file": "packages/workflow-runtime/src/event-subscription.ts",
+      "before": "a531503b179d066a6400429fff61d16ccf3133450a341705afeb7abf88462526",
+      "after": "bfeee8f45dba315847df701afbcca85806959ec9720ef662c1da6ad96fdf0468"
+    },
+    {
+      "file": "packages/workflow-runtime/src/gates/BasicGates.ts",
+      "before": "95e613d5a4676f6b7d9e855d1dc512bb2646b280e4b9b2ed9e76b2c919e7e333",
+      "after": "2c742048c7082095ecaf6ff4125575cfab6c75280643082e9c7f13e468e1c6ee"
+    },
+    {
+      "file": "packages/types/src/json-boundary.ts",
+      "before": "ABSENT",
+      "after": "0bd7ce862e69af09c0ba18efa608a94c9c077272904d315b5e59e25385833f59"
+    },
+    {
+      "file": "packages/types/src/index.ts",
+      "before": "579e5a1f24fd3b32aea0ec2fe0d169f49be8b2661cd9e61e560aad330cb7ef33",
+      "after": "1474bd1056d69ae19271a5393c76c02c9ddac35d038a16f9e0ba6c30d73bc229"
+    }
+  ],
+  "policy": "Permission test doubles use actual inferred logger shape and real non-I/O engine; no any replacement aliases. Add-sensitive-operation uses an existing declared nondefault operation instead of unsupported custom extension. Manifest validation admits partial typed input exactly as its existing schema parser rejects missing id. Workflow JSON keeps unknown until object/schema checks; event delivery handles rejected async work synchronously through existing promise owner. Delay timer membership now persists until real completion rather than being deleted in the next microtask.",
+  "required": "Compiler; full Permission and Workflow regressions; malformed JSON/scalar rejection and timer lifetime tests. Historical @ts-nocheck directives unchanged; no claim that legacy module types are fully verified."
+}

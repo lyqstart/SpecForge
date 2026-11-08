@@ -1,0 +1,23 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/reproduce-platform-fixture-contracts.ts"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "reproduce-real-platform-fixture-contracts",
+  "expected_writes": "owned OS-temp alias and asset bundle fixtures; original guard/source unchanged",
+  "started_utc": "2026-11-08T11:41:38.479Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 1,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\reproduce-platform-fixture-contracts.ts",
+      "sha256": "c907a6f35ed4ab4254f7322347e7a9d37fb93b92ee6aa697bef11e75586e404b",
+      "size": 3078,
+      "extension": ".ts"
+    }
+  ]
+}

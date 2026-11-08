@@ -1,0 +1,13 @@
+{
+  "utc": "2026-11-08T10:53:44.068Z",
+  "input_sha256": "7eab3e72152b34e1e2144fe996dc376a57a1d6b31334b1df14105a8bd5041ec0",
+  "reason": "0145 actual TS6059: embedded src test cannot import a root TS helper outside production rootDir. Keep the assertion helper inside that existing src test, inspect actual array literals, add negative cases, preserve compiler rootDir/include.",
+  "required_verification": "Complete build and whole affected regression file",
+  "members": [
+    {
+      "file": "packages/daemon-core/src/tools/lib/architecture-governance-v7-regression.test.ts",
+      "before": "adbf8b0f066d77b346883a642f1f471637ec25f125bddc73ace7d6cdd6887087",
+      "after": "b1a12703fdbb363e1801640c85f2d01fa6b21703afc212677732f6d66262417f"
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/plan-and-apply-eslint-autofixes.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "plan-all-eslint-fixes-before-private-source-write",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES:approved private autofixes;EXTERNAL_EVIDENCE_WRITES:all before/after bytes,remaining diagnostics;not final lint acceptance",
+  "started_utc": "2026-11-08T07:32:29.029Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\plan-and-apply-eslint-autofixes.cjs",
+      "sha256": "cb4922e4f57a9631f8f204138f505fd79b9bab2868b066d1dd951a90e71027c9",
+      "size": 2932,
+      "extension": ".cjs"
+    }
+  ]
+}

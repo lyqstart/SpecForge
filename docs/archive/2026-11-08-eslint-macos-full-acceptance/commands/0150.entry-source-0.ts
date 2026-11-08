@@ -1,0 +1,111 @@
+import { existsSync, readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+
+import ts from 'typescript';
+import { describe, expect, it } from 'vitest';
+
+import { codeContains } from '../../../tests/helpers/source-structure';
+
+const ROOT = resolve(import.meta.dirname, '../../..');
+
+describe('current Permission and Write Guard ownership boundary', () => {
+  it('keeps Permission Engine independent of Daemon implementation', () => {
+    const permissionPackage = JSON.parse(
+      readFileSync(resolve(ROOT, 'packages/permission-engine/package.json'), 'utf8'),
+    ) as { dependencies?: Record<string, string> };
+
+    expect(permissionPackage.dependencies).not.toHaveProperty('@specforge/daemon-core');
+  });
+
+  it('keeps write enforcement out of Workflow Runtime', () => {
+    const retiredWorkflowRuntimeSurfaces = [
+      'packages/workflow-runtime/src/v11/runtime/WriteGuard.ts',
+      'packages/workflow-runtime/tests/v11/unit/write-guard.test.ts',
+      'packages/workflow-runtime/tests/v11/property/write-guard.property.test.ts',
+    ] as const;
+
+    for (const relativePath of retiredWorkflowRuntimeSurfaces) {
+      expect(existsSync(resolve(ROOT, relativePath)), relativePath).toBe(false);
+    }
+
+    const legacyBarrel = readFileSync(
+      resolve(ROOT, 'packages/workflow-runtime/src/v11/index.ts'),
+      'utf8',
+    );
+    expect(legacyBarrel).not.toContain("./runtime/WriteGuard.js");
+    expect(legacyBarrel).not.toContain('CodePermissionService');
+    expect(legacyBarrel).not.toContain('ChangedFilesAudit');
+  });
+
+  it('keeps current write decisions and enforcement at the Daemon boundary', () => {
+    const daemonWriteGuard = readFileSync(
+      resolve(ROOT, 'packages/daemon-core/src/tools/lib/write-guard-v11.ts'),
+      'utf8',
+    );
+    const daemonHttp = readFileSync(
+      resolve(ROOT, 'packages/daemon-core/src/http/HTTPServer.ts'),
+      'utf8',
+    );
+    const pluginClient = readFileSync(
+      resolve(ROOT, 'packages/service-management/src/plugin/reconnecting-daemon-client.ts'),
+      'utf8',
+    );
+
+    expect(daemonWriteGuard).toContain("from '@specforge/permission-engine'");
+    expect(daemonWriteGuard).toContain('type WriteTargetDetails,');
+    expect(codeContains(daemonWriteGuard, 'targetDetails: WriteTargetDetails = {}')).toBe(true);
+    expect(codeContains(daemonWriteGuard, 'return decideWritePermission(ctx, targetPath, operation, targetDetails);')).toBe(true);
+    const nativeBoundary = readFileSync(resolve(ROOT, 'packages/daemon-core/src/tools/lib/native-write-boundary.ts'), 'utf8');
+    expect(codeContains(daemonHttp, 'checkNativeTool(this.deps,')).toBe(true);
+    expect(nativeBoundary).toContain("from './write-guard-v11'");
+    const syntax = ts.createSourceFile('native-write-boundary.ts', nativeBoundary, ts.ScriptTarget.Latest, true);
+    let permissionCalls = 0;
+    const inspect = (node: ts.Node): void => {
+      if (ts.isCallExpression(node) && ts.isIdentifier(node.expression) && node.expression.text === 'checkWrite') permissionCalls++;
+      ts.forEachChild(node, inspect);
+    };
+    inspect(syntax);
+    expect(permissionCalls).toBeGreaterThan(0);
+    expect(daemonHttp).toContain('NATIVE_SHELL_REQUIRES_CONTROLLED_EXECUTION');
+    expect(daemonHttp).not.toContain('const wiArtifactPattern =');
+    expect(daemonHttp).not.toContain("case 'tool.invoking':");
+    expect(daemonHttp).not.toContain('handleToolInvoking(');
+    expect(pluginClient).toContain('/api/v1/v11/write-guard/check');
+  });
+
+  it('does not retain an unconsumed parallel Daemon write-policy evaluator', () => {
+    const retiredDaemonSurfaces = [
+      'packages/daemon-core/src/tools/lib/command-write-audit.ts',
+      'packages/daemon-core/src/tools/lib/write-policy.ts',
+    ] as const;
+
+    for (const relativePath of retiredDaemonSurfaces) {
+      expect(existsSync(resolve(ROOT, relativePath)), relativePath).toBe(false);
+    }
+
+    const daemonWriteGuard = readFileSync(
+      resolve(ROOT, 'packages/daemon-core/src/tools/lib/write-guard-v11.ts'),
+      'utf8',
+    );
+    expect(daemonWriteGuard).not.toContain('export interface WritePolicyRule');
+    expect(daemonWriteGuard).not.toContain('export function enforceWritePolicy(');
+    expect(daemonWriteGuard).not.toContain('DEFAULT_WRITE_POLICY_RULES');
+    expect(daemonWriteGuard).not.toContain('export function evaluatePolicy(');
+
+    const pathPolicy = readFileSync(
+      resolve(ROOT, 'packages/daemon-core/src/tools/lib/path-policy.ts'),
+      'utf8',
+    );
+    const bashGuard = readFileSync(
+      resolve(ROOT, 'packages/daemon-core/src/tools/lib/bash-guard.ts'),
+      'utf8',
+    );
+    const safeBashCore = readFileSync(
+      resolve(ROOT, 'packages/daemon-core/src/tools/lib/sf_safe_bash_core.ts'),
+      'utf8',
+    );
+    expect(pathPolicy).not.toContain('enforceWritePolicy');
+    expect(bashGuard).not.toContain('WritePolicyRule');
+    expect(safeBashCore).not.toContain('DEFAULT_BASH_WRITE_POLICY');
+  });
+});

@@ -1,0 +1,14 @@
+{
+  "command": "version",
+  "description": "Show CLI version",
+  "examples": [
+    {
+      "description": "Show version",
+      "command": "specforge version"
+    },
+    {
+      "description": "Show version in JSON format",
+      "command": "specforge version --json"
+    }
+  ]
+}

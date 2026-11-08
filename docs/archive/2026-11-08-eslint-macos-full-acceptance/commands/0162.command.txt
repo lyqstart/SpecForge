@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/freeze-private-candidate.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "review-and-freeze-private-complete-candidate",
+  "expected_writes": "immutable final source manifest diff and path inventory; source read-only",
+  "started_utc": "2026-11-08T11:14:29.559Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\freeze-private-candidate.cjs",
+      "sha256": "a96ffa5ba18661c5f25a80cd2d25232569ff2267fd3d7ed1577092bf5d0c7e9a",
+      "size": 4428,
+      "extension": ".cjs"
+    }
+  ]
+}

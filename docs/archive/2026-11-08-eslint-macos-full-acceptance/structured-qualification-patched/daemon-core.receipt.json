@@ -1,0 +1,19 @@
+{
+  "owner": "daemon-core",
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "test",
+    "--",
+    "--maxWorkers=1",
+    "--reporter=json",
+    "--outputFile=D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\structured-qualification-patched\\daemon-core.vitest.json"
+  ],
+  "cwd": "D:\\code\\SpecForge\\.lint-shortpath-a01\\packages\\daemon-core",
+  "context_sha256": "6718af96ad6d72872663e3feadf61af12de0cdc94afdd0ba7e1b02a71ab1908b",
+  "started_utc": "2026-11-08T12:39:45.532Z",
+  "finished_utc": "2026-11-08T12:45:50.249Z",
+  "exit": 0,
+  "stdout_sha256": "90dfc669bd0ff7d239bca741207b5b6a9b2a8109d4434d941491b59ec76e6081",
+  "stderr_sha256": "fc0a56148e42cc7c6801dd6db251e6556c91da4f54a17b04f2034e187eb852a2"
+}

@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "D:/code/SpecForge/docs/archive/2026-11-08-eslint-macos-full-acceptance/inventory-final-candidate-message-surfaces.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge\\.lint-platform-a01",
+  "purpose": "final-candidate-message-surface-inventory",
+  "expected_writes": "Read-only complete current owner syntax enumeration; no claim of dynamic branch completeness",
+  "started_utc": "2026-11-08T12:13:53.681Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\inventory-final-candidate-message-surfaces.cjs",
+      "sha256": "b1c7a21bbee7c661ab77dce3eafd46dd44c27e7ddb7088e04561dcc3ac19fcb3",
+      "size": 4574,
+      "extension": ".cjs"
+    }
+  ]
+}

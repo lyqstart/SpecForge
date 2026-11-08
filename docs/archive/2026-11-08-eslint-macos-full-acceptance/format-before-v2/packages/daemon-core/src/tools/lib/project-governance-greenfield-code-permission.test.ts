@@ -1,0 +1,425 @@
+import * as fs from 'node:fs/promises';
+import * as path from 'node:path';
+import { tmpdir } from 'node:os';
+import { afterEach, describe, expect, test } from 'vitest';
+import { execFile } from 'node:child_process';
+import { promisify } from 'node:util';
+import {
+  auditActualGovernanceScope,
+  freezeGovernanceScopeForCodePermission,
+  persistGovernanceScope,
+} from './project-governance-v2.js';
+import { recordGitGovernanceProjectWrites } from './git-governance-write-provenance.js';
+
+const execFileAsync = promisify(execFile);
+
+const roots: string[] = [];
+
+async function write(filePath: string, content: string): Promise<void> {
+  await fs.mkdir(path.dirname(filePath), { recursive: true });
+  await fs.writeFile(filePath, content, 'utf8');
+}
+
+async function createFixture(): Promise<{ projectRoot: string; workItemDir: string }> {
+  const projectRoot = await fs.mkdtemp(path.join(tmpdir(), 'sf-greenfield-permission-'));
+  roots.push(projectRoot);
+  const projectDir = path.join(projectRoot, '.specforge', 'project');
+  const workItemDir = path.join(projectRoot, '.specforge', 'work-items', 'WI-0002');
+  await write(
+    path.join(projectDir, 'spec_manifest.json'),
+    JSON.stringify(
+      {
+        schema_version: '1.0',
+        project_spec_version: 'PSV-0002',
+        last_merged_work_item: 'WI-0002',
+        project: {
+          architecture: '.specforge/project/architecture.md',
+          data_model: '.specforge/project/data_model.md',
+          trace_matrix: '.specforge/project/trace_matrix.md',
+          extension_registry: '.specforge/project/extension_registry.json',
+        },
+        modules: [
+          {
+            module_code: 'DOMAIN',
+            design: '.specforge/project/modules/DOMAIN/design.md',
+            contracts: '.specforge/project/modules/DOMAIN/contracts.json',
+            trace: '.specforge/project/modules/DOMAIN/trace.md',
+            code_paths: ['src/domain/**'],
+          },
+        ],
+      },
+      null,
+      2,
+    ),
+  );
+  await write(path.join(projectDir, 'architecture.md'), '# Architecture\n\nARCH-WD-001\n');
+  await write(path.join(projectDir, 'data_model.md'), '# Data Model\n\nDATA-WD-001\n');
+  await write(
+    path.join(projectDir, 'trace_matrix.md'),
+    '| From | Relation | To |\n|---|---|---|\n| DATA-WD-001 | constrained_by | ARCH-WD-001 |\n| DD-DOMAIN-001 | constrained_by | DATA-WD-001 |\n',
+  );
+  await write(
+    path.join(projectDir, 'extension_registry.json'),
+    JSON.stringify({ schema_version: '1.0', project_spec_version: 'PSV-0002', contracts: {} }),
+  );
+  await write(
+    path.join(projectDir, 'modules', 'DOMAIN', 'design.md'),
+    '# Domain Design\n\nDD-DOMAIN-001\n',
+  );
+  await write(
+    path.join(projectDir, 'modules', 'DOMAIN', 'contracts.json'),
+    JSON.stringify({
+      schema_version: '1.0',
+      owner_module: 'DOMAIN',
+      contracts: {
+        shared_enums: [],
+        invariants: [],
+        public_interfaces: [],
+        extension_points: [],
+        internal_contracts: [],
+      },
+    }),
+  );
+  await write(
+    path.join(projectDir, 'modules', 'DOMAIN', 'trace.md'),
+    '<!-- GENERATED_FROM_PROJECT_TRACE: module projection; do not edit independently -->\n| From | Relation | To |\n|---|---|---|\n| DD-DOMAIN-001 | constrained_by | DATA-WD-001 |\n',
+  );
+  await write(
+    path.join(workItemDir, 'trigger_result.json'),
+    JSON.stringify({
+      workflow_path: 'architecture_change_path',
+      classification: { architecture_changed: true },
+      impact_summary: {
+        existing_modules: ['CORE'],
+        new_modules: ['DOMAIN'],
+      },
+    }),
+  );
+  await write(
+    path.join(workItemDir, 'candidates', 'tasks.md'),
+    [
+      '# Tasks',
+      '',
+      '### TASK-WI-0002-001 implement domain and cross-module test',
+      '- **refs**: [DD-DOMAIN-001]',
+      '- **allowed_write_files**: [src/domain/types.ts, tests/workdesk.test.ts]',
+      '- **verification_commands**:',
+      '  - unit:',
+      '    - `bun test`',
+      '',
+    ].join('\n'),
+  );
+  await write(
+    path.join(workItemDir, 'work_item.json'),
+    JSON.stringify({
+      schema_version: '1.1',
+      work_item_id: 'WI-0002',
+      workflow_type: 'feature_spec',
+      workflow_path: 'architecture_change_path',
+      code_change_allowed: false,
+      allowed_write_files: [],
+    }),
+  );
+  return { projectRoot, workItemDir };
+}
+
+afterEach(async () => {
+  await Promise.all(roots.splice(0).map(root => fs.rm(root, { recursive: true, force: true })));
+});
+
+describe('greenfield code permission governance scope', () => {
+  test('rejects malformed formal governance IDs instead of falling back to compatibility mode', async () => {
+    const { projectRoot, workItemDir } = await createFixture();
+    const projectDir = path.join(projectRoot, '.specforge', 'project');
+    await write(path.join(projectDir, 'architecture.md'), '# Architecture\n\n### ARCH-0001 Invalid\n');
+    await write(path.join(projectDir, 'data_model.md'), '# Data Model\n\n### DATA-0001 Invalid\n');
+
+    const result = await freezeGovernanceScopeForCodePermission({
+      projectRoot,
+      workItemDir,
+      workItemId: 'WI-0002',
+      allowedWriteFiles: [{ path: 'src/domain/types.ts', operation: 'create' }],
+    });
+
+    expect(result.passed).toBe(false);
+    expect(result.error).toBe('INVALID_PROJECT_GOVERNANCE');
+    expect(result.snapshot.active).toBe(false);
+    expect(
+      result.checks.some(check => check.check_id === 'formal_governance_complete' && !check.passed),
+    ).toBe(true);
+  });
+
+  test('rejects malformed IDs even when the same formal governance files also contain valid IDs', async () => {
+    const { projectRoot, workItemDir } = await createFixture();
+    const projectDir = path.join(projectRoot, '.specforge', 'project');
+    await write(
+      path.join(projectDir, 'architecture.md'),
+      '# Architecture\n\nARCH-WD-001 is valid, but ARCH-0001 is not.\n',
+    );
+    await write(
+      path.join(projectDir, 'data_model.md'),
+      '# Data Model\n\nDATA-WD-001 is valid, but DATA-0001 is not.\n',
+    );
+    await write(
+      path.join(projectDir, 'modules', 'DOMAIN', 'design.md'),
+      '# Domain Design\n\nDD-DOMAIN-001 is valid, but DD-0001 is not.\n',
+    );
+
+    const result = await freezeGovernanceScopeForCodePermission({
+      projectRoot,
+      workItemDir,
+      workItemId: 'WI-0002',
+      allowedWriteFiles: [{ path: 'src/domain/types.ts', operation: 'create' }],
+    });
+
+    expect(result.snapshot.active).toBe(true);
+    expect(result.passed).toBe(false);
+    expect(result.checks).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ check_id: 'architecture_id_format', passed: false }),
+        expect.objectContaining({ check_id: 'data_model_id_format', passed: false }),
+        expect.objectContaining({ check_id: 'module_design_id_format', passed: false }),
+      ]),
+    );
+  });
+
+  test('derives merged architecture scope and permits an approved cross-module test harness', async () => {
+    const { projectRoot, workItemDir } = await createFixture();
+    const result = await freezeGovernanceScopeForCodePermission({
+      projectRoot,
+      workItemDir,
+      workItemId: 'WI-0002',
+      allowedWriteFiles: [
+        { path: 'src/domain/types.ts', operation: 'create' },
+        { path: 'tests/workdesk.test.ts', operation: 'create' },
+      ],
+    });
+
+    expect(result.passed, JSON.stringify(result.checks.filter(check => !check.passed))).toBe(true);
+    expect(result.snapshot.affected_modules).toEqual(['DOMAIN']);
+    expect(result.snapshot.design_refs).toEqual(['DD-DOMAIN-001']);
+    expect(result.snapshot.data_model_refs).toEqual(['DATA-WD-001']);
+    expect(result.snapshot.architecture_refs).toEqual(['ARCH-WD-001']);
+
+    await persistGovernanceScope(workItemDir, result.snapshot);
+    const audit = await auditActualGovernanceScope({
+      projectRoot,
+      workItemDir,
+      changedFiles: ['src/domain/types.ts', 'tests/workdesk.test.ts'],
+    });
+    expect(audit.passed, audit.violations.join('; ')).toBe(true);
+  });
+
+  test('derives merged governance refs for a requirement workflow without rewriting trigger_result', async () => {
+    const { projectRoot, workItemDir } = await createFixture();
+    await write(
+      path.join(workItemDir, 'trigger_result.json'),
+      JSON.stringify({
+        workflow_path: 'requirement_change_path',
+        classification: {
+          requirement_changed: true,
+          architecture_changed: true,
+          design_changed: true,
+          data_model_changed: true,
+          module_contract_changed: true,
+        },
+        impact_scope: {
+          affected_modules: ['DOMAIN'],
+          architecture_refs: [],
+          data_model_refs: [],
+          design_refs: [],
+          project_contract_refs: [],
+          module_contract_refs: [],
+          planned_code_paths: ['src/domain/types.ts', 'tests/workdesk.test.ts'],
+        },
+      }),
+    );
+
+    const result = await freezeGovernanceScopeForCodePermission({
+      projectRoot,
+      workItemDir,
+      workItemId: 'WI-0002',
+      allowedWriteFiles: [
+        { path: 'src/domain/types.ts', operation: 'create' },
+        { path: 'tests/workdesk.test.ts', operation: 'create' },
+      ],
+    });
+
+    expect(result.passed, JSON.stringify(result.checks.filter(check => !check.passed))).toBe(true);
+    expect(result.snapshot.design_refs).toEqual(['DD-DOMAIN-001']);
+    expect(result.snapshot.data_model_refs).toEqual(['DATA-WD-001']);
+    expect(result.snapshot.architecture_refs).toEqual(['ARCH-WD-001']);
+  });
+
+  test('requires a prepared WI Git context before Code Permission in an existing repository', async () => {
+    const { projectRoot, workItemDir } = await createFixture();
+    await execFileAsync('git', ['init', '-b', 'main'], { cwd: projectRoot });
+    await execFileAsync('git', ['config', 'user.name', 'SpecForge Test'], { cwd: projectRoot });
+    await execFileAsync('git', ['config', 'user.email', 'specforge-test@example.invalid'], { cwd: projectRoot });
+    await execFileAsync('git', ['add', '--', '.'], { cwd: projectRoot });
+    await execFileAsync('git', ['commit', '-m', 'chore: baseline'], { cwd: projectRoot });
+
+    const withoutContext = await freezeGovernanceScopeForCodePermission({
+      projectRoot,
+      workItemDir,
+      workItemId: 'WI-0002',
+      allowedWriteFiles: [{ path: 'src/domain/types.ts', operation: 'create' }],
+    });
+    expect(withoutContext.passed).toBe(false);
+    expect(withoutContext.error).toBe('GIT_CONTEXT_REQUIRED_BEFORE_CODE_PERMISSION');
+
+    const baseCommit = (await execFileAsync('git', ['rev-parse', 'HEAD'], { cwd: projectRoot })).stdout.trim();
+    await execFileAsync('git', ['switch', '-c', 'feature/domain-wi-0002'], { cwd: projectRoot });
+    await write(
+      path.join(workItemDir, 'git_context.json'),
+      JSON.stringify({
+        git_enabled: true,
+        branch_name: 'feature/domain-wi-0002',
+        base_commit: baseCommit,
+      }),
+    );
+
+    const withContext = await freezeGovernanceScopeForCodePermission({
+      projectRoot,
+      workItemDir,
+      workItemId: 'WI-0002',
+      allowedWriteFiles: [{ path: 'src/domain/types.ts', operation: 'create' }],
+    });
+    expect(withContext.passed, JSON.stringify(withContext.checks.filter(check => !check.passed))).toBe(true);
+    expect(withContext.snapshot.version_control_mode).toBe('git');
+    expect(withContext.snapshot.git_head_at_freeze).toBe(baseCommit);
+  });
+
+  test('rejects an unapproved ownerless test file', async () => {
+    const { projectRoot, workItemDir } = await createFixture();
+    const result = await freezeGovernanceScopeForCodePermission({
+      projectRoot,
+      workItemDir,
+      workItemId: 'WI-0002',
+      allowedWriteFiles: [{ path: 'tests/not-approved.test.ts', operation: 'create' }],
+    });
+    expect(result.passed).toBe(false);
+    expect(result.checks.some(check => !check.passed && check.check_id.startsWith('permission_owner_'))).toBe(true);
+  });
+
+  test('accepts controlled .gitignore and excludes governed ignored lockfiles from formal implementation scope', async () => {
+    const { projectRoot, workItemDir } = await createFixture();
+    await execFileAsync('git', ['init', '-b', 'main'], { cwd: projectRoot });
+    await write(path.join(projectRoot, 'src', 'domain', 'types.ts'), 'export type Id = string;\n');
+    await write(path.join(projectRoot, 'package-lock.json'), '{"lockfileVersion":3}\n');
+    await write(path.join(projectRoot, '.gitignore'), '/package-lock.json\n');
+    await write(
+      path.join(projectRoot, '.specforge', 'project', 'git_ignore_decisions.json'),
+      JSON.stringify({
+        schema_version: 'git_ignore_decisions.v1',
+        updated_at: new Date().toISOString(),
+        decisions: [{
+          path: 'package-lock.json',
+          decision: 'ignore',
+          reason: 'approved regenerable dependency lockfile',
+          artifact_class: 'dependency_lockfile',
+        }],
+      }),
+    );
+    recordGitGovernanceProjectWrites(projectRoot, 'sf_git_ignore_decision_record', [
+      '.gitignore',
+      '.specforge/project/git_ignore_decisions.json',
+    ]);
+    await write(
+      path.join(workItemDir, 'governance_scope.json'),
+      JSON.stringify({
+        schema_version: '1.0',
+        work_item_id: 'WI-0002',
+        active: true,
+        affected_modules: ['DOMAIN'],
+        allowed_write_files: ['src/domain/types.ts'],
+        architecture_refs: ['ARCH-WD-001'],
+        data_model_refs: ['DATA-WD-001'],
+        design_refs: ['DD-DOMAIN-001'],
+        project_contract_refs: [],
+        module_contract_refs: [],
+        project_spec_version: 'PSV-0002',
+        impact_scope_hash: 'test-scope',
+        frozen_at: new Date().toISOString(),
+      }),
+    );
+
+    const audit = await auditActualGovernanceScope({
+      projectRoot,
+      workItemDir,
+      changedFiles: ['src/domain/types.ts', '.gitignore', 'package-lock.json'],
+    });
+
+    expect(audit.passed, audit.violations.join('; ')).toBe(true);
+    expect(audit.actual_modules).toEqual(['DOMAIN']);
+    expect(audit.actual_files).toEqual(['.gitignore', 'src/domain/types.ts']);
+  });
+
+  test('expands changed Project Contract scope to every formal consumer Module and DD', async () => {
+    const { projectRoot, workItemDir } = await createFixture();
+    const projectDir = path.join(projectRoot, '.specforge', 'project');
+    await write(
+      path.join(projectDir, 'extension_registry.json'),
+      JSON.stringify({
+        schema_version: '1.0',
+        project_spec_version: 'PSV-0002',
+        contracts: {
+          shared_enums: [
+            {
+              id: 'PCON-DOMAIN-STATUS',
+              owner_module: 'DOMAIN',
+              source_refs: ['DD-DOMAIN-001'],
+              enforcement: 'static',
+              values: ['ready'],
+            },
+          ],
+          invariants: [],
+          public_interfaces: [],
+          extension_points: [],
+        },
+      }),
+    );
+    await write(
+      path.join(projectDir, 'trace_matrix.md'),
+      [
+        '| From | Relation | To |',
+        '|---|---|---|',
+        '| DATA-WD-001 | constrained_by | ARCH-WD-001 |',
+        '| DD-DOMAIN-001 | constrained_by | PCON-DOMAIN-STATUS |',
+        '| PCON-DOMAIN-STATUS | enforces | DD-DOMAIN-001 |',
+      ].join('\n'),
+    );
+    await write(
+      path.join(workItemDir, 'trigger_result.json'),
+      JSON.stringify({
+        workflow_path: 'architecture_change_path',
+        classification: { architecture_changed: true },
+        impact_scope: {
+          affected_modules: [],
+          architecture_refs: [],
+          data_model_refs: [],
+          design_refs: [],
+          project_contract_refs: ['PCON-DOMAIN-STATUS'],
+          module_contract_refs: [],
+          planned_code_paths: [],
+        },
+      }),
+    );
+
+    const result = await freezeGovernanceScopeForCodePermission({
+      projectRoot,
+      workItemDir,
+      workItemId: 'WI-0002',
+      allowedWriteFiles: [{ path: 'src/domain/types.ts', operation: 'modify' }],
+    });
+
+    expect(result.passed, JSON.stringify(result.checks.filter(check => !check.passed))).toBe(true);
+    expect(result.snapshot.affected_modules).toContain('DOMAIN');
+    expect(result.snapshot.design_refs).toContain('DD-DOMAIN-001');
+    expect(result.snapshot.project_contract_refs).toContain('PCON-DOMAIN-STATUS');
+    expect(
+      result.checks.find(check => check.check_id === 'permission_consumer_module_DOMAIN')?.passed,
+    ).toBe(true);
+  });
+
+});

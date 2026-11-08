@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/review-consumer-delta-v4.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "final-consumer-literal-operator-canaries",
+  "expected_writes": "AST comparison actual unary/postfix operators template spans array holes and formatting canaries; all expressions retained",
+  "started_utc": "2026-11-08T12:18:11.487Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\review-consumer-delta-v4.cjs",
+      "sha256": "08585c74c257b3220dd9371c09ad3a521cfad7192e048c31f0a0e7a9433a1213",
+      "size": 3843,
+      "extension": ".cjs"
+    }
+  ]
+}

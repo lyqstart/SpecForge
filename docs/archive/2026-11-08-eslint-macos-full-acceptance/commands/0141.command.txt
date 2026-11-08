@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/align-patch-release-identity.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "align-one-patch-release-authority",
+  "expected_writes": "root 12 package and lock workspace identity plus SPS release header only",
+  "started_utc": "2026-11-08T10:49:58.089Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\align-patch-release-identity.cjs",
+      "sha256": "460c48a66fb39b25ede1dd7d8d6cfe73f0b8b786da6bbba959826fb2ea5d79cb",
+      "size": 3333,
+      "extension": ".cjs"
+    }
+  ]
+}

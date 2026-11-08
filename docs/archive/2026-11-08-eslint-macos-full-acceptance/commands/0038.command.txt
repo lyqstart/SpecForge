@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/harden-permission-unknown-types.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "harden-permission-boundary-types-with-runtime-byte-proof",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES:private explicit unknown types;EXTERNAL_EVIDENCE_WRITES:before bytes and emitted-module equality;not consumer acceptance",
+  "started_utc": "2026-11-08T07:55:47.882Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\harden-permission-unknown-types.cjs",
+      "sha256": "ed4c4e76e6d9d043bb16f5d728d4497d6c49435570e914c87462ff3ca0f24bb3",
+      "size": 2559,
+      "extension": ".cjs"
+    }
+  ]
+}

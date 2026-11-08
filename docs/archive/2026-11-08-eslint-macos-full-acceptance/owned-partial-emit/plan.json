@@ -1,0 +1,26 @@
+{
+  "utc": "2026-11-08T11:08:32.529Z",
+  "owner": "Partial TypeScript emit from failed0145 build; all files are untracked and absent from initial clean HEAD/private initializer. Exact source maps bind new run-owned source-structure.ts. Copies retained before removing only these four generated shadows.",
+  "members": [
+    {
+      "file": "tests/helpers/source-structure.js",
+      "sha256": "1291f885763489ecea373ec9f1f6c88b8585da0ce7121979b93d8d7d85926449",
+      "bytes": 2300
+    },
+    {
+      "file": "tests/helpers/source-structure.js.map",
+      "sha256": "7de6a900a05bbba17c463188aeeb28aff37423eb10e5ba0e1094968ee54480fb",
+      "bytes": 2698
+    },
+    {
+      "file": "tests/helpers/source-structure.d.ts",
+      "sha256": "ac1e91b6d16c7dffb8a818d6b0ce8a7a341b6cecc8cc71f23f595ca5875f1a8b",
+      "bytes": 227
+    },
+    {
+      "file": "tests/helpers/source-structure.d.ts.map",
+      "sha256": "c6fbf448173ba08749794f1da9b635d506587e1e081019a820bd7593f813ff0a",
+      "bytes": 285
+    }
+  ]
+}

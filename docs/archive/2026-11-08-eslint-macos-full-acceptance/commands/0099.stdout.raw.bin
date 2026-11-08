@@ -1,0 +1,13 @@
+
+ RUN  v1.6.1 D:/code/SpecForge/.lint-review-a01/packages/workflow-runtime
+
+ ✓ tests/unit/GateRunnerErrorHandling.test.ts  (31 tests) 37ms
+ ✓ tests/unit/AgentWorkflowEngine.test.ts  (12 tests) 11ms
+ ✓ tests/unit/BasicGates.test.ts  (28 tests) 8ms
+ ✓ tests/v11/unit/json-parser.test.ts  (14 tests) 5ms
+
+ Test Files  4 passed (4)
+      Tests  85 passed (85)
+   Start at  17:17:37
+   Duration  2.56s (transform 377ms, setup 79ms, collect 809ms, tests 61ms, environment 1ms, prepare 668ms)
+

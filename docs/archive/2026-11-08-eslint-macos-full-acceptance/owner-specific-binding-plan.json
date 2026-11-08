@@ -1,0 +1,62 @@
+{
+  "utc": "2026-11-08T07:52:18.404Z",
+  "contracts": [
+    "API key metadata clone explicitly deletes only key, preserves other own enumerable metadata and leaves stored object unchanged.",
+    "Dead-store clock and JSON.parse calls retained; no field/branch validation skipped.",
+    "Plain producer-owned unused projections removed; state values enumeration preserves entry order.",
+    "Property iteration uses count because generated sample value was deliberately unused; same actual array iteration count.",
+    "File-wide ts-nocheck pragma retained; unused schema import removed explicitly, no new suppression."
+  ],
+  "members": [
+    {
+      "file": "packages/permission-engine/src/services/api-key-manager.ts",
+      "before_sha256": "ccd09104757eac5667cf5d96ba358cc9ce72ba364379394f8c2eb312336088bd",
+      "after_sha256": "990781730ad99590383f3397aad4bfa69a8455fe1a956cfde88769acdfc192e9"
+    },
+    {
+      "file": "packages/cli/src/commands/job-wait.ts",
+      "before_sha256": "15d036f77e2b2cfb06072c9bcb8e72c082387c223931b4064e45f2170df53e33",
+      "after_sha256": "41fa149204a7b99c1f66502ca687a120a553e3056454ec8f40cf4583c812fc86"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_ears_parser.ts",
+      "before_sha256": "95cc8a12faf2f5cb69e101c586a778a698c78f8a3f61c3813f1afabfc2a512d4",
+      "after_sha256": "0fa685955be63e804caf8f8e72e2f3096a4d5be604fe9560694f8ca5800d43e9"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/property/helpers.ts",
+      "before_sha256": "edf8e47823c5a47bccc1006afd9e6bf9a3cf9a7b7255891aab0429a712059551",
+      "after_sha256": "86871468e490cff436ac9f736921bd697d2229ce028a62c8e410b6a978d4a06a"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/property/composite-gate-property-3.sequential-execution.test.ts",
+      "before_sha256": "ef3b8951baf5005192be80a2b8788dc63b8dad103c3e010e1d2bf7a847450e11",
+      "after_sha256": "4fa4ab127b2b4c88321d2d82998ab2f1a2648da2961882a7344b6d29a8821980"
+    },
+    {
+      "file": "packages/permission-engine/src/services/bearer-token-validator.ts",
+      "before_sha256": "6187e90b348d6500c519e2c3282230e8075d1a0c8910027e9eb1a4b0f5df2907",
+      "after_sha256": "0d7658cb1a114af96aa3f2c3bf37aa9be3b108baec6f472d2dbf7cddef88be10"
+    },
+    {
+      "file": "packages/cli/src/BlobOptimizer.ts",
+      "before_sha256": "cafb451b360cf43160facd0351f40df2e98394b888b34aa22f3301c3753a9667",
+      "after_sha256": "568afe32fac1b60c7cb79ce09e2b2c50a99d3b25460fae6e206ce6cf1a5e015e"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_doc_lint_core.ts",
+      "before_sha256": "0a1a3167c42e33c584103a91d3f79705da7ee39a008559c7dcfe1a43654bcf36",
+      "after_sha256": "5172a8c6d3de7f251e7fb99e4b414ceee8460d45402701d79999b3d0777e7c1f"
+    },
+    {
+      "file": "packages/daemon-core/src/http/HTTPServer.ts",
+      "before_sha256": "642c04bdf15ab2504d9d2b7d39acdc7efa3e04c49575d6cd0fc70b59d27806da",
+      "after_sha256": "23f397fd4e91701c99dc3727da2f67206be58d4dbc9d1273ab1e7e19e3973ef3"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/property/generators.ts",
+      "before_sha256": "0fb41eacbeaf12ef22d507f5dc56bdab08e72984e7e0285fe65bec87661d64d0",
+      "after_sha256": "c633da99b23eaaf873d8364fafbb6a58ae5b4b7abfb9b4bc32dbfe13ccf725cc"
+    }
+  ]
+}

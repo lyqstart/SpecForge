@@ -1,0 +1,24 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/run-isolated-qualification-leg.cjs",
+    "toolchain",
+    "D:/code/SpecForge/.lint-toolchain-a01"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "isolated-toolchain-baseline-full-qualification",
+  "expected_writes": "isolated middle-leg frozen install full build tests and official installer",
+  "started_utc": "2026-11-08T11:11:29.564Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\run-isolated-qualification-leg.cjs",
+      "sha256": "75428734ba673661c54d5a3b29f4c24ce488ea0364db147a2957c958418461c7",
+      "size": 6076,
+      "extension": ".cjs"
+    }
+  ]
+}

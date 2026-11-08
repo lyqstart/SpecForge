@@ -1,0 +1,16 @@
+$ node scripts/run-root-task.mjs lint
+$ node ../../scripts/lint-package.mjs types
+$ node ../../scripts/lint-package.mjs version-unification
+$ node ../../scripts/lint-package.mjs configuration
+$ node ../../scripts/lint-package.mjs service-management
+$ node ../../scripts/lint-package.mjs host-profile
+$ node ../../scripts/lint-package.mjs observability
+$ node ../../scripts/lint-package.mjs permission-engine
+$ node ../../scripts/lint-package.mjs opencode-adapter
+$ node ../../scripts/lint-package.mjs scope-gate
+error: script "lint" exited with code 1
+$ node ../../scripts/lint-package.mjs workflow-runtime
+$ node ../../scripts/lint-package.mjs cli
+$ node ../../scripts/lint-package.mjs daemon-core
+[lint-workspace] FAILED scope-gate(exit=1)
+error: script "lint" exited with code 1

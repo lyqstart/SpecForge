@@ -1,0 +1,1 @@
+{"copied":2,"output":"D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\publication-live","public_seal_mutated":false}

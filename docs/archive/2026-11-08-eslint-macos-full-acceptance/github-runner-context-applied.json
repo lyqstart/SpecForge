@@ -1,0 +1,13 @@
+{
+  "utc": "2026-11-08T11:22:02.193Z",
+  "input_sha256": "8d52a2abea4171c5f9533b8f10a9ac263d3339c3335505a5e448fac16493bcac",
+  "reason": "Actual GitHub validation run42475137148 rejected runner.temp in job-level env at102:32. Move report environment binding to each supported step env context; preserve actual matrix/phases/actions/pins. Raw public error and failed commit remain retained.",
+  "required_verification": "Actual new GitHub workflow validation and complete real three-OS matrix; local YAML parse is not sufficient",
+  "members": [
+    {
+      "file": ".github/workflows/code-quality.yml",
+      "before": "c9e98b03f93eaf06fb519487dd020db5ff1777119dcb169df7d285e52fe58555",
+      "after": "7b543bd4bc073a73e61336d74f00b095f1eae84dc6a70e32c6a403c4980576cb"
+    }
+  ]
+}

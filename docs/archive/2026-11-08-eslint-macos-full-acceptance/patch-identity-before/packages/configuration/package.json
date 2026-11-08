@@ -1,0 +1,44 @@
+{
+  "name": "@specforge/configuration",
+  "version": "1.0.24",
+  "description": "Configuration subsystem for SpecForge",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "clean": "bun ../../scripts/clean-workspace.ts --package configuration",
+    "lint": "node ../../scripts/lint-package.mjs configuration",
+    "lint:fix": "node ../../scripts/lint-package.mjs configuration --fix",
+    "format": "prettier --write src tests",
+    "format:check": "prettier --check src tests",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
+  },
+  "keywords": [
+    "specforge",
+    "configuration"
+  ],
+  "author": "SpecForge Team",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@typescript-eslint/eslint-plugin": "8.59.3",
+    "@typescript-eslint/parser": "8.59.3",
+    "@vitest/coverage-v8": "^1.2.0",
+    "eslint": "9.39.4",
+    "eslint-config-prettier": "10.1.8",
+    "eslint-plugin-prettier": "5.5.5",
+    "prettier": "3.8.3",
+    "typescript": "^5.3.3",
+    "vitest": "^1.2.0"
+  },
+  "dependencies": {
+    "@specforge/types": "workspace:*",
+    "chokidar": "^3.5.3",
+    "fast-check": "^3.13.0",
+    "lru-cache": "^10.2.0",
+    "zod": "^3.22.4"
+  }
+}

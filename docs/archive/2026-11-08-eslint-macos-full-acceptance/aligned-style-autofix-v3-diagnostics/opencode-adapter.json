@@ -1,0 +1,336 @@
+{
+  "summary": {
+    "name": "opencode-adapter",
+    "started_utc": "2026-11-08T09:30:40.188Z",
+    "finished_utc": "2026-11-08T09:30:44.212Z",
+    "files": 21,
+    "errors": 0,
+    "warnings": 0,
+    "rules": {}
+  },
+  "results": [
+    {
+      "filePath": "D:\\code\\SpecForge\\.lint-review-a01\\packages\\opencode-adapter\\src\\OpenCodeAdapter.ts",
+      "messages": [],
+      "suppressedMessages": [
+        {
+          "ruleId": "@typescript-eslint/require-await",
+          "severity": 2,
+          "message": "Async method 'getSession' has no 'await' expression.",
+          "line": 562,
+          "column": 3,
+          "nodeType": "FunctionExpression",
+          "messageId": "missingAwait",
+          "endLine": 562,
+          "endColumn": 19,
+          "suggestions": [
+            {
+              "messageId": "removeAsync",
+              "fix": {
+                "range": [
+                  18486,
+                  18550
+                ],
+                "text": "getSession(sessionId: string): SessionInfo | null"
+              },
+              "desc": "Remove 'async'."
+            }
+          ],
+          "suppressions": [
+            {
+              "kind": "directive",
+              "justification": ""
+            }
+          ]
+        },
+        {
+          "ruleId": "@typescript-eslint/require-await",
+          "severity": 2,
+          "message": "Async method 'next' has no 'await' expression.",
+          "line": 1029,
+          "column": 11,
+          "nodeType": "FunctionExpression",
+          "messageId": "missingAwait",
+          "endLine": 1029,
+          "endColumn": 21,
+          "suggestions": [
+            {
+              "messageId": "removeAsync",
+              "fix": {
+                "range": [
+                  33907,
+                  33957
+                ],
+                "text": "next(): IteratorResult<KernelEvent>"
+              },
+              "desc": "Remove 'async'."
+            }
+          ],
+          "suppressions": [
+            {
+              "kind": "directive",
+              "justification": ""
+            }
+          ]
+        },
+        {
+          "ruleId": "@typescript-eslint/require-await",
+          "severity": 2,
+          "message": "Async method 'pushEvent' has no 'await' expression.",
+          "line": 1048,
+          "column": 3,
+          "nodeType": "FunctionExpression",
+          "messageId": "missingAwait",
+          "endLine": 1048,
+          "endColumn": 18,
+          "suggestions": [
+            {
+              "messageId": "removeAsync",
+              "fix": {
+                "range": [
+                  34398,
+                  34472
+                ],
+                "text": "pushEvent(sessionId: string, rawEvent: OpenCodeEvent): void"
+              },
+              "desc": "Remove 'async'."
+            }
+          ],
+          "suppressions": [
+            {
+              "kind": "directive",
+              "justification": ""
+            }
+          ]
+        }
+      ],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "D:\\code\\SpecForge\\.lint-review-a01\\packages\\opencode-adapter\\src\\configuration.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "output": "/**\n * OpenCode Adapter Configuration System\n *\n * Provides configuration loading from various sources:\n * - Default values\n * - Environment variables\n * - Config files\n *\n * Requirements: 2.1\n */\n\nimport * as path from 'node:path';\nimport * as fs from 'node:fs';\nimport type { AdapterConfig } from './types';\n\n/**\n * Configuration source priority (lowest to highest)\n */\nexport const CONFIG_PRIORITY = {\n  DEFAULT: 0,\n  FILE: 1,\n  ENVIRONMENT: 2,\n  RUNTIME: 3,\n} as const;\n\n/**\n * Environment variable prefixes for configuration\n */\nexport const CONFIG_ENV_PREFIX = 'OPENCODE_ADAPTER_';\n\n/**\n * Configuration loading options\n */\nexport interface LoadConfigOptions {\n  /** Load from environment variables */\n  useEnv?: boolean;\n  /** Load from config file */\n  useFile?: boolean;\n  /** Config file path */\n  configFilePath?: string;\n  /** Runtime configuration (highest priority) */\n  runtimeConfig?: Partial<AdapterConfig>;\n  /** Schema version for validation */\n  schemaVersion?: string;\n}\n\n/**\n * Loaded configuration result\n */\nexport interface LoadedConfig {\n  config: AdapterConfig;\n  sources: string[];\n  schemaVersion: string;\n}\n\n/**\n * Default configuration\n */\nexport const DEFAULT_CONFIG: AdapterConfig = {\n  compatibleKernelRange: '>=1.0.0 <2.0.0',\n  translationStrictness: 'lenient',\n  communicationTimeout: 30000,\n  verboseLogging: false,\n};\n\n/**\n * Schema version for this configuration system\n */\nexport const CONFIG_SCHEMA_VERSION = '1.0';\n\n/**\n * Load configuration from all sources\n *\n * Priority (lowest to highest):\n * 1. Default values\n * 2. Config file\n * 3. Environment variables\n * 4. Runtime config\n *\n * @param options - Configuration loading options\n * @returns Loaded configuration with metadata\n */\nexport function loadConfig(options: LoadConfigOptions = {}): LoadedConfig {\n  const {\n    useEnv = true,\n    useFile = false,\n    configFilePath = './opencode-adapter.config.json',\n    runtimeConfig = {},\n    schemaVersion = CONFIG_SCHEMA_VERSION,\n  } = options;\n\n  const sources: string[] = [];\n  const config: AdapterConfig = { ...DEFAULT_CONFIG };\n\n  // 1. Load from file if enabled\n  if (useFile) {\n    try {\n      const fileConfig = loadConfigFromFile(configFilePath);\n      if (fileConfig) {\n        Object.assign(config, fileConfig);\n        sources.push(`file:${configFilePath}`);\n      }\n    } catch {\n      // File not found or invalid, continue with defaults\n    }\n  }\n\n  // 2. Load from environment variables if enabled\n  if (useEnv) {\n    const envConfig = loadConfigFromEnv();\n    if (envConfig) {\n      Object.assign(config, envConfig);\n      sources.push('environment');\n    }\n  }\n\n  // 3. Apply runtime configuration (highest priority)\n  if (runtimeConfig && Object.keys(runtimeConfig).length > 0) {\n    Object.assign(config, runtimeConfig);\n    sources.push('runtime');\n  }\n\n  return {\n    config,\n    sources,\n    schemaVersion,\n  };\n}\n\n/**\n * Load configuration from environment variables\n */\nfunction loadConfigFromEnv(): Partial<AdapterConfig> | null {\n  const envConfig: Partial<AdapterConfig> = {};\n  let hasConfig = false;\n\n  // Compatible kernel range\n  const kernelRange = process.env[`${CONFIG_ENV_PREFIX}COMPATIBLE_KERNEL_RANGE`];\n  if (kernelRange) {\n    envConfig.compatibleKernelRange = kernelRange;\n    hasConfig = true;\n  }\n\n  // Translation strictness\n  const strictness = process.env[`${CONFIG_ENV_PREFIX}TRANSLATION_STRICTNESS`];\n  if (strictness === 'strict' || strictness === 'lenient') {\n    envConfig.translationStrictness = strictness;\n    hasConfig = true;\n  }\n\n  // Integration timeout (communicationTimeout)\n  const timeout = process.env[`${CONFIG_ENV_PREFIX}INTEGRATION_TIMEOUT_MS`];\n  if (timeout) {\n    const parsed = parseInt(timeout, 10);\n    if (!isNaN(parsed) && parsed > 0) {\n      envConfig.communicationTimeout = parsed;\n      hasConfig = true;\n    }\n  }\n\n  // Verbose logging\n  const verbose = process.env[`${CONFIG_ENV_PREFIX}VERBOSE_LOGGING`];\n  if (verbose !== undefined) {\n    envConfig.verboseLogging = verbose === 'true' || verbose === '1';\n    hasConfig = true;\n  }\n\n  // Thin Plugin endpoint\n  const endpoint = process.env[`${CONFIG_ENV_PREFIX}THIN_PLUGIN_ENDPOINT`];\n  if (endpoint) {\n    envConfig.thinPluginEndpoint = endpoint;\n    hasConfig = true;\n  }\n\n  return hasConfig ? envConfig : null;\n}\n\n/**\n * Load configuration from a JSON file\n */\nfunction loadConfigFromFile(filePath: string): Partial<AdapterConfig> | null {\n  try {\n    const resolvedPath = path.resolve(filePath);\n\n    if (!fs.existsSync(resolvedPath)) {\n      return null;\n    }\n\n    const content = fs.readFileSync(resolvedPath, 'utf-8');\n    const parsed: unknown = JSON.parse(content);\n    if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) return null;\n    const values: Record<string, unknown> = { ...parsed };\n\n    // Validate and extract known fields\n    const fileConfig: Partial<AdapterConfig> = {};\n\n    if (values['compatibleKernelRange'] && typeof values['compatibleKernelRange'] === 'string') {\n      fileConfig.compatibleKernelRange = values['compatibleKernelRange'];\n    }\n\n    if (\n      values['translationStrictness'] === 'strict' ||\n      values['translationStrictness'] === 'lenient'\n    ) {\n      fileConfig.translationStrictness = values['translationStrictness'];\n    }\n\n    if (typeof values['communicationTimeout'] === 'number' && values['communicationTimeout'] > 0) {\n      fileConfig.communicationTimeout = values['communicationTimeout'];\n    }\n\n    if (typeof values['verboseLogging'] === 'boolean') {\n      fileConfig.verboseLogging = values['verboseLogging'];\n    }\n\n    if (values['thinPluginEndpoint'] && typeof values['thinPluginEndpoint'] === 'string') {\n      fileConfig.thinPluginEndpoint = values['thinPluginEndpoint'];\n    }\n\n    return fileConfig;\n  } catch {\n    return null;\n  }\n}\n\n/**\n * Validate configuration\n */\nexport function validateConfig(config: Partial<AdapterConfig>): {\n  valid: boolean;\n  errors: string[];\n} {\n  const errors: string[] = [];\n\n  // Validate compatibleKernelRange\n  if (config.compatibleKernelRange !== undefined) {\n    if (typeof config.compatibleKernelRange !== 'string') {\n      errors.push('compatibleKernelRange must be a string');\n    } else if (config.compatibleKernelRange.trim().length === 0) {\n      errors.push('compatibleKernelRange cannot be empty');\n    }\n  }\n\n  // Validate translationStrictness\n  if (config.translationStrictness !== undefined) {\n    if (config.translationStrictness !== 'strict' && config.translationStrictness !== 'lenient') {\n      errors.push('translationStrictness must be \"strict\" or \"lenient\"');\n    }\n  }\n\n  // Validate communicationTimeout\n  if (config.communicationTimeout !== undefined) {\n    if (typeof config.communicationTimeout !== 'number') {\n      errors.push('communicationTimeout must be a number');\n    } else if (config.communicationTimeout <= 0) {\n      errors.push('communicationTimeout must be greater than 0');\n    } else if (config.communicationTimeout > 600000) {\n      // Max 10 minutes\n      errors.push('communicationTimeout must be less than or equal to 600000ms (10 minutes)');\n    }\n  }\n\n  // Validate verboseLogging\n  if (config.verboseLogging !== undefined && typeof config.verboseLogging !== 'boolean') {\n    errors.push('verboseLogging must be a boolean');\n  }\n\n  // Validate thinPluginEndpoint\n  if (config.thinPluginEndpoint !== undefined) {\n    if (typeof config.thinPluginEndpoint !== 'string') {\n      errors.push('thinPluginEndpoint must be a string');\n    } else if (config.thinPluginEndpoint.trim().length === 0) {\n      errors.push('thinPluginEndpoint cannot be empty');\n    }\n  }\n\n  return {\n    valid: errors.length === 0,\n    errors,\n  };\n}\n\n/**\n * Merge multiple configurations\n * Later configs override earlier ones\n */\nexport function mergeConfigs(...configs: Partial<AdapterConfig>[]): AdapterConfig {\n  const result: AdapterConfig = { ...DEFAULT_CONFIG };\n\n  for (const config of configs) {\n    if (config) {\n      Object.assign(result, config);\n    }\n  }\n\n  return result;\n}\n\n/**\n * Get environment variable name for a config key\n */\nexport function getEnvVarName(configKey: keyof AdapterConfig): string {\n  const mapping: Record<keyof AdapterConfig, string> = {\n    compatibleKernelRange: 'COMPATIBLE_KERNEL_RANGE',\n    translationStrictness: 'TRANSLATION_STRICTNESS',\n    communicationTimeout: 'INTEGRATION_TIMEOUT_MS',\n    verboseLogging: 'VERBOSE_LOGGING',\n    thinPluginEndpoint: 'THIN_PLUGIN_ENDPOINT',\n  };\n\n  return `${CONFIG_ENV_PREFIX}${mapping[configKey]}`;\n}\n\n/**\n * Get all configuration environment variable names\n */\nexport function getAllEnvVarNames(): Record<keyof AdapterConfig, string> {\n  return {\n    compatibleKernelRange: getEnvVarName('compatibleKernelRange'),\n    translationStrictness: getEnvVarName('translationStrictness'),\n    communicationTimeout: getEnvVarName('communicationTimeout'),\n    verboseLogging: getEnvVarName('verboseLogging'),\n    thinPluginEndpoint: getEnvVarName('thinPluginEndpoint'),\n  };\n}\n",
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "D:\\code\\SpecForge\\.lint-review-a01\\packages\\opencode-adapter\\src\\diagnostics\\DiagnosticsLogger.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "D:\\code\\SpecForge\\.lint-review-a01\\packages\\opencode-adapter\\src\\diagnostics\\index.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "D:\\code\\SpecForge\\.lint-review-a01\\packages\\opencode-adapter\\src\\errors\\ErrorClassifier.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "D:\\code\\SpecForge\\.lint-review-a01\\packages\\opencode-adapter\\src\\errors\\index.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "D:\\code\\SpecForge\\.lint-review-a01\\packages\\opencode-adapter\\src\\event-logger\\EventLogger.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "D:\\code\\SpecForge\\.lint-review-a01\\packages\\opencode-adapter\\src\\event-logger\\index.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "D:\\code\\SpecForge\\.lint-review-a01\\packages\\opencode-adapter\\src\\index.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "D:\\code\\SpecForge\\.lint-review-a01\\packages\\opencode-adapter\\src\\integration\\OpenCodeHttpRuntimeClient.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "D:\\code\\SpecForge\\.lint-review-a01\\packages\\opencode-adapter\\src\\integration\\SessionRegistry.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "D:\\code\\SpecForge\\.lint-review-a01\\packages\\opencode-adapter\\src\\integration\\ThinPluginClient.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "D:\\code\\SpecForge\\.lint-review-a01\\packages\\opencode-adapter\\src\\integration\\index.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "D:\\code\\SpecForge\\.lint-review-a01\\packages\\opencode-adapter\\src\\integration\\types.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "D:\\code\\SpecForge\\.lint-review-a01\\packages\\opencode-adapter\\src\\translators\\CapabilityTranslator.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "D:\\code\\SpecForge\\.lint-review-a01\\packages\\opencode-adapter\\src\\translators\\ContextTranslator.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "D:\\code\\SpecForge\\.lint-review-a01\\packages\\opencode-adapter\\src\\translators\\EventTranslator.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "D:\\code\\SpecForge\\.lint-review-a01\\packages\\opencode-adapter\\src\\translators\\ToolTranslator.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "D:\\code\\SpecForge\\.lint-review-a01\\packages\\opencode-adapter\\src\\types\\index.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "D:\\code\\SpecForge\\.lint-review-a01\\packages\\opencode-adapter\\src\\version-checker.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "D:\\code\\SpecForge\\.lint-review-a01\\packages\\opencode-adapter\\src\\version\\VersionChecker.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    }
+  ]
+}

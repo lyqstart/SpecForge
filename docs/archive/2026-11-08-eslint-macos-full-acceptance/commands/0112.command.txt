@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/repair-import-layout-and-type-aliases.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "restore-module-doc-and-explicit-type-import-owners",
+  "expected_writes": "private-fixture-source-and-plan-only",
+  "started_utc": "2026-11-08T09:52:04.133Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\repair-import-layout-and-type-aliases.cjs",
+      "sha256": "048bc8ce14967414563530ffc775bb3943c575e3c5fc67b9220d889a4ebe6b15",
+      "size": 5790,
+      "extension": ".cjs"
+    }
+  ]
+}

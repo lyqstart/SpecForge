@@ -1,0 +1,23 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/collect-platform-lint.cjs",
+    "platform-lint-final"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "final-platform-complete-eslint-json-inventory",
+  "expected_writes": "Read-only exact final source all12 file-level lint results; no rule suppression or scope narrowing",
+  "started_utc": "2026-11-08T12:11:48.134Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\collect-platform-lint.cjs",
+      "sha256": "49583a4ae8d8e9a58d5281521be737bff528e9f02712dae7155d06547f591140",
+      "size": 1960,
+      "extension": ".cjs"
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "number": "034",
+  "name": "official-daemon-start",
+  "executable": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-eslint-macos-A01-v4-patched\\temp\\sf-platform-acceptance-HnCHuB\\opencode\\sf-user\\bin\\specforge.exe",
+  "args": [
+    "daemon",
+    "start",
+    "--detach",
+    "--json"
+  ],
+  "started_utc": "2026-11-08T12:36:27.388Z",
+  "finished_utc": "2026-11-08T12:36:27.735Z",
+  "inner_exit_code": 0,
+  "signal": null,
+  "spawn_error": null
+}

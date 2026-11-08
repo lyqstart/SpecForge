@@ -1,0 +1,3698 @@
+{
+  "utc": "2026-11-08T13:22:09.263Z",
+  "baseline": "3549c23c64c53ad29761104a125b87ff50a53cc5",
+  "source_head": "6ec81b1f61b285877da3745efc42be1fa0d86e9e",
+  "source_manifest_sha256": "eca3d579419cbaeb4f19da0fa9242ae93a96a77ef5a4a92f49cbc398d4cef1cd",
+  "members": [
+    {
+      "file": ".gitattributes",
+      "size": 3412,
+      "sha256": "274d926ea319cd65f6ffa5e956f6428668e791edc8cbad24186509fd85bc8760",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": ".gitattributes.raw"
+    },
+    {
+      "file": ".github/workflows/code-quality.yml",
+      "size": 6644,
+      "sha256": "0741b0df466f237d1e3aee42226678e35739a9752860b7291b4a5ac4587e7ba8",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": ".github/workflows/code-quality.yml"
+    },
+    {
+      "file": ".github/workflows/distribution-smoke.yml",
+      "size": 2137,
+      "sha256": "a4911367dd7204a996d300df8e6b5bb7518423cb18c99f003cd79687ac61949f",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": ".github/workflows/distribution-smoke.yml"
+    },
+    {
+      "file": "bun.lock",
+      "size": 268290,
+      "sha256": "3f60323fd1c3303673a8d79d4253257198725d247d3e6551e7648d0826db4438",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "bun.lock"
+    },
+    {
+      "file": "docs/product-specification/specforge-product-specification.md",
+      "size": 89704,
+      "sha256": "b03174778f6bd1efb72227708152c422b7b0102e4cf8129a5a4d9d5e752afff0",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "docs/product-specification/specforge-product-specification.md"
+    },
+    {
+      "file": "eslint.config.mjs",
+      "size": 4020,
+      "sha256": "8a0f4267d9f398406901ed2989fae6c261dc2eceff193aeef86b7eea4156cfb4",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "eslint.config.mjs"
+    },
+    {
+      "file": "package.json",
+      "size": 2971,
+      "sha256": "b6ce6bc4372b87a0ed56a7f593cbfb68945cf64875b1e782867c296b34a4ca2a",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "package.json"
+    },
+    {
+      "file": "packages/cli/package.json",
+      "size": 1625,
+      "sha256": "15a6b813e7ad86e52f5e7c61bc00ba5996eab8700dd714c668200852b30051dd",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/cli/package.json"
+    },
+    {
+      "file": "packages/cli/src/BlobOptimizer.ts",
+      "size": 7459,
+      "sha256": "b92d819f5fab0b47cacb724f99d92a93f3d2b3975df1f91988a053f0acb8bda4",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/cli/src/BlobOptimizer.ts"
+    },
+    {
+      "file": "packages/cli/src/JobPoller.ts",
+      "size": 11660,
+      "sha256": "1a54d2d87bef48ea55d3260d026e61dfd35336d6ed3797b6607396642a65ff55",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/cli/src/JobPoller.ts"
+    },
+    {
+      "file": "packages/cli/src/blob/BlobHandler.ts",
+      "size": 6835,
+      "sha256": "5c9b353fc8a9835028cef600d62ad505aa0e0fbeee6e76ad09d35e6fc1b3002b",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/cli/src/blob/BlobHandler.ts"
+    },
+    {
+      "file": "packages/cli/src/cli.ts",
+      "size": 5618,
+      "sha256": "c6debc954be6543abcfec683c0f819948d7b5a2f5b75349fdcd83c5eb0ab0581",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/cli/src/cli.ts"
+    },
+    {
+      "file": "packages/cli/src/commands/daemon-client.ts",
+      "size": 15485,
+      "sha256": "6956ce6e2a9485e94d2fcff37ea23ea30ee35e4237610cf6c1159b52ae9c6c02",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/cli/src/commands/daemon-client.ts"
+    },
+    {
+      "file": "packages/cli/src/commands/daemon/index.ts",
+      "size": 5021,
+      "sha256": "958f787721f5eaa6a02aca50138808fe1b0f3aabfe9790e1e6712eb95258952d",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/cli/src/commands/daemon/index.ts"
+    },
+    {
+      "file": "packages/cli/src/commands/daemon/install-service.ts",
+      "size": 4183,
+      "sha256": "3823b2b6b31bde36ac08ad388198a11d012379bc8abf866158b61dd210b765ce",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/cli/src/commands/daemon/install-service.ts"
+    },
+    {
+      "file": "packages/cli/src/commands/help.ts",
+      "size": 4925,
+      "sha256": "5419a6e1904597982b1a72cad49d2f8077b0909c42a4ab849db1605461170e5a",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/cli/src/commands/help.ts"
+    },
+    {
+      "file": "packages/cli/src/commands/job-wait.ts",
+      "size": 5932,
+      "sha256": "e82f1996af1770d14a22c4df265149c79c4970eb2621751bbe24fe5ec52ad751",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/cli/src/commands/job-wait.ts"
+    },
+    {
+      "file": "packages/cli/src/commands/opencode-server/index.ts",
+      "size": 5233,
+      "sha256": "dd94831f047240cafc6c9c24579ae0b164c3d86307850d57f225b9184675b9cb",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/cli/src/commands/opencode-server/index.ts"
+    },
+    {
+      "file": "packages/cli/src/commands/opencode-server/install-service.ts",
+      "size": 4231,
+      "sha256": "8d8c626b61c2f6818ddd2702a2d7f9f9cc7c2612e70582fbda3e5b73451c7f4e",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/cli/src/commands/opencode-server/install-service.ts"
+    },
+    {
+      "file": "packages/cli/src/commands/plugin.ts",
+      "size": 13474,
+      "sha256": "31646221f5f484997f9f57540a9da64b67bf1e82b8994c2cb85f6d1bf87bac8a",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/cli/src/commands/plugin.ts"
+    },
+    {
+      "file": "packages/cli/src/commands/progress.ts",
+      "size": 5267,
+      "sha256": "324b53ae2936060d60a1552b12cc787de6c00cea7efd298a182d2fc9c03d788f",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/cli/src/commands/progress.ts"
+    },
+    {
+      "file": "packages/cli/src/commands/services/index.ts",
+      "size": 20835,
+      "sha256": "aae85a3e0cef268cbd8d7e7fc08c81a3e1dddc15e7d3643f376decfc516d8753",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/cli/src/commands/services/index.ts"
+    },
+    {
+      "file": "packages/cli/src/commands/services/json-payload.ts",
+      "size": 4574,
+      "sha256": "5066943e4f63198b11a81dd309d506d5758bdc431431a4e80c498def6ada8182",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/cli/src/commands/services/json-payload.ts"
+    },
+    {
+      "file": "packages/cli/src/commands/spec.ts",
+      "size": 16758,
+      "sha256": "cb5a15dbc6b837881fc3f539fffa20f25ed879d3a7aefa1355637a98162af932",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/cli/src/commands/spec.ts"
+    },
+    {
+      "file": "packages/cli/src/commands/version-cmd.ts",
+      "size": 4508,
+      "sha256": "21d26186284e909e1b26840e656da1b1f812dcefd077e68943a6b2ea1cce1506",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/cli/src/commands/version-cmd.ts"
+    },
+    {
+      "file": "packages/cli/src/commands/webhook.ts",
+      "size": 9598,
+      "sha256": "e006a8567891333b306cac6a76b0ae470d1b75b7399b29bc4db42e1f058f4a86",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/cli/src/commands/webhook.ts"
+    },
+    {
+      "file": "packages/cli/src/distribution/package-validator.ts",
+      "size": 5915,
+      "sha256": "06d52fc1a1fa716f7b0405b8cb1645d8c236ee07c3e8a2ee8d3b6a76aaebb991",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/cli/src/distribution/package-validator.ts"
+    },
+    {
+      "file": "packages/cli/src/help/HelpSystem.ts",
+      "size": 30663,
+      "sha256": "56256be5fc66fa54b440f126244e057f3e77ce1e67211f43bac3e4194a57f98f",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/cli/src/help/HelpSystem.ts"
+    },
+    {
+      "file": "packages/cli/src/http/DaemonClient.ts",
+      "size": 22645,
+      "sha256": "f5653336d3f25faeeb905f94650e19e34f022ffe2e0784f2b67409f74356fc08",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/cli/src/http/DaemonClient.ts"
+    },
+    {
+      "file": "packages/cli/src/job-tracker/terminal-states.ts",
+      "size": 3924,
+      "sha256": "a25a37e3f77245c031c6c3cd75308aed54e9e0552ed9c6c74830cfaef13975d6",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/cli/src/job-tracker/terminal-states.ts"
+    },
+    {
+      "file": "packages/cli/src/job/JobTracker.ts",
+      "size": 12633,
+      "sha256": "01ae3d84ffe6d9089c28843e94243a26252ea0cd2bf97ae017796eefef2998a4",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/cli/src/job/JobTracker.ts"
+    },
+    {
+      "file": "packages/cli/tests/unit/json-ansi-boundary.test.ts",
+      "size": 955,
+      "sha256": "46e088d88ebcaa511f544bc9c90d440c2a8492ca92f245d68a6ce0ced77d6471",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/cli/tests/unit/json-ansi-boundary.test.ts"
+    },
+    {
+      "file": "packages/configuration/package.json",
+      "size": 1345,
+      "sha256": "b3a012b17f04e4f9258bf611e9ed1b7a04639354d37445c08895817d7e058150",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/configuration/package.json"
+    },
+    {
+      "file": "packages/configuration/src/accepted-config.ts",
+      "size": 3027,
+      "sha256": "938dfbf0e35bf03da5aa807b9f398ae60e0d50eb6d978568a5fe0ed144845de4",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/configuration/src/accepted-config.ts"
+    },
+    {
+      "file": "packages/configuration/src/config-access.ts",
+      "size": 6327,
+      "sha256": "9d94a1852e11cc0b04cebeace9a361d61fb8e278105ce39e21fb234b9049bfae",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/configuration/src/config-access.ts"
+    },
+    {
+      "file": "packages/configuration/src/config-loader.ts",
+      "size": 7082,
+      "sha256": "2ef8c51ea32035d0bfb02df0fab781ad75994bb85878fdc8f17381c5e5316d45",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/configuration/src/config-loader.ts"
+    },
+    {
+      "file": "packages/configuration/src/config-merge.ts",
+      "size": 6332,
+      "sha256": "aa71fcfb82a1545ad7bf4ec025d9ce23f1fbc056226c81bb8174d0ebbe707c26",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/configuration/src/config-merge.ts"
+    },
+    {
+      "file": "packages/configuration/src/config-validator.ts",
+      "size": 8373,
+      "sha256": "716d8702adaa8ef1c33f40716b90bc182cd199c181aac5fd3b36e66fa07d4c6d",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/configuration/src/config-validator.ts"
+    },
+    {
+      "file": "packages/configuration/src/constants.ts",
+      "size": 1840,
+      "sha256": "30a57dd8bf3eedc8b46fce9a8b9f9f69deaa00f0baa8bf2d2a550a68f1992997",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/configuration/src/constants.ts"
+    },
+    {
+      "file": "packages/configuration/src/hot-reload.ts",
+      "size": 22776,
+      "sha256": "11b64b3d30ca43fd0ac267db51a783759a626451882ad55a0753c6654b9a960e",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/configuration/src/hot-reload.ts"
+    },
+    {
+      "file": "packages/configuration/src/index.ts",
+      "size": 545,
+      "sha256": "3b917afbfe173f219949c91a2ae2ec9b9454434580b0430e4dfea32e4cf727a9",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/configuration/src/index.ts"
+    },
+    {
+      "file": "packages/configuration/src/logger.ts",
+      "size": 2261,
+      "sha256": "ba047a128c744d3ede3e3c77f224a5bf7f66f4f0381678b00e450b2cb5adf0ef",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/configuration/src/logger.ts"
+    },
+    {
+      "file": "packages/configuration/src/merge-engine.ts",
+      "size": 8087,
+      "sha256": "c3c0db84142c18d88b2d89f7517a3c809fcce2f422944c0f98e87b7bf1452295",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/configuration/src/merge-engine.ts"
+    },
+    {
+      "file": "packages/configuration/src/project-schema-descriptor.ts",
+      "size": 845,
+      "sha256": "2f2bd652af780110af88c6a675d74812c9966cf652b11c7acb48265c1d699072",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/configuration/src/project-schema-descriptor.ts"
+    },
+    {
+      "file": "packages/configuration/src/types.ts",
+      "size": 2503,
+      "sha256": "df1f1617e93ac1d1b657cd026538220af1befdcf39909dfea5810d03503a2f51",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/configuration/src/types.ts"
+    },
+    {
+      "file": "packages/daemon-core/package.json",
+      "size": 1985,
+      "sha256": "adaf1b0c130487ebf020b910ceaf2b9d444fda41d62ce0c2093ab2c3c66c8638",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/package.json"
+    },
+    {
+      "file": "packages/daemon-core/src/agent/KnowledgeTrigger.ts",
+      "size": 4058,
+      "sha256": "d43f0c1fae7a77d00bb5b430bd7ee7863f601db9afdee74a76bda580b35446a0",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/agent/KnowledgeTrigger.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/cas/ContentAddressableStorage.ts",
+      "size": 3624,
+      "sha256": "a0541ac8cc13c5419fbd0441a338f9b6eb27211121d11a638eb88ba630ecacd1",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/cas/ContentAddressableStorage.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/daemon/Daemon.ts",
+      "size": 10636,
+      "sha256": "cfca7133a2d9c8f67d3c114fb5d2f51e5560ec21af5383e8d5597eb3c78ac59f",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/daemon/Daemon.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/daemon/DaemonConfig.ts",
+      "size": 4742,
+      "sha256": "166cce120a96b3b0802e06a841aa751d3c220ee25d07bab461b3d29c2cd137b2",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/daemon/DaemonConfig.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/daemon/HandshakeManager.ts",
+      "size": 9343,
+      "sha256": "53174d9268fd430ce0a099cdc390da575d8a95714d6d2b9be7ee02feaa831ae4",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/daemon/HandshakeManager.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/daemon/path-resolver.ts",
+      "size": 8724,
+      "sha256": "f099e81ee8b187966ce075e2aef48c94a6767c317dd7fe2c3589ec8308a3edb4",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/daemon/path-resolver.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/event-bus/EventBus.test.ts",
+      "size": 6935,
+      "sha256": "de6ef45d43bd6e6dabacf641a9db3f723eec04abe66c757c47587a781dd70df5",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/event-bus/EventBus.test.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/event-bus/EventBus.ts",
+      "size": 10270,
+      "sha256": "dcb6e5de73a851c201107a13f4089e6b19e50f890307c8c9487f351007ca5d0d",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/event-bus/EventBus.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/extensions/ExtensionLoader.ts",
+      "size": 10501,
+      "sha256": "0d4be40c59590b5aebaa13050663a425a5db3af305159727e73d42122e80d07e",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/extensions/ExtensionLoader.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/extensions/index.ts",
+      "size": 377,
+      "sha256": "995a43e1ba4bb2e3fab0ca56586c039ce9eaaa3c51185cfa664548d871d55925",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/extensions/index.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/extensions/skill/SkillLoader.ts",
+      "size": 1630,
+      "sha256": "0e3c1de8bd3590d21169499344a8c190419bf982a50e55aa6762e3e3fcd34cc3",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/extensions/skill/SkillLoader.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/extensions/skill/SkillMatcher.ts",
+      "size": 1148,
+      "sha256": "b3a23f48a4b8fba4ad88970048b166eaef1aceb302d08ac076cce6a9f5e9d2a5",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/extensions/skill/SkillMatcher.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/extensions/skill/SkillRegistry.ts",
+      "size": 6295,
+      "sha256": "6c4325663d2f141b4ffb4e4dc97841eac924693838afb9dc10d543d5b43847ad",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/extensions/skill/SkillRegistry.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/extensions/skill/index.ts",
+      "size": 275,
+      "sha256": "be851961d7df0385db2fe52b7f4a78476ba670967d321f0f048cf8b6a760cdca",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/extensions/skill/index.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/http/HTTPServer.test.ts",
+      "size": 14088,
+      "sha256": "5e1b97f7fb813ece7a19b0fd48b438467cbe8b38f964d11bdcfd6fbe08fb94cc",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/http/HTTPServer.test.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/http/HTTPServer.ts",
+      "size": 81176,
+      "sha256": "0d259cb6759b59496f47453695b9e09fb8bb6dbd03c639602ecb529bedf1ffa3",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/http/HTTPServer.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/index.ts",
+      "size": 3229,
+      "sha256": "19e770720d79966abbfdfe12bd2879f3edb744e7681195938bf9f28f1f4f17ee",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/index.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/logs/JsonlAppender.ts",
+      "size": 5500,
+      "sha256": "c29041d1ae8220b83837dcd3809c03f831651db18f8e2160455330a9a6f453b0",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/logs/JsonlAppender.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/observability/observability-config.ts",
+      "size": 2990,
+      "sha256": "e16d480fa7e63c1e70d63297cfd67972443720dd67448f71459b09afac6bb49a",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/observability/observability-config.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/observability/observability-recorder.ts",
+      "size": 6068,
+      "sha256": "d48e3d23ac2a9b611447cbe790d9d3b54690a1373c76e82b92ec01b0fe31e954",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/observability/observability-recorder.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/observability/redaction.ts",
+      "size": 1918,
+      "sha256": "26c9f1349b0290a5d929b1804ea9a26e03acce4680fb7ce6d96cc9479226a6fb",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/observability/redaction.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/observability/trace.ts",
+      "size": 699,
+      "sha256": "7e302d2aa66e9df9623cc1aeb16d7268ab5b35d4a63080733f5469e4131f1ada",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/observability/trace.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/payload-handler.ts",
+      "size": 4144,
+      "sha256": "1c38b0d092323b48177b3a8c0a5a82daf3f7a4bdce380bb4a22ab7671bef1b6e",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/payload-handler.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/project/ProjectManager.test.ts",
+      "size": 9674,
+      "sha256": "890885e448185d9d9612f0226cdfc4315e8971c2aa097a96cf6ccd873d0c6255",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/project/ProjectManager.test.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/project/ProjectManager.ts",
+      "size": 22469,
+      "sha256": "012bef1368148f2e21163f0d00456192a7b0c1aaf2eec2d14174d1b69c16f871",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/project/ProjectManager.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/project/project-schema-descriptors.ts",
+      "size": 5113,
+      "sha256": "26fcdcc2ebb9d175e8fea7199f65cb46394aa04bb21d556c62375b5fb0664459",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/project/project-schema-descriptors.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/recovery/ProjectArchiveRestore.ts",
+      "size": 22048,
+      "sha256": "15f273cdce365fe97e276bff62fbab42482ad9b48dee84a6fa377d217effe0f0",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/recovery/ProjectArchiveRestore.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/recovery/RecoverySubsystem.test.ts",
+      "size": 12156,
+      "sha256": "8592ee56fec8629b2b5849e79e7a461c91c8b069adbe8ab3c4b6c79d27bc35d6",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/recovery/RecoverySubsystem.test.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/recovery/RecoverySubsystem.ts",
+      "size": 19280,
+      "sha256": "b74193833c55e1192cd6671bf3c76bbd86402b4a7288b847f562fc36947cb208",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/recovery/RecoverySubsystem.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/session/AgentIdentity.ts",
+      "size": 2925,
+      "sha256": "2ec9a2f6b950351f5bb91c2e9cdfddd0d66570bb92b7cecaf232f3c5c77a8d55",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/session/AgentIdentity.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/session/SessionRegistry.test.ts",
+      "size": 7612,
+      "sha256": "e853d140ed5ae08fa88967d5eb81f86068dc102189a317f705eee86ef0666086",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/session/SessionRegistry.test.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/session/SessionRegistry.ts",
+      "size": 30947,
+      "sha256": "954292cfd0b8070d78da2f7519c07ccbb5d00477e311418db5142b5cc5b381ca",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/session/SessionRegistry.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/specforged.ts",
+      "size": 1610,
+      "sha256": "9b9209c98a99f582123dfec476ed9f454b28a353d36c18bd282bd5bbbad1003b",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/specforged.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/state/StateManager.test.ts",
+      "size": 4374,
+      "sha256": "5c0ff0d7a0f1687ff5ce37e8c6a28b3e22bb16c084def8c8cb46a4bfd57af924",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/state/StateManager.test.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/state/StateManager.ts",
+      "size": 24347,
+      "sha256": "92441242addcdf11407dfddab0f2addd24f880c53b5bdc4f6921b8de83ac6d56",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/state/StateManager.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/state/runtime-schema-descriptors.ts",
+      "size": 2840,
+      "sha256": "96c6c99da418c2046cd14a93b739e67b7bd710b205d3ab93876fbbdcd49ee95a",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/state/runtime-schema-descriptors.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/ToolDispatcher.ts",
+      "size": 14453,
+      "sha256": "a9b0f31f72f0ae5838d28c30898f1af5e975b5ed3c7d451b7a7f4710f834df43",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/ToolDispatcher.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-artifact-write.ts",
+      "size": 60889,
+      "sha256": "2e6d83e5f35c72c73bec4733bf5cf4f179e6c2e0eb60d1d4ac5b7c4c7fb82f2b",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/handlers/sf-artifact-write.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-batch-verify.ts",
+      "size": 719,
+      "sha256": "c1233a0c4557e7c0ef1da5822db775fb09fac0660ae1148c8164b2c3c17ef220",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/handlers/sf-batch-verify.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-changed-files-audit.ts",
+      "size": 35207,
+      "sha256": "fd2d85604af4811148983521a67c71484b31d5aed20aea2c3acce0afdfc0eeba",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/handlers/sf-changed-files-audit.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-contract-register.ts",
+      "size": 5816,
+      "sha256": "bce9626ff987fe3c7e4975e4581bb86ec76ff65a3371b327e84debb16ec22450",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/handlers/sf-contract-register.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-design-gate.ts",
+      "size": 1033,
+      "sha256": "c950ee8ea887cf1923cf0137fbe14748583bdfb5e1e3ea708ab06967f057295d",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/handlers/sf-design-gate.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-doc-lint.ts",
+      "size": 911,
+      "sha256": "f6c4e0836c13604f8f741877502eb40e5696e9ceb809d7654415984d00dac5af",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/handlers/sf-doc-lint.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-git-agent-lock-acquire.ts",
+      "size": 925,
+      "sha256": "96dc98d52e763c9252fd428b1fa7c61fdfa36dbf8afad01f9809f0449d426d12",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/handlers/sf-git-agent-lock-acquire.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-git-agent-lock-release.ts",
+      "size": 740,
+      "sha256": "83ef2d9f0c4012227600024093bf032019c2c420507170ada1631aae9c91e6cc",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/handlers/sf-git-agent-lock-release.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-git-auth-profile-config.ts",
+      "size": 1144,
+      "sha256": "8d0df25abde3a54ec6f68030f2451fb909d7bcea3f5513086d85f071556dc980",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/handlers/sf-git-auth-profile-config.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-git-branch-create.ts",
+      "size": 2240,
+      "sha256": "f2f72da8962758c45224598b68cd77bb45748c18f85fa373dae8d71fba22621e",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/handlers/sf-git-branch-create.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-git-branch-plan.ts",
+      "size": 1666,
+      "sha256": "fea3ab332a9a54713890a8775ed5c7b623fcb947709c610cd643e96681426e89",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/handlers/sf-git-branch-plan.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-git-changed-files-audit.ts",
+      "size": 810,
+      "sha256": "a5bdba4abaf776e0803cf5eb1e55be21f47a6cf4a40dfa18ac1a0e574fa393c0",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/handlers/sf-git-changed-files-audit.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-git-checkpoint-commit.ts",
+      "size": 974,
+      "sha256": "dfa1e692b853c3cdd1fbafd08cdb06b22f9cf39688980d66e7d5ba7d6efe3d78",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/handlers/sf-git-checkpoint-commit.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-git-code-permission-guard.ts",
+      "size": 1367,
+      "sha256": "ad64e3b12cda23c7ad23d9aa4811885f1470f1d254dd662707b99fcb941241a3",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/handlers/sf-git-code-permission-guard.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-git-ignore-analyze.ts",
+      "size": 644,
+      "sha256": "bc5f775e856c7a081ce902e42fee41000870112e2a341b429954395921786b7d",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/handlers/sf-git-ignore-analyze.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-git-ignore-decision-record.ts",
+      "size": 645,
+      "sha256": "43858f2e3baca22fb3dda66810b24ac8cf457524689bf33c3af1c7c4543c05be",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/handlers/sf-git-ignore-decision-record.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-git-merge-plan.ts",
+      "size": 1032,
+      "sha256": "855b803e6985cc684d8ea6690353e9d22b5352b981ec602bbe80bcd899b42682",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/handlers/sf-git-merge-plan.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-git-merge-run.ts",
+      "size": 1272,
+      "sha256": "42168a8b459dc97623c0cd679d77830afc032d707de61a4f44f43049e09412e1",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/handlers/sf-git-merge-run.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-git-post-merge-verify.ts",
+      "size": 1061,
+      "sha256": "b6da499756bcaa202f58018f70b5fdbf57193dd84913d478fcb6ad7cb0df9d3e",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/handlers/sf-git-post-merge-verify.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-git-pr-plan.ts",
+      "size": 1030,
+      "sha256": "3052ab82c74906a829125170d788aa1c5093b02ff5afd557742d429df6c80d4e",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/handlers/sf-git-pr-plan.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-git-preflight.ts",
+      "size": 450,
+      "sha256": "68a7fc943fee7618e2ba5b62315ce60729c094bcbc7ff32ca8f012f3e7531d26",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/handlers/sf-git-preflight.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-git-project-adopt.ts",
+      "size": 714,
+      "sha256": "410713234088aafc28c4ee2318d44e7f42a902f8fd855f14b643687bce331636",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/handlers/sf-git-project-adopt.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-git-push-branch.ts",
+      "size": 739,
+      "sha256": "96a0e0e7ab8862386b439ec5cb99c8a884c95ee0bd004b727b60a4c7b602d95a",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/handlers/sf-git-push-branch.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-git-release-tag-create.ts",
+      "size": 789,
+      "sha256": "01aa7fd325278f0476c5c1f5406da73dee4da2f3c5c5a03649c5a959783a544e",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/handlers/sf-git-release-tag-create.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-git-release-tag-plan.ts",
+      "size": 870,
+      "sha256": "0ef0fc72605e2b49667eafed5874dd5d632f7302e0e535966421c73dffdf7a69",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/handlers/sf-git-release-tag-plan.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-git-remote-config.ts",
+      "size": 947,
+      "sha256": "e7a39e65d80622286cf34c4ef9a796bae706f6d29e7c6c7e15043957788bed42",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/handlers/sf-git-remote-config.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-git-remote-probe.ts",
+      "size": 606,
+      "sha256": "569e1ef1e8396bb901a1e1fa3b68dcfe5679b6c7bc1e04bae5ee92d134fa2fc9",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/handlers/sf-git-remote-probe.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-git-stacked-branch-plan.ts",
+      "size": 914,
+      "sha256": "1e194fcd50f25caf7ad9f28561df9c1c4a7b87be2fbc55e5ca5e4a478444965a",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/handlers/sf-git-stacked-branch-plan.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-git-worktree-create.ts",
+      "size": 852,
+      "sha256": "320dfbb853b4a2be11295ac98aafdad865f0fccefeaa51220323409eb320e1bb",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/handlers/sf-git-worktree-create.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-git-worktree-plan.ts",
+      "size": 848,
+      "sha256": "5ec0ead719211fb84a90615095040da8d3c0b8cc4ea6f76abab3787962940473",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/handlers/sf-git-worktree-plan.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-hard-stop-resolve.ts",
+      "size": 15302,
+      "sha256": "9eea18e6cd906c9c6bce33ec62519cf9989bb076b09fbc39e2d775251e17baa9",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/handlers/sf-hard-stop-resolve.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-knowledge-base.ts",
+      "size": 6113,
+      "sha256": "351eb376969b685c8b537869aed503e3e6f67a80531058a40ccf79ff7e51e43c",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/handlers/sf-knowledge-base.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-project-config.ts",
+      "size": 980,
+      "sha256": "64b57254616f00195b6ba873a3df5409b0d4088598c3fe5004e27c088c8c4c94",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/handlers/sf-project-config.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-requirements-gate.ts",
+      "size": 841,
+      "sha256": "baaa36830180472e90bc2400cd4bda7418e28597dde72f6cca5f4fe724798c88",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/handlers/sf-requirements-gate.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-safe-bash.ts",
+      "size": 16515,
+      "sha256": "b84ec4e0a3bb184e1503e2b69f6252d9364396b3f081387136278ade00f8eb16",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/handlers/sf-safe-bash.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-semantic-closure-run.ts",
+      "size": 15662,
+      "sha256": "d9068642b9e1b81d6a84a807e89b3b2e4db89652031da3961d1aec9829506f0f",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/handlers/sf-semantic-closure-run.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-state-read.ts",
+      "size": 1784,
+      "sha256": "380a7f9e4bb6ca7d7a982be72472836c437650b7c7dee51e5148edd5e0362e09",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/handlers/sf-state-read.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-state-transition.ts",
+      "size": 30990,
+      "sha256": "d5b7bb65e8dfa46e6a4bc7b00c70131ebcc5c06d5747e7d9c61117e28ecf09db",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/handlers/sf-state-transition.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-v11-close-gate.ts",
+      "size": 48858,
+      "sha256": "ce11e15640e494614d4e2bf27a2e2c197a08a4f011b63138be34056306a332c8",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/handlers/sf-v11-close-gate.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-v11-code-permission.ts",
+      "size": 17269,
+      "sha256": "e1ced8451ba33513bab0693ef3461b2d23107841745cec0cf3fe836872908c3e",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/handlers/sf-v11-code-permission.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-v11-decision.ts",
+      "size": 22724,
+      "sha256": "bb39d4619ecc42cb2927874a718458365877a3d6330b5be599c12584c5f47b8c",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/handlers/sf-v11-decision.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-v11-gate-run.ts",
+      "size": 43427,
+      "sha256": "aebd8e28f969242bfdbed128928ffd6c4183b7629ed35fe7a4a3871bc57ac2e7",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/handlers/sf-v11-gate-run.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-v11-handoff.ts",
+      "size": 4733,
+      "sha256": "ae8e9ec38b8e8098567dcadaa42067a4a29286973a961307ade7dfc8c9712418",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/handlers/sf-v11-handoff.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-v11-merge.ts",
+      "size": 9920,
+      "sha256": "5b1d16bd0bb3dafde84692fc8efabefa2691dbd982a9b8ca4ddeb412873481ed",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/handlers/sf-v11-merge.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-v11-rollback.ts",
+      "size": 5386,
+      "sha256": "530f71bc0ff9e74fbe14822c6d78a7221ddfccab1ae4e02fe0bcf06a6a3ddd9c",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/handlers/sf-v11-rollback.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-v11-verification.ts",
+      "size": 6889,
+      "sha256": "fd5237ae97f1594c6c9b31c2c266019f6b6151564e7bef4896c9907a9eb39620",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/handlers/sf-v11-verification.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-v11-work-item-create.ts",
+      "size": 6927,
+      "sha256": "e94f433e5a578d17b26ccf9ace56c4896f0fedd4c660d7aef8389f869fd2721f",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/handlers/sf-v11-work-item-create.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-verification-execution.ts",
+      "size": 1262,
+      "sha256": "f5833fc46ece155efdc740bba7625a69e704805a34b0e2529a21952fdf4d9588",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/handlers/sf-verification-execution.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-verification-gate.ts",
+      "size": 1572,
+      "sha256": "866e5db73eaeb6616d71cd0b624b207c669e51e835ab24e28bb922f14391804c",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/handlers/sf-verification-gate.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/index.ts",
+      "size": 3591,
+      "sha256": "12789cf69d62edd9cd72dc999bb40872bd078f0a515470c325b7bd5718a92d6e",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/index.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/agent-handoff-v11.ts",
+      "size": 12152,
+      "sha256": "b6c02c8c6e5b0f2b9a18872a1fdc4bcb85339d7238d1f6c53013f6f988097354",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/agent-handoff-v11.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/allowed-write-files.ts",
+      "size": 1390,
+      "sha256": "54a46f87c389527619a86f799d4eb88bd8f238a872f44d2551ba31963447da7b",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/allowed-write-files.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/architecture-governance-v7-regression.test.ts",
+      "size": 7558,
+      "sha256": "dd8e117a10a18c7426decff70eb5edd637fdf6793074e1071b0a2a062b2660e2",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/architecture-governance-v7-regression.test.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/artifact-schema-validation.ts",
+      "size": 22816,
+      "sha256": "8a336eae9ed77dc80513ac1beddf8fcaa30bc52cd0c09a1c23f7489bb0fc09ff",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/artifact-schema-validation.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/atomic-spec-merge-write-provenance.ts",
+      "size": 5617,
+      "sha256": "18b52322613e1a1d03a6b594ed454bb2076b22fff247992f6169c9562fd8e611",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/atomic-spec-merge-write-provenance.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/authoritative-work-items.ts",
+      "size": 3061,
+      "sha256": "0da7fcf52476ba53f0d611ec6552ceeb24b1b247d4296855efcadbca47a741af",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/authoritative-work-items.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/bash-guard.ts",
+      "size": 2899,
+      "sha256": "0caff836d3aa24c3ad4ca7d4bc0e836d71614497a7836ddad69e74aab13261ea",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/bash-guard.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/blocked-write-classification.ts",
+      "size": 10164,
+      "sha256": "0f4375209d89d254cda9d76bee43f53788b67df11bc0c86d77a3f3c9cd130e41",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/blocked-write-classification.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/candidate-freeze-v11.ts",
+      "size": 821,
+      "sha256": "7edc945580a7f2aa9badac1070aa41b9f41d5a944b4c10244302f2dffa969dbd",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/candidate-freeze-v11.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/candidate-generation-integrity.ts",
+      "size": 9923,
+      "sha256": "ca9ad4d17bc4f67debcf50bf80b63b33b1c4f1c37f034d18ef4a96dcc946c10f",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/candidate-generation-integrity.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/candidate-manifest-owner.ts",
+      "size": 1628,
+      "sha256": "f80852e9f77160c3a0d46cda43806b2a291b633fc642c4b3627b04528d1f7a09",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/candidate-manifest-owner.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/candidate-requirement-reference-integrity.ts",
+      "size": 4011,
+      "sha256": "90c0a4d011043ae65bffeac168817593ceb5039bf860514af78186e164b239e3",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/candidate-requirement-reference-integrity.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/change-classification.ts",
+      "size": 2703,
+      "sha256": "bbc50857a8944a8ced9913541a206a20d623602d9cb20fd60052f6c798f1c040",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/change-classification.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/changed-files-audit-trusted-writes.ts",
+      "size": 992,
+      "sha256": "5988d3c07c8e47cf9b298f0632c5f4045bc7cce34b280aafefda06f34a332a82",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/changed-files-audit-trusted-writes.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/changed-files-audit-verdict.ts",
+      "size": 5718,
+      "sha256": "8473b877304ceee142b510a3ab688c2dafba626a03aa6cc8a3d68c1b7db7efea",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/changed-files-audit-verdict.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/changed-files-audit.ts",
+      "size": 7278,
+      "sha256": "9aa542ad2e30ea1dcfb2cb099e63bacc276affdae4aec46fdfc54e0a9c444fbb",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/changed-files-audit.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/close-gate.ts",
+      "size": 34492,
+      "sha256": "e43430bf0bbbb3f25995b39241468c9cf9bab054083f58ce35333c922296913f",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/close-gate.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/code-contract-verifier.ts",
+      "size": 11120,
+      "sha256": "5998d9585a271105e20cef5b517a7e615201d89f2a2f961932642fbdee1f1058",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/code-contract-verifier.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/code-permission-service-v11.ts",
+      "size": 11589,
+      "sha256": "5abaef05413014cfb71d2b7956f7e75a85bdfda451aa04a5979b95624a877624",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/code-permission-service-v11.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/contract-authoring.ts",
+      "size": 47025,
+      "sha256": "df23f6d6c386d55b0a9094cad6a65934fda8b2de1854756163eb77ecaa3d97ba",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/contract-authoring.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/contract-integrity.test.ts",
+      "size": 3923,
+      "sha256": "6b50136c81a8dbee7eb39e8d81b1be83bd65560fa3cd109d2e635fb70b957106",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/contract-integrity.test.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/contract-integrity.ts",
+      "size": 26660,
+      "sha256": "f5dad6959be3e1665f92ab68a50b04683ad34a0a0924580949638172e774d0cf",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/contract-integrity.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/contracts-registry.ts",
+      "size": 11240,
+      "sha256": "56deb7fafd9f9f879581dd14ed27733ca6437501f29279868dfd73a15c9a7385",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/contracts-registry.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/evidence-manifest.ts",
+      "size": 4202,
+      "sha256": "fbaa9337220856f0b9bc3f7b94e9cdb25668d70b6b34473fa8ddf110cb3ee1d6",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/evidence-manifest.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/filesystem-diff.ts",
+      "size": 21302,
+      "sha256": "19f947d4d54f868d9e8f02a5bd33e1b307b4776af04dff735d43677321b2d129",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/filesystem-diff.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/gate-chain.ts",
+      "size": 19092,
+      "sha256": "6d8a6827d607fd171df623393c89edc37671d644b793cb2c373d55c45a22ffff",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/gate-chain.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/gate-report.ts",
+      "size": 4944,
+      "sha256": "c4057a96619f6892b140af6d655c091b0f23602dacc6e86940498c09dae68af5",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/gate-report.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/gate-runner-v11.ts",
+      "size": 72563,
+      "sha256": "0695e87f01359b747e617754249ac3d0bc2ccc285069eddbeed837956f749b8b",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/gate-runner-v11.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/git-detached-bootstrap.ts",
+      "size": 27781,
+      "sha256": "8672a9baf0041c317dad54840ff0dbccc39aa63fa0172a41dcef90d8173ec879",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/git-detached-bootstrap.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/git-governance-core.ts",
+      "size": 23242,
+      "sha256": "e82420c088c2a6df7f8f1d6c2b53d77944c839c46640acc3b8b15098f36e686d",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/git-governance-core.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/git-governance-stage2.ts",
+      "size": 15259,
+      "sha256": "78049a7064665eb4c0ff55c43f235fd83fb447a89727a332e360d181bbf6488a",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/git-governance-stage2.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/git-governance-stage3.ts",
+      "size": 16180,
+      "sha256": "86967e74b6a05963c8308a041587fafb14c55fff2105c402b6330aa0be4cac2b",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/git-governance-stage3.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/git-governance-stage4.ts",
+      "size": 14223,
+      "sha256": "5bc812d8558c45b75f97f0e05c0ca976110ae19b78a732f5bb233f231ff93e69",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/git-governance-stage4.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/git-governance-write-provenance.ts",
+      "size": 5380,
+      "sha256": "2c824427e79262caf849ce1630d08017b857a4db66ece33b3fc226e943630ccf",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/git-governance-write-provenance.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/governance-invariants-v11.ts",
+      "size": 51433,
+      "sha256": "85aa7ed61b7292a915ebe42dfd0832a16d72c9181c77c1bed91a5cd4950fdd15",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/governance-invariants-v11.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/governance-trace-model.ts",
+      "size": 26844,
+      "sha256": "24b6558bd14419ec10df7272c2f64088dc500f86c09749316b7f542e69e6a45d",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/governance-trace-model.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/hard-stop-latch.ts",
+      "size": 7564,
+      "sha256": "90217ca3fd6c2cb6f885ef9d7f84164173cf7be88559a489fc560c59237d7d0e",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/hard-stop-latch.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/hard-stop-resolution-log.ts",
+      "size": 3247,
+      "sha256": "5ca04f0f85ae05dc9f2d48ed2c3de369179d0d3395e077d12a2c3d9dbd683c97",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/hard-stop-resolution-log.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/impact-analysis.ts",
+      "size": 6391,
+      "sha256": "a09e888b556fddab41847ac6f8ac125a4bf926e6114124ea2a7e15e3051cf5b9",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/impact-analysis.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/implementation-baseline.ts",
+      "size": 15872,
+      "sha256": "13ded69b63454857f0fa1d91d79384e109c52a7d581fba6570c4131b5d68dda3",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/implementation-baseline.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/invalid-closure-recovery-archive.ts",
+      "size": 2811,
+      "sha256": "af6fec91fa4e92526b9d701d156d39a93829412bfec6a3e75aaffec39ca7f431",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/invalid-closure-recovery-archive.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/invalid-merged-spec-closure-recovery.ts",
+      "size": 19557,
+      "sha256": "cfdaf834b8e3e4b2e35fc9025ddcd94015a909b17fbf83dc40167b581a770e8f",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/invalid-merged-spec-closure-recovery.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/merge-runner-v11.ts",
+      "size": 39730,
+      "sha256": "c5c04f1166cc4cf3b303c0c6213b405ad5469e05cf8b849f3fea405b345d6932",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/merge-runner-v11.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/native-write-boundary.ts",
+      "size": 4785,
+      "sha256": "1ce9688407620bb0bef3b12b71b71314beceadc1ad936820725d09681d82c4cf",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/native-write-boundary.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/new-project-governance-bootstrap.test.ts",
+      "size": 10550,
+      "sha256": "1e0ae8aa3be832c33ef0c907771443860fb8704dea8c74145b75524570af8d72",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/new-project-governance-bootstrap.test.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/path-identity.ts",
+      "size": 1835,
+      "sha256": "e74563116a7f358781eba16c8d90a3df8d432939637ad1cfe8717a65356b4c6f",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/path-identity.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/path-policy.ts",
+      "size": 4161,
+      "sha256": "6c5be43c476ee992956bcbf6f983f051fb7aff2811d264ed7d4606a6dbc524ab",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/path-policy.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/project-governance-fresh04-module-consumer.test.ts",
+      "size": 7918,
+      "sha256": "99be8ed722c22518680eefada34d077808551d5b93549f6bc4ca3d1bbb63921b",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/project-governance-fresh04-module-consumer.test.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/project-governance-greenfield-code-permission.test.ts",
+      "size": 16503,
+      "sha256": "f30cba31b7ee54b0c3efda960769f5795823ea62460982fc0cf38caf049d86d2",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/project-governance-greenfield-code-permission.test.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/project-governance-greenfield-premerge.test.ts",
+      "size": 10325,
+      "sha256": "e759c12b6129f49a1786a973804ff49c9324540abb1cf8ee724997e4296d79f3",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/project-governance-greenfield-premerge.test.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/project-governance-task-scope.test.ts",
+      "size": 8168,
+      "sha256": "7dcc76cfe6bb2d91b236497cbc4d9f63ba4cf58e9b1d8a77237231fdf9a65a2c",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/project-governance-task-scope.test.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/project-governance-v2.test.ts",
+      "size": 1928,
+      "sha256": "6c91a5d621a6150d47e868861bbb9b319187d6a276dd099149a4d2230f268d14",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/project-governance-v2.test.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/project-governance-v2.ts",
+      "size": 136668,
+      "sha256": "875892b3b3cbe73fe071e94d213af8292c1819ac8ac02d6cb2355b033af2a09a",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/project-governance-v2.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/project-init-reconstruction.ts",
+      "size": 8891,
+      "sha256": "49177dcf666cd9beff9b52a79c1d90bff27ca15913e72b68dafcbce9ebac06ef",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/project-init-reconstruction.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/regenerable-artifact-governance.ts",
+      "size": 4230,
+      "sha256": "65999f135a219c2eadea8d3470ab6862972d629310b6d89dad4abd0e38ea7d88",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/regenerable-artifact-governance.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/required-files.ts",
+      "size": 1352,
+      "sha256": "e4c43e89f710172bbdf845260fa8acea6380463c84788000bc7d71b39ed33ca7",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/required-files.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/required-gates.ts",
+      "size": 5233,
+      "sha256": "f37f509d8e0d42f1ce230f74de6e6ad41c5b9af0a9161df07d6fada539a66b88",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/required-gates.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/rollback-runner-v11.ts",
+      "size": 10543,
+      "sha256": "601844de836ac0d96df2d89cf2b7fc856b9e65336d241fe54d1733b8d2143f87",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/rollback-runner-v11.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/semantic-closure-builder.ts",
+      "size": 14632,
+      "sha256": "381c96177e12d6521c23e62799c65ffde1781b3634a04ceb44eee7482550ce79",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/semantic-closure-builder.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/semantic-closure-core.ts",
+      "size": 36707,
+      "sha256": "9d6f5b45460d5c1476120e947b48beab12fba43c04ba9195a03722e4df12864e",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/semantic-closure-core.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/semantic-closure-provenance.ts",
+      "size": 5139,
+      "sha256": "85927f719c3f7197f1ff1739990529b18823f21323d6a922bd3a538b54613d73",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/semantic-closure-provenance.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_artifact_write_core.ts",
+      "size": 18225,
+      "sha256": "71dbc284b9dffbc175de18c7374485e6d40c01324bbc9df21016f5df7f4578ac",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/sf_artifact_write_core.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_batch_verify_core.ts",
+      "size": 3805,
+      "sha256": "b40d1f537e52e5de012ce49a8b34031953e2b46d85c98afcb6da7b3af7966c2a",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/sf_batch_verify_core.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_design_gate_core.ts",
+      "size": 35891,
+      "sha256": "29783b8cb685d311ce1de7f9f0d4e4b306883b4cb8cd3408395e370647bdc5c8",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/sf_design_gate_core.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_design_governance_policy.ts",
+      "size": 5061,
+      "sha256": "70a3172ec46f90f54273616d416414d01c28d1b1b50b584967093273e2d16cd4",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/sf_design_governance_policy.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_doc_lint_core.ts",
+      "size": 31715,
+      "sha256": "629f4110e2d21d39194c6f8e3db518796e27849fdb2fb0a4309f655ecb826f00",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/sf_doc_lint_core.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_doctor_core.ts",
+      "size": 7674,
+      "sha256": "48e1c8d2f824e28adc1e512886c0ea353ac855763efc05afe2f047527e10c5ec",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/sf_doctor_core.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_ears_parser.ts",
+      "size": 26805,
+      "sha256": "15ef34101825c321fb19534b4889f9115b9dcd5124ae393b1e2b476d51b6847e",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/sf_ears_parser.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_ears_types.ts",
+      "size": 8974,
+      "sha256": "df0370c9459a33d548ef036f5d2a6bc2d8699d4cc3dcbc5605d7c3201a42908c",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/sf_ears_types.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_gate_types.ts",
+      "size": 1047,
+      "sha256": "c278bf4d287a9b0e162792b283ace78c2dc9df8424797b631efb35c684e64183",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/sf_gate_types.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_knowledge_base_core.ts",
+      "size": 32807,
+      "sha256": "235b61cf8eafa364912989b281b79a1c4d4b6f408ae9216745acf98bc8535942",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/sf_knowledge_base_core.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_markdown_verification_parser.ts",
+      "size": 15927,
+      "sha256": "2a2d08c75674efacbcb9822536ef3ed6badd493208dc559dba41ae4568e76220",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/sf_markdown_verification_parser.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_project_init_core.test.ts",
+      "size": 5805,
+      "sha256": "9b0f18ed0f511f3a749d606e964a05aeea67f94276b2c0f9e1a8ccbe8dfbf7be",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/sf_project_init_core.test.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_project_init_core.ts",
+      "size": 20954,
+      "sha256": "c5ad3b53cffe1809904b52db329e684f3df8c25aaf4e544a0c1879fe75481e0b",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/sf_project_init_core.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_requirements_gate_core.ts",
+      "size": 25800,
+      "sha256": "384bcbfab24fe4f5355877b06992b0a08c3e42743c2aa96add1d167f63f8aeb3",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/sf_requirements_gate_core.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_core.ts",
+      "size": 2341,
+      "sha256": "14a8c5e42971ce13764768857d59f034ee4dcf14f7e454bd5e8191e7c0368f35",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/sf_safe_bash_core.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_executor.ts",
+      "size": 10303,
+      "sha256": "f5ec20c20d248618e13a6b584a001b0ba20dfbc8067e21b62bc8e3cc05475681",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/sf_safe_bash_executor.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "size": 1096,
+      "sha256": "52ab07857d9a43dd4293b8b232175b1337279a7224dde4f9902b14d7f2ea0a01",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_types.ts",
+      "size": 3263,
+      "sha256": "423342efb5dc853619f3cc6026be401308a29cec2b6cf23d53cdfeaf6be143af",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/sf_safe_bash_types.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_section_matcher.ts",
+      "size": 4722,
+      "sha256": "2c8e75d1b184163f6d2da2b2516b8205a80c9953bc0564f4e5b59b77c035ccbd",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/sf_section_matcher.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_tasks_gate_core.ts",
+      "size": 17998,
+      "sha256": "8a5d5972f877d785273c1770c9a558a199c3ce98bc0089eea2a100fe17cdb732",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/sf_tasks_gate_core.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_trace_matrix_core.test.ts",
+      "size": 4656,
+      "sha256": "12d3a437fbbc14b5e9ca646b3472e1a2606da722dda46a05fbadbe7a38e58c1d",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/sf_trace_matrix_core.test.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_trace_matrix_core.ts",
+      "size": 13454,
+      "sha256": "edd0749bae48aaef9c1666d8cd54ae794851ceed2e44b6fa8542b08f0360cc40",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/sf_trace_matrix_core.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_verification_gate_core.ts",
+      "size": 26397,
+      "sha256": "8fe2918add6ce061ce94adfab3aa63e85da0c591cf6b76f703cb776786a7f7f3",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/sf_verification_gate_core.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_verification_types.ts",
+      "size": 8837,
+      "sha256": "c42c8493960fd910598668b3089395a7f1837908096c19594706c1014fa8527c",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/sf_verification_types.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/shell-command-write-intent.ts",
+      "size": 5221,
+      "sha256": "1ad03ad4f5478545f1b782bdb109aa5454c4fcd227923a3adbeaff28ecc00d00",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/shell-command-write-intent.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/spec-migration-trace-contract.ts",
+      "size": 1306,
+      "sha256": "2d1094e2ff073ffc8285955e8cc0c218920914e336df9c2d627ba56e6e079cfe",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/spec-migration-trace-contract.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/state-coordinator-v11.ts",
+      "size": 23971,
+      "sha256": "a68deaf6333c7e342874466afbdde42af01bebe30fc375d40c265014723d3d17",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/state-coordinator-v11.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/state-machine-v11.ts",
+      "size": 7555,
+      "sha256": "47b15e0bec79c3fc148e1ec6260c934f7df5e3ce46a7574510d7cb7d0705c77d",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/state-machine-v11.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/state_machine.ts",
+      "size": 8938,
+      "sha256": "d17615efe5a06405ed370c2ea3ac65a3355488bc17981760cdd42dd837124ae9",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/state_machine.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/tool-permissions.ts",
+      "size": 8153,
+      "sha256": "8784e2b4c57b62eba4dd38ae8122a693a0c6caa5418b1047e9ac85a00225102e",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/tool-permissions.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/tool-wrapper.ts",
+      "size": 1648,
+      "sha256": "6cb8b695e108d5897da082d3c36a011fd35e8c0d5270056c010cbc1d2cf93483",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/tool-wrapper.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/user-decision-recorder-v11.ts",
+      "size": 8761,
+      "sha256": "f42df684f704e1d454f96d3a8bc389471e48f4438ba800556a4b89f9a6b308f6",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/user-decision-recorder-v11.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/utils.ts",
+      "size": 6906,
+      "sha256": "0da272200ea16564ff2314a51cce2b456fc0d848640e735467b8e0d64f5f4b9a",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/utils.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/verification-evidence-integrity.ts",
+      "size": 7606,
+      "sha256": "8ffe6a4e2ef121acbf9e9ac9b89d092cd34c285bdde4dedd75c593db1431a1df",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/verification-evidence-integrity.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/verification-evidence-v11.ts",
+      "size": 6844,
+      "sha256": "b4bb7e390c545c98eefc5c0e04213a773c9ce9386920bea48bee871b4c153aad",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/verification-evidence-v11.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/verification-governance-contract.ts",
+      "size": 15124,
+      "sha256": "f2457555e03667e77415433a2479b03d75d34c4f58de69156c8083ab9164a797",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/verification-governance-contract.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/verification-report-contract.ts",
+      "size": 12784,
+      "sha256": "1cfce63535f35b52164165ae1319e2daa5867f63089d509d35ecc80a313d49b9",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/verification-report-contract.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/verification-report.ts",
+      "size": 3137,
+      "sha256": "e58c69a265b6a6ea8b0f114784a5f68e16a10d61cac5787e6c240b9d32391db3",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/verification-report.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/waiver.ts",
+      "size": 2198,
+      "sha256": "a5ef5ba201d9a8541c7bd2c4003bd9b49f635a4a3116b6750b1c9ac491f32063",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/waiver.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/work-item-lifecycle-v11.ts",
+      "size": 8035,
+      "sha256": "54b62b1c8d6895f64b3e62565a41a490f062adadbdcaa5cbdba96f56b1739b6b",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/work-item-lifecycle-v11.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/work-item-metadata.ts",
+      "size": 3553,
+      "sha256": "bb60cd6e7e3cd02f18077cbfbdcf965da1c7beb1500a25348537e6a9c0168b64",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/work-item-metadata.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/workflow-path-selector-v11.ts",
+      "size": 899,
+      "sha256": "a31c7f90179003674d6ad9eb47426a8594ce0737eaf12deb96b95955f931700e",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/workflow-path-selector-v11.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/write-guard-audit-binding.ts",
+      "size": 5193,
+      "sha256": "a459eaf44d74bd3b7fbf057790e61bbb3aeca440b1f6e069d0d3bb66e34b6a80",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/write-guard-audit-binding.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/write-guard-authorization-log.ts",
+      "size": 7498,
+      "sha256": "38c40f4b3e235345f268bf9299218ad359fef23872b02f0d3697c1c11daefcfe",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/write-guard-authorization-log.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/write-guard-runtime-v12.ts",
+      "size": 11926,
+      "sha256": "d50ba93c3470916191c765f5b44bc037bf7f047373d748183e76a77c32179c3b",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/write-guard-runtime-v12.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/write-guard-v11.ts",
+      "size": 5659,
+      "sha256": "e0e5f28b1d3b46f7d79c676b145f57555cfbef4af75daf890391a30294be380b",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/tools/lib/write-guard-v11.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/types.test.ts",
+      "size": 2642,
+      "sha256": "b628760318e7ee15ed6d0a7c28698a4d38969c2e35d624d08203999f1a7bb64f",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/types.test.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/verification/VerificationRuntime.ts",
+      "size": 33184,
+      "sha256": "1bd77c28ca73ac1f5d9681b2e9a0777dfc1073da94b47ff663de2107f0a6e64c",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/verification/VerificationRuntime.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/verification/authority-snapshot.ts",
+      "size": 9023,
+      "sha256": "bc7ed1af0e227db5d77659341b8a393dc3ccbf52bb718f419e4a003cb3435004",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/verification/authority-snapshot.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/verification/execution-evidence-consumer.ts",
+      "size": 5420,
+      "sha256": "e7b985eabe3f0b94b1a8a252d731930d961d8c98580dfda0dfb0f240e03dbb06",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/verification/execution-evidence-consumer.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/verification/invocation-lease.ts",
+      "size": 3852,
+      "sha256": "d64ea4189795d593ba28aad0a04f71453b001f370aa1ddc6725f409be1c49a31",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/verification/invocation-lease.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/verification/native-executor.ts",
+      "size": 17522,
+      "sha256": "5d83dc9364c71016008e72b7b8d4429901036e72dfabf2524e9e911f4af28b96",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/verification/native-executor.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/verification/node-command-contract.ts",
+      "size": 16494,
+      "sha256": "2c313d6e0db881d67b183518579bc3b0963ad8a28e9ad411f803557deff6024c",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/verification/node-command-contract.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/verification/owner-store.ts",
+      "size": 7663,
+      "sha256": "bfecddfaff5c384ebb4038603a2e929f2d9537fe38fc57364cde0727cd71df09",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/verification/owner-store.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/verification/rejection-diagnostic.ts",
+      "size": 1537,
+      "sha256": "9d607f17e1b8d94e8427aba42ae18556a677309f34241624596ab073422fb77c",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/verification/rejection-diagnostic.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/verification/request-context.ts",
+      "size": 894,
+      "sha256": "beff4effe22359909d684ccdc899b1b5983cf9046d038b05560d70f347931596",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/verification/request-context.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/verification/source-snapshot.ts",
+      "size": 7657,
+      "sha256": "deaa2976c37eba6af54e4c881d457a40d86f2f3c47f15cb38e7ef80fe39d6b40",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/verification/source-snapshot.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/verification/static-task-command.ts",
+      "size": 7297,
+      "sha256": "59f84f7042fa4657187d0b7ad0b24e82629804897a0a08707171f7ccafac0044",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/verification/static-task-command.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/verification/verification-assets.ts",
+      "size": 2477,
+      "sha256": "bc901b9572e63ae0ce08ea8265a8c225c23f60ef1f1c73f6ea7459f0f09a6020",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/verification/verification-assets.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/verification/verification-plan.ts",
+      "size": 3895,
+      "sha256": "20a9e57ca3098211f2b602ba1335a16143cce491f1a3977956fb540519719688",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/verification/verification-plan.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/verification/verification-schema.ts",
+      "size": 16943,
+      "sha256": "6eb14add9dd264fac956746cfd32e0cfa5909f292a64b79dd3e4783d44264cd2",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/verification/verification-schema.ts"
+    },
+    {
+      "file": "packages/daemon-core/src/wal/WAL.ts",
+      "size": 7406,
+      "sha256": "161b03053fbba36971534a652c611c801415a0d4417831e599ae6cb9c15ae628",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/src/wal/WAL.ts"
+    },
+    {
+      "file": "packages/daemon-core/tests/design-governance-orchestrator-closure.test.ts",
+      "size": 47647,
+      "sha256": "ee398a688598c0e7bdd07db4db5bca706e1a6a2519c8e44d529361c15a41c411",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/tests/design-governance-orchestrator-closure.test.ts"
+    },
+    {
+      "file": "packages/daemon-core/tests/fixtures/build-process-fixture.ts",
+      "size": 783,
+      "sha256": "73059702ba2c7f924858bbb77c96c7eb791284a882b9ca913432f14a23acba79",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/tests/fixtures/build-process-fixture.ts"
+    },
+    {
+      "file": "packages/daemon-core/tests/unit/ascii-control-boundary.test.ts",
+      "size": 694,
+      "sha256": "723ce05e939907e6a4304b947ac818b37a182e91b1887736d561758aca3acc53",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/tests/unit/ascii-control-boundary.test.ts"
+    },
+    {
+      "file": "packages/daemon-core/tests/unit/authoritative-work-item-reader.test.ts",
+      "size": 3485,
+      "sha256": "2f89f7de98433f5915828555cb67783a31a6caec91a34bd0ab2cfd3a728e9b9d",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/tests/unit/authoritative-work-item-reader.test.ts"
+    },
+    {
+      "file": "packages/daemon-core/tests/unit/candidate-gate-historical-attempt-reconcile.test.ts",
+      "size": 5280,
+      "sha256": "50e14ec15fce6525e435bb99500b2123afd848bab2ecbd3ea571be80cdc00c0b",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/tests/unit/candidate-gate-historical-attempt-reconcile.test.ts"
+    },
+    {
+      "file": "packages/daemon-core/tests/unit/candidate-generation-integrity.test.ts",
+      "size": 19205,
+      "sha256": "ff1cbf2f163ee63f37d222dfd8301e41cb28e719c77dd01aae429936430c6cc6",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/tests/unit/candidate-generation-integrity.test.ts"
+    },
+    {
+      "file": "packages/daemon-core/tests/unit/candidate-runtime-truth-contract.test.ts",
+      "size": 2758,
+      "sha256": "e1f88529289777299951fcd3b9a3abbb0404e3e19b8aaaffa6901ab70a9a502a",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/tests/unit/candidate-runtime-truth-contract.test.ts"
+    },
+    {
+      "file": "packages/daemon-core/tests/unit/current-project-layout-boundary.test.ts",
+      "size": 9892,
+      "sha256": "a2930706d37f6e7e7895973855d55ab808fcb01b35d9d1a21f44cf2f13dc22ce",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/tests/unit/current-project-layout-boundary.test.ts"
+    },
+    {
+      "file": "packages/daemon-core/tests/unit/err155-159-contract-governance-recovery.test.ts",
+      "size": 8400,
+      "sha256": "822e35d088a8bc916a6f12ce500861fa234d7490d03367a36126321de0208079",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/tests/unit/err155-159-contract-governance-recovery.test.ts"
+    },
+    {
+      "file": "packages/daemon-core/tests/unit/input-boundary-contracts.test.ts",
+      "size": 2827,
+      "sha256": "ae3638d6d62cde7c881584fff2b09b9979b2e9470e4d43f1bc1bcd7f1c512b19",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/tests/unit/input-boundary-contracts.test.ts"
+    },
+    {
+      "file": "packages/daemon-core/tests/unit/optional-file-lock-owner.test.ts",
+      "size": 5285,
+      "sha256": "5876bf931e42fdeef3afd3f1806c2c70e548b84ce4737312fcdecb58242787c6",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/tests/unit/optional-file-lock-owner.test.ts"
+    },
+    {
+      "file": "packages/daemon-core/tests/unit/runtime-history-integrity.test.ts",
+      "size": 9502,
+      "sha256": "f67186672bfc5c8b44d45ef285bc9c2fffab5b57827ca65921947208140dc7cc",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/tests/unit/runtime-history-integrity.test.ts"
+    },
+    {
+      "file": "packages/daemon-core/tests/unit/source-structure-contract.test.ts",
+      "size": 1285,
+      "sha256": "3750c36eaf9d2adfa2436f4d06546115255bbfd8a7120e9151b962c4e3f3c12d",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/tests/unit/source-structure-contract.test.ts"
+    },
+    {
+      "file": "packages/daemon-core/tests/unit/verification-source-snapshot.test.ts",
+      "size": 6757,
+      "sha256": "af4997d6de3a0cca99f73293b04b93c621fdaab8404438526f504e5e8330ab2f",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/tests/unit/verification-source-snapshot.test.ts"
+    },
+    {
+      "file": "packages/daemon-core/tests/v11-final-governance-regression.test.ts",
+      "size": 10954,
+      "sha256": "f4dd1f82a0cfcb9890644de51edfb4b07ad52682dde47606ed25a65341d2cf41",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/tests/v11-final-governance-regression.test.ts"
+    },
+    {
+      "file": "packages/daemon-core/tests/v6-authority-consumer-alignment.test.ts",
+      "size": 4270,
+      "sha256": "3a3f92d1100acd85bc188382dd1ab3d2e5cf5cc73dfe320f9d67db3de891bcd8",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/tests/v6-authority-consumer-alignment.test.ts"
+    },
+    {
+      "file": "packages/daemon-core/tsconfig.eslint-declarations.json",
+      "size": 202,
+      "sha256": "1514fce8182c35eb7d932999367fe9829c4bc36eee1194b556246a08c2902974",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/tsconfig.eslint-declarations.json"
+    },
+    {
+      "file": "packages/daemon-core/tsconfig.eslint.json",
+      "size": 262,
+      "sha256": "05fc349ea1295f85ca92d04030c7b38482c6b9b5da35ca57e04bd9080393cbde",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/daemon-core/tsconfig.eslint.json"
+    },
+    {
+      "file": "packages/host-profile/package.json",
+      "size": 771,
+      "sha256": "36cb21f59111a6900310b64160b662e63f5c9b3ff308c7f7ed801085ed444639",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/host-profile/package.json"
+    },
+    {
+      "file": "packages/host-profile/src/probe-os.ts",
+      "size": 5572,
+      "sha256": "13b4554df1197c0a8cb435322f8ae9db7ecb300d858007b6d83d1696762ed580",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/host-profile/src/probe-os.ts"
+    },
+    {
+      "file": "packages/host-profile/src/probe-utils.ts",
+      "size": 7546,
+      "sha256": "e5480b47974017a7d92cdb16337d194ccf180a48f42c8a5cb1aad34133ee23f7",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/host-profile/src/probe-utils.ts"
+    },
+    {
+      "file": "packages/observability/package.json",
+      "size": 2089,
+      "sha256": "5d629d73a9adadb1cdfbb3769c12090079ecedc8c3258286cca232c9b33c3937",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/observability/package.json"
+    },
+    {
+      "file": "packages/observability/src/config-contract.ts",
+      "size": 2239,
+      "sha256": "bb5aa29312f0303da0af9da44dca4415e9ee024efc9c146934e476f8123e1185",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/observability/src/config-contract.ts"
+    },
+    {
+      "file": "packages/observability/src/types/event-utils.ts",
+      "size": 5587,
+      "sha256": "4c79d90f8a02e80d1cea9623f1d193ea515d6b8f6e00b2a106ba4ad55026e3d0",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/observability/src/types/event-utils.ts"
+    },
+    {
+      "file": "packages/observability/tests/property/property-30-event-schema-multisync.pbt.ts",
+      "size": 17458,
+      "sha256": "93f4a513066bb80360282a782384b394db2d4c7b06fa3a5946ec25eebe1fe86a",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/observability/tests/property/property-30-event-schema-multisync.pbt.ts"
+    },
+    {
+      "file": "packages/observability/tests/property/property-30-event-schema-multisync.property.test.ts",
+      "size": 18576,
+      "sha256": "45c76fa6b9a0084fdf0933545a8821a074dd0ba3a0a78d0d960197aca274f1a8",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/observability/tests/property/property-30-event-schema-multisync.property.test.ts"
+    },
+    {
+      "file": "packages/observability/tests/property/property-30-event-schema-simple.test.ts",
+      "size": 8373,
+      "sha256": "9c17a9cbc824c7252698b902b4a886d636977d860d4e1ca3f0d1149f1ec2b1ab",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/observability/tests/property/property-30-event-schema-simple.test.ts"
+    },
+    {
+      "file": "packages/observability/tests/unit/event-schema.test.ts",
+      "size": 9417,
+      "sha256": "71f75c5929f044902db2cedafb8a8a55b29954ef1eecee52bed3dbdde67d9cc4",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/observability/tests/unit/event-schema.test.ts"
+    },
+    {
+      "file": "packages/observability/tests/unit/project-structure.test.ts",
+      "size": 2727,
+      "sha256": "4338f783d26e0ec9b66a350d4c317750e3efce9e95e89656a11b9f97ca5c8912",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/observability/tests/unit/project-structure.test.ts"
+    },
+    {
+      "file": "packages/observability/tsconfig.eslint-declarations.json",
+      "size": 202,
+      "sha256": "1514fce8182c35eb7d932999367fe9829c4bc36eee1194b556246a08c2902974",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/observability/tsconfig.eslint-declarations.json"
+    },
+    {
+      "file": "packages/observability/tsconfig.eslint.json",
+      "size": 262,
+      "sha256": "05fc349ea1295f85ca92d04030c7b38482c6b9b5da35ca57e04bd9080393cbde",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/observability/tsconfig.eslint.json"
+    },
+    {
+      "file": "packages/observability/vitest.config.ts",
+      "size": 1079,
+      "sha256": "2d6dbf9e8959ad90491516fa9f93129a68e801b2bc028e3cf044c53866a18e41",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/observability/vitest.config.ts"
+    },
+    {
+      "file": "packages/opencode-adapter/package.json",
+      "size": 1927,
+      "sha256": "f7a8d574b03e89af4a13aed4422d748a7250e3933cd9b4150b417a34fb29495d",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/opencode-adapter/package.json"
+    },
+    {
+      "file": "packages/opencode-adapter/src/OpenCodeAdapter.ts",
+      "size": 41688,
+      "sha256": "2657a7f84fa28552cf54bef00e118ce4950e82df4294ff8e5ae3e0308d18da72",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/opencode-adapter/src/OpenCodeAdapter.ts"
+    },
+    {
+      "file": "packages/opencode-adapter/src/configuration.ts",
+      "size": 8982,
+      "sha256": "4bfa1033183dcaeac301fd4df94170ef5eb32cf9dea2cc328ddaecbadab0ee5e",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/opencode-adapter/src/configuration.ts"
+    },
+    {
+      "file": "packages/opencode-adapter/src/diagnostics/DiagnosticsLogger.ts",
+      "size": 15856,
+      "sha256": "32a38d4e5d5f8136ca65f97f5671afff5a9126176ffb5ced7e062dc61a91d978",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/opencode-adapter/src/diagnostics/DiagnosticsLogger.ts"
+    },
+    {
+      "file": "packages/opencode-adapter/src/diagnostics/index.ts",
+      "size": 367,
+      "sha256": "6ea199fd5cec18efcf802cb6feaa87b449fd96c5d123e059771244ac97636ce7",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/opencode-adapter/src/diagnostics/index.ts"
+    },
+    {
+      "file": "packages/opencode-adapter/src/errors/ErrorClassifier.ts",
+      "size": 18653,
+      "sha256": "9922c0b97fd31d25081b3388795b3a9c749e08ef33cf5a4e492edf40d0cbcbf7",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/opencode-adapter/src/errors/ErrorClassifier.ts"
+    },
+    {
+      "file": "packages/opencode-adapter/src/errors/index.ts",
+      "size": 27031,
+      "sha256": "643ba43a47cc9ee78e0b6bf24f9d5764b212c50244db0f175125f96bd295a6b5",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/opencode-adapter/src/errors/index.ts"
+    },
+    {
+      "file": "packages/opencode-adapter/src/event-logger/EventLogger.ts",
+      "size": 8021,
+      "sha256": "f5bcff2ad062a57e5ab20bf29f27be144efbb68e906072ff70308ec552748875",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/opencode-adapter/src/event-logger/EventLogger.ts"
+    },
+    {
+      "file": "packages/opencode-adapter/src/event-logger/index.ts",
+      "size": 216,
+      "sha256": "b3e3d6f6bd1a7e5722a251168ad8c6ae0ee3866731c42eed0ba0b5ad9a7a9aba",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/opencode-adapter/src/event-logger/index.ts"
+    },
+    {
+      "file": "packages/opencode-adapter/src/index.ts",
+      "size": 3022,
+      "sha256": "ceacb84d0b3d8238f12f4239eba98dcee8289b5866bb5163a3d0b40b665c0c8e",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/opencode-adapter/src/index.ts"
+    },
+    {
+      "file": "packages/opencode-adapter/src/integration/OpenCodeHttpRuntimeClient.ts",
+      "size": 15975,
+      "sha256": "85b4a4e9ff860b4fcd80aa9f27f26e7f46f21f62e247306a6d07c0c3165a8789",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/opencode-adapter/src/integration/OpenCodeHttpRuntimeClient.ts"
+    },
+    {
+      "file": "packages/opencode-adapter/src/integration/SessionRegistry.ts",
+      "size": 10790,
+      "sha256": "867f3df356d3c30e69143794c4b1429b8d8f46b356ef789698297f2fcd3551ab",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/opencode-adapter/src/integration/SessionRegistry.ts"
+    },
+    {
+      "file": "packages/opencode-adapter/src/integration/ThinPluginClient.ts",
+      "size": 16453,
+      "sha256": "b80b035c2965d204ff752885589af156a17398c21dcdaacb1ab90c18b75a3997",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/opencode-adapter/src/integration/ThinPluginClient.ts"
+    },
+    {
+      "file": "packages/opencode-adapter/src/integration/index.ts",
+      "size": 866,
+      "sha256": "5b33cd13d4f2073410603cc3f866ad8491cbaa0ed4663c57af7126817a1ce9b1",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/opencode-adapter/src/integration/index.ts"
+    },
+    {
+      "file": "packages/opencode-adapter/src/translators/CapabilityTranslator.ts",
+      "size": 8144,
+      "sha256": "afb70c7dec57ed29323f847244ebcfa5a230338841092947767176d4bdc36777",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/opencode-adapter/src/translators/CapabilityTranslator.ts"
+    },
+    {
+      "file": "packages/opencode-adapter/src/translators/ContextTranslator.ts",
+      "size": 2102,
+      "sha256": "c4de4e0a277313c09920bac8bdf44dedd99f599d87308579c1e7e1c53c2cc9cd",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/opencode-adapter/src/translators/ContextTranslator.ts"
+    },
+    {
+      "file": "packages/opencode-adapter/src/translators/ToolTranslator.ts",
+      "size": 2846,
+      "sha256": "bdd4be7807513516ec1c88311adc14df6fd46199a5a22f2a4f4c249c6c103be4",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/opencode-adapter/src/translators/ToolTranslator.ts"
+    },
+    {
+      "file": "packages/opencode-adapter/src/types/index.ts",
+      "size": 8424,
+      "sha256": "18ac7d95994e2ea664e0a12fa1a6588073ca936e679cccbfb910569c37f6b1d1",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/opencode-adapter/src/types/index.ts"
+    },
+    {
+      "file": "packages/opencode-adapter/src/version-checker.ts",
+      "size": 17955,
+      "sha256": "181e94a80513565a761a50039aabeb85c25e2ddfa41dba36842900a3a56d0bb2",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/opencode-adapter/src/version-checker.ts"
+    },
+    {
+      "file": "packages/opencode-adapter/tests/unit/opaque-error-boundary.test.ts",
+      "size": 794,
+      "sha256": "1babc107fa2852f1acb7aa9aed85cc1eb22355cf7560412156477c2c07a2e4fd",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/opencode-adapter/tests/unit/opaque-error-boundary.test.ts"
+    },
+    {
+      "file": "packages/opencode-adapter/tsconfig.eslint-declarations.json",
+      "size": 202,
+      "sha256": "1514fce8182c35eb7d932999367fe9829c4bc36eee1194b556246a08c2902974",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/opencode-adapter/tsconfig.eslint-declarations.json"
+    },
+    {
+      "file": "packages/opencode-adapter/tsconfig.eslint.json",
+      "size": 262,
+      "sha256": "05fc349ea1295f85ca92d04030c7b38482c6b9b5da35ca57e04bd9080393cbde",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/opencode-adapter/tsconfig.eslint.json"
+    },
+    {
+      "file": "packages/permission-engine/package.json",
+      "size": 2134,
+      "sha256": "19d678166d93659dd02c754dc1e6a740cf17b0f617edd64a6bafdaee535ebe62",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/permission-engine/package.json"
+    },
+    {
+      "file": "packages/permission-engine/src/hard-rules.ts",
+      "size": 11854,
+      "sha256": "7b74fddafeed5dbd5588586bafc60c982470e6e7015dd2f150e764bf27fbd0ad",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/permission-engine/src/hard-rules.ts"
+    },
+    {
+      "file": "packages/permission-engine/src/index.ts",
+      "size": 10265,
+      "sha256": "0561bcafd6d5972039e383ce9f454d9d5d3ba57f0bf562ee47f2ff923608e0ba",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/permission-engine/src/index.ts"
+    },
+    {
+      "file": "packages/permission-engine/src/services/api-key-manager.ts",
+      "size": 12305,
+      "sha256": "fc4079e4e4f3939c6f8115f757aecc20fbb907d2ea1b5f76517c32c692a13ea0",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/permission-engine/src/services/api-key-manager.ts"
+    },
+    {
+      "file": "packages/permission-engine/src/services/bearer-token-validator.ts",
+      "size": 10003,
+      "sha256": "295cee5883be58abda2bc523873f6f641e0ddac1a259f4df24e0aeabf0f09015",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/permission-engine/src/services/bearer-token-validator.ts"
+    },
+    {
+      "file": "packages/permission-engine/src/services/builtin-policy-loader.ts",
+      "size": 17013,
+      "sha256": "e457645c32124dc9d51944975bcc3abb234d8b6acd415e17e71ae3d9cc210a2e",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/permission-engine/src/services/builtin-policy-loader.ts"
+    },
+    {
+      "file": "packages/permission-engine/src/services/daemon-integration.ts",
+      "size": 16724,
+      "sha256": "2d5b8660e3386cb3cb6a885e95cbb653c790ec6bf4baef131a48056b6f6a82e3",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/permission-engine/src/services/daemon-integration.ts"
+    },
+    {
+      "file": "packages/permission-engine/src/services/event-logger.ts",
+      "size": 11946,
+      "sha256": "9b37ed21a5d7b531d9be23067fa51878ffbbf5e6852b032c4880eb443f00892b",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/permission-engine/src/services/event-logger.ts"
+    },
+    {
+      "file": "packages/permission-engine/src/services/index.ts",
+      "size": 7890,
+      "sha256": "aa53e18342fac9a7913e68421071e327adbb5b38a7290cc37a3eeea56b5b9ebb",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/permission-engine/src/services/index.ts"
+    },
+    {
+      "file": "packages/permission-engine/src/services/plugin-loader-integration.ts",
+      "size": 19562,
+      "sha256": "cc063721796a751e99c558bed2f7710fe580b8586d0e7a7e21488aaaa9090212",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/permission-engine/src/services/plugin-loader-integration.ts"
+    },
+    {
+      "file": "packages/permission-engine/src/services/plugin-permission-validator.ts",
+      "size": 11065,
+      "sha256": "70218060bfc7583308dd5cc38ad3db4bf13e16765c095d6150bf1b0e67cdb1d7",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/permission-engine/src/services/plugin-permission-validator.ts"
+    },
+    {
+      "file": "packages/permission-engine/src/services/policy-enforcement-point.ts",
+      "size": 26182,
+      "sha256": "42650c1a192537ee25f29735514351413c3a201ed44877a75c671f07ad1de6d4",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/permission-engine/src/services/policy-enforcement-point.ts"
+    },
+    {
+      "file": "packages/permission-engine/src/services/remote-access-guard.ts",
+      "size": 19973,
+      "sha256": "f42509e4eecc4e67e2ebf992f234e6580ad6d34ae09af7d201f9520202c13eb6",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/permission-engine/src/services/remote-access-guard.ts"
+    },
+    {
+      "file": "packages/permission-engine/src/services/rule-merging-engine.ts",
+      "size": 7818,
+      "sha256": "5cacbb8d87f4b8dcfcb8a414eb120163e213938798491261a4da70011ca0719b",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/permission-engine/src/services/rule-merging-engine.ts"
+    },
+    {
+      "file": "packages/permission-engine/src/services/static-api-checker.ts",
+      "size": 24318,
+      "sha256": "5b40b4f4bd1881edb43b07f2e1ab5b220b9536d143142e0a7ba4ada2ab1bda4b",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/permission-engine/src/services/static-api-checker.ts"
+    },
+    {
+      "file": "packages/permission-engine/src/services/user-policy-loader.ts",
+      "size": 24151,
+      "sha256": "23f840b145a220dc3b185ccf1e9e1d47d78614352c0ec1b6939067242cc23227",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/permission-engine/src/services/user-policy-loader.ts"
+    },
+    {
+      "file": "packages/permission-engine/src/types/builtin-policies.ts",
+      "size": 5771,
+      "sha256": "7bbb8171db427f6a43a974c8e7d41e52a24e0c5e5ae921a4daa9e5d5de6a1884",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/permission-engine/src/types/builtin-policies.ts"
+    },
+    {
+      "file": "packages/permission-engine/src/types/index.ts",
+      "size": 2802,
+      "sha256": "0ee2f0863adbaa903bd6bfbd3490d3c68c51ae8cdd7e6ede43290da4c254a4f0",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/permission-engine/src/types/index.ts"
+    },
+    {
+      "file": "packages/permission-engine/src/utils/unknown-boundary.ts",
+      "size": 775,
+      "sha256": "f928361f02aa73a6fc08194e5f28f3335226b532570519c1265e3bc47c479206",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/permission-engine/src/utils/unknown-boundary.ts"
+    },
+    {
+      "file": "packages/permission-engine/src/write-decision.ts",
+      "size": 10065,
+      "sha256": "6be9c4d7abf423393d2c61d96276aa4ba14da379d37ffdc7e00c8d36de683f42",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/permission-engine/src/write-decision.ts"
+    },
+    {
+      "file": "packages/permission-engine/tests/integration/crash-recovery.test.ts",
+      "size": 15073,
+      "sha256": "164d42e91cdf9f96cfb888225599943ecde401083cac81e745ef1478999e65c2",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/permission-engine/tests/integration/crash-recovery.test.ts"
+    },
+    {
+      "file": "packages/permission-engine/tests/integration/e2e-permission-flow.test.ts",
+      "size": 15534,
+      "sha256": "4ec644fa94db11ef07796887ac99669ef09fec1e56781b700613ebd9becf1aad",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/permission-engine/tests/integration/e2e-permission-flow.test.ts"
+    },
+    {
+      "file": "packages/permission-engine/tests/integration/plugin-loading-integration.test.ts",
+      "size": 2798,
+      "sha256": "211425f599ac338ceda763e7e3c8d2ce346cb689687f8f0c650ca82fd4cd9465",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/permission-engine/tests/integration/plugin-loading-integration.test.ts"
+    },
+    {
+      "file": "packages/permission-engine/tests/integration/remote-access-integration.test.ts",
+      "size": 8820,
+      "sha256": "5f5806e11a4e1207650facfb306183da4ee9a2358a76a6c1ad4c87ebf7814169",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/permission-engine/tests/integration/remote-access-integration.test.ts"
+    },
+    {
+      "file": "packages/permission-engine/tests/property/bearer-token-enforcement-property-16.test.ts",
+      "size": 18648,
+      "sha256": "bdad4341f58147fb6c10f0c0beb5e551055a8feca8a074e1b6cfa9b2ff660395",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/permission-engine/tests/property/bearer-token-enforcement-property-16.test.ts"
+    },
+    {
+      "file": "packages/permission-engine/tests/property/hard-rule-immutability-simple.test.ts",
+      "size": 8826,
+      "sha256": "f80451cec7f8ddeda3820cc394e8579aca5bc06db237da6aeff5c5e8160ca422",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/permission-engine/tests/property/hard-rule-immutability-simple.test.ts"
+    },
+    {
+      "file": "packages/permission-engine/tests/property/performance-validation-property.test.ts",
+      "size": 21340,
+      "sha256": "2ea09c9fd0c9aa93d35426862711deb374efa070cac321d7d7c42e0fef1b3fb3",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/permission-engine/tests/property/performance-validation-property.test.ts"
+    },
+    {
+      "file": "packages/permission-engine/tests/property/permission-decision-traceability-property-10.test.ts",
+      "size": 18031,
+      "sha256": "1fc70eb4f0f4dc582295e5d46c8337d8986ac74f0afb617d722bcde9ec2a9e46",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/permission-engine/tests/property/permission-decision-traceability-property-10.test.ts"
+    },
+    {
+      "file": "packages/permission-engine/tests/property/plugin-permission-gate-property-28.test.ts",
+      "size": 32850,
+      "sha256": "c5b5413bb91bb6ddaa653e6a44588728297a37f33b5ce9dae5de4ee880e6f64d",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/permission-engine/tests/property/plugin-permission-gate-property-28.test.ts"
+    },
+    {
+      "file": "packages/permission-engine/tests/property/remote-access-guard-property-26.test.ts",
+      "size": 29070,
+      "sha256": "3ee0ed6a1270dd8c393c5d5dff27fa1512f0075eed34d20d5bb16586e992030a",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/permission-engine/tests/property/remote-access-guard-property-26.test.ts"
+    },
+    {
+      "file": "packages/permission-engine/tests/unit/api-key-manager.test.ts",
+      "size": 7532,
+      "sha256": "8ec8825586fdd38385f49aebff83dc7bee50e4b7b0c4c40dacb7d228224c409f",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/permission-engine/tests/unit/api-key-manager.test.ts"
+    },
+    {
+      "file": "packages/permission-engine/tests/unit/bearer-token-validator.test.ts",
+      "size": 12818,
+      "sha256": "1b84ed785f5993b4f5a7a0cb42d0dfe110b0f9984af3dc89a90e8b2cf78852d1",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/permission-engine/tests/unit/bearer-token-validator.test.ts"
+    },
+    {
+      "file": "packages/permission-engine/tests/unit/daemon-integration.test.ts",
+      "size": 6098,
+      "sha256": "28c71e6e5ab9723207393062d6d254bbc9662468b297ac0550dabab70ac3e0e5",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/permission-engine/tests/unit/daemon-integration.test.ts"
+    },
+    {
+      "file": "packages/permission-engine/tests/unit/event-logging.test.ts",
+      "size": 9816,
+      "sha256": "5b82c99854919944d90c4380932854a361673f4505497f76691db0b394ea18b1",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/permission-engine/tests/unit/event-logging.test.ts"
+    },
+    {
+      "file": "packages/permission-engine/tests/unit/permission-engine.test.ts",
+      "size": 8889,
+      "sha256": "784f8567de0fb4dbd56f11aa53f6424b4edbb9e75ef8cc66eacb29e2e45e8d83",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/permission-engine/tests/unit/permission-engine.test.ts"
+    },
+    {
+      "file": "packages/permission-engine/tests/unit/plugin-loader-integration.test.ts",
+      "size": 8187,
+      "sha256": "7971ae8770c1548136652ade9c50f6eb151142b490df72d05808b6548e24ea79",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/permission-engine/tests/unit/plugin-loader-integration.test.ts"
+    },
+    {
+      "file": "packages/permission-engine/tests/unit/plugin-permission-validator.test.ts",
+      "size": 8927,
+      "sha256": "46440d48c70bce854f64e34320b4e312a23b2b8278445fed06f9c4bb58f1b7da",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/permission-engine/tests/unit/plugin-permission-validator.test.ts"
+    },
+    {
+      "file": "packages/permission-engine/tests/unit/static-api-checker.test.ts",
+      "size": 7208,
+      "sha256": "a2fcc25d87e8ac663f20b38136011c6cb695a3d677f3a265aaba761e263f3e65",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/permission-engine/tests/unit/static-api-checker.test.ts"
+    },
+    {
+      "file": "packages/permission-engine/tests/unit/static-permission-logger-owner.test.ts",
+      "size": 1207,
+      "sha256": "1c1732674d846f630aa3fcd2a0579e4646815ae817b4a40c4770ea02a5f8dde0",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/permission-engine/tests/unit/static-permission-logger-owner.test.ts"
+    },
+    {
+      "file": "packages/permission-engine/tests/unit/two-step-confirmation.test.ts",
+      "size": 10098,
+      "sha256": "0d2940c450666377a42763a80d8e923624fd0acccd547680bb2baefd8f5c9b55",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/permission-engine/tests/unit/two-step-confirmation.test.ts"
+    },
+    {
+      "file": "packages/permission-engine/tests/unit/unknown-permission-boundary.test.ts",
+      "size": 1592,
+      "sha256": "c81faeb5995fa3e22883c19bae821841de0e240bd9ee0865bafb9e4a965e96cb",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/permission-engine/tests/unit/unknown-permission-boundary.test.ts"
+    },
+    {
+      "file": "packages/permission-engine/tests/unit/user-binding.test.ts",
+      "size": 11440,
+      "sha256": "336310a12f5e5be0d73f7bda8ec821be47809b5ebd499116e75b9ea57c0ff9ff",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/permission-engine/tests/unit/user-binding.test.ts"
+    },
+    {
+      "file": "packages/permission-engine/tests/unit/write-decision.test.ts",
+      "size": 5850,
+      "sha256": "9c6019b503e98741e245ee1ad3a6659f7379d79101b581a024d8ee8981b8fa3d",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/permission-engine/tests/unit/write-decision.test.ts"
+    },
+    {
+      "file": "packages/permission-engine/tsconfig.eslint-declarations.json",
+      "size": 202,
+      "sha256": "1514fce8182c35eb7d932999367fe9829c4bc36eee1194b556246a08c2902974",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/permission-engine/tsconfig.eslint-declarations.json"
+    },
+    {
+      "file": "packages/permission-engine/tsconfig.eslint.json",
+      "size": 262,
+      "sha256": "05fc349ea1295f85ca92d04030c7b38482c6b9b5da35ca57e04bd9080393cbde",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/permission-engine/tsconfig.eslint.json"
+    },
+    {
+      "file": "packages/scope-gate/package.json",
+      "size": 2355,
+      "sha256": "efdeab2701c755ee4b486d4b7fcb0f99a938f639aab308d203f14a250a9ce97a",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/scope-gate/package.json"
+    },
+    {
+      "file": "packages/scope-gate/src/node-release-surface-producers.ts",
+      "size": 12878,
+      "sha256": "d06a136889c662d380d75b441d6461652322fa15d6814978ec687f6f761defe4",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/scope-gate/src/node-release-surface-producers.ts"
+    },
+    {
+      "file": "packages/scope-gate/src/release-artifact-inventory-builder.ts",
+      "size": 4851,
+      "sha256": "464db092b7ee041e4a212c8928b52203cdaee33be271da389d9a2c8b8354eded",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/scope-gate/src/release-artifact-inventory-builder.ts"
+    },
+    {
+      "file": "packages/scope-gate/src/release-authority-projection.ts",
+      "size": 5653,
+      "sha256": "6d408bffddc5831a889b78d557d89cfea6317b62d7b1812b112698bbd61619c0",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/scope-gate/src/release-authority-projection.ts"
+    },
+    {
+      "file": "packages/scope-gate/src/release-evidence-normalizer.ts",
+      "size": 12802,
+      "sha256": "069e9da77f2a9e842bfd2174a912076736199ab6fdfc6f45edee6616c3f4845f",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/scope-gate/src/release-evidence-normalizer.ts"
+    },
+    {
+      "file": "packages/scope-gate/tests/current-clean-boundary.test.ts",
+      "size": 1737,
+      "sha256": "e5541d115a7277eca9036782d3d80eb3d0d195e10a7d9ae2ba1a26cee9517614",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/scope-gate/tests/current-clean-boundary.test.ts"
+    },
+    {
+      "file": "packages/scope-gate/tests/current-cli-no-legacy-deployment.test.ts",
+      "size": 3242,
+      "sha256": "77fc9a27d201c86be3db9826fac0d4554133e7a6ab0dc8818eb2c1a49c24669a",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/scope-gate/tests/current-cli-no-legacy-deployment.test.ts"
+    },
+    {
+      "file": "packages/scope-gate/tests/current-crossplatform-ci-contract.test.ts",
+      "size": 4575,
+      "sha256": "1463c414c02bd894c054596735f50fedff58b7c4d4ef4f909013c06572e9fb20",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/scope-gate/tests/current-crossplatform-ci-contract.test.ts"
+    },
+    {
+      "file": "packages/scope-gate/tests/current-daemon-http-doc-contract.test.ts",
+      "size": 970,
+      "sha256": "f815c7a7153f3845112e30377357778875a50a4ac73db044476a3ae67ab3cfcc",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/scope-gate/tests/current-daemon-http-doc-contract.test.ts"
+    },
+    {
+      "file": "packages/scope-gate/tests/current-installer-backup-lifecycle.test.ts",
+      "size": 6139,
+      "sha256": "32d4b8f96fa3a152ca29bb8464e36d81f36f96eafb397558ca5e1e2f121626e7",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/scope-gate/tests/current-installer-backup-lifecycle.test.ts"
+    },
+    {
+      "file": "packages/scope-gate/tests/current-operating-doc-contract.test.ts",
+      "size": 4705,
+      "sha256": "d6549eadeb27e59b0c61157d75ff667b31ff096699e150ec9b99d0fe9191f86c",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/scope-gate/tests/current-operating-doc-contract.test.ts"
+    },
+    {
+      "file": "packages/scope-gate/tests/current-permission-write-guard-boundary.test.ts",
+      "size": 4951,
+      "sha256": "c4f244b92f27de55ffe3e1e37179df863aa687c32c0053922a890c8bf610d5d4",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/scope-gate/tests/current-permission-write-guard-boundary.test.ts"
+    },
+    {
+      "file": "packages/scope-gate/tests/current-release-authority-projection.integration.test.ts",
+      "size": 2643,
+      "sha256": "14a77b78d360f4865376281dcb0a86a02ecc40c657862b5945526feef9f2c0f6",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/scope-gate/tests/current-release-authority-projection.integration.test.ts"
+    },
+    {
+      "file": "packages/scope-gate/tests/current-release-entry-interop.test.ts",
+      "size": 2239,
+      "sha256": "0f232f047eb5d3e218327a81a886dfa667ee23092a8630ffa94610e0e9e6d5ee",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/scope-gate/tests/current-release-entry-interop.test.ts"
+    },
+    {
+      "file": "packages/scope-gate/tests/current-release-no-runtime-scope-surface.test.ts",
+      "size": 925,
+      "sha256": "d25b430d44eb8b19b6048e1c32849f71d6509fbf8e253e40b04802152b0b4ad0",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/scope-gate/tests/current-release-no-runtime-scope-surface.test.ts"
+    },
+    {
+      "file": "packages/scope-gate/tests/current-release-path-projections.test.ts",
+      "size": 1422,
+      "sha256": "15dffb8879b2b58a8e218cada4777727427390e70690c367ae9d365d63447ad0",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/scope-gate/tests/current-release-path-projections.test.ts"
+    },
+    {
+      "file": "packages/scope-gate/tests/current-repository-owner-snapshot.integration.test.ts",
+      "size": 4143,
+      "sha256": "9a7f69576ee86b32f737464a1bfee7a7c671a798e182f8f36e5b6463b70cd5d8",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/scope-gate/tests/current-repository-owner-snapshot.integration.test.ts"
+    },
+    {
+      "file": "packages/scope-gate/tests/current-repository-package-build-surfaces.integration.test.ts",
+      "size": 1599,
+      "sha256": "a93beb4224523458f232ada7a0a35a7f6426dbb91184745b555314ccc5c75710",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/scope-gate/tests/current-repository-package-build-surfaces.integration.test.ts"
+    },
+    {
+      "file": "packages/scope-gate/tests/current-repository-release-manifest-runtime.integration.test.ts",
+      "size": 2492,
+      "sha256": "c1aeab2e6c03a09931a02ab02fe82b7a7fcc9e72d80f5df319c3aa5e0aef20fc",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/scope-gate/tests/current-repository-release-manifest-runtime.integration.test.ts"
+    },
+    {
+      "file": "packages/scope-gate/tests/current-runtime-daemon-dependency-direction.test.ts",
+      "size": 2548,
+      "sha256": "b9ac52dde94265743ed994c3cf8da4223a800e647ec1bae37ef7f085057eefd3",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/scope-gate/tests/current-runtime-daemon-dependency-direction.test.ts"
+    },
+    {
+      "file": "packages/scope-gate/tests/current-standard-authority-source.test.ts",
+      "size": 1860,
+      "sha256": "6be933c4ecb5c96bc026da904c29853d2aa1d14fa3c9967ccd5e95d5f2896b25",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/scope-gate/tests/current-standard-authority-source.test.ts"
+    },
+    {
+      "file": "packages/scope-gate/tests/current-upgrade-journal-transaction.test.ts",
+      "size": 6276,
+      "sha256": "3ed2cc7f163420caf1d32b3cfba1deab9fef84f46b7582154e29de14acb17a68",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/scope-gate/tests/current-upgrade-journal-transaction.test.ts"
+    },
+    {
+      "file": "packages/scope-gate/tests/eslint-runtime-binding-contract.test.ts",
+      "size": 1708,
+      "sha256": "85259faa4039b7369ef4e2e826c5f3e57b8aea443ec3c97d7b63a672e7689d75",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/scope-gate/tests/eslint-runtime-binding-contract.test.ts"
+    },
+    {
+      "file": "packages/scope-gate/tests/node-release-surface-producers.test.ts",
+      "size": 7604,
+      "sha256": "50e17b61919c1f33a26dab2968248dae4440299c2c42dbe76cf71b250f0efa71",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/scope-gate/tests/node-release-surface-producers.test.ts"
+    },
+    {
+      "file": "packages/scope-gate/tests/owner-snapshot-surface-producers.test.ts",
+      "size": 3881,
+      "sha256": "21b2fd0928076ceeefe7ff2f4081fe64f6430cb3b42ad1e9068f8691f996a16b",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/scope-gate/tests/owner-snapshot-surface-producers.test.ts"
+    },
+    {
+      "file": "packages/scope-gate/tests/release-artifact-inventory-builder.test.ts",
+      "size": 3821,
+      "sha256": "7d62680235cb6ff7107e44f19ce5e61b6f37651acbb0d1094150f7ffebc3f828",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/scope-gate/tests/release-artifact-inventory-builder.test.ts"
+    },
+    {
+      "file": "packages/scope-gate/tests/release-authority-projection.test.ts",
+      "size": 5307,
+      "sha256": "1332b190df95e108992e7aa5606eed46da410e511dc21e07f8d69aabc055011b",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/scope-gate/tests/release-authority-projection.test.ts"
+    },
+    {
+      "file": "packages/scope-gate/tests/release-evidence-normalizer.test.ts",
+      "size": 7085,
+      "sha256": "6b728fa3cca01677366de3f2e83a6992c080d9f4bbfdeb4cbd988390b626d82f",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/scope-gate/tests/release-evidence-normalizer.test.ts"
+    },
+    {
+      "file": "packages/scope-gate/tests/release-owner-snapshot.test.ts",
+      "size": 6534,
+      "sha256": "fc99d0131585971753c3d4cb01321944c472bce528d7db4859082d66445d4d9f",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/scope-gate/tests/release-owner-snapshot.test.ts"
+    },
+    {
+      "file": "packages/scope-gate/tests/release-runtime-artifact-producer.test.ts",
+      "size": 3368,
+      "sha256": "76b936ec0ca1b31a878725030d81ea0f89e31c294f13c466fe2dfb8e1c736bf8",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/scope-gate/tests/release-runtime-artifact-producer.test.ts"
+    },
+    {
+      "file": "packages/scope-gate/tests/release-set-validator.property.test.ts",
+      "size": 3397,
+      "sha256": "01a5188d2ce14d97aeff6ef9d283dbae196c198f1423a36ecfd3a05834704ce1",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/scope-gate/tests/release-set-validator.property.test.ts"
+    },
+    {
+      "file": "packages/scope-gate/tests/release-set-validator.test.ts",
+      "size": 6173,
+      "sha256": "2e2235cd5ffc5d569979d7b6372d2f83c77f57f2230586751ff52b3f4d09ff1c",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/scope-gate/tests/release-set-validator.test.ts"
+    },
+    {
+      "file": "packages/scope-gate/tests/scope-release-precheck.test.ts",
+      "size": 3779,
+      "sha256": "3d58ebfeb4a4f1232de44e09d372df0d2f4f5a1eb5adae7df43134bfc6852b77",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/scope-gate/tests/scope-release-precheck.test.ts"
+    },
+    {
+      "file": "packages/scope-gate/tests/source-policy-audit.test.ts",
+      "size": 2029,
+      "sha256": "7206f66d0d172ace3c608f69a1cdb537cd95e074b4f05a4b427f472ae42d21cd",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/scope-gate/tests/source-policy-audit.test.ts"
+    },
+    {
+      "file": "packages/scope-gate/tsconfig.eslint-declarations.json",
+      "size": 202,
+      "sha256": "1514fce8182c35eb7d932999367fe9829c4bc36eee1194b556246a08c2902974",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/scope-gate/tsconfig.eslint-declarations.json"
+    },
+    {
+      "file": "packages/scope-gate/tsconfig.eslint.json",
+      "size": 262,
+      "sha256": "05fc349ea1295f85ca92d04030c7b38482c6b9b5da35ca57e04bd9080393cbde",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/scope-gate/tsconfig.eslint.json"
+    },
+    {
+      "file": "packages/service-management/package.json",
+      "size": 2124,
+      "sha256": "f5cdf97f69b121ddd628ed2508d83e53c60f47c1ca1a25e4182fbf418e9cfb63",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/service-management/package.json"
+    },
+    {
+      "file": "packages/service-management/src/orchestrator/healthcheck.ts",
+      "size": 12269,
+      "sha256": "ac14a34566c06a4a844d2d7d6ee8a9a31c692a2fb7cc391aa68774079ba11c0d",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/service-management/src/orchestrator/healthcheck.ts"
+    },
+    {
+      "file": "packages/service-management/src/orchestrator/lifecycle-events.ts",
+      "size": 10407,
+      "sha256": "48dccb10ea4599decf81b79206fb324a1d5887f2f20866fa45b038ac7dee1e72",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/service-management/src/orchestrator/lifecycle-events.ts"
+    },
+    {
+      "file": "packages/service-management/src/orchestrator/service-lifecycle-orchestrator.ts",
+      "size": 18676,
+      "sha256": "483c6518aff856fa79c72589ff89fc49b2a51a2258f60515c22915cdefd13f13",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/service-management/src/orchestrator/service-lifecycle-orchestrator.ts"
+    },
+    {
+      "file": "packages/service-management/src/plugin/reconnecting-daemon-client.ts",
+      "size": 25128,
+      "sha256": "ce71af1dc2237ac5f92124ea75d30eb9d1ff729a43f3bb733c9fee131965a74d",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/service-management/src/plugin/reconnecting-daemon-client.ts"
+    },
+    {
+      "file": "packages/service-management/src/service-manager/systemd-service-manager.ts",
+      "size": 20228,
+      "sha256": "ec2d0623e32cd252b2d244293d627cce69fc88feea28eee1df1d96c55800c481",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/service-management/src/service-manager/systemd-service-manager.ts"
+    },
+    {
+      "file": "packages/service-management/src/shutdown/graceful-shutdown-handler.ts",
+      "size": 10837,
+      "sha256": "d2513802b0be74ad87acdb473f67b5bd35d425747aea9512819bef80945b65b4",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/service-management/src/shutdown/graceful-shutdown-handler.ts"
+    },
+    {
+      "file": "packages/service-management/tests/unit/graceful-shutdown-handler.test.ts",
+      "size": 20561,
+      "sha256": "fdfbe09395abdcdb41b8dd2ca916fbdab1f2ccc0a88b8bff978a516946ca49cf",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/service-management/tests/unit/graceful-shutdown-handler.test.ts"
+    },
+    {
+      "file": "packages/types/package.json",
+      "size": 3057,
+      "sha256": "e10692a6f59f69255f786ea0d0cd42a2023c914f4129551dcaf86942226d4388",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/types/package.json"
+    },
+    {
+      "file": "packages/types/src/character-boundaries.ts",
+      "size": 491,
+      "sha256": "4c25ae76ea343dce91fc65fa8d1e3d6b3bd3bb665c7002abeab42c2a38b9f995",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/types/src/character-boundaries.ts"
+    },
+    {
+      "file": "packages/types/src/index.ts",
+      "size": 12214,
+      "sha256": "890e534cdd9384dc2386b1f892c971bc47e5ace3dd0d51fe314fcd7e5c6dfcf9",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/types/src/index.ts"
+    },
+    {
+      "file": "packages/types/src/json-boundary.ts",
+      "size": 351,
+      "sha256": "0bd7ce862e69af09c0ba18efa608a94c9c077272904d315b5e59e25385833f59",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/types/src/json-boundary.ts"
+    },
+    {
+      "file": "packages/types/src/promise-contract.ts",
+      "size": 468,
+      "sha256": "58febf54be96f2e6534cd3e283c0032c962a1fdd489b80003ed499641751970b",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/types/src/promise-contract.ts"
+    },
+    {
+      "file": "packages/types/src/scalar-text.ts",
+      "size": 751,
+      "sha256": "cbfe7769f05a797496f7f17830c5ecccfb95004823efad4f0e4ef0a16ad05c87",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/types/src/scalar-text.ts"
+    },
+    {
+      "file": "packages/version-unification/package.json",
+      "size": 779,
+      "sha256": "6afc1b37eb3b39fd49e7dde9bca83943d4e6fd31c8ac354ff03ce48af958db6f",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/version-unification/package.json"
+    },
+    {
+      "file": "packages/workflow-runtime/package.json",
+      "size": 2398,
+      "sha256": "de49c9bc44c0512d9b0192faa97dbb863f840f1a352f0cfdbb0725d1dc75448c",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/package.json"
+    },
+    {
+      "file": "packages/workflow-runtime/src/AgentRunner.ts",
+      "size": 11685,
+      "sha256": "8f60924e6dbd4d2b44874a6e2bea524dcfa7fbff381584f1ebdbfcb2413e7a71",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/src/AgentRunner.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/src/GateRunner.ts",
+      "size": 22494,
+      "sha256": "b605abbf2b8b6cee0a261ef3acb2e7eef218d251117ebc954ba07996b98d55ca",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/src/GateRunner.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/src/WorkflowEngine.ts",
+      "size": 35058,
+      "sha256": "b4ea44802e8f811c0a60a69d2d6ff25965fe0c8735850e1fb36fd070b8d97765",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/src/WorkflowEngine.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/src/WorkflowErrorHandling.ts",
+      "size": 12970,
+      "sha256": "3d6dab920946c9f801c6dc9fb228f0d439477410bb95f8c370d52e7e1fd37d36",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/src/WorkflowErrorHandling.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/src/agent/LLMKernelIntegration.ts",
+      "size": 10678,
+      "sha256": "0a853310bccb0100a51c5bbecdcdbdab62360a67315cf00a46758d58a36fa1c3",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/src/agent/LLMKernelIntegration.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/src/engine/AgentWorkflowEngine.ts",
+      "size": 11150,
+      "sha256": "ece8b39f5d2e772a97925fa141b998afb622643cd48ab334b0aa325bd18cea16",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/src/engine/AgentWorkflowEngine.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/src/engine/WorkflowInstance.ts",
+      "size": 9132,
+      "sha256": "1c174d3a6f937b4061283beea2ef444f56563d087b90702ae762755d4b15dcc3",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/src/engine/WorkflowInstance.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/src/engine/WorkflowLoader.ts",
+      "size": 8766,
+      "sha256": "9d48ac57aa2743ee061a0b5cd2e232f123f52e0c58c506e0f16423ea78d305f4",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/src/engine/WorkflowLoader.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/src/error-handler.ts",
+      "size": 16398,
+      "sha256": "75f4fc9e312b20f7c179d2192be8c3568a93c32d4d4ee3743462158a613d830c",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/src/error-handler.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/src/error-propagation.ts",
+      "size": 12270,
+      "sha256": "809f3442ac4322dbbff1ef92e1a9d6959fd387fc0a5e0a2c1c26529b7ae91ae7",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/src/error-propagation.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/src/event-filter.ts",
+      "size": 5967,
+      "sha256": "7a4aecf217fd2fab60e1ca9e6c09a7b6c754aea2926a854adecac2f8aef50440",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/src/event-filter.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/src/event-integration.ts",
+      "size": 3328,
+      "sha256": "052fc45967ed55168134dcca260772ec0b6cf467de6639026fd7765dcc1d47d7",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/src/event-integration.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/src/event-subscription.ts",
+      "size": 5835,
+      "sha256": "7a29675b4ef5ad4de3392160f76162b969dbc8b26d91265a2d2956e188d0fe79",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/src/event-subscription.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/src/events/EventPublisher.ts",
+      "size": 6333,
+      "sha256": "ca07955ab877db04adce350f39d0e7e8493d2398dd5057631c140364fd0ead12",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/src/events/EventPublisher.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/src/gates/AgentGateRunner.ts",
+      "size": 5102,
+      "sha256": "6dac30e902c59b7ca27f58be0b54498376ce8ec86572987195eb59c2adfab343",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/src/gates/AgentGateRunner.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/src/gates/BasicGates.ts",
+      "size": 14282,
+      "sha256": "dfd391ff4289fad4c0fbf4a36aa161163ddeb2c305593b0797a6448f78ba78a9",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/src/gates/BasicGates.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/src/gates/CompositeGateSerializer.ts",
+      "size": 11647,
+      "sha256": "4160d28fb623348901e957fedb7311fef33154b4b2d4c0696c99832cdd617faf",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/src/gates/CompositeGateSerializer.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/src/index.ts",
+      "size": 5052,
+      "sha256": "3acd456f9bf92d6180cf7347d0e6a943123532999f6f011408e5a06c444d65ec",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/src/index.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/src/loaders/WorkflowDefinitionLoader.ts",
+      "size": 21955,
+      "sha256": "cd9b9ba695e0cae50bd677569b9ef97bf71d438ab81ad25579e4153f3667a0d8",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/src/loaders/WorkflowDefinitionLoader.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/src/rbac/AuthorizationAuditLogger.ts",
+      "size": 4567,
+      "sha256": "f6a4bf29963a786b70fc31caa442cce85787ad156ae6db5ee2342904b61f3fbf",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/src/rbac/AuthorizationAuditLogger.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/src/rbac/FileAuthorizationPolicy.ts",
+      "size": 8055,
+      "sha256": "ff471cf283a44322a5b13999d8ab52d11811c771caacba892a4491d8d82677cf",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/src/rbac/FileAuthorizationPolicy.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/src/rbac/PrincipalResolver.ts",
+      "size": 3195,
+      "sha256": "967d6ec68cf66e5e8d64fec3f69d39ee79daf1b5628f597e4a6df25beaffefb8",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/src/rbac/PrincipalResolver.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/src/rbac/ProtectedFileMatcher.ts",
+      "size": 5706,
+      "sha256": "4667ab545f7ae7eb6640786f1d866e004d317dbb97a309f399634875fc766076",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/src/rbac/ProtectedFileMatcher.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/src/rbac/RBACEngine.ts",
+      "size": 6581,
+      "sha256": "982abc4ec2f291275b52255818d1d1d4b40b29ae48e419476ba6483923810039",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/src/rbac/RBACEngine.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/src/rbac/TransitionAuthorizer.ts",
+      "size": 5092,
+      "sha256": "cd29d6b7de4052feebb1f5fa19a5d9df9cbb55a6eced1beec609a7fef768f22d",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/src/rbac/TransitionAuthorizer.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/src/retry.ts",
+      "size": 8643,
+      "sha256": "c6edb2766964c38059222697cf735cc48a6b40e1c1a85fbb979c8fdb54ddcd92",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/src/retry.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/src/types/gate-definition.ts",
+      "size": 4637,
+      "sha256": "d433aa1f01605b3342ae011c577afba32d4cb52425c3b440557e06b17c773d7c",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/src/types/gate-definition.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/src/types/state-machine.ts",
+      "size": 5476,
+      "sha256": "562a32837a3417b9b52d2c3810bc5d7a1fe7a4245fbe1559ba4248c56e4f10c9",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/src/types/state-machine.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/src/types/workflow-instance.ts",
+      "size": 890,
+      "sha256": "f2612419a88cc3e0241535d1f33c969a376148acf93194d9c19adb184461990e",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/src/types/workflow-instance.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/src/v11/runtime/CloseGate.ts",
+      "size": 12042,
+      "sha256": "38201de1cdedfffc6ff8013b411702f7d8f6158884eb021dcf33594e91927577",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/src/v11/runtime/CloseGate.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/src/v11/runtime/JsonParser.ts",
+      "size": 3583,
+      "sha256": "c7bb81753867d18b6de07b8fe99ebd9818c4855627517655117b1c600a486a3c",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/src/v11/runtime/JsonParser.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/src/v11/runtime/PathPolicy.ts",
+      "size": 13875,
+      "sha256": "6921631abb5fbc30a4e30fc79bbec96966fe2b0be57908c66a83c32c373d5732",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/src/v11/runtime/PathPolicy.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/acceptance.test.ts",
+      "size": 23728,
+      "sha256": "d4bbfbf22c22dd5cf5490042ec248f2985d3a1b239e55da4a8af7eb5f34d7239",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/tests/acceptance.test.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/composite-observation.ts",
+      "size": 1842,
+      "sha256": "a64482b23c5df8530c4e98a55a610f6bd7f3f0460807ab34f964c73a1fcd00cc",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/tests/composite-observation.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/engine/WorkflowInstance.test.ts",
+      "size": 28615,
+      "sha256": "832f5497ab1cc00a8d8ac444f370f5d086e3f5472d9ea5b0bec4b1a9efa066b0",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/tests/engine/WorkflowInstance.test.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/engine/WorkflowLoader.test.ts",
+      "size": 17135,
+      "sha256": "87a64fbc1503e03bd8adc015b3cf60aaebd64fc90e49b2523909dfd88507ee01",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/tests/engine/WorkflowLoader.test.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/event-filter.test.ts",
+      "size": 15962,
+      "sha256": "2b2405283653b598d6ecca5ae3d4d46c94c48e246e1758d5eab708a05ee32c53",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/tests/event-filter.test.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/event-subscription.test.ts",
+      "size": 14554,
+      "sha256": "68657ef451b88a882d259e90ff0fa68d1711725ede1ffa9f986cf41e24e91bde",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/tests/event-subscription.test.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/helpers/current-user-decision.ts",
+      "size": 1143,
+      "sha256": "add6fa9781c7504210e60c6994c8cdbb4593000c19bd7339bcc27f10c1be6bdb",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/tests/helpers/current-user-decision.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/integration/agent-runner.test.ts",
+      "size": 12276,
+      "sha256": "53f649cbebeafd24d357f650a2795e957327bef9af62b83eb8cbfb974aa03873",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/tests/integration/agent-runner.test.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/integration/event-integration.test.ts",
+      "size": 20954,
+      "sha256": "9e2b1dcd46a771d674c3228d3d468cc19420efa1af1ad818e5cd2ffb543f2e7d",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/tests/integration/event-integration.test.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/integration/event-publisher.test.ts",
+      "size": 10153,
+      "sha256": "dcd697f98b1d0e0796d3f1bcb55b865792dab92608a2ee73fbb7a9b65afcbc46",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/tests/integration/event-publisher.test.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/integration/workflow-e2e-property-29.test.ts",
+      "size": 36818,
+      "sha256": "c22ea667aaf475456574c5a01097ea89decf9e91e9babe1009976bd6d977eff1",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/tests/integration/workflow-e2e-property-29.test.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/performance/workflow-performance.test.ts",
+      "size": 24240,
+      "sha256": "47b098e5b1897ed00fbd7de1e3f7727222304a2f035716486cb1995f6bb5a025",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/tests/performance/workflow-performance.test.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/property/composite-gate-parallel.property.test.ts",
+      "size": 22590,
+      "sha256": "85f24f56196ae3ab7435919f60ebd91d41d7f6d1eef50abacb9062c6b3a0a518",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/tests/property/composite-gate-parallel.property.test.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/property/composite-gate-property-3.sequential-execution.test.ts",
+      "size": 22013,
+      "sha256": "753ffe7fe781961eb90779b49bc5038fdf93b842460ed16d142ef7152b64b1fb",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/tests/property/composite-gate-property-3.sequential-execution.test.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/property/composite-gate-property-4.parallel-execution.test.ts",
+      "size": 20831,
+      "sha256": "925fbe800021e9f3825732d22e4a50aefe86412e28309a517a113f80cdcac153",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/tests/property/composite-gate-property-4.parallel-execution.test.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/property/composite-gate-property-5.fail-fast-parallel.test.ts",
+      "size": 20289,
+      "sha256": "de3e544eb9c6d1030b73edfd3e77e12b12abe991bf7304661de4186d8d35af5f",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/tests/property/composite-gate-property-5.fail-fast-parallel.test.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/property/error-handling-property.test.ts",
+      "size": 33165,
+      "sha256": "17649b198c8301e7ab6f45398a032558dffef6ed8d3c8fea3f454e4bee668c44",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/tests/property/error-handling-property.test.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/property/fail-fast-parallel.property.test.ts",
+      "size": 18602,
+      "sha256": "a68d43a259880025f74abaa36f2375e2e9d3845bc3733d26715970c0b133973f",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/tests/property/fail-fast-parallel.property.test.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/property/framework-verification.test.ts",
+      "size": 7422,
+      "sha256": "e57dd609afaa47dca3b348a8d4ba515bf4c099d0440f53b7fc3f0d98e044d0ff",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/tests/property/framework-verification.test.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/property/gate-property-2.determinism.test.ts",
+      "size": 14891,
+      "sha256": "9457a254e98e70b14646e7e4031826ed0e30230703001051ceee2c6ac3b3e77f",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/tests/property/gate-property-2.determinism.test.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/property/generators.ts",
+      "size": 9421,
+      "sha256": "f5a1f1c02ff18f743f15cd46b037ccd601b51baf0916b29d2d6efb873f853327",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/tests/property/generators.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/property/helpers.ts",
+      "size": 8951,
+      "sha256": "13e3a69a97a95364229436942d5961a0d38473df1895780cd6af6fae77d3b8ab",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/tests/property/helpers.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/property/workflow-property-1.state-machine-consistency.test.ts",
+      "size": 15343,
+      "sha256": "5679710af5b2b7d6673d42e3879e692511664055886776b1335791859b78804a",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/tests/property/workflow-property-1.state-machine-consistency.test.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/property/workflow-property-6.event-ordering.test.ts",
+      "size": 32255,
+      "sha256": "f0c7baa1dea275184d2dd8f12951be597cd6b7a057e36a36ab8b17b1f56db162",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/tests/property/workflow-property-6.event-ordering.test.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/required-test-value.ts",
+      "size": 256,
+      "sha256": "64c90cf3154af7b45a011185119aa2d1bc895bee5e45d4c537271ae760a0bbbe",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/tests/required-test-value.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/setup.ts",
+      "size": 2169,
+      "sha256": "52d30c95ce6d834fca8ba535869723f8ff1909765c46df2577161b11136f8a43",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/tests/setup.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/AgentGateRunner.test.ts",
+      "size": 7737,
+      "sha256": "a70945ddedee751d80c9249a644afd8dd204356f1ba6ca6ba6d0a283f53cfe61",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/tests/unit/AgentGateRunner.test.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/AgentWorkflowEngine.evidence-guard.test.ts",
+      "size": 31431,
+      "sha256": "2b342f435e9be9da078b3bb2d418575bba37a4f0e856aa36739a1659a4686d4f",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/tests/unit/AgentWorkflowEngine.evidence-guard.test.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/AgentWorkflowEngine.test.ts",
+      "size": 12206,
+      "sha256": "734fb22ca96389e6ae7202a7bb845adb57af8546834d74e958e7669b8ff7ce10",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/tests/unit/AgentWorkflowEngine.test.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/BasicGates.test.ts",
+      "size": 8520,
+      "sha256": "53688a44f47f12ca3522098668797262b2ea311596b5bf9640e50a4df9d1902f",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/tests/unit/BasicGates.test.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/CompositeGateCancellation.test.ts",
+      "size": 10825,
+      "sha256": "e9d3999ee54107cd80b0afa33a0353754771b2744f4954c2c1056532ea42bb88",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/tests/unit/CompositeGateCancellation.test.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/CompositeGateResultAggregation.test.ts",
+      "size": 20999,
+      "sha256": "ef9cf3033cfc14c6cdf0d59c1805c7542904ca0883c958f88127e91c0d920986",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/tests/unit/CompositeGateResultAggregation.test.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/CompositeGateSerializer.test.ts",
+      "size": 18544,
+      "sha256": "58d716f99673139af3713785ea7d368268442ad18d7ceb60e7ce4da873c52cd7",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/tests/unit/CompositeGateSerializer.test.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/EventPublisher.test.ts",
+      "size": 12003,
+      "sha256": "733a8518636f25bddc5dc1b0fffbaccaab995a09b77d4d77f759f058eda541b2",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/tests/unit/EventPublisher.test.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/GateDefinition.test.ts",
+      "size": 9831,
+      "sha256": "98a15a94af5b7f36b9347c23a9798b8d43e1f8d63406dcc5fe4f23915afc200a",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/tests/unit/GateDefinition.test.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/GateResult.test.ts",
+      "size": 10517,
+      "sha256": "d4fc24ace3a4299c1627e06104f427199e174635abf80f035796ff9321042ce6",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/tests/unit/GateResult.test.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/GateRunner.test.ts",
+      "size": 18944,
+      "sha256": "cb5ff87313f42a195f2a6a600158d58c407cacc8ca9ebcde5d432ed56194130a",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/tests/unit/GateRunner.test.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/GateRunnerErrorHandling.test.ts",
+      "size": 21897,
+      "sha256": "1a38ebbae6c1c6f2f416d99fbfe18c286a6bff08f2639f73c1966a3f667ed605",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/tests/unit/GateRunnerErrorHandling.test.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/WorkflowDefinitionLoader.test.ts",
+      "size": 20534,
+      "sha256": "570125e7c395c06ad2950515cb47962791ce793cd5b27aa0c12c13fd65293541",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/tests/unit/WorkflowDefinitionLoader.test.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/WorkflowEngine.test.ts",
+      "size": 37357,
+      "sha256": "bc9592818db5f38c473ca546b570a9797700e1da5f934b85bf51b1ed45455235",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/tests/unit/WorkflowEngine.test.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/WorkflowErrorHandling.test.ts",
+      "size": 18806,
+      "sha256": "85bc833cbc434525b227f4a75808e1ecb280a3ff31e8d8e44ba0d436881dc63d",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/tests/unit/WorkflowErrorHandling.test.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/WorkflowInstance.test.ts",
+      "size": 13472,
+      "sha256": "f1f99ea1eb7784f665a3422e35fd1491fb9f54020544109f808d702d12980aee",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/tests/unit/WorkflowInstance.test.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/composite-observation.test.ts",
+      "size": 1164,
+      "sha256": "f15f282af1569611dc3ed68cc94539555e09ff5e36a9dd7ad989ff3b5abaf0a8",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/tests/unit/composite-observation.test.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/current-definition-schema-boundary.test.ts",
+      "size": 4210,
+      "sha256": "a8279322e40a0a1708461165544c57673cf8cda3f07ee3d71c758474b385c5a0",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/tests/unit/current-definition-schema-boundary.test.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/current-release-builtin-workflow.test.ts",
+      "size": 669,
+      "sha256": "2848d53861558598491e73e1cf11d0ceecb353b5ce079eb7e6e4c49805897f1b",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/tests/unit/current-release-builtin-workflow.test.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/current-workflow-engine-owner.test.ts",
+      "size": 1935,
+      "sha256": "3a6da6b7107e4b1b4a10b0cfe4254acb9e6edca18a1a84d05aa6484f2b1ee74f",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/tests/unit/current-workflow-engine-owner.test.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/delay-timer-owner.test.ts",
+      "size": 1357,
+      "sha256": "5484468b3c151070b5cdbe79596b41bfd91f70f5575b9ab7490fef6e77f737a8",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/tests/unit/delay-timer-owner.test.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/engine.test.ts",
+      "size": 17899,
+      "sha256": "af334aa182b58e29317a51025687768f9458e87e16cde17d19f6e8d97a591073",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/tests/unit/engine.test.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/error-handler.test.ts",
+      "size": 21260,
+      "sha256": "2d1ae1e26d57c0b5c95702e537aa3a57ac8e9555faf8766d99b3d1c71bf9d379",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/tests/unit/error-handler.test.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/error-propagation.test.ts",
+      "size": 16321,
+      "sha256": "62df1b443e6f2420052fe64c1d60b3551fb10ee29eddc14968e7b517913e502b",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/tests/unit/error-propagation.test.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/evidence-guard-v11.test.ts",
+      "size": 89090,
+      "sha256": "7b1e60dfe57bba089d2649b7ddf5bd07581e305fb9666622905ae24dd051180c",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/tests/unit/evidence-guard-v11.test.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/persistence-owner-boundary.test.ts",
+      "size": 2023,
+      "sha256": "84b9b6437a8fecdcb1e2c39c260268d876d27588d7360b403148bfeb7189bc87",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/tests/unit/persistence-owner-boundary.test.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/production-lint-boundaries.test.ts",
+      "size": 2842,
+      "sha256": "6ce07d5b23c36a9bd7395000cebd57aa917ca5d34c732ea1618c0f24f7a19443",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/tests/unit/production-lint-boundaries.test.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/promise-from-sync-contract.test.ts",
+      "size": 1943,
+      "sha256": "694a991240dcdcd5df1151d7d5b79e8edcea0933099c358cbe475ef8d1102ef2",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/tests/unit/promise-from-sync-contract.test.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/rbac/AuthorizationAuditLogger.test.ts",
+      "size": 5890,
+      "sha256": "186c56755580aa2a84e4b897090a032a3cd5c603552387ad5dc9983252625952",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/tests/unit/rbac/AuthorizationAuditLogger.test.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/rbac/FileAuthorizationPolicy.test.ts",
+      "size": 13956,
+      "sha256": "a5e4c26ca766919f63c75b7330df9f98e8be0f54aa79ba4f28f86ee3769cc36c",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/tests/unit/rbac/FileAuthorizationPolicy.test.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/rbac/PrincipalResolver.test.ts",
+      "size": 4893,
+      "sha256": "984d44a8a8bc00f18e1d8b033b572b8b486092d38eb1b5325f66b6f0ef5e831c",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/tests/unit/rbac/PrincipalResolver.test.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/rbac/ProtectedFileMatcher.test.ts",
+      "size": 5293,
+      "sha256": "1ce98298d48c699ab0b9db2d5fa7fb2aed9706dce58ef577f1a09bd87d95c91b",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/tests/unit/rbac/ProtectedFileMatcher.test.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/rbac/RBACEngine-RoundB.test.ts",
+      "size": 9325,
+      "sha256": "c2ed307338b928819b05e99d80be962f74dbee3a69ba1285ee69d3a609113e5d",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/tests/unit/rbac/RBACEngine-RoundB.test.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/rbac/RBACEngine.test.ts",
+      "size": 4072,
+      "sha256": "4a154be0c25c1d27a0206e7f93866bf17a102eff688f38a3c59faea9826f4fc6",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/tests/unit/rbac/RBACEngine.test.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/rbac/TransitionAuthorizer.test.ts",
+      "size": 11090,
+      "sha256": "14eb164d864aa7623f3c99e85704d114663c21746eb9f80703c92344619959ca",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/tests/unit/rbac/TransitionAuthorizer.test.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/rbac/seal-transitions.test.ts",
+      "size": 7233,
+      "sha256": "d4d31dbc8ab8d3eeced79336135a535efbe74a2e76843555348b6fd44d9a4407",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/tests/unit/rbac/seal-transitions.test.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/rbac/state-advancement-subjects.test.ts",
+      "size": 678,
+      "sha256": "d1e0bfb8b9e04a2e84af664387d046d3b49409c2319669c04b2c707a13d402a4",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/tests/unit/rbac/state-advancement-subjects.test.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/retry.test.ts",
+      "size": 23739,
+      "sha256": "5aea6667d0d5b6d10eace8330589483a7bca050e695b4a7514cd075c50094f84",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/tests/unit/retry.test.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/scalar-json-boundary.test.ts",
+      "size": 1985,
+      "sha256": "e424c522a333731f77e5201e8df190a4e029855a273ca770a52f626251c143bb",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/tests/unit/scalar-json-boundary.test.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/user-decision-schema-boundary.test.ts",
+      "size": 1909,
+      "sha256": "25fb8b03c1b484f1ee7d5c5debfe950ecbb6ca63d3c2bb79be1205f4d2899375",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/tests/unit/user-decision-schema-boundary.test.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/work-item-artifact-authority.test.ts",
+      "size": 2657,
+      "sha256": "11544e6d7682c75a63286466023d0eca4eace1097ea7be5b8e17e0e727ccbdc9",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/tests/unit/work-item-artifact-authority.test.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/v11/e2e/v11-code-only-filesystem-e2e.test.ts",
+      "size": 9489,
+      "sha256": "6aa7838a1990fff594b9b7a5aa57032dc4d73d3330dc086fca57f95d64341fcb",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/tests/v11/e2e/v11-code-only-filesystem-e2e.test.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/v11/property/parsers.property.test.ts",
+      "size": 2302,
+      "sha256": "8642f7ecbe427a7684cf52944b4c1598376a54f3532d8ce9b627db5f004e9179",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/tests/v11/property/parsers.property.test.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/v11/property/path-validation.property.test.ts",
+      "size": 3848,
+      "sha256": "73b718ac0a401c00f1402398e7a207d14789bd9f6f73be11b9e875f556d5c3e1",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/tests/v11/property/path-validation.property.test.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/v11/unit/close-gate.test.ts",
+      "size": 7610,
+      "sha256": "864e068c946d58aa062c99b5557716355b984f0992caa4140a534f16b1bf5b83",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/tests/v11/unit/close-gate.test.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/v11/unit/json-parser.test.ts",
+      "size": 3700,
+      "sha256": "8b689ea239615a277e29d6443ac27a0d71733a2ae030e9d90ccc445b31b4f171",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/tests/v11/unit/json-parser.test.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/v11/unit/path-policy-permissions.test.ts",
+      "size": 19122,
+      "sha256": "a45bf8f1304fb69b910cdb81fcd4fa63e964c9d0430d21d92fcd72ff4fb66566",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/tests/v11/unit/path-policy-permissions.test.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/v11/unit/path-policy.test.ts",
+      "size": 8118,
+      "sha256": "6570eb43c7958a173af1cfb42bd673fa2552ecef04ba1039334e3d8a05a1c673",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/tests/v11/unit/path-policy.test.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/v11/unit/path-service.test.ts",
+      "size": 7332,
+      "sha256": "26a956ae63156d8b9a414c4d069ef41cb327cbc92a5a7b0f9bb885f2883fe956",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/tests/v11/unit/path-service.test.ts"
+    },
+    {
+      "file": "packages/workflow-runtime/tsconfig.eslint-declarations.json",
+      "size": 202,
+      "sha256": "1514fce8182c35eb7d932999367fe9829c4bc36eee1194b556246a08c2902974",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/tsconfig.eslint-declarations.json"
+    },
+    {
+      "file": "packages/workflow-runtime/tsconfig.eslint.json",
+      "size": 262,
+      "sha256": "05fc349ea1295f85ca92d04030c7b38482c6b9b5da35ca57e04bd9080393cbde",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "packages/workflow-runtime/tsconfig.eslint.json"
+    },
+    {
+      "file": "scripts/lib/eslint-runtime-reference-rule.mjs",
+      "size": 2165,
+      "sha256": "e2a7026ae51199473d0f58d20554bdcc980bf0e367785d5914dd8aafe37e835b",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "scripts/lib/eslint-runtime-reference-rule.mjs"
+    },
+    {
+      "file": "scripts/lib/lint-workspace-policy.mjs",
+      "size": 1266,
+      "sha256": "a34983cc959aa3eae3276b2b7f49e28a0dd4cd8924b2b0e4d6fd4ac3842ed025",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "scripts/lib/lint-workspace-policy.mjs"
+    },
+    {
+      "file": "scripts/lib/qualification-environment.d.mts",
+      "size": 437,
+      "sha256": "9f7cb7f38227d35e4a6f3cddc7038e17f39402b77e7af25b33327ea9bb846b74",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "scripts/lib/qualification-environment.d.mts"
+    },
+    {
+      "file": "scripts/lib/qualification-environment.mjs",
+      "size": 1048,
+      "sha256": "5671fbd040e224fe0ebc0790e2769144d1ca709bfc1d99734b6242ee5e3b2bed",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "scripts/lib/qualification-environment.mjs"
+    },
+    {
+      "file": "scripts/lint-package.mjs",
+      "size": 2868,
+      "sha256": "cdf1a11e340a92965909aa411fc995cbc1bf0e27150f76b49465d740a06a6488",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "scripts/lint-package.mjs"
+    },
+    {
+      "file": "scripts/lint-workspace.ts",
+      "size": 744,
+      "sha256": "52060c40a85a2465ff885ea987b980c3c0595116b10787f69ecd1a779c0fbb64",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "scripts/lint-workspace.ts"
+    },
+    {
+      "file": "scripts/run-ci-regression.mjs",
+      "size": 5849,
+      "sha256": "71a5dee3c748b5fe348902d20094b70048140bdafbcc4217d835d7853dfac4ed",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "scripts/run-ci-regression.mjs"
+    },
+    {
+      "file": "scripts/run-root-tests.mjs",
+      "size": 5375,
+      "sha256": "8b9479e5aa148a3f2866217f27e0e4d3fc27360cee8b5bbc12b1e9ed95bf0e4d",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "scripts/run-root-tests.mjs"
+    },
+    {
+      "file": "scripts/test-workspace.ts",
+      "size": 2236,
+      "sha256": "b9d8a72f0ae05d3ec27249840f0a69ff917f08a3630fdb9b76e01985a8d99f2d",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "scripts/test-workspace.ts"
+    },
+    {
+      "file": "setup/userlevel-opencode/tools/lib/sf_knowledge_base_core.ts",
+      "size": 33115,
+      "sha256": "d51d6df635045a4119dc3bf437be2e60b258fe91df851cfbd741899ef589daa4",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "setup/userlevel-opencode/tools/lib/sf_knowledge_base_core.ts"
+    },
+    {
+      "file": "tests/helpers/source-structure.ts",
+      "size": 2254,
+      "sha256": "a7fb7c4870c10e4f324bbe39f4df9f80883e6b44ef7c5af390ec5fb2907bd429",
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "storage_file": "tests/helpers/source-structure.ts"
+    }
+  ],
+  "qualification": "Complete source-only exact packet passed actual3OS, symmetric same-lock cold official and case-level qualification, builds/types/installer, native identity and review; ready for Git fast-forward adoption. Unmatched test collections retain AB_INCOMPARABLE."
+}

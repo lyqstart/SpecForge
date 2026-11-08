@@ -1,0 +1,23 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/apply-reviewed-edits.cjs",
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/scalar-test-syntax-closure.json"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "close-new-regression-source-syntax",
+  "expected_writes": "private-fixture-tests-and-plan-only",
+  "started_utc": "2026-11-08T08:59:14.204Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\apply-reviewed-edits.cjs",
+      "sha256": "6993ca3e125fbb54d1b77128c20381f51117424b70e9000c7b972b8c7e25aaaa",
+      "size": 2450,
+      "extension": ".cjs"
+    }
+  ]
+}

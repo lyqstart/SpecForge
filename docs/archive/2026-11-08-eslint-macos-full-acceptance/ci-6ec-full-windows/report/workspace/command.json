@@ -1,0 +1,11 @@
+{
+  "phase": "workspace",
+  "cwd": "D:\\a\\SpecForge\\SpecForge",
+  "executable": "C:\\Users\\runneradmin\\.bun\\bin\\bun.exe",
+  "args": [
+    "scripts/test-workspace.ts"
+  ],
+  "started_utc": "2026-11-08T13:01:54.794Z",
+  "context_sha256": "b4c497c02b4c83244f7a11a52785bc58d02014b270f925e9c60103a271d43af8",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES:build/test outputs;EXTERNAL_EVIDENCE_WRITES:owned runner-temp report;no tracked source changes"
+}

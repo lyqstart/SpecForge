@@ -1,0 +1,47 @@
+$ vitest run tests/unit/graceful-shutdown-handler.test.ts -t "releases exact signal|should not attach twice" "--maxWorkers=1"
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/graceful-shutdown-handler.test.ts > GracefulShutdownHandler > SIGTERM signal handling > should not attach twice if already attached
+AssertionError: expected 1 to be +0 // Object.is equality
+
+- Expected
++ Received
+
+- 0
++ 1
+
+ ❯ tests/unit/graceful-shutdown-handler.test.ts:404:48
+    402|       expect(process.listenerCount('SIGTERM')).toBe(before+1);
+    403|       await handler.dispose();
+    404|       expect(process.listenerCount('SIGTERM')).toBe(before);
+       |                                                ^
+    405|     });
+    406| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  tests/unit/graceful-shutdown-handler.test.ts > GracefulShutdownHandler > SIGTERM signal handling > releases exact signal callbacks and preserves foreign listeners across repeated lifecycles
+AssertionError: expected [ Array(3) ] to deeply equal [ [Function], [Function foreign] ]
+
+- Expected
++ Received
+
+  [
+    [Function anonymous],
+    [Function foreign],
++   [Function anonymous],
+  ]
+
+ ❯ tests/unit/graceful-shutdown-handler.test.ts:418:73
+    416|           for(const signal of signals)expect(process.listenerCount(sig…
+    417|           if(index%2===0)await handler.trigger('owned lifecycle regres…
+    418|           for(const signal of signals)expect(process.listeners(signal)…
+       |                                                                         ^
+    419|           expect(handler.getActiveTaskCount()).toBe(0);expect(handler.…
+    420|         }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+error: script "test" exited with code 1

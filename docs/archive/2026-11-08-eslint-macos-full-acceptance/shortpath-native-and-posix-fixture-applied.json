@@ -1,0 +1,23 @@
+{
+  "utc": "2026-11-08T12:22:28.531Z",
+  "input_sha256": "b90fb7d97ce261290325dfdb2cbc287634d3e7d4c6d79c6440fc2f09a621cde2",
+  "reason": "Actual849 Windows Git probes prove root8.3 vs Gitlong identity mismatch; 0217/0218 actual Node/Bun realpathSync preserves short names while native/promises expand. Actual Mac849 only1 failed case incorrectly expects Windows dedup on case-insensitive POSIX despite SPS529 requiring distinct POSIX identities. Repair test environment/API and exact assertions by observed filesystem presence; no production path/Git/duplicate-definition guard change.",
+  "required_verification": "Affected scope/real snapshot/Candidate full files, all12 lint/build, actual3OS full CI, final same-lock isolated qualification and structured case comparison.",
+  "members": [
+    {
+      "file": "scripts/lib/qualification-environment.mjs",
+      "before": "89c3a0befebe0614c7b153107840aa357fef847e858b06d50ea4edf8c24004ef",
+      "after": "5671fbd040e224fe0ebc0790e2769144d1ca709bfc1d99734b6242ee5e3b2bed"
+    },
+    {
+      "file": "packages/scope-gate/tests/current-crossplatform-ci-contract.test.ts",
+      "before": "5cac3d3ad3de890863d39922fafe282e0567844611af790b0ac0724e257f318a",
+      "after": "1463c414c02bd894c054596735f50fedff58b7c4d4ef4f909013c06572e9fb20"
+    },
+    {
+      "file": "packages/daemon-core/tests/unit/candidate-generation-integrity.test.ts",
+      "before": "e5c527245174adccb8e6a177c2e62122b557c128042be222121b375a7636359d",
+      "after": "ff1cbf2f163ee63f37d222dfd8301e41cb28e719c77dd01aae429936430c6cc6"
+    }
+  ]
+}

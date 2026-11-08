@@ -1,0 +1,9 @@
+$ tsc
+$ tsc
+$ tsc
+$ tsc
+$ tsc
+$ tsc
+$ tsc
+$ tsc
+[build-workspace] FAILED @specforge/opencode-adapter exitCode=2

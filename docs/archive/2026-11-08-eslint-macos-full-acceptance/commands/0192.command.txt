@@ -1,0 +1,15 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "lint"
+  ],
+  "cwd": "D:\\code\\SpecForge\\.lint-platform-a01",
+  "purpose": "platform-complete-eslint-after-cleanup-owner-fix",
+  "expected_writes": "read-only all12 lint and workflow documentation check",
+  "started_utc": "2026-11-08T12:00:17.921Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": []
+}

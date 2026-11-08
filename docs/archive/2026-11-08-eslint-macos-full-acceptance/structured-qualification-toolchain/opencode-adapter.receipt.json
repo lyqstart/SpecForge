@@ -1,0 +1,19 @@
+{
+  "owner": "opencode-adapter",
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "test",
+    "--",
+    "--maxWorkers=1",
+    "--reporter=json",
+    "--outputFile=D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\structured-qualification-toolchain\\opencode-adapter.vitest.json"
+  ],
+  "cwd": "D:\\code\\SpecForge\\.lint-toolchain-a01\\packages\\opencode-adapter",
+  "context_sha256": "db0c81c8db1019131e34fee988b1769a4d1422100598b62a57d14b9c1184f6d4",
+  "started_utc": "2026-11-08T12:10:13.089Z",
+  "finished_utc": "2026-11-08T12:10:45.629Z",
+  "exit": 0,
+  "stdout_sha256": "cb9d52dead6f8e091bb9539530803330c58bf612676874633dd93e934d0517d5",
+  "stderr_sha256": "574423750fbcdb613454137f2452d762a30a8bd6ab3c3706812cb569e4cd66b6"
+}

@@ -1,0 +1,18 @@
+{
+  "utc": "2026-11-08T09:27:19.975Z",
+  "input_sha256": "8f884720d0e366f7abdcce86e28416511e96b19c54405592088c10928f224923",
+  "reason": "Read real project owner with existing three port variants; validate unknown responses, preserve receiver and replay order, keep projection files out of state authority. No product workflow/state write or permission expansion.",
+  "required_verification": "New malformed/legacy/point-read/receiver/replay tests; existing configuration activation and native-boundary consumers; all12 compilation and complete suites.",
+  "members": [
+    {
+      "file": "packages/daemon-core/src/tools/lib/authoritative-work-items.ts",
+      "before": "525b704ea204a32ff8aa072e5353f28140c7b4c8fe17a46b8ebd4f89ab2fe4b2",
+      "after": "cc0bf24e1de7f9affdb4af47c654af2999b3ee4d2df9363f5190a28bb443bf84"
+    },
+    {
+      "file": "packages/daemon-core/tests/unit/authoritative-work-item-reader.test.ts",
+      "before": "ABSENT",
+      "after": "2f89f7de98433f5915828555cb67783a31a6caec91a34bd0ab2cfd3a728e9b9d"
+    }
+  ]
+}

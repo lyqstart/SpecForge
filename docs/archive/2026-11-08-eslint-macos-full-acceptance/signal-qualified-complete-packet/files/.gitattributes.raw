@@ -1,0 +1,66 @@
+# Source code executed or linted by Bun, TypeScript, ESLint, or Prettier must
+# remain LF-idempotent across Windows, Linux, and macOS clean worktrees.
+*.ts text eol=lf
+*.tsx text eol=lf
+*.mts text eol=lf
+*.cts text eol=lf
+*.js text eol=lf
+*.jsx text eol=lf
+*.mjs text eol=lf
+*.cjs text eol=lf
+packages/daemon-core/src/verification/windows/*.cs text eol=lf
+
+# SpecForge generated workflow Skill docs are rendered and compared byte-for-byte.
+setup/userlevel-opencode/skills/sf-workflow-*/SKILL.md text eol=lf
+setup/userlevel-opencode/agents/sf-verifier.md text eol=lf
+setup/userlevel-opencode/skills/superpowers-verification-before-completion/SKILL.md text eol=lf
+
+# Kiro governance specifications are reviewed with git diff --check and must
+# not reintroduce CRLF-only whitespace noise from Windows authoring tools.
+
+# Sealed raw test outputs and source-byte snapshots must survive Git unchanged.
+docs/archive/2026-10-19-config-activation-loss-evidence/** -text -diff
+
+/templates/.specforge/config/observability.json text eol=lf
+/setup/userlevel-opencode/templates/.specforge/config/observability.json text eol=lf
+/docs/archive/2026-10-24-runtime-history-repair/** -text -diff
+/docs/archive/2026-10-24-runtime-history-delivery/** -text -diff
+/docs/archive/2026-10-24-boundary-capability-repair/** -text -diff
+/docs/archive/2026-10-24-boundary-capability-delivery/** -text -diff
+
+/docs/archive/2026-10-24-final-six-acceptance/** -text -diff
+
+/docs/archive/2026-10-24-shell-boundary-repair/** -text -diff
+
+/docs/archive/2026-10-24-candidate-seal-repair/** -text -diff
+
+/docs/archive/2026-10-24-sps-conformance-audit/** -text -diff
+/docs/archive/2026-10-25-verifier-conformance/** -text -diff
+/docs/archive/2026-11-03-sps-conformance-repair/registration-incident-snapshot.json -text -diff
+/docs/archive/2026-11-03-sps-conformance-repair/checkpoint-persistence-result.json -text -diff
+/docs/archive/2026-11-03-sps-conformance-repair/native-compaction-result-redacted.json -text -diff
+/docs/archive/2026-11-03-sps-conformance-repair/native-compaction-glm53-result.json -text -diff
+/docs/archive/2026-11-03-isolated-crash-validation/** -text -diff
+/docs/archive/2026-11-03-isolated-state-replay/** -text -diff
+/docs/archive/2026-11-03-original-wi-recovery/** -text -diff
+/docs/archive/2026-11-03-original-wi-archive-restore/** -text -diff
+/docs/archive/2026-11-03-original-wi-approved-implementation/** -text -diff
+/docs/archive/2026-11-04-verification-isolation-proposal/** -text -diff
+/docs/archive/2026-11-04-verification-isolation-poc/** -text -diff
+/docs/archive/2026-11-04-winsock-isolation-diagnosis/** -text -diff
+/docs/archive/2026-11-04-registry-read-experiment/** -text -diff
+/docs/archive/2026-11-04-canary-producer-diagnosis/** -text -diff
+/docs/archive/2026-11-05-synthetic-boundary-matrix/** -text -diff
+/docs/archive/2026-11-06-single-process-matrix/** -text -diff
+/docs/archive/2026-11-07-verification-production/** -text -diff
+
+/docs/archive/2026-11-07-consumer-conformance/** -text -diff
+/docs/archive/2026-11-08-role-alignment/** -text -diff
+/docs/archive/2026-11-08-crossplatform-consumer-audit/** -text -diff
+/docs/archive/design/SpecForge架构一致性治理最终实施方案.full-history-20261006.md -text -diff
+
+/docs/archive/2026-11-08-eslint-macos-full-acceptance/** -text -diff
+
+# Keep frozen dependency inputs byte-identical on all hosts.
+bun.lock text eol=lf
+/.gitattributes text eol=lf

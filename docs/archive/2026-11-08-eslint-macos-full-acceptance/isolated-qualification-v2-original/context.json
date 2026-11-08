@@ -1,0 +1,31 @@
+{
+  "utc": "2026-11-08T11:29:11.431Z",
+  "leg": "original",
+  "repository": "D:\\code\\SpecForge\\.lint-original-a01",
+  "source_commit": "3549c23c64c53ad29761104a125b87ff50a53cc5",
+  "base_head": "3549c23c64c53ad29761104a125b87ff50a53cc5",
+  "temp_parent_outside_git": {
+    "path": "C:\\Users\\lyq\\AppData\\Local\\Temp",
+    "exit": 128,
+    "stderr": "fatal: not a git repository (or any of the parent directories): .git\n"
+  },
+  "bun_path": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "bun_sha256": "0187f68d843f825a72ada4a7eca60db896ed753759a7f8252edcd31ac1bf1b9c",
+  "node_path": "C:\\Program Files\\nodejs\\node.exe",
+  "node_sha256": "3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237",
+  "node": "v24.19.0",
+  "lock_sha256": "ce3a0f55612b56ea8b9c10ca378c45529e7e94887b7e04b762bbb4afb1b82c5f",
+  "environment": {
+    "HOME": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-eslint-macos-A01-v2-original\\home",
+    "USERPROFILE": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-eslint-macos-A01-v2-original\\home",
+    "TEMP": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-eslint-macos-A01-v2-original\\temp",
+    "TMP": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-eslint-macos-A01-v2-original\\temp",
+    "TMPDIR": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-eslint-macos-A01-v2-original\\temp",
+    "APPDATA": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-eslint-macos-A01-v2-original\\roaming",
+    "LOCALAPPDATA": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-eslint-macos-A01-v2-original\\local",
+    "OPENCODE_CONFIG_DIR": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-eslint-macos-A01-v2-original\\opencode",
+    "BUN_INSTALL_CACHE_DIR": "C:/Users/lyq/.bun/install/cache",
+    "SPECFORGE_VERIFICATION_NODE_SOURCE": "C:\\Program Files\\nodejs\\node.exe"
+  },
+  "cache_policy": "Only integrity-bound package download cache is shared; workspaces, dependencies, builds, user profiles and test fixtures remain independent. No source or compiled workspace cache shared."
+}

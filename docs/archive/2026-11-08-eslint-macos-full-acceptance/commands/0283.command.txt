@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "D:/code/SpecForge/docs/archive/2026-11-08-eslint-macos-full-acceptance/inventory-final-signal-message-surfaces.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge\\.lint-signal-a01",
+  "purpose": "final6ec-source-message-inventory",
+  "expected_writes": "Full current1147 sources final6ec source identity and actual message syntax enumeration",
+  "started_utc": "2026-11-08T13:07:27.287Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\inventory-final-signal-message-surfaces.cjs",
+      "sha256": "1eb5ca3973c12c021d84e43f68ca84495b82b4e7baad1befde6a08f24365ac60",
+      "size": 4571,
+      "extension": ".cjs"
+    }
+  ]
+}

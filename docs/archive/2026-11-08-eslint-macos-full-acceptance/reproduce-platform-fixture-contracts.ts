@@ -1,0 +1,15 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import os from 'node:os';
+import {spawnSync} from 'node:child_process';
+import {pathToFileURL} from 'node:url';
+import assert from 'node:assert/strict';
+const evidence=import.meta.dirname,owner=path.resolve('.lint-review-a01/packages/daemon-core/src/verification/owner-store.ts'),fixtureOwner=path.resolve('.lint-review-a01/packages/daemon-core/tests/fixtures/build-process-fixture.ts');
+const {assertVerificationPath}=await import(pathToFileURL(owner).href),{buildProcessFixture}=await import(pathToFileURL(fixtureOwner).href);
+const physicalParent=fs.realpathSync(os.tmpdir()),root=fs.mkdtempSync(path.join(physicalParent,'sf-platform-fixture-contract-')),physical=path.join(root,'physical'),alias=path.join(root,'alias');fs.mkdirSync(physical);fs.symlinkSync(physical,alias,process.platform==='win32'?'junction':'dir');
+let linkError='';try{await assertVerificationPath(alias);}catch(error){linkError=String(error);}assert.match(linkError,/VERIFICATION_LINK_FORBIDDEN/);await assertVerificationPath(fs.realpathSync(alias));
+assert.equal(typeof process.env.npm_execpath,'string');const assetRoot=path.join(root,'assets');fs.mkdirSync(assetRoot);const entry=path.join(assetRoot,'entry.ts'),asset=path.join(assetRoot,'image.png');fs.writeFileSync(asset,Buffer.from([137,80,78,71,13,10,26,10]));fs.writeFileSync(entry,"import asset from './image.png'; console.log(asset);\n");
+let singleOutputError='';try{buildProcessFixture(entry,assetRoot);}catch(error){singleOutputError=String(error);}assert.match(singleOutputError,/multiple output files without an output directory/);
+const out=path.join(root,'multi-output'),argv=['build',entry,'--target=bun','--outdir='+out,'--entry-naming=process-fixture.js'],built=spawnSync(process.env.npm_execpath!,argv,{windowsHide:true,encoding:'utf8'});assert.equal(built.status,0,built.stderr);assert(fs.existsSync(path.join(out,'process-fixture.js')));const names=fs.readdirSync(out);assert(names.some(name=>name.endsWith('.png')));
+const result={utc:new Date().toISOString(),platform:process.platform,root,link_test:{actual_guard_owner:owner,alias,canonical:fs.realpathSync(alias),linkError,canonical_succeeded:true,product_guard_unchanged:true},bundler_test:{actual_fixture_owner:fixtureOwner,bun:process.env.npm_execpath,singleOutputError,multi_output_command:argv,status:built.status,outputs:names,stdout:built.stdout,stderr:built.stderr},interpretation:'CONFIRMED cross-platform fixture defects: raw aliased temporary roots violate existing no-link owner contract; outfile cannot represent actual bundled asset outputs. Fix belongs to qualification environment and test fixture bundler, not product path guards. macOS-specific ancestor facts still require new actual CI context.'};
+fs.writeFileSync(path.join(evidence,'platform-fixture-counterfactual.json'),JSON.stringify(result,null,2)+'\n',{flag:'wx'});console.log(JSON.stringify({link_alias_rejected:true,canonical_same_target_accepted:true,old_single_output_failed:true,actual_outdir_multi_output_passed:true,outputs:names}));

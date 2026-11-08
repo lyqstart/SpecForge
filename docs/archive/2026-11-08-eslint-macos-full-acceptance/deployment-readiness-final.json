@@ -1,0 +1,18 @@
+{
+  "utc": "2026-11-08T13:28:42.951Z",
+  "source_head": "6ec81b1f61b285877da3745efc42be1fa0d86e9e",
+  "source_commit": "commit-6ec81b1f61b285877da3745efc42be1fa0d86e9e",
+  "release_manifest_sha256": "6d2bebd844649b3e1ea65033e117bd2c733eefa2e046963e1d4bbcf104d2aefa",
+  "version": "1.0.25",
+  "delta": [
+    "sf-user/bin/specforge.exe",
+    "sf-user/bin/specforged.exe",
+    "sf-user/bin/verification/assets.json",
+    "sf-user/bin/verification/specforge-verify.exe",
+    "tools/lib/sf_knowledge_base_core.ts"
+  ],
+  "business_installer_writes_authorized": false,
+  "owner_key_content_read": false,
+  "native_program_lineage": "final-root-native-program-lineage/result.json",
+  "execution_gate": "PASS: complete527 adopted source hashes, actual3OS full/build/lint/Root and install; symmetric cold and structured qualifications, current Linux systemd and official root build/precheck completed."
+}

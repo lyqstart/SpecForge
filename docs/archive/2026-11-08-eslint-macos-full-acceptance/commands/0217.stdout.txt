@@ -1,0 +1,25 @@
+{
+  "platform": "win32",
+  "version": "v24.19.0",
+  "executable": "C:\\Program Files\\nodejs\\node.exe",
+  "rows": [
+    {
+      "requested": "C:\\Users\\lyq\\AppData\\Local\\Packages\\sandbox.{dbebe84c-39d9-4caa-a9dc-73becb3d906d}\\AC\\Temp",
+      "synchronous": "C:\\Users\\lyq\\AppData\\Local\\Packages\\sandbox.{dbebe84c-39d9-4caa-a9dc-73becb3d906d}\\AC\\Temp",
+      "native": "C:\\Users\\lyq\\AppData\\Local\\Packages\\sandbox.{dbebe84c-39d9-4caa-a9dc-73becb3d906d}\\AC\\Temp",
+      "asynchronous": "C:\\Users\\lyq\\AppData\\Local\\Packages\\sandbox.{dbebe84c-39d9-4caa-a9dc-73becb3d906d}\\AC\\Temp"
+    },
+    {
+      "requested": "C:\\Program Files",
+      "synchronous": "C:\\Program Files",
+      "native": "C:\\Program Files",
+      "asynchronous": "C:\\Program Files"
+    },
+    {
+      "requested": "C:\\PROGRA~1",
+      "synchronous": "C:\\PROGRA~1",
+      "native": "C:\\Program Files",
+      "asynchronous": "C:\\Program Files"
+    }
+  ]
+}

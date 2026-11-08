@@ -1,0 +1,18 @@
+{
+  "utc": "2026-11-08T08:59:15.393Z",
+  "input_sha256": "87882eb0586a626811e7c75ed4e7c782353f3e95f9cf557264863f1362ad027f",
+  "reason": "0082 real test run: scalar test could not collect due to one extra parenthesis in Symbol expected text. Timer and publisher six tests passed. Generic edit owner now independently parses all after TS bytes before any write; unchanged archived original input preserves failure.",
+  "required_verification": "Actual scalar JSON and timer tests, lint",
+  "members": [
+    {
+      "file": "packages/workflow-runtime/tests/unit/scalar-json-boundary.test.ts",
+      "before": "d5c10a949ca5a6e6d309989b285dc175f8c015fed02949fdca0bd537e2376a4d",
+      "after": "e424c522a333731f77e5201e8df190a4e029855a273ca770a52f626251c143bb"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/production-lint-boundaries.test.ts",
+      "before": "d0e48b6e6a015fb94d173d86b931e1fc72bc79d8972e5302a89b5099e53ce4e1",
+      "after": "e34674a16479a89fa112b867946c90dfb2d56d6fe5843794463b975173aa7f47"
+    }
+  ]
+}

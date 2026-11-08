@@ -1,0 +1,12 @@
+
+ RUN  v1.6.1 D:/code/SpecForge/.lint-review-a01/packages/workflow-runtime
+
+ ✓ tests/unit/production-lint-boundaries.test.ts  (4 tests) 7ms
+ ❯ tests/unit/scalar-json-boundary.test.ts  (0 test)
+ ✓ tests/unit/delay-timer-owner.test.ts  (2 tests) 5ms
+
+ Test Files  1 failed | 2 passed (3)
+      Tests  6 passed (6)
+   Start at  16:58:14
+   Duration  1.89s (transform 266ms, setup 65ms, collect 584ms, tests 12ms, environment 0ms, prepare 572ms)
+

@@ -1,0 +1,19 @@
+{
+  "owner": "root",
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "test:root",
+    "--",
+    "--maxWorkers=1",
+    "--reporter=json",
+    "--outputFile=D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\structured-qualification-patched\\root.vitest.json"
+  ],
+  "cwd": "D:\\code\\SpecForge\\.lint-shortpath-a01",
+  "context_sha256": "6718af96ad6d72872663e3feadf61af12de0cdc94afdd0ba7e1b02a71ab1908b",
+  "started_utc": "2026-11-08T12:45:50.250Z",
+  "finished_utc": "2026-11-08T12:46:16.338Z",
+  "exit": 0,
+  "stdout_sha256": "8cc728b367cf9bc458cc974b385917f3cc8428fa9e1dd7a8c75a7654724c40aa",
+  "stderr_sha256": "00c19612dd2abd6a20f669b83e04b76c8b8b214b44f50e66fa93d7937196e7ee"
+}

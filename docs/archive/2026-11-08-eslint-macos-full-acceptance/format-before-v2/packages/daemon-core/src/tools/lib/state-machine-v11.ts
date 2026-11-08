@@ -1,0 +1,203 @@
+/**
+ * state-machine-v11.ts — v1.1 标准 WI 状态机引擎（§5）
+ *
+ * 产品边界：SPS-1.0。当前可执行合同由本模块导出、Runtime 消费者与回归测试固定；归档 v1.1 标准仅作历史证据。
+ *
+ * 职责：
+ * - §5.1 主状态枚举（24 个状态）
+ * - §5.2 禁止跳转规则
+ * - §5.3 状态推进主体校验
+ * - §5.4 恢复检查
+ */
+
+import * as fs from 'node:fs/promises';
+import * as path from 'node:path';
+import { STATE_ADVANCEMENT_SUBJECTS } from '@specforge/workflow-runtime';
+import { FINAL_STATES, FINAL_TRANSITIONS } from './state_machine';
+
+// ---------------------------------------------------------------------------
+// §5.1 主状态枚举
+// ---------------------------------------------------------------------------
+
+export const WI_STATUSES_V11 = FINAL_STATES;
+
+export type WIStatusV11 = (typeof WI_STATUSES_V11)[number];
+
+// ---------------------------------------------------------------------------
+// §5.2 禁止跳转
+// ---------------------------------------------------------------------------
+
+const FORBIDDEN: ReadonlyArray<readonly [string, string]> = [
+  ['created', 'implementation_running'],
+  ['intake_ready', 'implementation_running'],
+  ['impact_analyzing', 'implementation_running'],
+  ['impact_analyzed', 'implementation_running'],
+  ['workflow_selected', 'implementation_running'],
+  ['candidate_prepared', 'merging'],
+  ['approval_required', 'merging'],
+  ['approval_required', 'closed'],
+  ['merged', 'closed'],
+  ['blocked', 'closed'],
+  ['rejected', 'closed'],
+];
+
+/**
+ * 校验状态跳转是否被禁止（§5.2）。
+ * 注意：closed → any 也是禁止的。
+ */
+export function isForbiddenTransition(from: string, to: string): boolean {
+  if (from === 'closed') return true;
+  return FORBIDDEN.some(([f, t]) => f === from && t === to);
+}
+
+// ---------------------------------------------------------------------------
+// §5.3 状态推进主体
+// ---------------------------------------------------------------------------
+
+/**
+ * 校验主体是否有权推进 WI 状态（§5.3）。
+ */
+export function isAuthorizedAdvancementSubject(subject: string): boolean {
+  return (STATE_ADVANCEMENT_SUBJECTS as readonly string[]).includes(subject);
+}
+
+// ---------------------------------------------------------------------------
+// v1.1 合法跳转表
+// ---------------------------------------------------------------------------
+
+/**
+ * v1.1 标准 WI 主链路合法跳转表。
+ */
+/** Compatibility export backed by the one authoritative transition table. */
+export const V11_TRANSITIONS: ReadonlyMap<string, readonly string[]> = FINAL_TRANSITIONS;
+
+/**
+ * 校验 v1.1 状态跳转是否合法。
+ */
+export function isValidV11Transition(from: string, to: string): boolean {
+  // 先检查禁止列表
+  if (isForbiddenTransition(from, to)) return false;
+  // 再检查合法列表
+  const targets = V11_TRANSITIONS.get(from);
+  if (!targets) return false;
+  return targets.includes(to);
+}
+
+/**
+ * Workflow-aware verification recovery.
+ *
+ * The common lifecycle table remains unchanged. spec_migration is the no-code
+ * exception: stale governed Verification input may recover from
+ * verification_done to post_merge_verified, then reuse the existing
+ * post_merge_verified -> verification_running -> verification_done path.
+ * state-coordinator-v11 supplies the fail-closed provenance guard.
+ */
+export function isValidV11TransitionForWorkflow(
+  from: string,
+  to: string,
+  workflowType?: string,
+): boolean {
+  if (isValidV11Transition(from, to)) return true;
+  return (
+    workflowType === 'spec_migration' &&
+    from === 'verification_done' &&
+    to === 'post_merge_verified'
+  );
+}
+
+// ---------------------------------------------------------------------------
+// §5.4 恢复机制
+// ---------------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------
+// §5.3 Evidence Prerequisites for Key States
+// ---------------------------------------------------------------------------
+
+/**
+ * Key states that require specific evidence files before transition.
+ *
+ * Round C enhancement: `closed` now requires THREE evidence files:
+ * - verification_report.md
+ * - changed_files_audit.md
+ * - close_gate.md (or close_gate.json)
+ *
+ * The single-file check (verification_report.md) is preserved for backward
+ * compatibility in STATE_EVIDENCE_REQUIREMENTS. The comprehensive three-file
+ * check is available via checkCloseGateEvidenceRequirements().
+ */
+export const STATE_EVIDENCE_REQUIREMENTS: Record<string, { requiredFile: string; description: string }> = {
+  'approval_required': { requiredFile: 'gate_summary.md', description: 'Gate Summary must exist before approval' },
+  'merge_ready': { requiredFile: 'user_decision.json', description: 'User Decision must exist before merge' },
+  'merging': { requiredFile: 'gate_summary.md', description: 'merge_ready_gate must have passed' },
+  'closed': { requiredFile: 'verification_report.md', description: 'close_gate verification report must exist' },
+};
+
+/**
+ * All evidence files required before transitioning to `closed`.
+ *
+ * verification_done → closed is a seal transition that must be performed
+ * by `close_gate`. Before closing, ALL three evidence files must exist.
+ */
+export const CLOSE_GATE_REQUIRED_EVIDENCE: ReadonlyArray<{ file: string; description: string }> = [
+  { file: 'verification_report.md', description: 'Verification report must exist before close' },
+  { file: 'changed_files_audit.md', description: 'Changed files audit must exist before close' },
+  { file: 'close_gate.md', description: 'Close gate evidence must exist before close' },
+];
+
+/**
+ * Check all evidence requirements for transitioning to `closed`.
+ *
+ * Returns { met: true } if all three evidence files exist.
+ * Returns { met: false, missing: string[] } with the list of missing files.
+ */
+export async function checkCloseGateEvidenceRequirements(
+  workItemDir: string,
+): Promise<{ met: boolean; missing: string[]; descriptions: string[] }> {
+  const missing: string[] = [];
+  const descriptions: string[] = [];
+
+  for (const req of CLOSE_GATE_REQUIRED_EVIDENCE) {
+    const fullPath = path.join(workItemDir, req.file);
+    try {
+      await fs.access(fullPath);
+    } catch {
+      // Also check .json variant for close_gate
+      if (req.file === 'close_gate.md') {
+        const jsonPath = path.join(workItemDir, 'close_gate.json');
+        try {
+          await fs.access(jsonPath);
+          continue; // .json variant exists
+        } catch {
+          // Neither variant exists
+        }
+      }
+      missing.push(req.file);
+      descriptions.push(req.description);
+    }
+  }
+
+  return { met: missing.length === 0, missing, descriptions };
+}
+
+/**
+ * Check if a state transition's target has evidence prerequisites, and verify them.
+ * Returns { met: true } if no prerequisites or all files exist.
+ * Returns { met: false, missing } if prerequisites are not satisfied.
+ */
+export async function checkStateEvidenceRequirement(
+  targetStatus: string,
+  workItemDir: string,
+): Promise<{ met: boolean; missing?: string; description?: string }> {
+  const req = STATE_EVIDENCE_REQUIREMENTS[targetStatus];
+  if (!req) {
+    return { met: true };
+  }
+
+  const fullPath = path.join(workItemDir, req.requiredFile);
+  try {
+    await fs.access(fullPath);
+    return { met: true };
+  } catch {
+    return { met: false, missing: req.requiredFile, description: req.description };
+  }
+}

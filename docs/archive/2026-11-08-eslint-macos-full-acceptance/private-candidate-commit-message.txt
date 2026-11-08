@@ -1,0 +1,14 @@
+fix: unify complete ESLint and qualify full three-platform regression
+
+Preserve current package rule ownership and scopes while aligning ESLint/parser
+dependencies, checking runtime bindings, and repairing typed asynchronous and
+untrusted-input boundaries. Retain fail-closed governance, accurate diagnostics,
+template validator identity, and syntax-based contract regression checks.
+
+Run build, complete lint, workspace and Root phases on Windows, Linux and macOS
+with pinned tools and immutable raw CI receipts; retain official install smoke.
+
+Pre-candidate validation: all12 build/release precheck, complete lint with zero
+errors/warnings, Root753, actual targeted governance/permission/lint regressions.
+Three-leg isolated qualification and actual OS CI remain required. This private
+validation branch is not final acceptance or main deployment approval.

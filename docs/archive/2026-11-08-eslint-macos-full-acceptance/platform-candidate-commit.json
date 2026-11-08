@@ -1,0 +1,7 @@
+{
+  "utc": "2026-11-08T12:07:17.443Z",
+  "commit": "849fbf12ae8f5f9198f50da2c173e7ffa4f44f3c",
+  "parent": "df9f572cf4150fb1f03fbac9f2ba028e9c4cfa8a",
+  "branch": "codex/eslint-macos-platform-validation",
+  "frozen_manifest_sha256": "1d61d3d9e504c1a59ed2747fd132cc53ce85c2d6263f51d2e60eaf87c30e6ccc"
+}

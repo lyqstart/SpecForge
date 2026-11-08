@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/quarantine-owned-partial-emit.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "quarantine-run-owned-partial-typescript-emit",
+  "expected_writes": "four exact generated shadows retained before unlink; source TS unchanged",
+  "started_utc": "2026-11-08T11:08:30.592Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\quarantine-owned-partial-emit.cjs",
+      "sha256": "14d26bd0f7980bbe82fd1be2aeedc966f880c53edcf8e20417909f92a9b4637c",
+      "size": 1553,
+      "extension": ".cjs"
+    }
+  ]
+}

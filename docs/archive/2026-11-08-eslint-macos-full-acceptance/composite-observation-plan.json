@@ -1,0 +1,49 @@
+{
+  "utc": "2026-11-08T09:03:36.986Z",
+  "policy": "Actual runtime observation guard checks results/every child passed/reason/details, optional policy/cancelled IDs/counts; does not claim schema qualification or invent any Gate field. Same original object/child identity retained. Existing test assertions retained; missing/invalid details fail rather than being asserted as a type.",
+  "required": "Guard positive/negative canaries and complete affected property/integration suites; full ESLint and compiler.",
+  "members": [
+    {
+      "file": "packages/workflow-runtime/tests/integration/workflow-e2e-property-29.test.ts",
+      "before": "832fa3e696802b606b4ba295859a10e27359bf4452834e9570cf2b3fd4c8274c",
+      "after": "bfdbc27578699182caacaff03c8ba4b9e4c5caadf09bd427293c18c97cd15d31",
+      "replaced_any_casts": 4
+    },
+    {
+      "file": "packages/workflow-runtime/tests/property/composite-gate-parallel.property.test.ts",
+      "before": "511e186d406e25e5ebe32b9f1e8b64b02ad991a1244948b08adaaf08002e0265",
+      "after": "57e37538cef5f59f1be8371bd7d4ababe5f425688e7f8d13d9fd0410e3857687",
+      "replaced_any_casts": 6
+    },
+    {
+      "file": "packages/workflow-runtime/tests/property/composite-gate-property-4.parallel-execution.test.ts",
+      "before": "7838215ef649c4f5c40bafd12f57ebeba3d57e61b74884ac81b5e1d866e34337",
+      "after": "688e21211bb9cb3b2139f4b5b5e4cdd3565a65e3f7a2f8514d2c78624c40d94e",
+      "replaced_any_casts": 8
+    },
+    {
+      "file": "packages/workflow-runtime/tests/property/composite-gate-property-5.fail-fast-parallel.test.ts",
+      "before": "5e6e79a6c4c6e09b1453e0a7e1bb22e0406c9c63f15786fdb2697950aac49050",
+      "after": "1e6e453141db07286e4d75918766ab3716d55ed5e6da876c1e5e5bcfa29a09ad",
+      "replaced_any_casts": 12
+    },
+    {
+      "file": "packages/workflow-runtime/tests/property/fail-fast-parallel.property.test.ts",
+      "before": "853f5aaac34f34c3aa4fa479f6a377ebdc6758d2ed3f64610b5e026f7e32829a",
+      "after": "445cf816d9cfb618f76a76e587c4b8bc50758dd64eb034626e7ce744090f3b78",
+      "replaced_any_casts": 17
+    },
+    {
+      "file": "packages/workflow-runtime/tests/composite-observation.ts",
+      "before": "ABSENT",
+      "after": "a64482b23c5df8530c4e98a55a610f6bd7f3f0460807ab34f964c73a1fcd00cc",
+      "replaced_any_casts": 0
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/composite-observation.test.ts",
+      "before": "ABSENT",
+      "after": "dcc5d630a541c8453ed287ee260d2c922b405d141f1fe9b8cf0ef502e04b4567",
+      "replaced_any_casts": 0
+    }
+  ]
+}

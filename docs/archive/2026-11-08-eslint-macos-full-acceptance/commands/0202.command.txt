@@ -1,0 +1,24 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/run-isolated-qualification-leg-v3.cjs",
+    "patched",
+    ".lint-platform-a01"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "final-platform-isolated-patched-qualification",
+  "expected_writes": "Final frozen candidate independent outside-Git profile cold build full workspace Root and official installer; original and tooling V2 legs reused unchanged",
+  "started_utc": "2026-11-08T12:07:55.396Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\run-isolated-qualification-leg-v3.cjs",
+      "sha256": "9136f4ae619221e8142f61f509bf32b55294d10ea7fd8b8c6f2159fce9582bb9",
+      "size": 7051,
+      "extension": ".cjs"
+    }
+  ]
+}

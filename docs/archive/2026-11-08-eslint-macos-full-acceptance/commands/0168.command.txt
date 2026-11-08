@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/read-invalid-workflow-checks.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "read-primary-workflow-validation-annotations",
+  "expected_writes": "public read-only GitHub checks; immutable raw output",
+  "started_utc": "2026-11-08T11:20:06.521Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\read-invalid-workflow-checks.cjs",
+      "sha256": "1131220fb4be932d0f85b84f29308e00071d7925437645d6a75096ed2e1083e0",
+      "size": 1404,
+      "extension": ".cjs"
+    }
+  ]
+}

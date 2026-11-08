@@ -1,0 +1,76 @@
+{
+  "utc": "2026-11-08T08:41:49.138Z",
+  "members": [
+    {
+      "file": "packages/observability/tests/property/property-30-event-schema-multisync.pbt.ts",
+      "before": "b4a7f28a3ed33f52e06650da87118beb26e359550cd0055c8b22a0fa545cac60",
+      "after": "ff91bea9ad2a05cf024ee13c97120f5c2d5cef0f9582378c6b2b4b5dd3736e46"
+    },
+    {
+      "file": "packages/observability/src/types/event-utils.ts",
+      "before": "7178b441d09508133fb0f82a75d29a2916e113db57549778af440d66783e8052",
+      "after": "36efadea90d11c37b8b157a7bf4152cd42804549e2822b7ff42f296adb612c1a"
+    },
+    {
+      "file": "packages/observability/tests/unit/event-schema.test.ts",
+      "before": "d780f90f52b00c0626f29178c781d5d117bbd8552f9abb7e82b99ba3853c5340",
+      "after": "76aa7bbd45b295c2d784e6327f0b81c76f234da65b7708bac43fe17ae50216b6"
+    },
+    {
+      "file": "packages/opencode-adapter/src/OpenCodeAdapter.ts",
+      "before": "a58df8398df32f824429fd9d3b33c2346482c36e2323fd89acafd8411f8a7a12",
+      "after": "59fdf65394db44c8f18d6eb76d396b2966a587293d80566181ea5915ba83e5f5"
+    },
+    {
+      "file": "packages/opencode-adapter/src/configuration.ts",
+      "before": "62492c53d366f424a6157db33e1a7901793994b5d6f21cebfede8bcbcf9d51a4",
+      "after": "3637eb4caf88ea201c2dbcc8d0e0665a43221e80216e9b40b5588cc618d84922"
+    },
+    {
+      "file": "packages/opencode-adapter/src/errors/ErrorClassifier.ts",
+      "before": "34c3455362863f6f95d60f06d708bd255aaa5fa33677858656216056d106aa61",
+      "after": "5dd1064650f4da708341649902ae9366c707e3807f8fcdf42e6ee3a54dea5ffb"
+    },
+    {
+      "file": "packages/scope-gate/tests/current-crossplatform-ci-contract.test.ts",
+      "before": "e59d7be0bbd091f6bb3b155e92a806a4175aa5328ffba9f508e84098f14aed9c",
+      "after": "e0b9c7fa06ee6872327fc27d612cad67f8921be63142c9baa8b279da48a4408c"
+    },
+    {
+      "file": "packages/scope-gate/tests/current-operating-doc-contract.test.ts",
+      "before": "bf321c0aad88d4544b895133c1eb5b23a4f3c172d251368946d9fea911d17520",
+      "after": "5bd4393cdaced52792cbd2b0c748603ad83d5beae3c6f9d725dd8d63b51a840c"
+    },
+    {
+      "file": "packages/cli/src/cli.ts",
+      "before": "c9d7fc6da7856ed8824cb33a092b8086598482cdf5523fa4021b44ccf40f82bf",
+      "after": "9a97423efe4fc8d23812e320fc8af31e7584deb656ca093e401e267133c8b7f0"
+    },
+    {
+      "file": "packages/cli/src/commands/plugin.ts",
+      "before": "2ebe94f8a58bcf834ee470e4dab26d0128cd5354968bab06b974ad47ecc9f550",
+      "after": "e2c5a0feec3347784d48760b712b13f477cc312fcd8ce8c001b47237bd04e161"
+    },
+    {
+      "file": "packages/cli/src/commands/spec.ts",
+      "before": "d80f1e37049094637327a94d41ce67aba16e4091b0a303c721beeb54f3c19f45",
+      "after": "0c99c1f7caf37320d6a2208567a7686984846af1405b649440f7e0ece61a6b9e"
+    },
+    {
+      "file": "packages/cli/src/commands/webhook.ts",
+      "before": "4ee26c39ec4aad4d1b525fca41a8d0990e22eff14c257884d7aea238ef040f1c",
+      "after": "428b7165fc239980a8cfd4802aa6efcca3af5bd4a34baa1ee44d5dfbe94da4a6"
+    },
+    {
+      "file": "packages/cli/src/commands/services/json-payload.ts",
+      "before": "3feaefbde3a6f201df7b1fa38a34cb4999535e9ce91b601c2590cc2b11872a0e",
+      "after": "0cdd3e5475debb6d7be7a7edf5aeb645ac6186963794251f93cf2cd45a4d9e50"
+    },
+    {
+      "file": "packages/cli/src/job-tracker/terminal-states.ts",
+      "before": "14a11b8117bbfb127b40c4ff43abea04377a38c9bbdafe655d8bd3737c39bee8",
+      "after": "15b27be51fbb42683d9b9d34e034356323b8ad467f643bda07fac7cae4cb0680"
+    }
+  ],
+  "required": "Real compiler/lint and affected suite; property pbt file is outside default Vitest discovery and requires explicit existing-schema validation run. Event validator widens only the two explicitly validated string domains; runtime validation unchanged. Unknown adapter objects never invoke arbitrary string coercion. No product capabilities enabled."
+}

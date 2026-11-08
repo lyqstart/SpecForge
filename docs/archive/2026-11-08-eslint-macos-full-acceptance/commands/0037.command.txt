@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/repair-owner-specific-bindings.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "repair-owner-specific-unused-projections-and-stores",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES:private owner-specific source and test fixes;EXTERNAL_EVIDENCE_WRITES:exact before bytes and semantic plan",
+  "started_utc": "2026-11-08T07:52:17.729Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\repair-owner-specific-bindings.cjs",
+      "sha256": "1ae2a8536df788150e9eae8aca03c17003bca6e3ec13017064684315f7e1c96a",
+      "size": 6232,
+      "extension": ".cjs"
+    }
+  ]
+}

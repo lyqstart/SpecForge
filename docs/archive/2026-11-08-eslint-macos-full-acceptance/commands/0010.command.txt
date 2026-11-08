@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/apply-short-fixture.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "apply-identical-reviewed-toolchain-to-short-fixture",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES:private review files and same lock;EXTERNAL_EVIDENCE_WRITES:source identity report",
+  "started_utc": "2026-11-08T07:21:17.037Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\apply-short-fixture.cjs",
+      "sha256": "23e3934d8cc521243974d39eb6cc3b4e22257b69a4cabbd28bf0321659998bb8",
+      "size": 1556,
+      "extension": ".cjs"
+    }
+  ]
+}

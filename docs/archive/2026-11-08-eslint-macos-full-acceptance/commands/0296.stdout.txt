@@ -1,0 +1,1 @@
+{"actual_git_diff_members":527,"added_binding":"packages/daemon-core/tests/unit/candidate-generation-integrity.test.ts","all_prior_bytes_unchanged":true,"source_mutated":false}

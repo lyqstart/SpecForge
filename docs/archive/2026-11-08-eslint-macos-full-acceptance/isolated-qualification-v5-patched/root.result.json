@@ -1,0 +1,19 @@
+{
+  "leg": "patched",
+  "phase": "root",
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "test:root"
+  ],
+  "cwd": "D:\\code\\SpecForge\\.lint-signal-a01",
+  "started_utc": "2026-11-08T13:08:45.864Z",
+  "context_sha256": "13c6c5fd873b748a49e35a7d60a3a4380794e4aee22aea2b077a2a9925d9f99c",
+  "expected_writes": "Owned isolated dependencies/build/test/install roots and sealed reports; no real business project or user configuration writes",
+  "finished_utc": "2026-11-08T13:08:56.556Z",
+  "inner_exit_code": 0,
+  "signal": null,
+  "spawn_error": null,
+  "stdout_sha256": "7fa15777bfcd32f06072f5f9312fa65be1f26b70f0071b3a7bf2af9ad703a7d7",
+  "stderr_sha256": "54f34b9fbaab56a061650ce928db59448135ee8b295e9e4e467e0770c8a63dd7"
+}

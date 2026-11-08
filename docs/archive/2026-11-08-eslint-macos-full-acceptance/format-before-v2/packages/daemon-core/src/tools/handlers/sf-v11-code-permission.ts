@@ -1,0 +1,483 @@
+import { SPEC_DIR_NAME } from "@specforge/types/directory-layout";
+/**
+ * sf-v11-code-permission — v1.2.2 hotfix
+ *
+ * Fix scope:
+ * - Keep v1.2.1 governance checks.
+ * - Add controlled scope extension actions: extend / append.
+ * - release / enable also merge with an existing active permission set instead of
+ *   silently replacing earlier phase authorizations.
+ */
+import { registerHandler } from '../ToolDispatcher';
+import {
+  prepareCodePermissionRelease,
+  commitPreparedCodePermissionRelease,
+  revokeCodePermission,
+  checkCodePermission,
+} from '../lib/code-permission-service-v11';
+import { takeSnapshot, saveBaseline } from '../lib/filesystem-diff';
+import { readAuthoritativeState, transitionWithEvidence } from '../lib/state-coordinator-v11';
+import * as path from 'node:path';
+import * as fs from 'node:fs/promises';
+import { validateWorkItemId } from '../lib/work-item-id-validator';
+import { guardHardStop, setHardStop } from '../lib/hard-stop-latch';
+import { readWorkItemMetadata } from '../lib/work-item-metadata.js';
+import { evaluateMergeReport } from '@specforge/types';
+import { recoverLegacyFilesystemVersionControlMode } from '../lib/project-governance-v2.js';
+
+async function readJsonIfExists(filePath: string): Promise<any | null> {
+  try {
+    return JSON.parse(await fs.readFile(filePath, 'utf-8'));
+  } catch {
+    return null;
+  }
+}
+
+async function readTextIfExists(filePath: string): Promise<string | null> {
+  try {
+    return await fs.readFile(filePath, 'utf-8');
+  } catch {
+    return null;
+  }
+}
+
+function workflowTypeFromPath(workflowPath: string | undefined): string {
+  switch (workflowPath) {
+    case 'requirement_change_path':
+      return 'feature_spec';
+    case 'design_change_path':
+    case 'architecture_change_path':
+    case 'task_change_path':
+    case 'code_only_fast_path':
+    case 'contract_change_path':
+      return 'feature_spec';
+    case 'spec_migration_path':
+      return 'spec_migration';
+    case 'rollback_path':
+      return 'rollback';
+    default:
+      return 'feature_spec';
+  }
+}
+
+async function assertMergeSucceededBeforeCode(workItemDir: string): Promise<{
+  workflowPath: string;
+  workflowType: string;
+  mergeReportStatus: 'not_applicable' | 'success';
+}> {
+  const workItem = await readJsonIfExists(path.join(workItemDir, 'work_item.json'));
+  const workflowPath = String(workItem?.workflow_path ?? '');
+  const workflowType = String(workItem?.workflow_type ?? workflowTypeFromPath(workflowPath));
+
+  if (workflowPath === 'code_only_fast_path') {
+    return { workflowPath, workflowType, mergeReportStatus: 'not_applicable' };
+  }
+
+  const mergeReport = await readTextIfExists(path.join(workItemDir, 'merge_report.md'));
+  if (!mergeReport) {
+    throw new Error('MERGE_REPORT_REQUIRED_BEFORE_CODE_PERMISSION: non-code-only workflow must merge specs before enabling code writes');
+  }
+  const verdict = evaluateMergeReport(mergeReport, path.basename(workItemDir));
+  if (!verdict.valid || verdict.status !== 'success') {
+    throw new Error(`MERGE_SUCCESS_REQUIRED_BEFORE_CODE_PERMISSION: ${verdict.reason ?? `status is ${verdict.status}`}`);
+  }
+
+  return { workflowPath, workflowType, mergeReportStatus: 'success' };
+}
+
+async function advanceImplementationStateBeforeCode(input: {
+  deps: any;
+  context: any;
+  projectRoot: string;
+  workItemId: string;
+  workItemDir: string;
+  workflowPath: string;
+  workflowType: string;
+}): Promise<any> {
+  const state = await readAuthoritativeState({
+    deps: input.deps,
+    projectRoot: input.projectRoot,
+    workItemId: input.workItemId,
+  });
+  const current = state.current_state;
+
+  if (
+    current === 'implementation_running' ||
+    current === 'implementation_done' ||
+    current === 'verification_running' ||
+    current === 'verification_done' ||
+    current === 'closed'
+  ) {
+    return {
+      attempted: true,
+      advanced: false,
+      reason: 'already_at_or_past_implementation_running',
+      current_state: current,
+    };
+  }
+
+  if (current !== 'merged' && current !== 'post_merge_verified' && current !== 'implementation_ready') {
+    throw new Error(
+      `POST_MERGE_VERIFIED_REQUIRED_BEFORE_CODE_PERMISSION: authoritative state is ${current ?? 'null'}, expected merged, post_merge_verified, or implementation_ready`,
+    );
+  }
+
+  const steps: any[] = [];
+
+  if (current === 'merged') {
+    steps.push(
+      await transitionWithEvidence({
+        deps: input.deps,
+        context: input.context,
+        projectRoot: input.projectRoot,
+        workItemId: input.workItemId,
+        workItemDir: input.workItemDir,
+        fromState: 'merged',
+        toState: 'post_merge_verified',
+        workflowType: input.workflowType,
+        actorRole: 'code_permission_service',
+        evidence: 'code_permission_service recovered code_only_fast_path after merge not_applicable before implementation',
+        transitionContext: { source: 'sf_v11_code_permission', merge_not_applicable_recovery: true },
+      }),
+    );
+  }
+
+  if (current === 'post_merge_verified' || current === 'merged') {
+    steps.push(
+      await transitionWithEvidence({
+        deps: input.deps,
+        context: input.context,
+        projectRoot: input.projectRoot,
+        workItemId: input.workItemId,
+        workItemDir: input.workItemDir,
+        fromState: 'post_merge_verified',
+        toState: 'implementation_ready',
+        workflowType: input.workflowType,
+        actorRole: 'code_permission_service',
+        evidence: 'code_permission_service prepares implementation after post_merge_gate passed',
+        transitionContext: { source: 'sf_v11_code_permission' },
+      }),
+    );
+  }
+
+  return {
+    attempted: true,
+    advanced: steps.length > 0,
+    from_state: current,
+    to_state: 'implementation_ready',
+    current_state: 'implementation_ready',
+    transition_steps: steps,
+  };
+}
+
+type NormalizedWriteOperation = 'create' | 'modify' | 'delete';
+
+function normalizeWriteOperation(value: unknown): NormalizedWriteOperation {
+  return value === 'create' || value === 'modify' || value === 'delete' ? value : 'modify';
+}
+
+function normalizeAllowedForPolicy(
+  allowedWriteFiles: any[],
+): Array<{ path: string; operation: NormalizedWriteOperation }> {
+  return allowedWriteFiles.map((file) => {
+    if (typeof file === 'string') return { path: file, operation: 'modify' };
+    return { path: String(file?.path ?? ''), operation: normalizeWriteOperation(file?.operation) };
+  });
+}
+
+function findForbiddenGovernanceTargets(allowedWriteFiles: any[]): string[] {
+  return normalizeAllowedForPolicy(allowedWriteFiles)
+    .map((file) => file.path.replace(/\\/g, '/'))
+    .filter((p) => p === SPEC_DIR_NAME || p.startsWith((`${SPEC_DIR_NAME}/` as const)) || p.includes('/.specforge/'));
+}
+
+function isReleaseLikeAction(action: string): boolean {
+  return action === 'release' || action === 'enable' || action === 'extend' || action === 'append';
+}
+
+function normalizedReturnAction(action: string): string {
+  if (action === 'append') return 'extend';
+  if (action === 'enable') return 'release';
+  return action;
+}
+
+function isLegacyFilesystemRecoveryAction(action: string): boolean {
+  return action === 'recover_legacy_filesystem_mode';
+}
+
+registerHandler('sf_v11_code_permission', async (args, context, deps) => {
+  const projectRoot = (context?.directory as string) || (context?.worktree as string) || process.cwd();
+  const workItemId = args['work_item_id'] as string;
+  const action = String((args['action'] as string) || 'check');
+
+  const idError = validateWorkItemId(workItemId);
+  if (idError) return { success: false, error: idError };
+
+  const workItemDir = path.join(projectRoot, SPEC_DIR_NAME, 'work-items', workItemId);
+  let workItem: Record<string, unknown>;
+  try {
+    workItem = await readWorkItemMetadata(workItemDir, workItemId);
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : String(error),
+      hard_stop: false,
+      retry_allowed: true,
+    };
+  }
+  if (
+    action !== 'check' &&
+    action !== 'query' &&
+    (workItem?.workflow_type === 'contract_change' ||
+      workItem?.workflow_path === 'contract_change_path')
+  ) {
+    return {
+      success: false,
+      error: 'CODE_PERMISSION_NOT_APPLICABLE_FOR_CONTRACT_CHANGE',
+      policy_violation: true,
+      retry_allowed: false,
+    };
+  }
+  if (
+    action !== 'check' &&
+    action !== 'query' &&
+    (workItem?.workflow_type === 'spec_migration' ||
+      workItem?.workflow_path === 'spec_migration_path')
+  ) {
+    return {
+      success: false,
+      error: 'CODE_PERMISSION_NOT_APPLICABLE_FOR_SPEC_MIGRATION',
+      code_permission_not_applicable: true,
+      policy_violation: true,
+      retry_allowed: false,
+    };
+  }
+
+  if (action !== 'check' && action !== 'query') {
+    const hardStopGuard = guardHardStop(projectRoot, workItemId, 'sf_v11_code_permission');
+    if (!hardStopGuard.allowed) {
+      return {
+        success: false,
+        error: hardStopGuard.error,
+        hard_stop: true,
+        hard_stop_record: hardStopGuard.hard_stop_record,
+      };
+    }
+  }
+
+  try {
+    if (isLegacyFilesystemRecoveryAction(action)) {
+      if (args['confirm_legacy_filesystem_recovery'] !== true) {
+        return {
+          success: false,
+          error: 'LEGACY_FILESYSTEM_MODE_RECOVERY_CONFIRMATION_REQUIRED',
+          retry_allowed: true,
+        };
+      }
+      const authoritativeState = await readAuthoritativeState({ deps, projectRoot, workItemId });
+      if (authoritativeState.current_state !== 'implementation_done') {
+        return {
+          success: false,
+          error: 'LEGACY_FILESYSTEM_MODE_RECOVERY_REQUIRES_IMPLEMENTATION_DONE',
+          current_state: authoritativeState.current_state,
+          retry_allowed: false,
+        };
+      }
+      const recovery = await recoverLegacyFilesystemVersionControlMode({
+        projectRoot,
+        workItemDir,
+        workItemId,
+        reason: String(args['recovery_reason'] ?? ''),
+      });
+      if (!recovery.success) {
+        return {
+          success: false,
+          error: recovery.error,
+          retry_allowed: false,
+          legacy_filesystem_recovery: recovery,
+        };
+      }
+      return {
+        success: true,
+        action,
+        work_item_id: workItemId,
+        recovered_version_control_mode: 'filesystem',
+        recovery_path: recovery.recovery_path,
+        idempotent: recovery.idempotent === true,
+        next_action: 'rerun_verification_gate_without_git_branch_or_checkpoint_commit',
+      };
+    }
+
+    if (isReleaseLikeAction(action)) {
+      const allowedWriteFiles = args['allowed_write_files'] as any[];
+      if (!allowedWriteFiles || !Array.isArray(allowedWriteFiles) || allowedWriteFiles.length === 0) {
+        setHardStop(projectRoot, workItemId, 'ALLOWED_WRITE_FILES_REQUIRED', 'sf_code_permission');
+        return {
+          success: false,
+          error: 'ALLOWED_WRITE_FILES_REQUIRED',
+          hard_stop: true,
+          message:
+            'sf_code_permission enable/extend requires allowed_write_files[] with at least one file path.\n' +
+            'The orchestrator must extract target files from tasks.md before calling enable/extend.',
+        };
+      }
+
+      const existingAllowedWriteFiles = Array.isArray(workItem.allowed_write_files)
+        ? workItem.allowed_write_files
+        : [];
+      const extensionRequested =
+        action === 'extend' ||
+        action === 'append' ||
+        (workItem.code_change_allowed === true && existingAllowedWriteFiles.length > 0);
+      const revisionReason = String(args['revision_reason'] ?? '').trim();
+      if (extensionRequested && revisionReason.length < 8) {
+        return {
+          success: false,
+          error: 'SCOPE_REVISION_REASON_REQUIRED',
+          hard_stop: false,
+          policy_violation: true,
+          retry_allowed: true,
+          message:
+            'Extending an active allowed-write scope requires revision_reason so the planned-scope change remains auditable.',
+        };
+      }
+
+      const forbiddenGovernanceTargets = findForbiddenGovernanceTargets(allowedWriteFiles);
+      if (forbiddenGovernanceTargets.length > 0) {
+        return {
+          success: false,
+          error: 'ALLOWED_WRITE_FILES_MUST_NOT_INCLUDE_SPECFORGE_GOVERNANCE_PATHS',
+          hard_stop: false,
+          policy_violation: true,
+          retry_allowed: true,
+          forbidden_paths: forbiddenGovernanceTargets,
+          message:
+            'Implementation write permission can only include business/code files.\n' +
+            '.specforge governance artifacts must be written by controlled workflow tools, not executors.',
+        };
+      }
+
+      const workflowFacts = await assertMergeSucceededBeforeCode(workItemDir);
+      const normalized = normalizeAllowedForPolicy(allowedWriteFiles);
+      const preparedPermission = await prepareCodePermissionRelease({
+        workItemDir,
+        workItemId,
+        allowedWriteFiles: normalized,
+        revisionReason,
+      });
+      const preCommitState = await readAuthoritativeState({
+        deps,
+        projectRoot,
+        workItemId,
+      });
+      if (
+        preparedPermission.releaseMode === 'extend' &&
+        preCommitState.current_state !== 'implementation_running'
+      ) {
+        return {
+          success: false,
+          error: 'CODE_PERMISSION_EXTEND_REQUIRES_IMPLEMENTATION_RUNNING',
+          hard_stop: false,
+          policy_violation: true,
+          retry_allowed: false,
+          current_state: preCommitState.current_state,
+        };
+      }
+      if (
+        preparedPermission.releaseMode === 'release' &&
+        !['merged', 'post_merge_verified', 'implementation_ready', 'implementation_running']
+          .includes(String(preCommitState.current_state ?? ''))
+      ) {
+        return {
+          success: false,
+          error: 'POST_MERGE_VERIFIED_REQUIRED_BEFORE_CODE_PERMISSION',
+          hard_stop: false,
+          policy_violation: true,
+          retry_allowed: false,
+          current_state: preCommitState.current_state,
+        };
+      }
+
+      try {
+        await fs.access(path.join(workItemDir, 'filesystem_baseline.json'));
+      } catch {
+        const baseline = takeSnapshot(projectRoot);
+        saveBaseline(workItemDir, baseline);
+      }
+
+      const state = await commitPreparedCodePermissionRelease(preparedPermission);
+      let statePreparation;
+      let stateAutoAdvance;
+      try {
+        statePreparation = await advanceImplementationStateBeforeCode({
+          deps,
+          context,
+          projectRoot,
+          workItemId,
+          workItemDir,
+          workflowPath: workflowFacts.workflowPath,
+          workflowType: workflowFacts.workflowType || workflowTypeFromPath(workflowFacts.workflowPath),
+        });
+        stateAutoAdvance = statePreparation;
+        if (statePreparation.current_state === 'implementation_ready') {
+          const runningStep = await transitionWithEvidence({
+            deps,
+            context,
+            projectRoot,
+            workItemId,
+            workItemDir,
+            fromState: 'implementation_ready',
+            toState: 'implementation_running',
+            workflowType:
+              workflowFacts.workflowType || workflowTypeFromPath(workflowFacts.workflowPath),
+            actorRole: 'code_permission_service',
+            evidence: 'code_permission_service released write permission for implementation',
+            transitionContext: { source: 'sf_v11_code_permission' },
+          });
+          stateAutoAdvance = {
+            attempted: true,
+            advanced: true,
+            from_state: statePreparation.from_state,
+            to_state: 'implementation_running',
+            current_state: 'implementation_running',
+            transition_steps: [
+              ...(Array.isArray(statePreparation.transition_steps)
+                ? statePreparation.transition_steps
+                : []),
+              runningStep,
+            ],
+          };
+        }
+      } catch (error) {
+        await revokeCodePermission(workItemDir).catch(() => undefined);
+        throw error;
+      }
+
+      return {
+        success: true,
+        action: normalizedReturnAction(action),
+        work_item_id: workItemId,
+        code_change_allowed: state.code_change_allowed,
+        allowed_count: state.allowed_write_files.length,
+        scope_revision: state.scope_revision ?? null,
+        state_auto_advance: stateAutoAdvance,
+      };
+    }
+
+    if (action === 'revoke') {
+      await revokeCodePermission(workItemDir);
+      return { success: true, action: 'revoke', work_item_id: workItemId, code_change_allowed: false };
+    }
+
+    const state = await checkCodePermission(workItemDir);
+    return {
+      success: true,
+      action,
+      work_item_id: workItemId,
+      code_change_allowed: state.code_change_allowed,
+      allowed_write_files: state.allowed_write_files,
+    };
+  } catch (err: any) {
+    return { success: false, error: err.message };
+  }
+});

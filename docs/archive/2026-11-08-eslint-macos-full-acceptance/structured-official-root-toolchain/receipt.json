@@ -1,0 +1,19 @@
+{
+  "utc": "2026-11-08T12:25:13.501Z",
+  "started": "2026-11-08T12:24:42.146Z",
+  "leg": "toolchain",
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "test:root",
+    "--",
+    "--maxWorkers=1",
+    "--reporter=json",
+    "--outputFile=D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\structured-official-root-toolchain\\root.vitest.json"
+  ],
+  "cwd": "D:\\code\\SpecForge\\.lint-toolchain-a01",
+  "exit": 0,
+  "stdout_sha256": "8a7b99543cc5d7195ea9216b7a5a222c3b911f83eb922beca6dcf872053a6186",
+  "stderr_sha256": "06964b80169635fd4fca0049e1532ef23d5904456f6eeba71c6fdcd9b2d2fa91",
+  "qualification": "Correct official package script invokes Node root runner; prior direct Bun invocation with different Runtime failed and is retained, not compared as official result."
+}

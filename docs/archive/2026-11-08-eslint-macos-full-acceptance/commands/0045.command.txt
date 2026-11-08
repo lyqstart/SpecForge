@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/inspect-all-binding-reference-kinds.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "inspect-all98-files-before-new-reference-repair",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES:complete binding reference kinds and original type evidence;RUNTIME_OBSERVER_WRITES:compiler processes;no source edits",
+  "started_utc": "2026-11-08T08:08:01.621Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\inspect-all-binding-reference-kinds.cjs",
+      "sha256": "a22999902cb221e5fd7c65db97881c5424704d929b34903c2d9b0f8e74094e5a",
+      "size": 4504,
+      "extension": ".cjs"
+    }
+  ]
+}

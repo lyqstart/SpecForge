@@ -1,0 +1,14 @@
+{
+  "number": "039",
+  "name": "official-uninstall",
+  "executable": "/home/runner/.bun/bin/bun",
+  "args": [
+    "scripts/sf-installer.ts",
+    "uninstall"
+  ],
+  "started_utc": "2026-11-08T12:26:44.092Z",
+  "finished_utc": "2026-11-08T12:26:44.140Z",
+  "inner_exit_code": 0,
+  "signal": null,
+  "spawn_error": null
+}

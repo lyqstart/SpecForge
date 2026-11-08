@@ -1,0 +1,18 @@
+{
+  "utc": "2026-11-08T12:54:52.432Z",
+  "input_sha256": "abd211c144948f0c1b6047b95beaa3b8b324d829e31ab17be30f57aadc8cbfe0",
+  "reason": "0255 failed same-lock byte check;0256 proves Windows checkout CRLF. Bind actual per-phase lock SHA into CI context and force literal LF for lock and the attributes file, so official3OS and local same-lock assertions are independently verifiable. Product runtime/permissions unchanged.",
+  "required_verification": "Node syntax, owned git check-attr/eol, Scope CI contract regression, actual3OS contexts identical3f lock, final cold+structured qualification.",
+  "members": [
+    {
+      "file": "scripts/run-ci-regression.mjs",
+      "before": "91f1e86e93ea866caf0662edaa46fd4684f6e156d417927564892e6135275554",
+      "after": "71a5dee3c748b5fe348902d20094b70048140bdafbcc4217d835d7853dfac4ed"
+    },
+    {
+      "file": ".gitattributes",
+      "before": "6e2fc521146e94c6bcc8784b62c7212abb7bda0b2de0c7147d7a6e0aff86a10a",
+      "after": "274d926ea319cd65f6ffa5e956f6428668e791edc8cbad24186509fd85bc8760"
+    }
+  ]
+}

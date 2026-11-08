@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/prepare-platform-cleanup-and-diagnostic.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "preserve-cleanup-failures-and-collect-owned-git-identity",
+  "expected_writes": "private test hook ownership and read-only self-owned Git metadata diagnostics only",
+  "started_utc": "2026-11-08T11:59:18.024Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\prepare-platform-cleanup-and-diagnostic.cjs",
+      "sha256": "2d8c64a112b5bd56a19f033ba09c21c1c7765286495e961c9472529f71a1c22c",
+      "size": 5512,
+      "extension": ".cjs"
+    }
+  ]
+}

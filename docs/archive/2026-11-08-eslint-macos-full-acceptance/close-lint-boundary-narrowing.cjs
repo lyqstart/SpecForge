@@ -1,0 +1,14 @@
+const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');const e=__dirname,files=[];const file=(name,changes)=>files.push({file:'packages/daemon-core/src/tools/lib/'+name,changes});
+file('gate-runner-v11.ts',[{from:'const json = JSON.parse(content);',to:'const json = parseJsonObject(content);',count:2},{from:'const decision = JSON.parse(content);',to:'const decision = parseJsonObject(content);'}]);
+file('project-governance-v2.ts',[{from:"    const baseCommit = String(snapshot.base_commit ?? '');\n    if (!baseCommit) {\n      throw new Error('FORMAL_VERSION_BASE_COMMIT_REQUIRED');",to:"    const baseCommit = snapshot.base_commit;\n    if (typeof baseCommit !== 'string' || !baseCommit) {\n      throw new Error('FORMAL_VERSION_BASE_COMMIT_REQUIRED');"}]);
+file('filesystem-diff.ts',[
+{from:'Number(entry.baseline_size) === file.size &&\n            /^[a-f0-9]{64}$/i.test(String(entry.sha256 ?? \'\'))',to:"typeof entry.baseline_size === 'number' && entry.baseline_size === file.size &&\n            typeof entry.sha256 === 'string' && /^[a-f0-9]{64}$/i.test(entry.sha256)"},
+{from:'file.sha256 = String(entry.sha256).toLowerCase();',to:'file.sha256 = entry.sha256.toLowerCase();'},
+{from:'function readLatestPreflightBeforeBaseline(',to:"type PreflightIndex = Record<string, unknown> & { timestamp: string; payload_file: string; trace_id?: string };\nfunction readLatestPreflightBeforeBaseline("},
+{from:'index: Record<string, unknown>;',to:'index: PreflightIndex;'},
+{from:'let entries: Record<string, unknown>[];',to:'let entries: PreflightIndex[];'},
+{from:"      .filter(\n        entry =>\n          entry?.tool_name === 'sf_git_preflight'",to:"      .filter(\n        (entry): entry is PreflightIndex =>\n          entry?.tool_name === 'sf_git_preflight'"},
+{from:"Date.parse(String(right.timestamp ?? '')) - Date.parse(String(left.timestamp ?? ''))",to:'Date.parse(right.timestamp) - Date.parse(left.timestamp)'},
+{from:"      const expectedSha256 = String(entry.payload_sha256 ?? pathEncodedSha256).toLowerCase();",to:"      const payloadHash = entry.payload_sha256 ?? pathEncodedSha256;\n      if (typeof payloadHash !== 'string') continue;\n      const expectedSha256 = payloadHash.toLowerCase();"},
+{from:"const preflightMs = Date.parse(String(preflight.index.timestamp ?? ''));",to:'const preflightMs = Date.parse(preflight.index.timestamp);'}]);
+const target=path.join(e,'lint-boundary-narrowing-plan.json');fs.writeFileSync(target,JSON.stringify({id:'lint-boundary-narrowing',reason:'Actual record parsing and checked preflight type predicate retain narrowings; malformed SHA/size/expiry/commit values cannot coerce into acceptance.',required_verification:'Build lint and complete platform tests',files},null,2)+'\n',{flag:'wx'});require('node:child_process').execFileSync(process.execPath,[path.join(e,'apply-reviewed-edits.cjs'),target],{cwd:process.cwd(),stdio:'inherit'});

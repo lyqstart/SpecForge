@@ -1,0 +1,75 @@
+{
+  "utc": "2026-11-08T07:55:48.837Z",
+  "annotations": 67,
+  "members": [
+    {
+      "file": "packages/permission-engine/src/hard-rules.ts",
+      "before": "44ba8b67aa145d707f2e576a68090a304d06a5f0904f3510dc8e07e3d28b4e61",
+      "after": "f0e105a5a6f628bc5276fbbdc8236cbbfc36bbb6d30ec1085cf1eb64c5be88cf",
+      "annotations": 9
+    },
+    {
+      "file": "packages/permission-engine/src/index.ts",
+      "before": "5481f0c6a7d1e26e9b67f1f1c54cc9f8a4dcead08ac37ef04a9c00161f57e556",
+      "after": "48ea676b60d0ff35af74985bb06173c199c9367537ba8069954f9688cc935412",
+      "annotations": 7
+    },
+    {
+      "file": "packages/permission-engine/src/services/builtin-policy-loader.ts",
+      "before": "8bf743e2f17cc3036a55ca7218986acfca9235ebe91f433213e32a26ce355be7",
+      "after": "fff436537020c634b0de3a17ab6de37f89469aadbb3b6b452b1fcac60e8eb876",
+      "annotations": 12
+    },
+    {
+      "file": "packages/permission-engine/src/services/event-logger.ts",
+      "before": "5ef0815bb0e39809f0e61b43f0b8b73b2e289ca7db54ae7b2eb152443ba8c9b8",
+      "after": "4420642ad6b118ac5022bb71517836e9bc90103d56b028125a6735aafcebadcc",
+      "annotations": 5
+    },
+    {
+      "file": "packages/permission-engine/src/services/plugin-permission-validator.ts",
+      "before": "9492c423753337911698e50781b94c5c2729e69d1a410346308264650ebf3781",
+      "after": "5e30a66bb3b809810be809429acde55f7ad44d7e5839cd0ad6f64c41a8481da4",
+      "annotations": 2
+    },
+    {
+      "file": "packages/permission-engine/src/services/policy-enforcement-point.ts",
+      "before": "9796aa18f44ff49021242854d9d0948b05e56f394546082151206350f3745974",
+      "after": "5116598a27a8d0d93951dce1108a46e1b5ad1717b166c10a414712dd6f5ec954",
+      "annotations": 7
+    },
+    {
+      "file": "packages/permission-engine/src/services/remote-access-guard.ts",
+      "before": "c7e0d04d33ab9365866e605124bda7ffe5eb9499ce157b70986cd545c8d12efb",
+      "after": "eddf308fecc99c84d2acbbd936c948be0cb41f29ebee49f6a4ad6644e084ba3f",
+      "annotations": 2
+    },
+    {
+      "file": "packages/permission-engine/src/services/rule-merging-engine.ts",
+      "before": "e10d21cc2b56c55a8e8ef92a9cbee0e960f709405a938c31fd9b40c5542acca7",
+      "after": "5cacbb8d87f4b8dcfcb8a414eb120163e213938798491261a4da70011ca0719b",
+      "annotations": 3
+    },
+    {
+      "file": "packages/permission-engine/src/services/user-policy-loader.ts",
+      "before": "680f0e3b7ce0e530b0e13e403cab26f1095259d4c6928fb3802ada64895af2d0",
+      "after": "d7ce53956c98007d2bc750c83bb7ad7317a30fda2e71a68bdc1e2825d4083bef",
+      "annotations": 14
+    },
+    {
+      "file": "packages/permission-engine/src/types/builtin-policies.ts",
+      "before": "3704b985192845cfa8b70917e5b012f92fbc6a26efedc9756a7396726c8dba5e",
+      "after": "e56126a03ae9bcd7a0b986887cde607797072a10eaae003c2c0d9d7280249d78",
+      "annotations": 2
+    },
+    {
+      "file": "packages/permission-engine/src/types/index.ts",
+      "before": "24c4e24501829ec12863d3980a5e1b42f0823946e6e88108e8a6845a5d44420e",
+      "after": "92fc074569351bab634d62120d0d0dd2cf5d1e1b17127a64c934b4f0dec2ad97",
+      "annotations": 4
+    }
+  ],
+  "type_erasure": "TypeScript ESNext/ES2022 emitted module bytes identical for each file; this is a type-hardening stage, not proof that consumers compile.",
+  "next": "Compile every consumer and narrow unknown values at responsible producers; do not restore any or add blanket suppression.",
+  "existing_directives": "Existing historical ts-nocheck directives are preserved; no new directive or rule exception introduced."
+}

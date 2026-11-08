@@ -1,0 +1,24 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/run-signal-final-linux.cjs",
+    "install",
+    "--frozen-lockfile"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "signal-linux-frozen-install",
+  "expected_writes": "New final6ec fixture frozen3f lock install",
+  "started_utc": "2026-11-08T13:05:22.534Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\run-signal-final-linux.cjs",
+      "sha256": "baf90fcc2028e45db7460fb49988460b3fc6fbc4c038096610cd76c165a9d668",
+      "size": 1209,
+      "extension": ".cjs"
+    }
+  ]
+}

@@ -1,0 +1,1 @@
+{"artifact_id":13618247131,"sha256":"387106b033b5ff2f9ede40af47c26059f759a77a08516d39ecb34b703fc66c6e","bytes":41137,"dir":"D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\ci-6ec-platform-macos"}

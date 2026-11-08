@@ -1,0 +1,13 @@
+{
+  "utc": "2026-11-08T12:52:13.996Z",
+  "input_sha256": "be4f0f2e7dfd00fd5f2baf77e9075f613f697e4861081c9394231b52f4989ef4",
+  "reason": "0260 red actual listener identity/count tests prove existing registered closure is not removed. Store the exact same closure passed to process.on, preserve platform signal set/idempotent attach, reuse existing trigger finally/asyncDispose owner; no listener limit or global listener removal.",
+  "required_verification": "Full actual service unit22, daemon performance/lifecycle/API endpoints; no MaxListeners warnings afterstop; all12 lint/build, symmetric final same-lock full suites, actual3OS full/install, controlled upgrade.",
+  "members": [
+    {
+      "file": "packages/service-management/src/shutdown/graceful-shutdown-handler.ts",
+      "before": "769668482d0295a451c63c91039ccc6f760ec69062e47a4c810ebf524776502a",
+      "after": "d2513802b0be74ad87acdb473f67b5bd35d425747aea9512819bef80945b65b4"
+    }
+  ]
+}

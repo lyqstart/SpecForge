@@ -1,0 +1,37 @@
+$ vitest run tests/design-governance-orchestrator-closure.test.ts "tests/v11-final-governance-regression.test.ts" "tests/v6-authority-consumer-alignment.test.ts" tests/unit/candidate-gate-historical-attempt-reconcile.test.ts tests/unit/candidate-runtime-truth-contract.test.ts tests/unit/current-project-layout-boundary.test.ts "tests/unit/err155-159-contract-governance-recovery.test.ts" tests/unit/knowledge-store-schema.test.ts tests/unit/source-structure-contract.test.ts tests/unit/optional-file-lock-owner.test.ts tests/unit/input-boundary-contracts.test.ts "src/tools/lib/architecture-governance-v7-regression.test.ts" "--maxWorkers=1" "--minWorkers=1"
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+stderr | tests/unit/current-project-layout-boundary.test.ts > current project layout boundary > registers only from the authoritative current Project Spec manifest
+[Config] DEBUG Validating configuration layer { layer: 'builtin', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'user', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'project', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'runtime', schemaVersion: '1.0' }
+[Config] DEBUG Starting configuration merge { layerCount: 4 }
+[Config] DEBUG Merging layer { layer: 'builtin' }
+[Config] DEBUG Merging layer { layer: 'user' }
+[Config] DEBUG Merging layer { layer: 'project' }
+[Config] DEBUG Merging layer { layer: 'runtime' }
+[Config] INFO Configuration merge completed { keyCount: 8, layerCount: 4, validationErrors: 0 }
+
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/v6-authority-consumer-alignment.test.ts > authority recovery consumer alignment > projects the current Observability principle into both active Doc Lint implementations
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ tests/v6-authority-consumer-alignment.test.ts:43:56
+     41|     const principle = '可观测性是一级能力，不是第二套状态系统';
+     42| 
+     43|     expect(codeContains(daemonLint, `"${principle}"`)).toBe(true);
+       |                                                        ^
+     44|     expect(codeContains(userlevelLint, `"${principle}"`)).toBe(true);
+     45|     expect(rootLintFixtures).toContain(principle);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+error: script "test" exited with code 1

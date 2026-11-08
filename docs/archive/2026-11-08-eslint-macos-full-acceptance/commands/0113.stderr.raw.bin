@@ -1,0 +1,9 @@
+Error: EEXIST: file already exists, open 'D:\code\SpecForge\docs\archive\2026-11-08-eslint-macos-full-acceptance\redundant-types-before\packages\daemon-core\src\tools\handlers\sf-safe-bash.ts'
+    at Object.openSync (node:fs:622:18)
+    at Object.writeFileSync (node:fs:2497:35)
+    at D:\code\SpecForge\docs\archive\2026-11-08-eslint-macos-full-acceptance\repair-redundant-types-and-dead-owners.cjs:8:334 {
+  errno: -4075,
+  code: 'EEXIST',
+  syscall: 'open',
+  path: 'D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\redundant-types-before\\packages\\daemon-core\\src\\tools\\handlers\\sf-safe-bash.ts'
+}

@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/repair-typed-test-access.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "preserve-concrete-types-for-test-private-access-and-fixture-values",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES:private typed test inspection and checked fixtures;EXTERNAL_EVIDENCE_WRITES:exact per-file plan and original bytes",
+  "started_utc": "2026-11-08T08:17:40.921Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\repair-typed-test-access.cjs",
+      "sha256": "7dfc87b76262357d19fb46ea3d9c1ee68cfb47c4740d29f284767b17d6e8c450",
+      "size": 4973,
+      "extension": ".cjs"
+    }
+  ]
+}

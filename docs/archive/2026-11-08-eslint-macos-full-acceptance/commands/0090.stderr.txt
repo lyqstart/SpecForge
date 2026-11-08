@@ -1,0 +1,27 @@
+node:internal/assert/utils:77
+    throw err;
+    ^
+
+AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+
+  assert(owner&&ts.isCallExpression(owner.parent)&&owner.parent.expression.getText(source)==='it')
+
+    at walk (D:\code\SpecForge\docs\archive\2026-11-08-eslint-macos-full-acceptance\repair-daemon-async-and-lock-owners.cjs:11:522)
+    at visitNode2 (D:\code\SpecForge\.lint-review-a01\node_modules\.bun\typescript@6.0.3\node_modules\typescript\lib\typescript.js:32551:18)
+    at forEachChildInExpressionStatement (D:\code\SpecForge\.lint-review-a01\node_modules\.bun\typescript@6.0.3\node_modules\typescript\lib\typescript.js:32781:12)
+    at Object.forEachChild (D:\code\SpecForge\.lint-review-a01\node_modules\.bun\typescript@6.0.3\node_modules\typescript\lib\typescript.js:33072:35)
+    at walk (D:\code\SpecForge\docs\archive\2026-11-08-eslint-macos-full-acceptance\repair-daemon-async-and-lock-owners.cjs:11:736)
+    at visitNodes (D:\code\SpecForge\.lint-review-a01\node_modules\.bun\typescript@6.0.3\node_modules\typescript\lib\typescript.js:32559:22)
+    at forEachChildInBlock (D:\code\SpecForge\.lint-review-a01\node_modules\.bun\typescript@6.0.3\node_modules\typescript\lib\typescript.js:33029:10)
+    at Object.forEachChild (D:\code\SpecForge\.lint-review-a01\node_modules\.bun\typescript@6.0.3\node_modules\typescript\lib\typescript.js:33072:35)
+    at walk (D:\code\SpecForge\docs\archive\2026-11-08-eslint-macos-full-acceptance\repair-daemon-async-and-lock-owners.cjs:11:736)
+    at visitNode2 (D:\code\SpecForge\.lint-review-a01\node_modules\.bun\typescript@6.0.3\node_modules\typescript\lib\typescript.js:32551:18) {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: false,
+  expected: true,
+  operator: '==',
+  diff: 'simple'
+}
+
+Node.js v24.19.0

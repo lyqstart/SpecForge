@@ -1,0 +1,128 @@
+$ node scripts/run-root-task.mjs lint
+$ eslint src --ext .ts
+
+Oops! Something went wrong! :(
+
+ESLint: 9.39.4
+
+ESLint couldn't find an eslint.config.(js|mjs|cjs) file.
+
+From ESLint v9.0.0, the default configuration file is now eslint.config.js.
+If you are using a .eslintrc.* file, please follow the migration guide
+to update your configuration file to the new format:
+
+https://eslint.org/docs/latest/use/configure/migration-guide
+
+If you still have problems after following the migration guide, please stop by
+https://eslint.org/chat/help to chat with the team.
+
+$ eslint src --ext .ts
+error: script "lint" exited with code 1
+$ eslint src --ext .ts
+
+Oops! Something went wrong! :(
+
+ESLint: 8.57.1
+
+ESLint couldn't find a configuration file. To set up a configuration file for this project, please run:
+
+    npm init @eslint/config
+
+ESLint looked for configuration files in D:\code\SpecForge\packages\service-management\src\errors and its ancestors. If it found none, it then looked in your home directory.
+
+If you think you already have a configuration file or if you need more help, please stop by the ESLint Discord server: https://eslint.org/chat
+
+$ eslint src/**/*.ts tests/**/*.ts
+
+Oops! Something went wrong! :(
+
+ESLint: 8.57.1
+
+TypeError: Cannot read properties of undefined (reading 'map')
+Occurred while linting D:\code\SpecForge\packages\observability\src\config-contract.ts:53
+Rule: "@typescript-eslint/no-floating-promises"
+    at isPromiseArray (D:\code\SpecForge\node_modules\.bun\@typescript-eslint+eslint-plugin@7.18.0+8ab3403b8662203d\node_modules\@typescript-eslint\eslint-plugin\dist\rules\no-floating-promises.js:273:17)
+    at isUnhandledPromise (D:\code\SpecForge\node_modules\.bun\@typescript-eslint+eslint-plugin@7.18.0+8ab3403b8662203d\node_modules\@typescript-eslint\eslint-plugin\dist\rules\no-floating-promises.js:210:17)
+    at ExpressionStatement (D:\code\SpecForge\node_modules\.bun\@typescript-eslint+eslint-plugin@7.18.0+8ab3403b8662203d\node_modules\@typescript-eslint\eslint-plugin\dist\rules\no-floating-promises.js:103:75)
+    at ruleErrorHandler (D:\code\SpecForge\node_modules\.bun\eslint@8.57.1+b26c77de378bcceb\node_modules\eslint\lib\linter\linter.js:1076:28)
+    at D:\code\SpecForge\node_modules\.bun\eslint@8.57.1+b26c77de378bcceb\node_modules\eslint\lib\linter\safe-emitter.js:45:58
+    at Array.forEach (<anonymous>)
+    at Object.emit (D:\code\SpecForge\node_modules\.bun\eslint@8.57.1+b26c77de378bcceb\node_modules\eslint\lib\linter\safe-emitter.js:45:38)
+    at NodeEventGenerator.applySelector (D:\code\SpecForge\node_modules\.bun\eslint@8.57.1+b26c77de378bcceb\node_modules\eslint\lib\linter\node-event-generator.js:297:26)
+    at NodeEventGenerator.applySelectors (D:\code\SpecForge\node_modules\.bun\eslint@8.57.1+b26c77de378bcceb\node_modules\eslint\lib\linter\node-event-generator.js:326:22)
+    at NodeEventGenerator.enterNode (D:\code\SpecForge\node_modules\.bun\eslint@8.57.1+b26c77de378bcceb\node_modules\eslint\lib\linter\node-event-generator.js:340:14)
+$ eslint src/**/*.ts tests/**/*.ts
+
+Oops! Something went wrong! :(
+
+ESLint: 8.57.1
+
+Error [ERR_MODULE_NOT_FOUND]: Cannot find package '@eslint/js' imported from D:\code\SpecForge\packages\permission-engine\eslint.config.js
+    at Object.getPackageJSONURL (node:internal/modules/package_json_reader:301:9)
+    at packageResolve (node:internal/modules/esm/resolve:768:81)
+    at moduleResolve (node:internal/modules/esm/resolve:859:18)
+    at defaultResolve (node:internal/modules/esm/resolve:992:11)
+    at #cachedDefaultResolve (node:internal/modules/esm/loader:701:20)
+    at #resolveAndMaybeBlockOnLoaderThread (node:internal/modules/esm/loader:721:38)
+    at ModuleLoader.resolveSync (node:internal/modules/esm/loader:759:56)
+    at #resolve (node:internal/modules/esm/loader:683:17)
+    at ModuleLoader.getOrCreateModuleJob (node:internal/modules/esm/loader:603:35)
+    at ModuleJob.syncLink (node:internal/modules/esm/module_job:163:33)
+$ eslint src --ext .ts
+error: script "lint" exited with code 1
+$ eslint src/**/*.ts tests/**/*.ts
+
+Oops! Something went wrong! :(
+
+ESLint: 8.57.1
+
+TypeError: Cannot read properties of undefined (reading 'map')
+Occurred while linting D:\code\SpecForge\packages\scope-gate\src\node-release-surface-producers.ts:55
+Rule: "@typescript-eslint/no-floating-promises"
+    at isPromiseArray (D:\code\SpecForge\node_modules\.bun\@typescript-eslint+eslint-plugin@7.18.0+8ab3403b8662203d\node_modules\@typescript-eslint\eslint-plugin\dist\rules\no-floating-promises.js:273:17)
+    at isUnhandledPromise (D:\code\SpecForge\node_modules\.bun\@typescript-eslint+eslint-plugin@7.18.0+8ab3403b8662203d\node_modules\@typescript-eslint\eslint-plugin\dist\rules\no-floating-promises.js:210:17)
+    at ExpressionStatement (D:\code\SpecForge\node_modules\.bun\@typescript-eslint+eslint-plugin@7.18.0+8ab3403b8662203d\node_modules\@typescript-eslint\eslint-plugin\dist\rules\no-floating-promises.js:103:75)
+    at ruleErrorHandler (D:\code\SpecForge\node_modules\.bun\eslint@8.57.1+b26c77de378bcceb\node_modules\eslint\lib\linter\linter.js:1076:28)
+    at D:\code\SpecForge\node_modules\.bun\eslint@8.57.1+b26c77de378bcceb\node_modules\eslint\lib\linter\safe-emitter.js:45:58
+    at Array.forEach (<anonymous>)
+    at Object.emit (D:\code\SpecForge\node_modules\.bun\eslint@8.57.1+b26c77de378bcceb\node_modules\eslint\lib\linter\safe-emitter.js:45:38)
+    at NodeEventGenerator.applySelector (D:\code\SpecForge\node_modules\.bun\eslint@8.57.1+b26c77de378bcceb\node_modules\eslint\lib\linter\node-event-generator.js:297:26)
+    at NodeEventGenerator.applySelectors (D:\code\SpecForge\node_modules\.bun\eslint@8.57.1+b26c77de378bcceb\node_modules\eslint\lib\linter\node-event-generator.js:326:22)
+    at NodeEventGenerator.enterNode (D:\code\SpecForge\node_modules\.bun\eslint@8.57.1+b26c77de378bcceb\node_modules\eslint\lib\linter\node-event-generator.js:340:14)
+$ eslint src/**/*.ts tests/**/*.ts
+
+Oops! Something went wrong! :(
+
+ESLint: 8.57.1
+
+TypeError: tsutils.unionTypeParts is not a function or its return value is not iterable
+Occurred while linting D:\code\SpecForge\packages\workflow-runtime\src\AgentRunner.ts:89
+Rule: "@typescript-eslint/no-unsafe-assignment"
+    at getTypeFlags (D:\code\SpecForge\node_modules\.bun\@typescript-eslint+type-utils@7.18.0+d9676c4c49c7bc60\node_modules\@typescript-eslint\type-utils\dist\typeFlagUtils.js:37:29)
+    at isTypeFlagSet (D:\code\SpecForge\node_modules\.bun\@typescript-eslint+type-utils@7.18.0+d9676c4c49c7bc60\node_modules\@typescript-eslint\type-utils\dist\typeFlagUtils.js:54:19)
+    at isTypeAnyType (D:\code\SpecForge\node_modules\.bun\@typescript-eslint+type-utils@7.18.0+d9676c4c49c7bc60\node_modules\@typescript-eslint\type-utils\dist\predicates.js:100:43)
+    at checkAssignment (D:\code\SpecForge\node_modules\.bun\@typescript-eslint+eslint-plugin@7.18.0+8ab3403b8662203d\node_modules\@typescript-eslint\eslint-plugin\dist\rules\no-unsafe-assignment.js:188:42)
+    at PropertyDefinition[value != null] (D:\code\SpecForge\node_modules\.bun\@typescript-eslint+eslint-plugin@7.18.0+8ab3403b8662203d\node_modules\@typescript-eslint\eslint-plugin\dist\rules\no-unsafe-assignment.js:256:17)
+    at ruleErrorHandler (D:\code\SpecForge\node_modules\.bun\eslint@8.57.1+b26c77de378bcceb\node_modules\eslint\lib\linter\linter.js:1076:28)
+    at D:\code\SpecForge\node_modules\.bun\eslint@8.57.1+b26c77de378bcceb\node_modules\eslint\lib\linter\safe-emitter.js:45:58
+    at Array.forEach (<anonymous>)
+    at Object.emit (D:\code\SpecForge\node_modules\.bun\eslint@8.57.1+b26c77de378bcceb\node_modules\eslint\lib\linter\safe-emitter.js:45:38)
+    at NodeEventGenerator.applySelector (D:\code\SpecForge\node_modules\.bun\eslint@8.57.1+b26c77de378bcceb\node_modules\eslint\lib\linter\node-event-generator.js:297:26)
+$ eslint src --ext .ts
+
+Oops! Something went wrong! :(
+
+ESLint: 8.57.1
+
+ESLint couldn't find a configuration file. To set up a configuration file for this project, please run:
+
+    npm init @eslint/config
+
+ESLint looked for configuration files in D:\code\SpecForge\packages\cli\src\auth and its ancestors. If it found none, it then looked in your home directory.
+
+If you think you already have a configuration file or if you need more help, please stop by the ESLint Discord server: https://eslint.org/chat
+
+$ eslint src --ext .ts
+error: script "lint" exited with code 1
+[lint-workspace] FAILED version-unification(exit=2), configuration(exit=1), service-management(exit=2), observability(exit=2), permission-engine(exit=2), opencode-adapter(exit=1), scope-gate(exit=2), workflow-runtime(exit=2), cli(exit=2), daemon-core(exit=1)
+error: script "lint" exited with code 1

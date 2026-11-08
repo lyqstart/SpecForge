@@ -1,0 +1,146 @@
+{
+  "utc": "2026-11-08T07:25:22.901Z",
+  "members": [
+    {
+      "name": "types",
+      "exit": 0,
+      "files": 27,
+      "errors": 0,
+      "warnings": 0,
+      "rules": {}
+    },
+    {
+      "name": "version-unification",
+      "exit": 0,
+      "files": 2,
+      "errors": 0,
+      "warnings": 0,
+      "rules": {}
+    },
+    {
+      "name": "configuration",
+      "exit": 1,
+      "files": 13,
+      "errors": 728,
+      "warnings": 0,
+      "rules": {
+        "prettier/prettier": 726,
+        "@typescript-eslint/no-unused-vars": 2
+      }
+    },
+    {
+      "name": "service-management",
+      "exit": 1,
+      "files": 32,
+      "errors": 6,
+      "warnings": 0,
+      "rules": {
+        "@typescript-eslint/no-unused-vars": 6
+      }
+    },
+    {
+      "name": "host-profile",
+      "exit": 1,
+      "files": 9,
+      "errors": 2,
+      "warnings": 0,
+      "rules": {
+        "@typescript-eslint/no-unused-vars": 2
+      }
+    },
+    {
+      "name": "observability",
+      "exit": 1,
+      "files": 0,
+      "errors": null,
+      "warnings": null,
+      "rules": {}
+    },
+    {
+      "name": "permission-engine",
+      "exit": 1,
+      "files": 45,
+      "errors": 111,
+      "warnings": 104,
+      "rules": {
+        "@typescript-eslint/no-explicit-any": 103,
+        "import/order": 77,
+        "@typescript-eslint/no-unused-vars": 34,
+        "PARSING_OR_FATAL": 1
+      }
+    },
+    {
+      "name": "opencode-adapter",
+      "exit": 1,
+      "files": 21,
+      "errors": 348,
+      "warnings": 0,
+      "rules": {
+        "prettier/prettier": 339,
+        "@typescript-eslint/no-unsafe-argument": 3,
+        "@typescript-eslint/no-require-imports": 2,
+        "@typescript-eslint/no-unnecessary-type-assertion": 3,
+        "@typescript-eslint/no-base-to-string": 1
+      }
+    },
+    {
+      "name": "scope-gate",
+      "exit": 1,
+      "files": 45,
+      "errors": 56,
+      "warnings": 0,
+      "rules": {
+        "import/order": 54,
+        "@typescript-eslint/explicit-function-return-type": 2
+      }
+    },
+    {
+      "name": "workflow-runtime",
+      "exit": 1,
+      "files": 0,
+      "errors": null,
+      "warnings": null,
+      "rules": {}
+    },
+    {
+      "name": "cli",
+      "exit": 1,
+      "files": 63,
+      "errors": 57,
+      "warnings": 0,
+      "rules": {
+        "@typescript-eslint/no-unused-vars": 49,
+        "prefer-const": 4,
+        "no-useless-catch": 1,
+        "no-control-regex": 1,
+        "no-useless-escape": 1,
+        "no-case-declarations": 1
+      }
+    },
+    {
+      "name": "daemon-core",
+      "exit": 1,
+      "files": 231,
+      "errors": 8148,
+      "warnings": 0,
+      "rules": {
+        "prettier/prettier": 7565,
+        "@typescript-eslint/no-unsafe-argument": 95,
+        "@typescript-eslint/require-await": 36,
+        "@typescript-eslint/no-floating-promises": 17,
+        "@typescript-eslint/ban-ts-comment": 4,
+        "@typescript-eslint/no-unused-vars": 43,
+        "@typescript-eslint/no-unnecessary-type-assertion": 134,
+        "@typescript-eslint/unbound-method": 1,
+        "@typescript-eslint/no-misused-promises": 1,
+        "prefer-const": 19,
+        "@typescript-eslint/no-require-imports": 1,
+        "no-control-regex": 7,
+        "@typescript-eslint/no-base-to-string": 182,
+        "@typescript-eslint/no-redundant-type-constituents": 22,
+        "no-useless-escape": 20,
+        "@typescript-eslint/prefer-promise-reject-errors": 1
+      }
+    }
+  ]
+}

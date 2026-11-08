@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/repair-permission-boundaries.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "implement-real-permission-unknown-input-owners",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES:private input owners and positive/negative regressions;REPOSITORY_TRACKED_WRITES:ledger;EXTERNAL_EVIDENCE_WRITES:complete plan",
+  "started_utc": "2026-11-08T07:58:28.148Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\repair-permission-boundaries.cjs",
+      "sha256": "12bc6f7df4e8afc46d1f6a1ec5dc85cb6e1d2e83b1b518e2a9d57351ab85ba21",
+      "size": 5435,
+      "extension": ".cjs"
+    }
+  ]
+}

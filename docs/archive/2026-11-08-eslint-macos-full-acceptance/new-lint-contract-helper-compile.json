@@ -1,0 +1,7 @@
+{
+  "roots": [
+    "D:\\code\\SpecForge\\.lint-review-a01\\tests\\helpers\\source-structure.ts",
+    "D:\\code\\SpecForge\\.lint-review-a01\\packages\\scope-gate\\tests\\eslint-runtime-binding-contract.test.ts"
+  ],
+  "errors": []
+}

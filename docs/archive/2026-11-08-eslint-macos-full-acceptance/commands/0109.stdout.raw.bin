@@ -1,0 +1,44 @@
+
+ RUN  v3.2.4 D:/code/SpecForge/.lint-review-a01/packages/daemon-core
+
+ ✓ tests/unit/git-detached-bootstrap.test.ts (30 tests) 117737ms
+   ✓ controlled detached Git bootstrap > plans without creating refs, atomically binds two new branches and standard context, then retries idempotently  14267ms
+   ✓ controlled detached Git bootstrap > recovers an interrupted owner at refs_created without rewriting business/index or duplicating refs  10031ms
+   ✓ controlled detached Git bootstrap > recovers an interrupted owner at refs_and_head_bound without rewriting business/index or duplicating refs  10949ms
+   ✓ controlled detached Git bootstrap > recovers an interrupted owner at context_bound without rewriting business/index or duplicating refs  11695ms
+   ✓ controlled detached Git bootstrap > rejects unbound confirmation 批准 before refs  1620ms
+   ✓ controlled detached Git bootstrap > rejects unbound confirmation 不同意 main + codex/greet-library-wi-0001 before refs  2224ms
+   ✓ controlled detached Git bootstrap > rejects unbound confirmation 采用 main + codex/other-wi-0001 before refs  1617ms
+   ✓ controlled detached Git bootstrap > rejects a tampered immutable plan before refs  1812ms
+   ✓ controlled detached Git bootstrap > rejects unknown_schema with a correct raw hash before refs  1933ms
+   ✓ controlled detached Git bootstrap > rejects unknown_field with a correct raw hash before refs  1696ms
+   ✓ controlled detached Git bootstrap > rejects branch identity collision main while planning  566ms
+   ✓ controlled detached Git bootstrap > rejects branch identity collision main/topic while planning  690ms
+   ✓ controlled detached Git bootstrap > does not match the base name as a substring inside the work branch confirmation  1610ms
+   ✓ controlled detached Git bootstrap > atomically rejects a concurrent HEAD commit before changing either requested ref  3031ms
+   ✓ controlled detached Git bootstrap > rejects concurrent attachment to a different branch without overwriting that HEAD  3206ms
+   ✓ controlled detached Git bootstrap > holds Git HEAD.lock against an actual concurrent commit, then completes safely  8765ms
+   ✓ controlled detached Git bootstrap > preserves an unknown Git HEAD lock and rejects before creating refs  2476ms
+   ✓ controlled detached Git bootstrap > rejects tracked drift without creating target refs or context  2489ms
+   ✓ controlled detached Git bootstrap > rejects untracked drift without creating target refs or context  2241ms
+   ✓ controlled detached Git bootstrap > rejects staged drift without creating target refs or context  2461ms
+   ✓ controlled detached Git bootstrap > rejects head drift without creating target refs or context  2182ms
+   ✓ controlled detached Git bootstrap > rejects refs drift without creating target refs or context  2672ms
+   ✓ controlled detached Git bootstrap > rejects config drift without creating target refs or context  2882ms
+   ✓ controlled detached Git bootstrap > rejects context drift without creating target refs or context  2313ms
+   ✓ controlled detached Git bootstrap > rejects active permission and an existing local branch at plan time  2017ms
+   ✓ controlled detached Git bootstrap > rejects a tracked hard-link alias and retains bytes at both names  1961ms
+   ✓ controlled detached Git bootstrap > does not execute repository hooks or change the index  8356ms
+   ✓ controlled detached Git bootstrap > shares mutation exclusion with the normal existing-branch owner and preserves its behavior afterward  1166ms
+   ✓ controlled detached Git bootstrap > rejects wrong Runtime state and missing real confirmation through the actual dispatcher  644ms
+   ✓ controlled detached Git bootstrap > consumes actual StateManager events through the real public dispatcher while preserving state and recording normal context  8162ms
+ ✓ tests/unit/configuration-activation-boundary.test.ts (3 tests) 75ms
+ ✓ tests/unit/authoritative-work-item-reader.test.ts (5 tests) 14ms
+ ✓ tests/unit/git-detached-filter-exclusion.test.ts (1 test) 7825ms
+   ✓ never starts a repository clean filter while checking or publishing a detached bootstrap  7824ms
+
+ Test Files  4 passed (4)
+      Tests  39 passed (39)
+   Start at  17:43:38
+   Duration  132.12s (transform 2.52s, setup 0ms, collect 5.27s, tests 125.65s, environment 1ms, prepare 453ms)
+

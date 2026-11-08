@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/repair-embedded-test-source-owner.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "repair-embedded-test-actual-source-owner",
+  "expected_writes": "one private src test and immutable AST contract repair",
+  "started_utc": "2026-11-08T10:53:42.711Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\repair-embedded-test-source-owner.cjs",
+      "sha256": "e71b2c22360a06ad67fea89494493fd6c0ae3f3ab7908a3f51b0b115fe6d1a23",
+      "size": 2687,
+      "extension": ".cjs"
+    }
+  ]
+}

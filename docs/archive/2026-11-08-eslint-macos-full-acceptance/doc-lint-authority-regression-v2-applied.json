@@ -1,0 +1,18 @@
+{
+  "utc": "2026-11-08T11:01:32.733Z",
+  "input_sha256": "f0ac74692df941b3b03fa8648ecb2c1b760d0f2757f911b0913c057ee24ae643",
+  "reason": "0149 actual failure: private V6 algorithm removed as unused; obsolete source-presence assertion must not reactivate historical product acceptance. SPS owns Observability state boundary. Assert no actual legacy check calls in either implementation, retain historical template/fixture principle evidence and existing runtime acceptance tests. Product edit is comments only.",
+  "required_verification": "Complete affected authority/current-lint runtime files then full build/lint/platform qualification",
+  "members": [
+    {
+      "file": "packages/daemon-core/tests/v6-authority-consumer-alignment.test.ts",
+      "before": "6fa89fcc20d6999436b2c002b346b385050ab0a89e61e810236fde0a634289b8",
+      "after": "3a3f92d1100acd85bc188382dd1ab3d2e5cf5cc73dfe320f9d67db3de891bcd8"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_doc_lint_core.ts",
+      "before": "b6d84d025277f45074d96b9c4b506c949caf3573e585ab756a580b750173b40a",
+      "after": "629f4110e2d21d39194c6f8e3db518796e27849fdb2fb0a4309f655ecb826f00"
+    }
+  ]
+}

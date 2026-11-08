@@ -1,0 +1,43 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "test",
+    "--",
+    "tests/v6-authority-consumer-alignment.test.ts",
+    "tests/unit/current-doc-lint-authority.test.ts",
+    "tests/unit/source-structure-contract.test.ts",
+    "--maxWorkers=1",
+    "--minWorkers=1"
+  ],
+  "cwd": "D:\\code\\SpecForge\\.lint-review-a01\\packages\\daemon-core",
+  "purpose": "current-doc-lint-and-source-helper-final-regressions",
+  "expected_writes": "owned current authority fixtures plus immutable results",
+  "started_utc": "2026-11-08T11:11:45.463Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 3,
+      "path": "D:\\code\\SpecForge\\.lint-review-a01\\packages\\daemon-core\\tests\\v6-authority-consumer-alignment.test.ts",
+      "sha256": "3a3f92d1100acd85bc188382dd1ab3d2e5cf5cc73dfe320f9d67db3de891bcd8",
+      "size": 4270,
+      "extension": ".ts"
+    },
+    {
+      "argument_index": 4,
+      "path": "D:\\code\\SpecForge\\.lint-review-a01\\packages\\daemon-core\\tests\\unit\\current-doc-lint-authority.test.ts",
+      "sha256": "a6dcfc2c894cffc5719dd390910ccb946b9fa4a47ffea680c959568d2e3cd5e4",
+      "size": 1501,
+      "extension": ".ts"
+    },
+    {
+      "argument_index": 5,
+      "path": "D:\\code\\SpecForge\\.lint-review-a01\\packages\\daemon-core\\tests\\unit\\source-structure-contract.test.ts",
+      "sha256": "3750c36eaf9d2adfa2436f4d06546115255bbfd8a7120e9151b962c4e3f3c12d",
+      "size": 1285,
+      "extension": ".ts"
+    }
+  ]
+}

@@ -1,0 +1,306 @@
+{
+  "utc": "2026-11-08T09:32:49.274Z",
+  "source": "D:\\code\\SpecForge\\.lint-review-a01",
+  "stage": "REPAIR_NOT_FINAL_PASS",
+  "semantics": "ESLint own fixes planned in memory for all packages before writes; import reorder/type/const fixes require diff/build/regressions, not claimed pure formatting.",
+  "members": [
+    {
+      "file": "packages/permission-engine/tests/unit/daemon-integration.test.ts",
+      "before_sha256": "be28e47baa4b5ea2d777ca7ab254b038a83eff211335198316c562ec2476eaaf",
+      "after_sha256": "19353190556f15f8ece02c88c873a564d0d62f09eb5f36b47cf1daa3e45d0a63"
+    },
+    {
+      "file": "packages/opencode-adapter/src/configuration.ts",
+      "before_sha256": "74e1a7a4bc335d58a8e5913841750cb3683724b386a388caed3e5bd431fc6f70",
+      "after_sha256": "4bfa1033183dcaeac301fd4df94170ef5eb32cf9dea2cc328ddaecbadab0ee5e"
+    },
+    {
+      "file": "packages/workflow-runtime/src/GateRunner.ts",
+      "before_sha256": "4631024df237325c2b3fcfa3812ae0da53f03266255f693bb548a3b73a640335",
+      "after_sha256": "4378326a205f1a6eea852182813e8a4862c613de895f30122ee16088e1391773"
+    },
+    {
+      "file": "packages/workflow-runtime/src/WorkflowEngine.ts",
+      "before_sha256": "9d385bb10ff11d8fa787a8d0700bd9f05eddeb9584047a540d699a084a772704",
+      "after_sha256": "7dcfa30d25f02f6a0b0573186c077cceb470815ff03429b9c868d3fdb863ec2a"
+    },
+    {
+      "file": "packages/workflow-runtime/src/loaders/WorkflowDefinitionLoader.ts",
+      "before_sha256": "ec2d803430197ab68a3b08bcd03b35edd0c2a6bc9ac6f0c7d0d72fa1f39b7b7e",
+      "after_sha256": "69bfb1db449ef0dab951bbb12e323e445d302cd5027de6de61978d3bfb2a2af3"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/integration/agent-runner.test.ts",
+      "before_sha256": "e201b4626c73cf2a1c104430692ad4d944b3cab8417bc76996e2d94cd53909f8",
+      "after_sha256": "d6563fec2ed8b5ddabd40dbe286ef5429dceafab97bd472da57737c968d1047c"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/integration/workflow-e2e-property-29.test.ts",
+      "before_sha256": "bfdbc27578699182caacaff03c8ba4b9e4c5caadf09bd427293c18c97cd15d31",
+      "after_sha256": "91e1de41aab6538ad2645bc0026fc25001c693b0a0f1c908d72ff5d6fbd265a1"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/property/composite-gate-parallel.property.test.ts",
+      "before_sha256": "57e37538cef5f59f1be8371bd7d4ababe5f425688e7f8d13d9fd0410e3857687",
+      "after_sha256": "ced3f8efeae322f95ea38cf188331b42775cc6b161ae99ea7ee6d765fb3dba0a"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/property/composite-gate-property-4.parallel-execution.test.ts",
+      "before_sha256": "651de488eb422db4dd2a5f5212ef03f759dcced8fd57e60032ee5c85708696e9",
+      "after_sha256": "52f3b5b7b6a5ff52d14f4b231049c56a6b2a3df63c9adb129b7c42c1ac6ae11c"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/property/composite-gate-property-5.fail-fast-parallel.test.ts",
+      "before_sha256": "1e6e453141db07286e4d75918766ab3716d55ed5e6da876c1e5e5bcfa29a09ad",
+      "after_sha256": "0c72e4c5336601baa0c45e4c3d541b2fb0040725ac62c74b3ef121f543276b3a"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/property/fail-fast-parallel.property.test.ts",
+      "before_sha256": "445cf816d9cfb618f76a76e587c4b8bc50758dd64eb034626e7ce744090f3b78",
+      "after_sha256": "b5436c6819ebae0804ce9374f17f278e76977ee74a830148c7037a4060ae05c0"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/AgentGateRunner.test.ts",
+      "before_sha256": "fca46e4f45063ba1eabc8207ff8fdd3ef076fbfba9a30c3aac3d781a0420ff17",
+      "after_sha256": "afbd5a57748dc84e0fdb2446d46dce6814608198ca018bb08cd93f1438d1bb0b"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/composite-observation.test.ts",
+      "before_sha256": "dcc5d630a541c8453ed287ee260d2c922b405d141f1fe9b8cf0ef502e04b4567",
+      "after_sha256": "f15f282af1569611dc3ed68cc94539555e09ff5e36a9dd7ad989ff3b5abaf0a8"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/delay-timer-owner.test.ts",
+      "before_sha256": "b2931915af2a09ec45c4db6ee9dad274f1296822a2a7f16d872c11b777c4ccd3",
+      "after_sha256": "5484468b3c151070b5cdbe79596b41bfd91f70f5575b9ab7490fef6e77f737a8"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/production-lint-boundaries.test.ts",
+      "before_sha256": "e34674a16479a89fa112b867946c90dfb2d56d6fe5843794463b975173aa7f47",
+      "after_sha256": "6ce07d5b23c36a9bd7395000cebd57aa917ca5d34c732ea1618c0f24f7a19443"
+    },
+    {
+      "file": "packages/daemon-core/src/daemon/HandshakeManager.ts",
+      "before_sha256": "b4521b1ced8a667f8703385272340d207546a3b6d285701f96bbdd9ef961ed04",
+      "after_sha256": "e607414d979beca4bd1880f002f29405ef06b47dff983954041b4ae35b3f9e0f"
+    },
+    {
+      "file": "packages/daemon-core/src/event-bus/EventBus.test.ts",
+      "before_sha256": "f31ea69934d061f15c05268ff3d41aba4de289c591c8f7c53d0142ca742b191a",
+      "after_sha256": "de6ef45d43bd6e6dabacf641a9db3f723eec04abe66c757c47587a781dd70df5"
+    },
+    {
+      "file": "packages/daemon-core/src/http/HTTPServer.ts",
+      "before_sha256": "334ad4f1340cb0c4911881c243803e5d48ed031fd42d3824dfa9549385449f4b",
+      "after_sha256": "f009e68f569853389a6b70d5ecd1c659a30e9c66acf68ad99a5d3372e6194c43"
+    },
+    {
+      "file": "packages/daemon-core/src/index.ts",
+      "before_sha256": "3baf8e44d8edf558aaa037784590e9909bdb109cf52ab8ea498148fc2e571572",
+      "after_sha256": "19e770720d79966abbfdfe12bd2879f3edb744e7681195938bf9f28f1f4f17ee"
+    },
+    {
+      "file": "packages/daemon-core/src/recovery/ProjectArchiveRestore.ts",
+      "before_sha256": "4dd8d5e4d1a4c7a669e83b61f9c734f7df3e40662ef54208c09f1f2eaa419777",
+      "after_sha256": "ba118ca2732948726c5fb3e55c10811e425f56d9625ff7ec797b4a3720cb9eee"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-git-stacked-branch-plan.ts",
+      "before_sha256": "a1eb04e716d68f0f72d25d093ced84b1aae5e766affe6cda7b896db87ce31f64",
+      "after_sha256": "1e194fcd50f25caf7ad9f28561df9c1c4a7b87be2fbc55e5ca5e4a478444965a"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-knowledge-base.ts",
+      "before_sha256": "a6358abcd9ee5c36a7ed9e10499acc1479abd6d9b97b693ce14b255c7da8a2ea",
+      "after_sha256": "c970da8b84496bf07e57b872371f7a97eb54c9040b06718410c9c476a33b732b"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-v11-decision.ts",
+      "before_sha256": "992b0a5725262c73351c7309e282e138e1df4b4ab64663407181328a9f561f19",
+      "after_sha256": "bb39d4619ecc42cb2927874a718458365877a3d6330b5be599c12584c5f47b8c"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/agent-handoff-v11.ts",
+      "before_sha256": "a4b77a58cfab9aa09d2862afc975d61d1ceffcc0db9c5c3b60673669b337dcca",
+      "after_sha256": "6dbe77dc220e4140ff93db08c9d030348e6ce60df78eacb3a57c6780f9bd7fe7"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/authoritative-work-items.ts",
+      "before_sha256": "cc0bf24e1de7f9affdb4af47c654af2999b3ee4d2df9363f5190a28bb443bf84",
+      "after_sha256": "0da7fcf52476ba53f0d611ec6552ceeb24b1b247d4296855efcadbca47a741af"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/close-gate.ts",
+      "before_sha256": "1667987ff8738964381172f9d6af3c55d7ad3ca098e8191eae4f1995a8312a5a",
+      "after_sha256": "e43430bf0bbbb3f25995b39241468c9cf9bab054083f58ce35333c922296913f"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/contracts-registry.ts",
+      "before_sha256": "aeca7641b7153bcc1aeee2c7d08dba3ded41721607a474e74d7da0e7d29439af",
+      "after_sha256": "56deb7fafd9f9f879581dd14ed27733ca6437501f29279868dfd73a15c9a7385"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/git-detached-bootstrap.ts",
+      "before_sha256": "b55b19138cdd32962632e04495b913dfb76e4184c9393c3f424a0e045a5875f8",
+      "after_sha256": "4274e9df9ebde6eb3b5d86e0e3c9e7f1133a23b5bb3b82fbb2d048f17265b5a9"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/merge-runner-v11.ts",
+      "before_sha256": "8db623368e47f5874afd42e6186a7c416c0325166a9c7a62b70d17b8e8b6e282",
+      "after_sha256": "9a24bd0421b56c82502b2bcd9e936957cec4e58fbc06c01cabb40fb2517c19f0"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_executor.ts",
+      "before_sha256": "ec8434a8861d22117c758536e3d5b96ee25abb5caf14ec1d91f0fb362656bc8e",
+      "after_sha256": "f5ec20c20d248618e13a6b584a001b0ba20dfbc8067e21b62bc8e3cc05475681"
+    },
+    {
+      "file": "packages/daemon-core/src/verification/node-command-contract.ts",
+      "before_sha256": "0e9619023d07b2e1fec2681d1e7b1484bbc6d98e5ba966883cb07a7546faa092",
+      "after_sha256": "2c313d6e0db881d67b183518579bc3b0963ad8a28e9ad411f803557deff6024c"
+    },
+    {
+      "file": "packages/daemon-core/src/verification/source-snapshot.ts",
+      "before_sha256": "745e4d45afa801fa63fed29063a663e321584a3b17d13abf407acdb75e03e3b1",
+      "after_sha256": "deaa2976c37eba6af54e4c881d457a40d86f2f3c47f15cb38e7ef80fe39d6b40"
+    },
+    {
+      "file": "packages/daemon-core/src/verification/static-task-command.ts",
+      "before_sha256": "21fafb57d6d19b871938e4f849b7eb9f9ae8bf8f90b2a1be16a7f2dc3d4eff17",
+      "after_sha256": "59f84f7042fa4657187d0b7ad0b24e82629804897a0a08707171f7ccafac0044"
+    }
+  ],
+  "summaries": [
+    {
+      "name": "types",
+      "started_utc": "2026-11-08T09:30:18.415Z",
+      "finished_utc": "2026-11-08T09:30:23.660Z",
+      "files": 31,
+      "errors": 0,
+      "warnings": 0,
+      "rules": {}
+    },
+    {
+      "name": "version-unification",
+      "started_utc": "2026-11-08T09:30:23.670Z",
+      "finished_utc": "2026-11-08T09:30:23.702Z",
+      "files": 2,
+      "errors": 0,
+      "warnings": 0,
+      "rules": {}
+    },
+    {
+      "name": "configuration",
+      "started_utc": "2026-11-08T09:30:23.715Z",
+      "finished_utc": "2026-11-08T09:30:24.782Z",
+      "files": 13,
+      "errors": 0,
+      "warnings": 0,
+      "rules": {}
+    },
+    {
+      "name": "service-management",
+      "started_utc": "2026-11-08T09:30:24.816Z",
+      "finished_utc": "2026-11-08T09:30:25.225Z",
+      "files": 32,
+      "errors": 0,
+      "warnings": 0,
+      "rules": {}
+    },
+    {
+      "name": "host-profile",
+      "started_utc": "2026-11-08T09:30:25.238Z",
+      "finished_utc": "2026-11-08T09:30:25.345Z",
+      "files": 9,
+      "errors": 0,
+      "warnings": 0,
+      "rules": {}
+    },
+    {
+      "name": "observability",
+      "started_utc": "2026-11-08T09:30:25.357Z",
+      "finished_utc": "2026-11-08T09:30:36.376Z",
+      "files": 10,
+      "errors": 0,
+      "warnings": 0,
+      "rules": {}
+    },
+    {
+      "name": "permission-engine",
+      "started_utc": "2026-11-08T09:30:36.436Z",
+      "finished_utc": "2026-11-08T09:30:40.164Z",
+      "files": 48,
+      "errors": 3,
+      "warnings": 0,
+      "rules": {
+        "import/order": 3
+      }
+    },
+    {
+      "name": "opencode-adapter",
+      "started_utc": "2026-11-08T09:30:40.188Z",
+      "finished_utc": "2026-11-08T09:30:44.212Z",
+      "files": 21,
+      "errors": 0,
+      "warnings": 0,
+      "rules": {}
+    },
+    {
+      "name": "scope-gate",
+      "started_utc": "2026-11-08T09:30:44.251Z",
+      "finished_utc": "2026-11-08T09:31:43.895Z",
+      "files": 45,
+      "errors": 0,
+      "warnings": 0,
+      "rules": {}
+    },
+    {
+      "name": "workflow-runtime",
+      "started_utc": "2026-11-08T09:31:43.971Z",
+      "finished_utc": "2026-11-08T09:32:22.100Z",
+      "files": 124,
+      "errors": 76,
+      "warnings": 2,
+      "rules": {
+        "import/order": 24,
+        "@typescript-eslint/consistent-type-imports": 3,
+        "import/no-duplicates": 2,
+        "@typescript-eslint/explicit-function-return-type": 20,
+        "@typescript-eslint/no-unnecessary-type-assertion": 3,
+        "@typescript-eslint/no-unsafe-return": 1,
+        "@typescript-eslint/no-unused-vars": 1,
+        "@typescript-eslint/only-throw-error": 1,
+        "@typescript-eslint/prefer-promise-reject-errors": 1,
+        "@typescript-eslint/no-unsafe-assignment": 9,
+        "@typescript-eslint/no-unsafe-call": 1,
+        "@typescript-eslint/no-unsafe-member-access": 9,
+        "@typescript-eslint/no-floating-promises": 1,
+        "@typescript-eslint/no-unsafe-argument": 2
+      }
+    },
+    {
+      "name": "cli",
+      "started_utc": "2026-11-08T09:32:22.161Z",
+      "finished_utc": "2026-11-08T09:32:22.843Z",
+      "files": 63,
+      "errors": 0,
+      "warnings": 0,
+      "rules": {}
+    },
+    {
+      "name": "daemon-core",
+      "started_utc": "2026-11-08T09:32:22.999Z",
+      "finished_utc": "2026-11-08T09:32:49.171Z",
+      "files": 231,
+      "errors": 120,
+      "warnings": 0,
+      "rules": {
+        "@typescript-eslint/no-unnecessary-type-assertion": 3,
+        "@typescript-eslint/no-unsafe-argument": 82,
+        "@typescript-eslint/no-redundant-type-constituents": 21,
+        "@typescript-eslint/no-unused-vars": 2,
+        "no-useless-escape": 12
+      }
+    }
+  ]
+}

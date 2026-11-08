@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/freeze-platform-candidate.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "freeze-platform-candidate",
+  "expected_writes": "Immutable reviewed private source manifest and explicit nine-file delta",
+  "started_utc": "2026-11-08T12:05:46.800Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\freeze-platform-candidate.cjs",
+      "sha256": "ba0844d8c7173512d36821eb3fc922fb7708593954aba8246358e26d16f4c194",
+      "size": 3576,
+      "extension": ".cjs"
+    }
+  ]
+}

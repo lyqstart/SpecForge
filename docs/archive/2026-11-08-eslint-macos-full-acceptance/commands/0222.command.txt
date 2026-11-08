@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/prepare-shortpath-and-posix-fixtures.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "apply-confirmed-native-temp-and-posix-fixture-repairs",
+  "expected_writes": "Three exact reviewed private files; preserve product guards and POSIX distinct identity plus true duplicate failures",
+  "started_utc": "2026-11-08T12:22:26.706Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\prepare-shortpath-and-posix-fixtures.cjs",
+      "sha256": "fee0387e6b2aa5dd95a62444bfd89780a6eff31b616fe7e405a2e162ba881054",
+      "size": 4131,
+      "extension": ".cjs"
+    }
+  ]
+}

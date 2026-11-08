@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/freeze-platform-candidate.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "freeze-platform-candidate-eol-identity",
+  "expected_writes": "Immutable parent Git text identity plus recorded physical EOL differences and nine-file platform delta",
+  "started_utc": "2026-11-08T12:06:14.351Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\freeze-platform-candidate.cjs",
+      "sha256": "fb9c740a4b550e1c0fb73303e1f375f7ccf6831c8f4ac3b76fa1dc6966119837",
+      "size": 3838,
+      "extension": ".cjs"
+    }
+  ]
+}

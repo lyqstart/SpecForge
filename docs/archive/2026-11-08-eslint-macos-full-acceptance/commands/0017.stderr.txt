@@ -1,0 +1,14 @@
+AssertionError [ERR_ASSERTION]: D:\code\SpecForge\.lint-review-a01\packages\opencode-adapter\src\errors\index.ts
++ actual - expected
+
++ '5ef1e65195e7fad7cc3774a87f25453fc075e835170c357c2d01fea337fa7edb'
+- '565fc11ebfdd45d8c38821276949b2dcd73770c90b8988dbb25e604d4d793e31'
+
+    at D:\code\SpecForge\docs\archive\2026-11-08-eslint-macos-full-acceptance\format-with-ast-proof.cjs:5:404 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: '5ef1e65195e7fad7cc3774a87f25453fc075e835170c357c2d01fea337fa7edb',
+  expected: '565fc11ebfdd45d8c38821276949b2dcd73770c90b8988dbb25e604d4d793e31',
+  operator: 'strictEqual',
+  diff: 'simple'
+}

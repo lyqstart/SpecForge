@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/repair-signal-callback-owner.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "repair-confirmed-shutdown-callback-owner",
+  "expected_writes": "Private existing service shutdown owner exact registered callback references; preserve signal scope and existing disposal lifecycle",
+  "started_utc": "2026-11-08T12:52:12.765Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\repair-signal-callback-owner.cjs",
+      "sha256": "57aa72994ee6e0f2c73ee4a5bb8279b414fd2e9bf267e863bebf68ea633a5441",
+      "size": 1965,
+      "extension": ".cjs"
+    }
+  ]
+}

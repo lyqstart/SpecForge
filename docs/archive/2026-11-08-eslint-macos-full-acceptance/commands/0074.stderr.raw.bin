@@ -1,0 +1,46 @@
+$ vitest run tests/unit/production-lint-boundaries.test.ts tests/unit/retry.test.ts tests/unit/CompositeGateCancellation.test.ts "--maxWorkers=1" "--minWorkers=1"
+stderr | tests/unit/retry.test.ts > Retry Module > withRetry > should retry retryable errors
+[Retry] operation failed (code: GATE_TIMEOUT, retryable: true), attempt 1/3, retrying in 2ms: Gate "test-gate" operation "test-op" timed out after 5000ms
+
+stderr | tests/unit/retry.test.ts > Retry Module > withRetry > should call onRetry callback before each retry
+[Retry] operation failed (code: GATE_TIMEOUT, retryable: true), attempt 1/3, retrying in 2ms: Gate "test-gate" operation "test-op" timed out after 5000ms
+
+stderr | tests/unit/retry.test.ts > Retry Module > createRetryDecorator > should create a decorated function with retry logic
+[Retry] TestOperation failed (code: GATE_TIMEOUT, retryable: true), attempt 1/3, retrying in 2ms: Gate "test-gate" operation "test-op" timed out after 5000ms
+
+stderr | tests/unit/retry.test.ts > GateRunner Retry Integration > SimpleGateRunner with Retry > should retry on retryable error when retry is enabled
+[Retry] GateRunner:retry-gate failed (code: GATE_TIMEOUT, retryable: true), attempt 1/3, retrying in 1ms: Gate "retry-gate" operation "check" timed out after 5000ms
+
+stderr | tests/unit/retry.test.ts > GateRunner Retry Integration > SimpleGateRunner with Retry > should retry on retryable error when retry is enabled
+[Retry] GateRunner:retry-gate failed (code: GATE_TIMEOUT, retryable: true), attempt 2/3, retrying in 1ms: Gate "retry-gate" operation "check" timed out after 5000ms
+
+stderr | tests/unit/retry.test.ts > GateRunner Retry Integration > SimpleGateRunner with Retry > should retry on retryable error when retry is enabled
+[GateRunner ERROR] Gate execution failed: Gate "retry-gate" operation "check" timed out after 5000ms {"gateId":"retry-gate","gateType":"simple","errorType":"TIMEOUT_ERROR","errorCode":"GATE_TIMEOUT","retryable":true,"suggestion":"Check if the operation \"check\" is stuck or increase timeout for gate \"retry-gate\"","timestamp":"2026-11-08T08:50:28.195Z","operation":"simple_gate_execution"}
+
+stderr | tests/unit/retry.test.ts > GateRunner Retry Integration > SimpleGateRunner with Retry > should not retry when retry is not configured
+[GateRunner ERROR] Gate execution failed: Gate "no-retry-gate" (simple) execution failed: Always fails {"gateId":"no-retry-gate","gateType":"simple","errorType":"EXECUTION_ERROR","errorCode":"GATE_EXECUTION_ERROR","retryable":false,"suggestion":"Review the gate \"no-retry-gate\" implementation and check logs for details","timestamp":"2026-11-08T08:50:28.202Z","originalError":{"name":"Error","message":"Always fails"}}
+
+stderr | tests/unit/retry.test.ts > GateRunner Retry Integration > CompositeGateRunner with Retry > should retry composite gate on retryable error
+[GateRunner ERROR] Gate execution failed: Gate "child-gate" operation "check" timed out after 5000ms {"gateId":"child-gate","gateType":"simple","errorType":"TIMEOUT_ERROR","errorCode":"GATE_TIMEOUT","retryable":true,"suggestion":"Check if the operation \"check\" is stuck or increase timeout for gate \"child-gate\"","timestamp":"2026-11-08T08:50:28.206Z"}
+
+stderr | tests/unit/retry.test.ts > GateRunner Retry Integration > CompositeGateRunner with Retry > should not retry when retry config is not set
+[GateRunner ERROR] Gate execution failed: Gate "child-gate" (simple) execution failed: Always fails {"gateId":"child-gate","gateType":"simple","errorType":"EXECUTION_ERROR","errorCode":"GATE_EXECUTION_ERROR","retryable":false,"suggestion":"Review the gate \"child-gate\" implementation and check logs for details","timestamp":"2026-11-08T08:50:28.207Z","originalError":{"name":"Error","message":"Always fails"}}
+
+stderr | tests/unit/retry.test.ts > Retry Strategy Behavior > exponential strategy should increase delay each retry
+[Retry] operation failed (code: GATE_TIMEOUT, retryable: true), attempt 1/3, retrying in 200ms: Gate "test-gate" operation "test-op" timed out after 5000ms
+
+stderr | tests/unit/retry.test.ts > Retry Strategy Behavior > exponential strategy should increase delay each retry
+[Retry] operation failed (code: GATE_TIMEOUT, retryable: true), attempt 2/3, retrying in 400ms: Gate "test-gate" operation "test-op" timed out after 5000ms
+
+stderr | tests/unit/retry.test.ts > Retry Strategy Behavior > linear strategy should increase delay linearly
+[Retry] operation failed (code: GATE_TIMEOUT, retryable: true), attempt 1/3, retrying in 200ms: Gate "test-gate" operation "test-op" timed out after 5000ms
+
+stderr | tests/unit/retry.test.ts > Retry Strategy Behavior > linear strategy should increase delay linearly
+[Retry] operation failed (code: GATE_TIMEOUT, retryable: true), attempt 2/3, retrying in 300ms: Gate "test-gate" operation "test-op" timed out after 5000ms
+
+stderr | tests/unit/retry.test.ts > Retry Strategy Behavior > fixed strategy should use same delay each retry
+[Retry] operation failed (code: GATE_TIMEOUT, retryable: true), attempt 1/3, retrying in 100ms: Gate "test-gate" operation "test-op" timed out after 5000ms
+
+stderr | tests/unit/retry.test.ts > Retry Strategy Behavior > fixed strategy should use same delay each retry
+[Retry] operation failed (code: GATE_TIMEOUT, retryable: true), attempt 2/3, retrying in 100ms: Gate "test-gate" operation "test-op" timed out after 5000ms
+

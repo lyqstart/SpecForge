@@ -1,0 +1,1 @@
+{"real_original_collector":true,"inside_git_negative_fixture_invalid":true,"outside_git_expected_error":true,"source_modified":false}

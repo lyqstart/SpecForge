@@ -1,0 +1,16 @@
+{
+  "utc": "2026-11-08T13:39:16.073Z",
+  "records": [
+    {
+      "file": "publication-live/run-command.cjs",
+      "sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+      "same_as_public_carrier": true
+    },
+    {
+      "file": "publication-live/seal-receipts.cjs",
+      "sha256": "b26b9ae560ea5e1a5fa778877d162e9681e6e895be2a4b9fdbc840551c25a2a4",
+      "same_as_public_carrier": true
+    }
+  ],
+  "reason": "Post-seal publication/bootstrap/main CI observations must not mutate public sealed evidence or create self-referential manifests. Same actual argv-only four-part numeric receipt/seal carrier now owns independent ignored publication-live records."
+}

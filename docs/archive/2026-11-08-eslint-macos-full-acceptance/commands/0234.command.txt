@@ -1,0 +1,20 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "wsl.exe",
+  "args": [
+    "--distribution",
+    "Ubuntu-24.04",
+    "--cd",
+    "/mnt/d/code/SpecForge/.lint-shortpath-a01",
+    "--exec",
+    "/usr/bin/node",
+    "/mnt/d/code/SpecForge/docs/archive/2026-11-08-eslint-macos-full-acceptance/prepare-linux-fixture.mjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "prepare-final-actual-linux-systemd-fixture",
+  "expected_writes": "Create only fresh owned /tmp ext4 fixture, verify every exported source and fixed Bun archive; synthetic fixture Git identity explicit",
+  "started_utc": "2026-11-08T12:29:37.481Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": []
+}

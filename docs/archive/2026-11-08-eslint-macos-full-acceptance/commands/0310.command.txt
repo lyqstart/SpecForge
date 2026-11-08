@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/collect-signal-final-primary-facts.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "collect-final1-0-25-installed-source-authority-primary-facts",
+  "expected_writes": "Actual117 byte identities10 agents8 skills45 tools, owner/key metadata unchanged, original closed replay/code/evidence and old tag preserved",
+  "started_utc": "2026-11-08T13:35:11.911Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\collect-signal-final-primary-facts.cjs",
+      "sha256": "5076e16334330936b9bda77362e06318ddb868ce9b8c6d44077acd5a29e066af",
+      "size": 5057,
+      "extension": ".cjs"
+    }
+  ]
+}

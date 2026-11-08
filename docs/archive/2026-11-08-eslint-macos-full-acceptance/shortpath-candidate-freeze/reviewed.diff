@@ -1,0 +1,91 @@
+diff --git a/packages/daemon-core/tests/unit/candidate-generation-integrity.test.ts b/packages/daemon-core/tests/unit/candidate-generation-integrity.test.ts
+index 85895732..9b218257 100644
+--- a/packages/daemon-core/tests/unit/candidate-generation-integrity.test.ts
++++ b/packages/daemon-core/tests/unit/candidate-generation-integrity.test.ts
+@@ -1,5 +1,5 @@
+ import { createHash } from 'node:crypto';
+-import { mkdtemp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
++import { access, mkdtemp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
+ import { tmpdir } from 'node:os';
+ import { join } from 'node:path';
+ import { afterEach, describe, expect, it } from 'vitest';
+@@ -188,7 +188,7 @@ describe('Candidate generation integrity', () => {
+     expect(isSameOrDescendantResolvedPath(upper, join('fixture', 'PROJECT'), 'linux')).toBe(false);
+   });
+ 
+-  it('counts a Windows CORE/core Candidate alias once while preserving real noncanonical REQ failures', async () => {
++  it('keeps target-platform Candidate identities and real noncanonical REQ failures on the actual filesystem', async () => {
+     const { projectRoot, workItemDir } = await makeProject();
+     const requirementsPath = join(
+       workItemDir,
+@@ -219,14 +219,17 @@ describe('Candidate generation integrity', () => {
+       workItemId: 'WI-0001',
+       kind: 'requirements',
+     });
+-    expect(artifacts).toHaveLength(1);
+-    expect(artifacts[0].path).toBe(requirementsPath);
++    const lowerPath=join(workItemDir,'candidates','project','modules','core','requirements.candidate.md');
++    const lowerExists=await access(lowerPath).then(()=>true,(error:NodeJS.ErrnoException)=>{if(error.code==='ENOENT')return false;throw error;});
++    const distinctPosixAlias=process.platform!=='win32'&&lowerExists;
++    expect(artifacts.map(artifact=>artifact.path)).toEqual(distinctPosixAlias?[requirementsPath,lowerPath]:[requirementsPath]);
+ 
+     const result = await validateCandidateRequirementReferences({
+       workItemDir,
+       requirementArtifacts: artifacts,
+     });
+-    expect(result.errors.join('\n')).not.toContain('REQUIREMENT_DEFINITION_DUPLICATE');
++    if(distinctPosixAlias)expect(result.errors.join('\n')).toContain('REQUIREMENT_DEFINITION_DUPLICATE');
++    else expect(result.errors.join('\n')).not.toContain('REQUIREMENT_DEFINITION_DUPLICATE');
+     expect(result.errors.join('\n')).toContain('REQUIREMENT_REFERENCE_NONCANONICAL');
+     expect(result.errors.join('\n')).toContain('REQ-CORE-0001');
+   });
+diff --git a/packages/scope-gate/tests/current-crossplatform-ci-contract.test.ts b/packages/scope-gate/tests/current-crossplatform-ci-contract.test.ts
+index b9a54e74..cc5dc56c 100644
+--- a/packages/scope-gate/tests/current-crossplatform-ci-contract.test.ts
++++ b/packages/scope-gate/tests/current-crossplatform-ci-contract.test.ts
+@@ -8,23 +8,29 @@ import { qualifyTemporaryEnvironment } from '../../../scripts/lib/qualification-
+ const ownedTemporaryDirectories:Array<{owned:string;parent:string}>=[];
+ afterEach(()=>{
+   for(const {owned,parent} of ownedTemporaryDirectories.splice(0)){
+-    if(realpathSync(owned)!==owned||path.dirname(owned)!==parent||!path.basename(owned).startsWith('sf-qualification-temp-'))throw new Error('UNOWNED_TEMP_CLEANUP');
++    if(realpathSync.native(owned)!==owned||path.dirname(owned)!==parent||!path.basename(owned).startsWith('sf-qualification-temp-'))throw new Error('UNOWNED_TEMP_CLEANUP');
+     rmSync(owned,{recursive:true,force:true});
+   }
+ });
+ const root=path.resolve(import.meta.dirname,'../../..'),read=(p:string): string =>readFileSync(path.join(root,p),'utf8').replace(/\r\n/g,'\n');
+ describe('current cross-platform CI deployment contract',()=>{
+   it('uses the same physical temporary target through an owned alias without changing product guards',()=>{
+-    const parent=realpathSync(tmpdir()),owned=mkdtempSync(path.join(parent,'sf-qualification-temp-')),physical=path.join(owned,'physical'),alias=path.join(owned,'alias');
++    const parent=realpathSync.native(tmpdir()),owned=mkdtempSync(path.join(parent,'sf-qualification-temp-')),physical=path.join(owned,'physical'),alias=path.join(owned,'alias');
+     ownedTemporaryDirectories.push({owned,parent});
+     mkdirSync(physical);symlinkSync(physical,alias,process.platform==='win32'?'junction':'dir');
+     const result=qualifyTemporaryEnvironment(alias);
+-    expect(result.canonical).toBe(realpathSync(physical));
++    expect(result.canonical).toBe(realpathSync.native(physical));
+     expect(result.environment).toEqual({TMPDIR:result.canonical,TEMP:result.canonical,TMP:result.canonical});
+     expect(result.ancestors.some(item=>item.path===alias&&item.kind==='symlink')).toBe(true);
+     expect(()=>qualifyTemporaryEnvironment(path.join(owned,'missing'))).toThrow();
+     for(const file of ['scripts/test-workspace.ts','scripts/run-root-tests.mjs','scripts/run-ci-regression.mjs'])expect(read(file),file).toContain('...temporary.environment');
+   });
++  it.runIf(process.platform==='win32'&&existsSync(path.join(process.env.SystemDrive||'C:','PROGRA~1')))('expands an actual existing Windows short path with the native physical identity',()=>{
++    const short=path.join(process.env.SystemDrive||'C:','PROGRA~1'),expected=realpathSync.native(short),result=qualifyTemporaryEnvironment(short);
++    expect(expected).not.toMatch(/~[0-9]/);
++    expect(result.canonical).toBe(expected);
++    expect(result.environment).toEqual({TMPDIR:expected,TEMP:expected,TMP:expected});
++  });
+   it('uses the official current release and isolated userlevel installer instead of retired tarball deployment',()=>{
+     const workflow=read('.github/workflows/distribution-smoke.yml');
+     expect(workflow).not.toContain('scripts/smoke-runner.ts');
+diff --git a/scripts/lib/qualification-environment.mjs b/scripts/lib/qualification-environment.mjs
+index e4448153..b1ce12a4 100644
+--- a/scripts/lib/qualification-environment.mjs
++++ b/scripts/lib/qualification-environment.mjs
+@@ -13,7 +13,7 @@ export function qualifyTemporaryEnvironment(requested = os.tmpdir()) {
+     ancestors.unshift({ path: current, kind, ...(kind === 'symlink' ? { target: fs.readlinkSync(current) } : {}) });
+     if (path.dirname(current) === current) break;
+   }
+-  const canonical = fs.realpathSync(absolute);
++  const canonical = fs.realpathSync.native(absolute);
+   if (!fs.lstatSync(canonical).isDirectory()) throw new Error('QUALIFICATION_TEMP_NOT_DIRECTORY');
+   return { requested: absolute, canonical, ancestors, environment: { TMPDIR: canonical, TEMP: canonical, TMP: canonical } };
+ }

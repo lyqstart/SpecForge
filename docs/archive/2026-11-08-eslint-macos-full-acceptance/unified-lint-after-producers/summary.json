@@ -1,0 +1,164 @@
+{
+  "utc": "2026-11-08T07:47:00.721Z",
+  "members": [
+    {
+      "name": "types",
+      "exit": 0,
+      "files": 28,
+      "errors": 0,
+      "warnings": 0,
+      "rules": {}
+    },
+    {
+      "name": "version-unification",
+      "exit": 0,
+      "files": 2,
+      "errors": 0,
+      "warnings": 0,
+      "rules": {}
+    },
+    {
+      "name": "configuration",
+      "exit": 1,
+      "files": 13,
+      "errors": 2,
+      "warnings": 0,
+      "rules": {
+        "@typescript-eslint/no-unused-vars": 2
+      }
+    },
+    {
+      "name": "service-management",
+      "exit": 1,
+      "files": 32,
+      "errors": 6,
+      "warnings": 0,
+      "rules": {
+        "@typescript-eslint/no-unused-vars": 6
+      }
+    },
+    {
+      "name": "host-profile",
+      "exit": 1,
+      "files": 9,
+      "errors": 2,
+      "warnings": 0,
+      "rules": {
+        "@typescript-eslint/no-unused-vars": 2
+      }
+    },
+    {
+      "name": "observability",
+      "exit": 1,
+      "files": 10,
+      "errors": 15,
+      "warnings": 0,
+      "rules": {
+        "@typescript-eslint/no-unused-vars": 7,
+        "@typescript-eslint/await-thenable": 3,
+        "import/namespace": 3,
+        "@typescript-eslint/no-explicit-any": 2
+      }
+    },
+    {
+      "name": "permission-engine",
+      "exit": 1,
+      "files": 45,
+      "errors": 34,
+      "warnings": 103,
+      "rules": {
+        "@typescript-eslint/no-explicit-any": 103,
+        "@typescript-eslint/no-unused-vars": 34
+      }
+    },
+    {
+      "name": "opencode-adapter",
+      "exit": 1,
+      "files": 21,
+      "errors": 6,
+      "warnings": 0,
+      "rules": {
+        "@typescript-eslint/no-unsafe-argument": 3,
+        "@typescript-eslint/no-require-imports": 2,
+        "@typescript-eslint/no-base-to-string": 1
+      }
+    },
+    {
+      "name": "scope-gate",
+      "exit": 1,
+      "files": 45,
+      "errors": 2,
+      "warnings": 0,
+      "rules": {
+        "@typescript-eslint/explicit-function-return-type": 2
+      }
+    },
+    {
+      "name": "workflow-runtime",
+      "exit": 1,
+      "files": 118,
+      "errors": 657,
+      "warnings": 15,
+      "rules": {
+        "import/order": 27,
+        "@typescript-eslint/no-non-null-assertion": 65,
+        "no-console": 11,
+        "@typescript-eslint/no-explicit-any": 131,
+        "@typescript-eslint/no-unsafe-argument": 44,
+        "@typescript-eslint/no-unsafe-assignment": 59,
+        "@typescript-eslint/no-unsafe-member-access": 126,
+        "@typescript-eslint/no-unsafe-call": 6,
+        "import/no-duplicates": 4,
+        "@typescript-eslint/consistent-type-imports": 3,
+        "@typescript-eslint/explicit-function-return-type": 24,
+        "@typescript-eslint/no-floating-promises": 2,
+        "@typescript-eslint/no-misused-promises": 1,
+        "@typescript-eslint/no-base-to-string": 8,
+        "@typescript-eslint/restrict-template-expressions": 8,
+        "@typescript-eslint/no-redundant-type-constituents": 4,
+        "import/export": 30,
+        "@typescript-eslint/no-unused-vars": 110,
+        "@typescript-eslint/no-unsafe-return": 4,
+        "@typescript-eslint/only-throw-error": 1,
+        "@typescript-eslint/prefer-promise-reject-errors": 1,
+        "@typescript-eslint/unbound-method": 3
+      }
+    },
+    {
+      "name": "cli",
+      "exit": 1,
+      "files": 63,
+      "errors": 53,
+      "warnings": 0,
+      "rules": {
+        "@typescript-eslint/no-unused-vars": 49,
+        "no-useless-catch": 1,
+        "no-control-regex": 1,
+        "no-useless-escape": 1,
+        "no-case-declarations": 1
+      }
+    },
+    {
+      "name": "daemon-core",
+      "exit": 1,
+      "files": 231,
+      "errors": 1043,
+      "warnings": 0,
+      "rules": {
+        "@typescript-eslint/no-unsafe-argument": 93,
+        "prettier/prettier": 651,
+        "@typescript-eslint/no-floating-promises": 17,
+        "@typescript-eslint/ban-ts-comment": 4,
+        "@typescript-eslint/no-unused-vars": 43,
+        "@typescript-eslint/unbound-method": 1,
+        "@typescript-eslint/no-misused-promises": 1,
+        "@typescript-eslint/no-require-imports": 1,
+        "no-control-regex": 7,
+        "@typescript-eslint/no-base-to-string": 182,
+        "@typescript-eslint/no-redundant-type-constituents": 22,
+        "no-useless-escape": 20,
+        "@typescript-eslint/prefer-promise-reject-errors": 1
+      }
+    }
+  ]
+}

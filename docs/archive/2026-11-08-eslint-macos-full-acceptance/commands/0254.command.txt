@@ -1,0 +1,20 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "git",
+  "args": [
+    "-c",
+    "core.longpaths=true",
+    "worktree",
+    "add",
+    "--detach",
+    ".lint-signal-a01",
+    "05713b7337b3dc55f1f3ed563cf342439643657f"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "create-signal-cleanup-validation-worktree",
+  "expected_writes": "Preserve fully qualified057 candidate; new exact057 private worktree for confirmed shutdown owner defect",
+  "started_utc": "2026-11-08T12:48:27.813Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": []
+}

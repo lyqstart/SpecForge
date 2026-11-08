@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/inspect-live-deployment.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "inspect-pre-adoption-live-deployment",
+  "expected_writes": "Read-only existing117 managed assets and token-free health; no original business or owner key read",
+  "started_utc": "2026-11-08T12:43:23.376Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\inspect-live-deployment.cjs",
+      "sha256": "58893ed84e0b1ddcac1b8488733ce58bb50ed261ffefc48a18fa810c695d7860",
+      "size": 1130,
+      "extension": ".cjs"
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "scripts/build-workspace.ts"
+  ],
+  "cwd": "D:\\code\\SpecForge\\.lint-review-a01",
+  "purpose": "complete-build-after-workflow-boundary-and-type-cleanup",
+  "expected_writes": "private-fixture-build-outputs-only",
+  "started_utc": "2026-11-08T10:02:15.661Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\.lint-review-a01\\scripts\\build-workspace.ts",
+      "sha256": "42f88fb9686fbcfbd0bdcdebc9b056536018ca778a61555c04b0671f88c12aca",
+      "size": 1441,
+      "extension": ".ts"
+    }
+  ]
+}

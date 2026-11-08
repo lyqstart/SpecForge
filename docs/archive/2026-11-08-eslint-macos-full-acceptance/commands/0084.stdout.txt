@@ -1,0 +1,1 @@
+{"id":"scalar-test-syntax-closure","files":2,"status":"APPLIED_REQUIRES_VERIFICATION"}

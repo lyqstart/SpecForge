@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/repair-declared-boundary-types.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "restore-explicit-producer-type-contracts",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES:private three-owner type repair;REPOSITORY_TRACKED_WRITES:ledger;EXTERNAL_EVIDENCE_WRITES:before bytes",
+  "started_utc": "2026-11-08T07:44:41.578Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\repair-declared-boundary-types.cjs",
+      "sha256": "c293aa9610f172cfe4a250fdda946be24fdbbe1bb5d103014baa0ae013992433",
+      "size": 3114,
+      "extension": ".cjs"
+    }
+  ]
+}

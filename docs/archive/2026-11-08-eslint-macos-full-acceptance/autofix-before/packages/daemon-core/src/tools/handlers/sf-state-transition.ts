@@ -1,0 +1,856 @@
+import { CURRENT_RELEASE_WORKFLOW_TYPE } from '@specforge/types';
+import { access, readFile, rename, rm, writeFile } from 'node:fs/promises';
+import { createHash } from 'node:crypto';
+import { registerHandler } from '../ToolDispatcher';
+import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
+import { join } from 'node:path';
+import {
+  isValidV11TransitionForWorkflow,
+  isForbiddenTransition,
+  WI_STATUSES_V11,
+  checkCloseGateEvidenceRequirements,
+} from '../lib/state-machine-v11';
+import {
+  WORKFLOW_PATH_TO_TYPE,
+  WORKFLOW_TYPE_TO_PATH,
+  type WorkflowPath,
+  type WorkflowType,
+  isWorkflowTypeCompatibleWithPath,
+} from '../lib/state_machine';
+import { isSealTransition, getSealTransition } from '@specforge/types/seal-transitions';
+import { validateWorkItemId } from '../lib/work-item-id-validator';
+import { guardHardStop } from '../lib/hard-stop-latch';
+import { readAuthoritativeState, transitionWithEvidence } from '../lib/state-coordinator-v11';
+import { parseChangedFilesAuditPass } from '../lib/write-guard-runtime-v12';
+import { materializeCandidateManifestEntries } from '../lib/governance-invariants-v11';
+import { resolveCanonicalCandidateWorkflowPath } from '../lib/artifact-schema-validation';
+import { readWorkItemMetadata, type WorkItemMetadata } from '../lib/work-item-metadata.js';
+import {
+  candidateManifestSchemaBlockCode,
+  precheckCandidateManifestSchema,
+} from '../lib/candidate-manifest-owner.js';
+import { readUnresolvedHandoffValidationFailures } from '../lib/agent-handoff-v11';
+import { readCurrentProjectSpecBinding } from '../lib/candidate-generation-integrity.js';
+import {
+  materializeImplementationBaseline,
+  restoreImplementationBaseline,
+  validateImplementationTruthBeforeSeal,
+  type ImplementationBaselineWrite,
+} from '../lib/implementation-baseline.js';
+
+async function readJsonIfExists(filePath: string): Promise<Record<string, any> | null> {
+  try {
+    return JSON.parse(await readFile(filePath, 'utf-8'));
+  } catch {
+    return null;
+  }
+}
+
+async function readExistingWorkflowFacts(
+  projectRoot: string,
+  workItemId: string,
+  metadata: WorkItemMetadata
+): Promise<{ workflowType?: string; workflowPath?: string }> {
+  const wiDir = join(projectRoot, SPEC_DIR_NAME, 'work-items', workItemId);
+  const candidates = [
+    join(wiDir, 'trigger_result.json'),
+    join(wiDir, 'candidate_manifest.json'),
+    join(projectRoot, SPEC_DIR_NAME, 'runtime', 'state.json'),
+  ];
+
+  for (const filePath of candidates) {
+    const json = await readJsonIfExists(filePath);
+    if (!json) continue;
+
+    if (filePath.endsWith('state.json') && Array.isArray(json.workItems)) {
+      const item = json.workItems.find((wi: any) => wi?.work_item_id === workItemId);
+      if (item) {
+        return {
+          workflowType: item.workflow_type,
+          workflowPath: item.workflow_path,
+        };
+      }
+    }
+
+    if (json.work_item_id === workItemId || !json.work_item_id) {
+      if (json.workflow_type || json.workflow_path) {
+        return {
+          workflowType: json.workflow_type,
+          workflowPath: json.workflow_path,
+        };
+      }
+    }
+  }
+
+  return {
+    workflowType: typeof metadata.workflow_type === 'string' ? metadata.workflow_type : undefined,
+    workflowPath: typeof metadata.workflow_path === 'string' ? metadata.workflow_path : undefined,
+  };
+}
+
+function isKnownWorkflowType(value: string | undefined): value is WorkflowType {
+  return !!value && Object.prototype.hasOwnProperty.call(WORKFLOW_TYPE_TO_PATH, value);
+}
+
+function resolveWorkflowTypeForTransition(input: {
+  rawWorkflowType?: string;
+  existingWorkflowType?: string;
+  workflowPath?: string;
+}): { workflowType?: string; error?: string; code?: string } {
+  const candidate = input.rawWorkflowType ?? input.existingWorkflowType;
+
+  if (input.workflowPath) {
+    const pathValue = input.workflowPath as WorkflowPath;
+    const defaultType = WORKFLOW_PATH_TO_TYPE[pathValue];
+
+    if (!defaultType) {
+      return {
+        error: `Unknown workflow_path: ${input.workflowPath}. Valid paths: ${Object.keys(WORKFLOW_PATH_TO_TYPE).join(', ')}`,
+        code: 'UNKNOWN_WORKFLOW_PATH',
+      };
+    }
+
+    if (candidate) {
+      if (!isKnownWorkflowType(candidate)) {
+        return {
+          error: `Unknown workflow_type: ${candidate}. Valid workflow types: ${Object.keys(WORKFLOW_TYPE_TO_PATH).join(', ')}`,
+          code: 'UNKNOWN_WORKFLOW_TYPE',
+        };
+      }
+
+      if (isWorkflowTypeCompatibleWithPath(candidate, input.workflowPath)) {
+        return { workflowType: candidate };
+      }
+
+      if (input.rawWorkflowType) {
+        return {
+          error:
+            `workflow_type ${candidate} is not compatible with workflow_path ${input.workflowPath}. ` +
+            `Expected path for ${candidate}: ${WORKFLOW_TYPE_TO_PATH[candidate]}.`,
+          code: 'WORKFLOW_TYPE_PATH_CONFLICT',
+        };
+      }
+    }
+
+    return { workflowType: defaultType };
+  }
+
+  if (candidate) {
+    if (!isKnownWorkflowType(candidate)) {
+      return {
+        error: `Unknown workflow_type: ${candidate}. Valid workflow types: ${Object.keys(WORKFLOW_TYPE_TO_PATH).join(', ')}`,
+        code: 'UNKNOWN_WORKFLOW_TYPE',
+      };
+    }
+    return { workflowType: candidate };
+  }
+
+  return {};
+}
+
+function sha256CandidateFreezeContent(content: string | Buffer): string {
+  return `sha256:${createHash('sha256').update(content).digest('hex')}`;
+}
+
+type ProjectSpecRepairPlanFreezeBinding = {
+  path: string;
+  previous_text: string;
+};
+
+async function bindProjectSpecRepairPlanToFrozenCandidateManifest(input: {
+  workItemDir: string;
+  workItemId: string;
+  frozenManifestPath: string;
+  previousManifestText: string;
+}): Promise<ProjectSpecRepairPlanFreezeBinding | undefined> {
+  const repairPlanPath = join(input.workItemDir, 'project_spec_repair_plan.json');
+  let previousRepairPlanText: string;
+  try {
+    previousRepairPlanText = await readFile(repairPlanPath, 'utf-8');
+  } catch (error: any) {
+    if (error?.code === 'ENOENT') return undefined;
+    throw error;
+  }
+
+  let repairPlan: Record<string, any>;
+  try {
+    repairPlan = JSON.parse(previousRepairPlanText);
+  } catch {
+    throw new Error('PROJECT_SPEC_REPAIR_PLAN_INVALID_DURING_CANDIDATE_FREEZE');
+  }
+  if (repairPlan.action !== 'project_spec_repair' || repairPlan.work_item_id !== input.workItemId) {
+    throw new Error('PROJECT_SPEC_REPAIR_PLAN_INVALID_DURING_CANDIDATE_FREEZE');
+  }
+
+  const expectedPreviousManifestHash = sha256CandidateFreezeContent(input.previousManifestText);
+  if (repairPlan.candidate_manifest_sha256 !== expectedPreviousManifestHash) {
+    throw new Error('PROJECT_SPEC_REPAIR_PLAN_PRE_FREEZE_BINDING_STALE');
+  }
+
+  const frozenManifestRaw = await readFile(input.frozenManifestPath);
+  const frozenManifestHash = sha256CandidateFreezeContent(frozenManifestRaw);
+  const updatedRepairPlan = {
+    ...repairPlan,
+    candidate_manifest_sha256: frozenManifestHash,
+  };
+  const updatedRepairPlanText = JSON.stringify(updatedRepairPlan, null, 2) + '\n';
+  const temporaryPath = `${repairPlanPath}.freezing-${process.pid}-${Date.now()}`;
+  try {
+    await writeFile(temporaryPath, updatedRepairPlanText, 'utf-8');
+    await rename(temporaryPath, repairPlanPath);
+  } catch (error) {
+    await rm(temporaryPath, { force: true }).catch(() => undefined);
+    throw error;
+  }
+
+  return {
+    path: repairPlanPath,
+    previous_text: previousRepairPlanText,
+  };
+}
+
+async function restoreRepairPlanBinding(
+  repairPlanPath: string,
+  previousRepairPlanText: string
+): Promise<void> {
+  const temporaryPath = `${repairPlanPath}.rollback-${process.pid}-${Date.now()}`;
+  try {
+    await writeFile(temporaryPath, previousRepairPlanText, 'utf-8');
+    await rename(temporaryPath, repairPlanPath);
+  } catch (error) {
+    await rm(temporaryPath, { force: true }).catch(() => undefined);
+    throw error;
+  }
+}
+
+async function materializeCandidateManifestBeforePreparedTransition(
+  projectRoot: string,
+  workItemId: string
+): Promise<{
+  manifest_path: string;
+  entry_count: number;
+  required_candidate_types: string[];
+  ignored_candidate_paths: string[];
+  previous_manifest_text: string;
+}> {
+  const workItemDir = join(projectRoot, SPEC_DIR_NAME, 'work-items', workItemId);
+  const manifestPath = join(workItemDir, 'candidate_manifest.json');
+  const triggerPath = join(workItemDir, 'trigger_result.json');
+  const schemaPrecheck = await precheckCandidateManifestSchema(workItemDir, workItemId);
+  const schemaBlockCode = candidateManifestSchemaBlockCode(schemaPrecheck);
+  if (schemaBlockCode) {
+    throw new Error(
+      `CANDIDATE_MANIFEST_SCHEMA_BLOCKED: ${schemaBlockCode}: candidate_manifest.json`
+    );
+  }
+  let previousManifestText = '';
+  let manifest: Record<string, any> | null = null;
+  try {
+    previousManifestText = await readFile(manifestPath, 'utf-8');
+    manifest = JSON.parse(previousManifestText);
+  } catch {
+    manifest = null;
+  }
+  const trigger = await readJsonIfExists(triggerPath);
+  if (!manifest) {
+    throw new Error('CANDIDATE_MANIFEST_REQUIRED_BEFORE_CANDIDATE_PREPARED');
+  }
+  if (!trigger) {
+    throw new Error('TRIGGER_RESULT_REQUIRED_BEFORE_CANDIDATE_PREPARED');
+  }
+  if (manifest.work_item_id && manifest.work_item_id !== workItemId) {
+    throw new Error(
+      `CANDIDATE_MANIFEST_WORK_ITEM_MISMATCH: ${manifest.work_item_id} != ${workItemId}`
+    );
+  }
+
+  const canonicalWorkflowPath = resolveCanonicalCandidateWorkflowPath(
+    manifest.workflow_path,
+    trigger.workflow_path
+  );
+  const projectSpecBinding = await readCurrentProjectSpecBinding(projectRoot);
+  const manifestForMaterialization = {
+    ...manifest,
+    workflow_path: canonicalWorkflowPath,
+    base_spec_version: projectSpecBinding.version,
+    project_spec_precondition_sha256: projectSpecBinding.sha256,
+  };
+  const materialized = materializeCandidateManifestEntries(
+    manifestForMaterialization,
+    workItemDir,
+    trigger.classification
+  );
+  const normalized = {
+    ...manifestForMaterialization,
+    schema_version: manifest.schema_version,
+    work_item_id: workItemId,
+    workflow_path: canonicalWorkflowPath,
+    workflow_type: manifest.workflow_type ?? trigger.workflow_type,
+    entries: materialized.entries,
+  };
+  const materializedText = JSON.stringify(normalized, null, 2) + '\n';
+  const temporaryPath = `${manifestPath}.materializing-${process.pid}-${Date.now()}`;
+  try {
+    await writeFile(temporaryPath, materializedText, 'utf-8');
+    await rename(temporaryPath, manifestPath);
+  } catch (error) {
+    await rm(temporaryPath, { force: true }).catch(() => undefined);
+    throw error;
+  }
+  return {
+    manifest_path: manifestPath,
+    entry_count: materialized.entries.length,
+    required_candidate_types: materialized.required_candidate_types,
+    ignored_candidate_paths: materialized.ignored_candidate_paths,
+    previous_manifest_text: previousManifestText,
+  };
+}
+
+async function restoreCandidateManifest(
+  manifestPath: string,
+  previousManifestText: string
+): Promise<void> {
+  const temporaryPath = `${manifestPath}.rollback-${process.pid}-${Date.now()}`;
+  try {
+    await writeFile(temporaryPath, previousManifestText, 'utf-8');
+    await rename(temporaryPath, manifestPath);
+  } catch (error) {
+    await rm(temporaryPath, { force: true }).catch(() => undefined);
+    throw error;
+  }
+}
+
+/**
+ * v1.1 state transition handler.
+ *
+ * V12:
+ * - Work Item creation is owned exclusively by sf_work_item_create.
+ * - This handler only advances an already-created, schema-current Work Item.
+ * - legacy target state "intake" is rejected with a retryable protocol error.
+ * - workflow_path is a coarse route; compatible workflow_type is preserved.
+ */
+registerHandler('sf_state_transition', async (args, context, deps) => {
+  let workItemId = args['work_item_id'] as string | undefined;
+  const fromState = (args['from_state'] as string) ?? '';
+  const toState = args['to_state'] as string;
+  const baseDir = (context?.directory as string) || (context?.worktree as string) || process.cwd();
+
+  if (!toState) {
+    return { success: false, error: 'to_state required' };
+  }
+
+  if (fromState === '' && toState === 'intake') {
+    return {
+      success: false,
+      error: 'LEGACY_INTAKE_STATE_FORBIDDEN_IN_V11',
+      code: 'LEGACY_INTAKE_STATE_FORBIDDEN',
+      retry_allowed: true,
+      remediation:
+        'Call sf_work_item_create with the original user_request. ' +
+        'sf_state_transition only advances an existing Work Item.',
+    };
+  }
+
+  const isCreateTransition = fromState === '' && toState === 'created';
+  if (isCreateTransition) {
+    return {
+      success: false,
+      error:
+        'WORK_ITEM_CREATE_TOOL_REQUIRED: use sf_work_item_create with the original user_request',
+      code: 'WORK_ITEM_CREATE_TOOL_REQUIRED',
+      retry_allowed: true,
+      remediation:
+        'Call sf_work_item_create; sf_state_transition only advances an existing Work Item.',
+    };
+  }
+
+  if (
+    args['workflow_type'] !== undefined &&
+    args['workflow_type'] !== CURRENT_RELEASE_WORKFLOW_TYPE
+  )
+    return {
+      success: false,
+      error: 'UNSUPPORTED_CURRENT_RELEASE_WORKFLOW',
+      code: 'UNSUPPORTED_CURRENT_RELEASE_WORKFLOW',
+    };
+
+  if (!workItemId) {
+    return {
+      success: false,
+      error: 'work_item_id required for state transition',
+      code: 'WORK_ITEM_ID_REQUIRED',
+      retry_allowed: true,
+    };
+  }
+
+  if (workItemId.trim() === '') {
+    return {
+      success: false,
+      error: 'work_item_id must not be an empty string',
+      code: 'EMPTY_WORK_ITEM_ID_FORBIDDEN',
+      retry_allowed: true,
+    };
+  }
+
+  const idError = validateWorkItemId(workItemId);
+  if (idError) {
+    return {
+      success: false,
+      error: idError,
+      code: 'INVALID_WORK_ITEM_ID',
+      hard_stop: false,
+      retry_allowed: true,
+      remediation: 'Use an existing WI-NNNN. Create new Work Items with sf_work_item_create.',
+    };
+  }
+
+  const projectPath = (context?.directory as string) || (context?.worktree as string) || '';
+  if (!projectPath) {
+    return {
+      success: false,
+      error: 'projectPath required - provide context.directory or context.worktree',
+    };
+  }
+
+  const hardStopGuard = guardHardStop(baseDir, workItemId, 'sf_state_transition');
+  if (!hardStopGuard.allowed) {
+    return {
+      success: false,
+      error: hardStopGuard.error,
+      hard_stop: true,
+      hard_stop_record: hardStopGuard.hard_stop_record,
+    };
+  }
+
+  const wiDir = join(baseDir, SPEC_DIR_NAME, 'work-items', workItemId);
+  let metadata: WorkItemMetadata;
+  try {
+    metadata = await readWorkItemMetadata(wiDir, workItemId);
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : String(error),
+      code: 'WORK_ITEM_METADATA_PRECHECK_FAILED',
+      hard_stop: true,
+    };
+  }
+
+  if (metadata.workflow_type !== CURRENT_RELEASE_WORKFLOW_TYPE)
+    return {
+      success: false,
+      error: 'UNSUPPORTED_CURRENT_RELEASE_WORKFLOW',
+      code: 'UNSUPPORTED_CURRENT_RELEASE_WORKFLOW',
+    };
+  const rawWorkflowPath = args['workflow_path'] as string | undefined;
+  const rawWorkflowType = args['workflow_type'] as string | undefined;
+  const existingWorkflowFacts = await readExistingWorkflowFacts(baseDir, workItemId, metadata);
+  if (
+    existingWorkflowFacts.workflowType !== undefined &&
+    existingWorkflowFacts.workflowType !== CURRENT_RELEASE_WORKFLOW_TYPE
+  )
+    return {
+      success: false,
+      error: 'CURRENT_WORKFLOW_IDENTITY_CONFLICT',
+      code: 'CURRENT_WORKFLOW_IDENTITY_CONFLICT',
+    };
+  const inheritedWorkflowPath = rawWorkflowPath ?? existingWorkflowFacts.workflowPath;
+
+  const resolvedWorkflow = resolveWorkflowTypeForTransition({
+    rawWorkflowType,
+    existingWorkflowType: existingWorkflowFacts.workflowType,
+    workflowPath: inheritedWorkflowPath,
+  });
+  if (resolvedWorkflow.error) {
+    return {
+      success: false,
+      error: resolvedWorkflow.error,
+      code: resolvedWorkflow.code,
+      retry_allowed: true,
+    };
+  }
+
+  const resolvedWorkflowType = resolvedWorkflow.workflowType;
+  const effectiveWorkflowType =
+    resolvedWorkflowType || existingWorkflowFacts.workflowType || 'feature_spec';
+  const useV11 =
+    (args['use_v11_state_machine'] as boolean) ||
+    !!inheritedWorkflowPath ||
+    !!existingWorkflowFacts.workflowType ||
+    !!rawWorkflowType ||
+    isCreateTransition;
+
+  if (useV11) {
+    if (!(WI_STATUSES_V11 as readonly string[]).includes(toState)) {
+      return {
+        success: false,
+        error: `Invalid v1.1 target state "${toState}". Valid states: ${(WI_STATUSES_V11 as readonly string[]).join(', ')}`,
+        code: 'INVALID_V11_TARGET_STATE',
+        valid_states: [...WI_STATUSES_V11],
+        retry_allowed: true,
+        remediation:
+          toState === 'intake'
+            ? 'Create new Work Items through sf_work_item_create with the original user_request; this tool only advances an existing Work Item.'
+            : 'Use the current state list returned in valid_states and re-read sf_state_read; only a legal transition with its required evidence may proceed.',
+      };
+    }
+
+    if (fromState !== '' && isForbiddenTransition(fromState, toState)) {
+      return {
+        success: false,
+        error: `Forbidden v1.1 transition: ${fromState} → ${toState} (§5.2)`,
+        forbidden: true,
+      };
+    }
+
+    if (
+      fromState !== '' &&
+      !isValidV11TransitionForWorkflow(fromState, toState, effectiveWorkflowType)
+    ) {
+      return {
+        success: false,
+        error: `Invalid v1.1 transition: ${fromState} → ${toState}`,
+        valid_from_states: `Use getTransitionTable() to see valid targets from ${fromState}`,
+      };
+    }
+
+    if (fromState === 'approved' && toState === 'blocked') {
+      return {
+        success: false,
+        error: "approved → blocked is reserved for sf_user_decision_record(action='invalidate')",
+        code: 'APPROVAL_INVALIDATION_ACTION_REQUIRED',
+        retry_allowed: true,
+      };
+    }
+
+    if (fromState !== '' && isSealTransition(fromState, toState)) {
+      const sealEntry = getSealTransition(fromState, toState);
+      const callerAgent = (context?.agent as string) ?? '';
+      if (sealEntry && callerAgent !== sealEntry.authorizedSubject) {
+        return {
+          success: false,
+          error: `Seal transition ${fromState} → ${toState} requires actor '${sealEntry.authorizedSubject}', got '${callerAgent || 'none'}'. Only ${sealEntry.authorizedSubject} may perform this transition.`,
+          seal_transition: true,
+          required_actor: sealEntry.authorizedSubject,
+          actual_actor: callerAgent || null,
+        };
+      }
+    }
+
+    if (toState === 'closed') {
+      const v11ProjectPath = (context?.directory as string) || (context?.worktree as string) || '';
+      if (!v11ProjectPath) {
+        return {
+          success: false,
+          error:
+            'projectPath required for close gate evidence check — provide context.directory or context.worktree',
+        };
+      }
+      const v11WorkItemDir = join(v11ProjectPath, SPEC_DIR_NAME, 'work-items', workItemId);
+      const evidenceResult = await checkCloseGateEvidenceRequirements(v11WorkItemDir);
+      if (!evidenceResult.met) {
+        return {
+          success: false,
+          error: `Close gate evidence requirements not met. Missing: ${evidenceResult.missing.join(', ')}. ${evidenceResult.descriptions.join('; ')}`,
+          missing_evidence: evidenceResult.missing,
+        };
+      }
+    }
+  }
+
+  if (fromState === '') {
+    const retiredRootManifestPath = join(baseDir, SPEC_DIR_NAME, 'manifest.json');
+    try {
+      await access(retiredRootManifestPath);
+      return {
+        success: false,
+        error: 'UNSUPPORTED_PROJECT_LAYOUT',
+        hint: `检测到已退出支持的 ${SPEC_DIR_NAME}/manifest.json；当前发布只接受 ${SPEC_DIR_NAME}/project/spec_manifest.json`,
+        recovery_action: 'reinitialize_current_project',
+      };
+    } catch {
+      // Expected for a current project.
+    }
+
+    const manifestPath = join(baseDir, SPEC_DIR_NAME, 'project', 'spec_manifest.json');
+    try {
+      await access(manifestPath);
+    } catch {
+      return {
+        success: false,
+        error: 'PROJECT_NOT_INITIALIZED',
+        hint: '项目尚未初始化；请由 sf-orchestrator 调用受控 sf_project_init。不要手工创建或修复 Project Spec、Manifest 或 Runtime 状态。',
+        recovery_action: 'execute_startup_flow',
+      };
+    }
+  }
+
+  if (!deps.projectManager) {
+    return { success: false, error: 'ProjectManager not available' };
+  }
+
+  const workItemDir = join(projectPath, SPEC_DIR_NAME, 'work-items', workItemId);
+  let implementationBaselineMaterialization: ImplementationBaselineWrite | undefined;
+  if (toState === 'candidate_preparing' && fromState !== 'candidate_preparing') {
+    try {
+      implementationBaselineMaterialization = await materializeImplementationBaseline(
+        projectPath,
+        workItemId
+      );
+    } catch (error) {
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : String(error),
+        code: 'IMPLEMENTATION_BASELINE_MATERIALIZATION_FAILED',
+        retry_allowed: true,
+        state_advanced: false,
+        remediation:
+          'Repair trigger_result.impact_scope.planned_code_paths or the planned project paths, then retry entering candidate_preparing. Do not hand-write implementation_baseline.json.',
+      };
+    }
+  }
+  let candidateManifestMaterialization:
+    | {
+        manifest_path: string;
+        entry_count: number;
+        required_candidate_types: string[];
+        ignored_candidate_paths: string[];
+        previous_manifest_text: string;
+      }
+    | undefined;
+  let projectSpecRepairPlanFreezeBinding: ProjectSpecRepairPlanFreezeBinding | undefined;
+  if (fromState === 'candidate_preparing' && toState === 'candidate_prepared') {
+    const authoritativeState = await readAuthoritativeState({
+      deps,
+      projectRoot: projectPath,
+      workItemId,
+    });
+    if (authoritativeState.current_state !== fromState) {
+      return {
+        success: false,
+        error:
+          `CANDIDATE_MANIFEST_STATE_MISMATCH: authoritative state ` +
+          `${authoritativeState.current_state} != requested ${fromState}`,
+        code: 'CANDIDATE_MANIFEST_STATE_MISMATCH',
+        retry_allowed: true,
+        state_advanced: false,
+      };
+    }
+    const unresolvedHandoffFailures = await readUnresolvedHandoffValidationFailures(workItemDir);
+    if (unresolvedHandoffFailures.length > 0) {
+      return {
+        success: false,
+        error: 'HANDOFF_VALIDATION_UNRESOLVED',
+        code: 'HANDOFF_VALIDATION_UNRESOLVED',
+        state_advanced: false,
+        retry_allowed: true,
+        unresolved_handoff_validations: unresolvedHandoffFailures,
+        remediation:
+          'Produce the missing/corrected handoff and rerun sf_handoff(validate_all) with the same expectation before sealing the Candidate.',
+      };
+    }
+    const implementationTruth = await validateImplementationTruthBeforeSeal({
+      projectRoot: projectPath,
+      workItemId,
+    });
+    if (!implementationTruth.valid) {
+      return {
+        success: false,
+        error: 'CANDIDATE_IMPLEMENTATION_TRUTH_INVALID',
+        code: 'CANDIDATE_IMPLEMENTATION_TRUTH_INVALID',
+        state_advanced: false,
+        retry_allowed: true,
+        blocking_issues: implementationTruth.errors,
+        input_files: implementationTruth.input_files,
+        remediation:
+          'Regenerate Candidate basis, Design and Tasks from Runtime-owned implementation_baseline.json, bind every architecture/design/tasks document to its snapshot_id, and retry candidate_preparing -> candidate_prepared.',
+      };
+    }
+    try {
+      candidateManifestMaterialization = await materializeCandidateManifestBeforePreparedTransition(
+        projectPath,
+        workItemId
+      );
+      projectSpecRepairPlanFreezeBinding = await bindProjectSpecRepairPlanToFrozenCandidateManifest(
+        {
+          workItemDir,
+          workItemId,
+          frozenManifestPath: candidateManifestMaterialization.manifest_path,
+          previousManifestText: candidateManifestMaterialization.previous_manifest_text,
+        }
+      );
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      if (candidateManifestMaterialization) {
+        try {
+          await restoreCandidateManifest(
+            candidateManifestMaterialization.manifest_path,
+            candidateManifestMaterialization.previous_manifest_text
+          );
+        } catch (rollbackError) {
+          const rollbackMessage =
+            rollbackError instanceof Error ? rollbackError.message : String(rollbackError);
+          return {
+            success: false,
+            error:
+              `CANDIDATE_FREEZE_ROLLBACK_FAILED: ${rollbackMessage}; ` +
+              `original freeze error: ${message}`,
+            code: 'CANDIDATE_FREEZE_ROLLBACK_FAILED',
+            hard_stop: true,
+            state_advanced: false,
+          };
+        }
+      }
+      return {
+        success: false,
+        error: message,
+        code: 'CANDIDATE_MANIFEST_MATERIALIZATION_FAILED',
+        retry_allowed: true,
+        state_advanced: false,
+        candidate_manifest_rolled_back: candidateManifestMaterialization ? true : undefined,
+        remediation:
+          'Fix the missing/conflicting controlled Candidate artifacts or repair-plan binding and retry candidate_preparing -> candidate_prepared. Do not hand-edit candidate_manifest.json or project_spec_repair_plan.json.',
+      };
+    }
+  }
+  if (fromState === 'implementation_running' && toState === 'implementation_done') {
+    const auditPath = join(workItemDir, 'changed_files_audit.md');
+    let auditText = '';
+    try {
+      auditText = await readFile(auditPath, 'utf-8');
+    } catch {
+      return {
+        success: false,
+        error:
+          'IMPLEMENTATION_AUDIT_NOT_PASSED: changed_files_audit.md is required before implementation_done',
+        code: 'IMPLEMENTATION_AUDIT_NOT_PASSED',
+        retry_allowed: true,
+      };
+    }
+    const auditCheck = parseChangedFilesAuditPass(auditText, workItemId);
+    if (!auditCheck.passed) {
+      return {
+        success: false,
+        error:
+          'IMPLEMENTATION_AUDIT_NOT_PASSED: ' +
+          (auditCheck.reason ?? 'changed_files_audit is not clean'),
+        code: 'IMPLEMENTATION_AUDIT_NOT_PASSED',
+        retry_allowed: true,
+      };
+    }
+  }
+  const finalWorkflowType = effectiveWorkflowType;
+
+  let transitionResult;
+  try {
+    transitionResult = await transitionWithEvidence({
+      deps,
+      context,
+      projectRoot: projectPath,
+      workItemId,
+      workItemDir,
+      fromState,
+      toState,
+      workflowType: finalWorkflowType,
+      actorRole: typeof context?.agent === 'string' ? context.agent : 'system',
+      evidence: (args['evidence'] as string) ?? '',
+      transitionContext: {
+        source: 'sf_state_transition',
+        ...((args['transition_context'] as Record<string, unknown> | undefined) ?? {}),
+      },
+    });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    if (implementationBaselineMaterialization) {
+      try {
+        await restoreImplementationBaseline(implementationBaselineMaterialization);
+      } catch (rollbackError) {
+        return {
+          success: false,
+          error: `IMPLEMENTATION_BASELINE_ROLLBACK_FAILED: ${
+            rollbackError instanceof Error ? rollbackError.message : String(rollbackError)
+          }; original transition error: ${message}`,
+          code: 'IMPLEMENTATION_BASELINE_ROLLBACK_FAILED',
+          hard_stop: true,
+          state_advanced: false,
+        };
+      }
+    }
+    if (candidateManifestMaterialization) {
+      const rollbackErrors: string[] = [];
+      try {
+        await restoreCandidateManifest(
+          candidateManifestMaterialization.manifest_path,
+          candidateManifestMaterialization.previous_manifest_text
+        );
+      } catch (rollbackError) {
+        rollbackErrors.push(
+          `candidate_manifest=${rollbackError instanceof Error ? rollbackError.message : String(rollbackError)}`
+        );
+      }
+      if (projectSpecRepairPlanFreezeBinding) {
+        try {
+          await restoreRepairPlanBinding(
+            projectSpecRepairPlanFreezeBinding.path,
+            projectSpecRepairPlanFreezeBinding.previous_text
+          );
+        } catch (rollbackError) {
+          rollbackErrors.push(
+            `project_spec_repair_plan=${rollbackError instanceof Error ? rollbackError.message : String(rollbackError)}`
+          );
+        }
+      }
+      if (rollbackErrors.length > 0) {
+        return {
+          success: false,
+          error:
+            `CANDIDATE_FREEZE_ROLLBACK_FAILED: ${rollbackErrors.join('; ')}; ` +
+            `original transition error: ${message}`,
+          code: 'CANDIDATE_FREEZE_ROLLBACK_FAILED',
+          hard_stop: true,
+          state_advanced: false,
+        };
+      }
+      return {
+        success: false,
+        error: message,
+        candidate_manifest_rolled_back: true,
+        repair_plan_rolled_back: projectSpecRepairPlanFreezeBinding ? true : undefined,
+        state_advanced: false,
+      };
+    }
+    return { success: false, error: message };
+  }
+
+  const publicCandidateManifestMaterialization = candidateManifestMaterialization
+    ? {
+        manifest_path: candidateManifestMaterialization.manifest_path,
+        entry_count: candidateManifestMaterialization.entry_count,
+        required_candidate_types: candidateManifestMaterialization.required_candidate_types,
+        ignored_candidate_paths: candidateManifestMaterialization.ignored_candidate_paths,
+        repair_plan_binding_updated: projectSpecRepairPlanFreezeBinding !== undefined,
+      }
+    : undefined;
+
+  return {
+    success: true,
+    work_item_id: workItemId,
+    allocated_work_item_id: isCreateTransition && !args['work_item_id'] ? workItemId : undefined,
+    workflow_type: finalWorkflowType,
+    workflow_path: inheritedWorkflowPath,
+    auto_work_item_json: isCreateTransition ? true : undefined,
+    state_authority: 'StateManager',
+    workflow_engine_transition_full_used: false,
+    candidate_manifest_materialization: publicCandidateManifestMaterialization,
+    implementation_baseline_materialization: implementationBaselineMaterialization
+      ? {
+          path: implementationBaselineMaterialization.path,
+          snapshot_id: implementationBaselineMaterialization.baseline.snapshot_id,
+          planned_code_paths: implementationBaselineMaterialization.baseline.planned_code_paths,
+          current_file_count: implementationBaselineMaterialization.baseline.current_file_count,
+          all_planned_paths_missing:
+            implementationBaselineMaterialization.baseline.all_planned_paths_missing,
+        }
+      : undefined,
+    transition_result: transitionResult.transition_result,
+  };
+});

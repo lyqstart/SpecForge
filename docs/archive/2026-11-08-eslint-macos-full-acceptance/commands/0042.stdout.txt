@@ -1,0 +1,189 @@
+
+ RUN  v1.6.1 D:/code/SpecForge/.lint-review-a01/packages/permission-engine
+
+ ✓ tests/property/plugin-permission-gate-property-28.test.ts  (24 tests) 55ms
+ ✓ tests/property/remote-access-guard-property-26.test.ts  (23 tests) 63ms
+stdout | tests/property/performance-validation-property.test.ts > Performance Validation: Permission Engine > 6.3.1: Permission Decision Latency > permission decision latency is consistent across different request types
+Permission Decision Latency Statistics:
+  Average: 0.026ms
+  Min: 0.007ms
+  Max: 1.032ms
+  P95: 0.041ms
+
+stdout | tests/property/performance-validation-property.test.ts > Performance Validation: Permission Engine > 6.3.2: Event Logging Overhead > event logging adds minimal overhead
+Event Logging Overhead Statistics:
+  Average: 0.045ms
+  Max: 1.653ms
+  P95: 0.120ms
+
+stdout | tests/property/performance-validation-property.test.ts > Performance Validation: Permission Engine > 6.3.2: Event Logging Overhead > logging overhead scales appropriately with payload size
+Logging overhead comparison:
+  Small payload: 0.054ms
+  Large payload: 0.018ms
+
+stdout | tests/property/performance-validation-property.test.ts > Performance Validation: Permission Engine > 6.3.2: Event Logging Overhead > batch event logging preserves every event within the per-event budget
+Batch vs Individual Logging:
+  Individual (50 ops): 1.077ms
+  Batch (50 ops): 0.846ms
+
+stdout | tests/property/performance-validation-property.test.ts > Performance Validation: Permission Engine > 6.3.3: Rule Loading and Caching Performance > rule evaluation cache provides significant speedup for repeated requests
+Cache Performance:
+  First evaluation (cache miss): 0.040ms
+  Average cached evaluation: 0.001ms
+  Max cached evaluation: 0.004ms
+  Speedup factor: 51.1x
+
+stdout | tests/property/performance-validation-property.test.ts > Performance Validation: Permission Engine > 6.3.3: Rule Loading and Caching Performance > cache handles many different request patterns efficiently
+Multiple Pattern Cache Performance:
+  Unique patterns: 100
+  Total evaluations: 500
+  Average time: 0.001ms
+  Max time: 0.004ms
+
+stdout | tests/property/performance-validation-property.test.ts > Performance Validation: Permission Engine > 6.3.3: Rule Loading and Caching Performance > cache can be cleared and rebuilt efficiently
+Cache Rebuild Performance:
+  Clear time: 0.020ms
+  Repopulate time (50 requests): 0.174ms
+
+stdout | tests/property/performance-validation-property.test.ts > Performance Validation: Permission Engine > 6.3.4: End-to-End Performance with Full Pipeline > full permission pipeline performs well under load
+Full Pipeline Performance:
+  Average: 0.039ms
+  Max: 0.437ms
+  P95: 0.085ms
+
+stdout | tests/property/performance-validation-property.test.ts > Performance Validation: Permission Engine > 6.3.4: End-to-End Performance with Full Pipeline > performance is consistent regardless of auth result
+Auth Result Performance:
+  Valid token avg: 0.021ms
+  Invalid token avg: 0.040ms
+
+ ✓ tests/property/performance-validation-property.test.ts  (12 tests) 41ms
+ ✓ tests/property/bearer-token-enforcement-property-16.test.ts  (12 tests) 4393ms
+ ❯ tests/property/permission-decision-traceability-property-10.test.ts  (6 tests | 6 failed) 8ms
+   ❯ tests/property/permission-decision-traceability-property-10.test.ts > Property 10: Permission Decision Traceability > 10.1: All permission decisions produce events with six required fields > for random (actor, action, resource) tuples, events contain all six required fields
+     → capturedEvents is not defined
+     → capturedEvents is not defined
+   ❯ tests/property/permission-decision-traceability-property-10.test.ts > Property 10: Permission Decision Traceability > 10.2: Each decision produces unique traceable events > each permission decision has unique eventId and timestamp
+     → capturedEvents is not defined
+     → capturedEvents is not defined
+   ❯ tests/property/permission-decision-traceability-property-10.test.ts > Property 10: Permission Decision Traceability > 10.3: Deny decisions are traceable to matched_rule and rule_layer > deny decisions contain correct matched_rule and rule_layer for traceability
+     → capturedEvents is not defined
+     → capturedEvents is not defined
+   ❯ tests/property/permission-decision-traceability-property-10.test.ts > Property 10: Permission Decision Traceability > 10.4: Event logging includes projectId for multi-project traceability > events contain correct projectId for the decision context
+     → capturedEvents is not defined
+     → capturedEvents is not defined
+   ❯ tests/property/permission-decision-traceability-property-10.test.ts > Property 10: Permission Decision Traceability > 10.5: Events contain complete context for debugging > events include decision (allow/deny) for audit purposes
+     → capturedEvents is not defined
+     → capturedEvents is not defined
+   ❯ tests/property/permission-decision-traceability-property-10.test.ts > Property 10: Permission Decision Traceability > 10.6: Actor information is fully captured in events > events capture complete actor information including roles
+     → capturedEvents is not defined
+     → capturedEvents is not defined
+stdout | tests/integration/e2e-permission-flow.test.ts > End-to-End Permission Flow > Complete Permission Flow > should complete full permission flow: auth check -> permission check -> event logging
+[DaemonIntegration] Initialized successfully
+[DaemonIntegration] Cleaned up
+
+stdout | tests/integration/e2e-permission-flow.test.ts > End-to-End Permission Flow > Complete Permission Flow > should deny unauthorized request in full flow
+[DaemonIntegration] Initialized successfully
+[DaemonIntegration] Cleaned up
+
+stdout | tests/integration/e2e-permission-flow.test.ts > End-to-End Permission Flow > Complete Permission Flow > should deny request with invalid token in full flow
+[DaemonIntegration] Initialized successfully
+[DaemonIntegration] Cleaned up
+
+stdout | tests/integration/e2e-permission-flow.test.ts > End-to-End Permission Flow > Three-Layer Permission Model Integration > should enforce hard rules in the complete flow
+[DaemonIntegration] Initialized successfully
+[DaemonIntegration] Cleaned up
+
+stdout | tests/integration/e2e-permission-flow.test.ts > End-to-End Permission Flow > Three-Layer Permission Model Integration > should allow non-hard-rule actions in the complete flow
+[DaemonIntegration] Initialized successfully
+[DaemonIntegration] Cleaned up
+
+stdout | tests/integration/e2e-permission-flow.test.ts > End-to-End Permission Flow > Request Context Propagation > should propagate client IP to permission context
+[DaemonIntegration] Initialized successfully
+[DaemonIntegration] Cleaned up
+
+stdout | tests/integration/e2e-permission-flow.test.ts > End-to-End Permission Flow > Request Context Propagation > should propagate request method and path to event logging
+[DaemonIntegration] Initialized successfully
+[DaemonIntegration] Cleaned up
+
+stdout | tests/integration/e2e-permission-flow.test.ts > End-to-End Permission Flow > Integration Result Structure > should return complete IntegrationResult structure
+[DaemonIntegration] Initialized successfully
+[DaemonIntegration] Cleaned up
+
+stdout | tests/integration/e2e-permission-flow.test.ts > End-to-End Permission Flow > Error Handling in Flow > should handle missing Permission Engine gracefully
+[DaemonIntegration] Initialized successfully
+[DaemonIntegration] Cleaned up
+[DaemonIntegration] Cleaned up
+
+stdout | tests/integration/e2e-permission-flow.test.ts > End-to-End Permission Flow > Error Handling in Flow > should handle uninitialized integration gracefully
+[DaemonIntegration] Cleaned up
+
+stdout | tests/integration/e2e-permission-flow.test.ts > Multi-Request Permission Flow > Sequential Requests > should handle multiple sequential requests with consistent results
+[DaemonIntegration] Initialized successfully
+[DaemonIntegration] Cleaned up
+
+stdout | tests/integration/e2e-permission-flow.test.ts > Multi-Request Permission Flow > Sequential Requests > should maintain state across multiple requests
+[DaemonIntegration] Initialized successfully
+[DaemonIntegration] Cleaned up
+
+ ✓ tests/integration/e2e-permission-flow.test.ts  (13 tests) 11ms
+stdout | tests/integration/e2e-permission-flow.test.ts > Multi-Request Permission Flow > Concurrent Requests > should handle concurrent requests without race conditions
+[DaemonIntegration] Initialized successfully
+[DaemonIntegration] Cleaned up
+
+ ✓ tests/integration/crash-recovery.test.ts  (25 tests) 21ms
+ ✓ tests/unit/bearer-token-validator.test.ts  (33 tests) 10ms
+ ✓ tests/unit/user-binding.test.ts  (31 tests) 180ms
+ ✓ tests/unit/two-step-confirmation.test.ts  (22 tests) 165ms
+ ✓ tests/unit/event-logging.test.ts  (13 tests) 14ms
+ ✓ tests/property/hard-rule-immutability-simple.test.ts  (6 tests) 10ms
+ ✓ tests/unit/plugin-permission-validator.test.ts  (24 tests) 17ms
+ ✓ tests/unit/permission-engine.test.ts  (34 tests) 12ms
+ ❯ tests/integration/remote-access-integration.test.ts  (15 tests | 15 failed) 11ms
+   ❯ tests/integration/remote-access-integration.test.ts > Remote Access Integration > API Key Manager Integration > should create and validate API keys
+     → validApiKey is not defined
+   ❯ tests/integration/remote-access-integration.test.ts > Remote Access Integration > API Key Manager Integration > should enforce IP whitelist
+     → validApiKey is not defined
+   ❯ tests/integration/remote-access-integration.test.ts > Remote Access Integration > API Key Manager Integration > should handle CIDR notation
+     → validApiKey is not defined
+   ❯ tests/integration/remote-access-integration.test.ts > Remote Access Integration > Two-Step Confirmation Integration > should require confirmation for sensitive operations
+     → validApiKey is not defined
+   ❯ tests/integration/remote-access-integration.test.ts > Remote Access Integration > Two-Step Confirmation Integration > should not require confirmation for non-sensitive operations
+     → validApiKey is not defined
+   ❯ tests/integration/remote-access-integration.test.ts > Remote Access Integration > Two-Step Confirmation Integration > should create and track pending confirmations
+     → validApiKey is not defined
+   ❯ tests/integration/remote-access-integration.test.ts > Remote Access Integration > Two-Step Confirmation Integration > should track multiple pending confirmations
+     → validApiKey is not defined
+   ❯ tests/integration/remote-access-integration.test.ts > Remote Access Integration > Remote Access Guard > should enable and disable remote mode
+     → validApiKey is not defined
+   ❯ tests/integration/remote-access-integration.test.ts > Remote Access Integration > Remote Access Guard > should validate requests when enabled
+     → validApiKey is not defined
+   ❯ tests/integration/remote-access-integration.test.ts > Remote Access Integration > Complete Remote Access Flow > should complete flow: create key -> validate -> check sensitive operation
+     → validApiKey is not defined
+   ❯ tests/integration/remote-access-integration.test.ts > Remote Access Integration > Complete Remote Access Flow > should fail at IP check
+     → validApiKey is not defined
+   ❯ tests/integration/remote-access-integration.test.ts > Remote Access Integration > Complete Remote Access Flow > should require confirmation for sensitive operations
+     → validApiKey is not defined
+   ❯ tests/integration/remote-access-integration.test.ts > Remote Access Integration > Remote Mode Configuration > should respect enabled flag
+     → validApiKey is not defined
+   ❯ tests/integration/remote-access-integration.test.ts > Remote Access Integration > IP Handling Edge Cases > should handle exact IP match
+     → validApiKey is not defined
+   ❯ tests/integration/remote-access-integration.test.ts > Remote Access Integration > IP Handling Edge Cases > should handle localhost
+     → validApiKey is not defined
+ ✓ tests/unit/plugin-loader-integration.test.ts  (17 tests) 11ms
+ ✓ tests/unit/api-key-manager.test.ts  (19 tests) 7ms
+ ✓ tests/unit/static-api-checker.test.ts  (16 tests) 8ms
+stdout | tests/unit/daemon-integration.test.ts > DaemonIntegration > cleanup > should clean up resources
+[DaemonIntegration] Cleaned up
+
+ ❯ tests/unit/daemon-integration.test.ts  (12 tests | 1 failed) 8ms
+   ❯ tests/unit/daemon-integration.test.ts > Integration flow > should initialize with daemon-core components
+     → mockEventBus is not defined
+ ✓ tests/unit/write-decision.test.ts  (12 tests) 4ms
+ ✓ tests/integration/plugin-loading-integration.test.ts  (6 tests) 5ms
+ ✓ tests/unit/unknown-permission-boundary.test.ts  (3 tests) 4ms
+
+ Test Files  3 failed | 19 passed (22)
+      Tests  22 failed | 356 passed (378)
+   Start at  15:59:02
+   Duration  16.04s (transform 467ms, setup 3ms, collect 3.69s, tests 5.06s, environment 3ms, prepare 3.45s)
+

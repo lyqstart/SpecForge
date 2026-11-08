@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/checkpoint-owner-repair.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "checkpoint-remaining-lint-and-macos-work",
+  "expected_writes": "project-status-and-evidence-only",
+  "started_utc": "2026-11-08T08:59:47.866Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\checkpoint-owner-repair.cjs",
+      "sha256": "4982bf5f9a90f7a8859058a7547a886d5af302b9a68dc90ed07b97bc579fbaa3",
+      "size": 2054,
+      "extension": ".cjs"
+    }
+  ]
+}

@@ -1,0 +1,3 @@
+const fs=require('node:fs'),path=require('node:path');
+const files=['scalar-json-boundary.test.ts','delay-timer-owner.test.ts'].map(name=>({file:'packages/workflow-runtime/tests/unit/'+name,content:fs.readFileSync(path.join(__dirname,'payload',name),'utf8')}));
+fs.writeFileSync(path.join(__dirname,'scalar-json-timer-regressions.json'),JSON.stringify({id:'scalar-json-timer-regressions',reason:'Actual opaque-coercion and early timer-untracking defects; real regression paths without provider/model calls.',required_verification:'New actual Vitest cases plus all owner suites and lint.',files},null,2)+'\n',{flag:'wx'});

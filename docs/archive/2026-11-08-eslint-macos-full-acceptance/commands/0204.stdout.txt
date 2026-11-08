@@ -1,0 +1,12 @@
+{"leg":"toolchain","owner":"version-unification","exit":0}
+{"leg":"toolchain","owner":"configuration","exit":0}
+{"leg":"toolchain","owner":"service-management","exit":0}
+{"leg":"toolchain","owner":"host-profile","exit":0}
+{"leg":"toolchain","owner":"observability","exit":0}
+{"leg":"toolchain","owner":"permission-engine","exit":0}
+{"leg":"toolchain","owner":"opencode-adapter","exit":0}
+{"leg":"toolchain","owner":"scope-gate","exit":0}
+{"leg":"toolchain","owner":"workflow-runtime","exit":0}
+{"leg":"toolchain","owner":"cli","exit":0}
+{"leg":"toolchain","owner":"daemon-core","exit":0}
+{"leg":"toolchain","owner":"root","exit":1}

@@ -1,0 +1,19 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "git",
+  "args": [
+    "-c",
+    "core.longpaths=true",
+    "update-index",
+    "--really-refresh",
+    "--",
+    "bun.lock"
+  ],
+  "cwd": "D:\\code\\SpecForge\\.lint-signal-a01",
+  "purpose": "refresh-owned-lock-index-after-eol-attribute-commit",
+  "expected_writes": "Only refresh owned private bun.lock stat after LF attr adoption; physical bytes already verified3f, no source rewrite",
+  "started_utc": "2026-11-08T12:56:59.018Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": []
+}

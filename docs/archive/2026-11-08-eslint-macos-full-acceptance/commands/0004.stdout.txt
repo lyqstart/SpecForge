@@ -1,0 +1,1 @@
+{"baseline_lint_exit":1,"architecture":"PARTIALLY_SUPPORTED","repair_contract":"FROZEN","original_business_mutations":0}

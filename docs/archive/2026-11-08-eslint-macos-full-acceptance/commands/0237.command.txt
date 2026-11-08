@@ -1,0 +1,23 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/run-final-linux.cjs",
+    "/mnt/d/code/SpecForge/docs/archive/2026-11-08-eslint-macos-full-acceptance/verify-linux-daemon-systemd.mjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "final-current-daemon-actual-linux-systemd",
+  "expected_writes": "Official current1.0.25 Daemon unique owned user systemd install/start/health/restart/stop/uninstall; no business WI",
+  "started_utc": "2026-11-08T12:31:46.407Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\run-final-linux.cjs",
+      "sha256": "45ec6be4a02014a753e13df6ffa601e47a5a38059d4219535ffdc55b4481a037",
+      "size": 1195,
+      "extension": ".cjs"
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "git",
+  "args": [
+    "-c",
+    "core.longpaths=true",
+    "restore",
+    "--source=HEAD",
+    "--worktree",
+    "--",
+    "docs/archive/2026-11-07-verification-production/consumer-source-review/current/docs/archive/2026-11-07-verification-production/evidence-guidance-baseline/setup/userlevel-opencode/skills/superpowers-verification-before-completion/SKILL.md"
+  ],
+  "cwd": "D:\\code\\SpecForge\\.lint-platform-a01",
+  "purpose": "restore-platform-worktree-checkout-omission",
+  "expected_writes": "Restore exactly tracked missing archive file from HEAD with longpaths; no archive content modification",
+  "started_utc": "2026-11-08T12:05:38.149Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": []
+}

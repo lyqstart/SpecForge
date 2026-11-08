@@ -1,0 +1,1 @@
+{"id":"authoritative-reader-contract","files":2,"status":"APPLIED_REQUIRES_VERIFICATION"}

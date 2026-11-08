@@ -1,0 +1,197 @@
+
+ RUN  v1.6.1 D:/code/SpecForge/.lint-review-a01/packages/workflow-runtime
+
+ ✓ tests/unit/evidence-guard-v11.test.ts  (107 tests) 518ms
+ ✓ tests/unit/WorkflowEngine.test.ts  (45 tests) 91ms
+ ✓ tests/integration/workflow-e2e-property-29.test.ts  (15 tests) 70ms
+ ✓ tests/property/error-handling-property.test.ts  (34 tests) 393ms
+ ✓ tests/property/workflow-property-6.event-ordering.test.ts  (16 tests) 90ms
+ ✓ tests/unit/AgentWorkflowEngine.evidence-guard.test.ts  (18 tests) 121ms
+ ✓ tests/engine/WorkflowInstance.test.ts  (54 tests) 140ms
+ ✓ tests/performance/workflow-performance.test.ts  (13 tests) 14ms
+ ✓ tests/acceptance.test.ts  (15 tests) 22ms
+ ✓ tests/unit/retry.test.ts  (39 tests) 1450ms
+ ✓ tests/property/composite-gate-parallel.property.test.ts  (14 tests) 196ms
+ ✓ tests/property/composite-gate-property-3.sequential-execution.test.ts  (13 tests) 43ms
+ ✓ tests/property/composite-gate-property-4.parallel-execution.test.ts  (11 tests) 152ms
+ ✓ tests/unit/GateRunnerErrorHandling.test.ts  (31 tests) 32ms
+ ✓ tests/unit/error-handler.test.ts  (46 tests) 134ms
+ ✓ tests/unit/CompositeGateResultAggregation.test.ts  (16 tests) 9ms
+ ✓ tests/integration/event-integration.test.ts  (23 tests) 13ms
+ ✓ tests/unit/WorkflowDefinitionLoader.test.ts  (29 tests) 39ms
+ ✓ tests/property/composite-gate-property-5.fail-fast-parallel.test.ts  (14 tests) 2726ms
+ ✓ tests/v11/unit/path-policy-permissions.test.ts  (54 tests) 10ms
+ ✓ tests/unit/WorkflowErrorHandling.test.ts  (37 tests) 5196ms
+ ✓ tests/property/fail-fast-parallel.property.test.ts  (14 tests) 47ms
+ ✓ tests/unit/GateRunner.test.ts  (27 tests) 21ms
+ ✓ tests/unit/engine.test.ts  (21 tests) 11ms
+ ✓ tests/unit/CompositeGateSerializer.test.ts  (28 tests) 8ms
+ ✓ tests/engine/WorkflowLoader.test.ts  (22 tests) 46ms
+ ✓ tests/unit/error-propagation.test.ts  (20 tests) 13ms
+ ✓ tests/property/workflow-property-1.state-machine-consistency.test.ts  (13 tests) 162ms
+ ✓ tests/event-filter.test.ts  (42 tests) 115ms
+ ✓ tests/property/gate-property-2.determinism.test.ts  (12 tests) 112ms
+ ❯ tests/event-subscription.test.ts  (20 tests | 20 failed) 15ms
+   ❯ tests/event-subscription.test.ts > EventSubscriptionManager > subscribe > should subscribe to event type and receive matching events
+     → createEventSubscriptionManager is not defined
+     → Cannot read properties of undefined (reading 'dispose')
+   ❯ tests/event-subscription.test.ts > EventSubscriptionManager > subscribe > should support wildcard patterns
+     → createEventSubscriptionManager is not defined
+     → Cannot read properties of undefined (reading 'dispose')
+   ❯ tests/event-subscription.test.ts > EventSubscriptionManager > subscribe > should handle multiple subscriptions to same event type
+     → createEventSubscriptionManager is not defined
+     → Cannot read properties of undefined (reading 'dispose')
+   ❯ tests/event-subscription.test.ts > EventSubscriptionManager > subscribe > should throw error for invalid event type
+     → createEventSubscriptionManager is not defined
+     → Cannot read properties of undefined (reading 'dispose')
+   ❯ tests/event-subscription.test.ts > EventSubscriptionManager > subscribe > should throw error for invalid handler
+     → createEventSubscriptionManager is not defined
+     → Cannot read properties of undefined (reading 'dispose')
+   ❯ tests/event-subscription.test.ts > EventSubscriptionManager > subscribe > should handle handler errors gracefully
+     → createEventSubscriptionManager is not defined
+     → Cannot read properties of undefined (reading 'dispose')
+   ❯ tests/event-subscription.test.ts > EventSubscriptionManager > unsubscribe > should unsubscribe and stop receiving events
+     → createEventSubscriptionManager is not defined
+     → Cannot read properties of undefined (reading 'dispose')
+   ❯ tests/event-subscription.test.ts > EventSubscriptionManager > unsubscribe > should handle unsubscribe of non-existent subscription
+     → createEventSubscriptionManager is not defined
+     → Cannot read properties of undefined (reading 'dispose')
+   ❯ tests/event-subscription.test.ts > EventSubscriptionManager > unsubscribe > should support unsubscribe via returned subscription object
+     → createEventSubscriptionManager is not defined
+     → Cannot read properties of undefined (reading 'dispose')
+   ❯ tests/event-subscription.test.ts > EventSubscriptionManager > getActiveSubscriptions > should return all active subscriptions
+     → createEventSubscriptionManager is not defined
+     → Cannot read properties of undefined (reading 'dispose')
+   ❯ tests/event-subscription.test.ts > EventSubscriptionManager > getActiveSubscriptions > should return empty array when no subscriptions
+     → createEventSubscriptionManager is not defined
+     → Cannot read properties of undefined (reading 'dispose')
+   ❯ tests/event-subscription.test.ts > EventSubscriptionManager > getActiveSubscriptions > should reflect subscription removal
+     → createEventSubscriptionManager is not defined
+     → Cannot read properties of undefined (reading 'dispose')
+   ❯ tests/event-subscription.test.ts > EventSubscriptionManager > dispose > should clean up all subscriptions
+     → createEventSubscriptionManager is not defined
+     → Cannot read properties of undefined (reading 'dispose')
+   ❯ tests/event-subscription.test.ts > EventSubscriptionManager > async handler support > should handle async event handlers
+     → createEventSubscriptionManager is not defined
+     → Cannot read properties of undefined (reading 'dispose')
+   ❯ tests/event-subscription.test.ts > EventSubscriptionManager > subscription lifecycle > should track subscription metadata correctly
+     → createEventSubscriptionManager is not defined
+     → Cannot read properties of undefined (reading 'dispose')
+   ❯ tests/event-subscription.test.ts > EventSubscriptionManager > subscription lifecycle > should generate unique subscription IDs
+     → createEventSubscriptionManager is not defined
+     → Cannot read properties of undefined (reading 'dispose')
+   ❯ tests/event-subscription.test.ts > EventSubscriptionManager > integration with Event Bus > should properly integrate with Event Bus lifecycle
+     → createEventSubscriptionManager is not defined
+     → Cannot read properties of undefined (reading 'dispose')
+   ❯ tests/event-subscription.test.ts > EventSubscriptionManager > integration with Event Bus > should handle Event Bus stop gracefully
+     → createEventSubscriptionManager is not defined
+     → Cannot read properties of undefined (reading 'dispose')
+   ❯ tests/event-subscription.test.ts > EventSubscriptionManager > resource cleanup (规则 D3 + T1) > should track all dynamically created subscriptions
+     → createEventSubscriptionManager is not defined
+     → Cannot read properties of undefined (reading 'dispose')
+   ❯ tests/event-subscription.test.ts > EventSubscriptionManager > resource cleanup (规则 D3 + T1) > should verify no resource leaks after test
+     → createEventSubscriptionManager is not defined
+     → Cannot read properties of undefined (reading 'dispose')
+ ✓ tests/unit/rbac/FileAuthorizationPolicy.test.ts  (37 tests) 7ms
+ ✓ tests/unit/WorkflowInstance.test.ts  (25 tests) 8ms
+ ✓ tests/unit/AgentWorkflowEngine.test.ts  (12 tests) 11ms
+ ❯ tests/integration/agent-runner.test.ts  (21 tests | 21 failed) 16ms
+   ❯ tests/integration/agent-runner.test.ts > AgentScheduler > Basic scheduling > should create scheduler with default config
+     → createAgentScheduler is not defined
+     → Cannot read properties of undefined (reading 'cancelAll')
+   ❯ tests/integration/agent-runner.test.ts > AgentScheduler > Basic scheduling > should create scheduler with custom config
+     → createAgentScheduler is not defined
+     → Cannot read properties of undefined (reading 'cancelAll')
+   ❯ tests/integration/agent-runner.test.ts > AgentScheduler > Basic scheduling > should schedule and execute agent
+     → createAgentScheduler is not defined
+     → Cannot read properties of undefined (reading 'cancelAll')
+   ❯ tests/integration/agent-runner.test.ts > AgentScheduler > Basic scheduling > should return error for failed agent
+     → createAgentScheduler is not defined
+     → Cannot read properties of undefined (reading 'cancelAll')
+   ❯ tests/integration/agent-runner.test.ts > AgentScheduler > Basic scheduling > should return error for error in agent
+     → createAgentScheduler is not defined
+     → Cannot read properties of undefined (reading 'cancelAll')
+   ❯ tests/integration/agent-runner.test.ts > AgentScheduler > Concurrency control > should limit concurrent agents
+     → createAgentScheduler is not defined
+     → Cannot read properties of undefined (reading 'cancelAll')
+   ❯ tests/integration/agent-runner.test.ts > AgentScheduler > Concurrency control > should process queue when capacity available
+     → createAgentScheduler is not defined
+     → Cannot read properties of undefined (reading 'cancelAll')
+   ❯ tests/integration/agent-runner.test.ts > AgentScheduler > Concurrency control > should track active agent count
+     → createAgentScheduler is not defined
+     → Cannot read properties of undefined (reading 'cancelAll')
+   ❯ tests/integration/agent-runner.test.ts > AgentScheduler > Cancellation > should cancel running agent
+     → createAgentScheduler is not defined
+     → Cannot read properties of undefined (reading 'cancelAll')
+   ❯ tests/integration/agent-runner.test.ts > AgentScheduler > Cancellation > should cancel all agents
+     → createAgentScheduler is not defined
+     → Cannot read properties of undefined (reading 'cancelAll')
+   ❯ tests/integration/agent-runner.test.ts > AgentScheduler > Statistics > should return correct stats
+     → createAgentScheduler is not defined
+     → Cannot read properties of undefined (reading 'cancelAll')
+   ❯ tests/integration/agent-runner.test.ts > WorkflowAgentRunner > Basic execution > should create workflow agent runner
+     → createAgentScheduler is not defined
+     → Cannot read properties of undefined (reading 'cancelAll')
+   ❯ tests/integration/agent-runner.test.ts > WorkflowAgentRunner > Basic execution > should run agent for state
+     → createAgentScheduler is not defined
+     → Cannot read properties of undefined (reading 'cancelAll')
+   ❯ tests/integration/agent-runner.test.ts > WorkflowAgentRunner > Agent role determination > should determine requirements role
+     → createAgentScheduler is not defined
+     → Cannot read properties of undefined (reading 'cancelAll')
+   ❯ tests/integration/agent-runner.test.ts > WorkflowAgentRunner > Agent role determination > should determine design role
+     → createAgentScheduler is not defined
+     → Cannot read properties of undefined (reading 'cancelAll')
+   ❯ tests/integration/agent-runner.test.ts > WorkflowAgentRunner > Agent role determination > should determine dev role
+     → createAgentScheduler is not defined
+     → Cannot read properties of undefined (reading 'cancelAll')
+   ❯ tests/integration/agent-runner.test.ts > WorkflowAgentRunner > Agent role determination > should determine reviewer role
+     → createAgentScheduler is not defined
+     → Cannot read properties of undefined (reading 'cancelAll')
+   ❯ tests/integration/agent-runner.test.ts > WorkflowAgentRunner > Agent role determination > should determine verifier role
+     → createAgentScheduler is not defined
+     → Cannot read properties of undefined (reading 'cancelAll')
+   ❯ tests/integration/agent-runner.test.ts > WorkflowAgentRunner > Agent role determination > should default to general role
+     → createAgentScheduler is not defined
+     → Cannot read properties of undefined (reading 'cancelAll')
+   ❯ tests/integration/agent-runner.test.ts > Agent Integration with WorkflowEngine > should integrate agent runner with workflow execution
+     → createAgentScheduler is not defined
+     → Cannot read properties of undefined (reading 'cancelAll')
+   ❯ tests/integration/agent-runner.test.ts > Agent Integration with WorkflowEngine > should handle agent failure in workflow context
+     → createAgentScheduler is not defined
+     → Cannot read properties of undefined (reading 'cancelAll')
+ ✓ tests/unit/EventPublisher.test.ts  (19 tests) 9ms
+ ✓ tests/unit/rbac/TransitionAuthorizer.test.ts  (28 tests) 6ms
+ ✓ tests/unit/CompositeGateCancellation.test.ts  (9 tests) 67ms
+ ✓ tests/unit/GateResult.test.ts  (28 tests) 6ms
+ ✓ tests/integration/event-publisher.test.ts  (20 tests) 9ms
+ ✓ tests/unit/GateDefinition.test.ts  (17 tests) 6ms
+ ✓ tests/v11/e2e/v11-code-only-filesystem-e2e.test.ts  (8 tests) 79ms
+ ✓ tests/unit/rbac/RBACEngine-RoundB.test.ts  (24 tests) 9ms
+ ✓ tests/unit/BasicGates.test.ts  (28 tests) 6ms
+ ✓ tests/v11/unit/path-policy.test.ts  (30 tests) 6ms
+ ✓ tests/unit/AgentGateRunner.test.ts  (11 tests) 160ms
+ ✓ tests/v11/unit/close-gate.test.ts  (11 tests) 6ms
+ ✓ tests/property/framework-verification.test.ts  (15 tests) 19ms
+ ✓ tests/v11/unit/path-service.test.ts  (39 tests) 7ms
+ ✓ tests/unit/rbac/seal-transitions.test.ts  (19 tests) 6ms
+ ✓ tests/unit/rbac/AuthorizationAuditLogger.test.ts  (12 tests) 6ms
+ ✓ tests/unit/rbac/ProtectedFileMatcher.test.ts  (25 tests) 5ms
+ ✓ tests/unit/rbac/PrincipalResolver.test.ts  (18 tests) 4ms
+ ✓ tests/unit/rbac/RBACEngine.test.ts  (13 tests) 3ms
+ ✓ tests/unit/current-definition-schema-boundary.test.ts  (8 tests) 21ms
+ ✓ tests/v11/property/path-validation.property.test.ts  (6 tests) 15ms
+ ✓ tests/v11/unit/json-parser.test.ts  (14 tests) 5ms
+ ✓ tests/unit/work-item-artifact-authority.test.ts  (3 tests) 29ms
+ ✓ tests/v11/property/parsers.property.test.ts  (2 tests) 17ms
+ ✓ tests/unit/promise-from-sync-contract.test.ts  (4 tests) 5ms
+ ✓ tests/unit/current-workflow-engine-owner.test.ts  (2 tests) 13ms
+ ✓ tests/unit/user-decision-schema-boundary.test.ts  (2 tests) 15ms
+ ✓ tests/unit/persistence-owner-boundary.test.ts  (3 tests) 4ms
+ ✓ tests/unit/rbac/state-advancement-subjects.test.ts  (2 tests) 2ms
+ ✓ tests/unit/current-release-builtin-workflow.test.ts  (1 test) 4ms
+
+ Test Files  2 failed | 63 passed (65)
+      Tests  41 failed | 1338 passed (1379)
+   Start at  16:21:08
+   Duration  44.05s (transform 1.25s, setup 761ms, collect 9.28s, tests 12.60s, environment 10ms, prepare 9.98s)
+

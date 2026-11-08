@@ -1,0 +1,20 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "git",
+  "args": [
+    "-c",
+    "core.longpaths=true",
+    "-c",
+    "core.safecrlf=false",
+    "add",
+    "--",
+    ".github/workflows/code-quality.yml"
+  ],
+  "cwd": "D:\\code\\SpecForge\\.lint-review-a01",
+  "purpose": "stage-only-supported-ci-context-fix",
+  "expected_writes": "private candidate index for one workflow",
+  "started_utc": "2026-11-08T11:22:09.488Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": []
+}

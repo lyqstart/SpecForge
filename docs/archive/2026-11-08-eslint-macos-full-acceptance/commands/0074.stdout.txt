@@ -1,0 +1,12 @@
+
+ RUN  v1.6.1 D:/code/SpecForge/.lint-review-a01/packages/workflow-runtime
+
+ ✓ tests/unit/retry.test.ts  (39 tests) 1417ms
+ ✓ tests/unit/CompositeGateCancellation.test.ts  (9 tests) 60ms
+ ✓ tests/unit/production-lint-boundaries.test.ts  (4 tests) 7ms
+
+ Test Files  3 passed (3)
+      Tests  52 passed (52)
+   Start at  16:50:27
+   Duration  3.28s (transform 219ms, setup 70ms, collect 506ms, tests 1.48s, environment 1ms, prepare 561ms)
+

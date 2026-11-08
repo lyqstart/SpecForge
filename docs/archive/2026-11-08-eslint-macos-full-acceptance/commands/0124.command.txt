@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/repair-final-governance-consumers.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "final-governance-consumer-type-closure",
+  "expected_writes": "private governance sources and immutable plans",
+  "started_utc": "2026-11-08T10:28:19.886Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\repair-final-governance-consumers.cjs",
+      "sha256": "31c684d42068e13212454cfa07564eb9dd136bcf2fa8e9cd40387ab32dc65cd9",
+      "size": 8498,
+      "extension": ".cjs"
+    }
+  ]
+}

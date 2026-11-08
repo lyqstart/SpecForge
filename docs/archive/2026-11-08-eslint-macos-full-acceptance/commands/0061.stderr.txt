@@ -1,0 +1,1 @@
+$ vitest run tests/unit/static-permission-logger-owner.test.ts "--maxWorkers=1" "--minWorkers=1"

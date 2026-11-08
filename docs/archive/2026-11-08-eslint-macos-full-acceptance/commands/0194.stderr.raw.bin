@@ -1,0 +1,1 @@
+$ vitest run tests/current-crossplatform-ci-contract.test.ts "--maxWorkers=1" "--minWorkers=1"

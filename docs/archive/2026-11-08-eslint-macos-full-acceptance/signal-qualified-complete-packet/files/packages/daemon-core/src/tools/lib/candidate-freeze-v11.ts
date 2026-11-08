@@ -1,0 +1,22 @@
+/**
+ * Candidate freeze policy.
+ *
+ * StateManager is the state authority. Callers must obtain the authoritative
+ * state first and pass it here; work_item.json is metadata and is not a valid
+ * source for this decision.
+ */
+
+export const CANDIDATE_MUTABLE_STATES = new Set(['candidate_preparing', 'gates_failed']);
+
+export function isCandidateFrozenState(state: string | null | undefined): boolean {
+  return typeof state === 'string' && state.length > 0 && !CANDIDATE_MUTABLE_STATES.has(state);
+}
+
+export function isCandidateGovernancePath(targetPath: string): boolean {
+  const normalized = targetPath.replace(/\\/g, '/').replace(/^\.\//, '');
+  return (
+    /(?:^|\/)candidates\//.test(normalized) ||
+    /(?:^|\/)candidate_manifest\.json$/.test(normalized) ||
+    /(?:^|\/)gate_summary\.md$/.test(normalized)
+  );
+}

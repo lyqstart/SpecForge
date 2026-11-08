@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/preserve-original-and-read-current-state.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "verify-original-delivery-and-read-current-closed-state",
+  "expected_writes": "Specific original5 code9 canonical hashes/main plus authenticated read-only StateManager replay; no original app/model/WI transition",
+  "started_utc": "2026-11-08T13:31:34.596Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\preserve-original-and-read-current-state.cjs",
+      "sha256": "b798db943e05720edfdc71eb58fe0acdc6c8215dc68e958c10c57f21ad72493e",
+      "size": 3488,
+      "extension": ".cjs"
+    }
+  ]
+}

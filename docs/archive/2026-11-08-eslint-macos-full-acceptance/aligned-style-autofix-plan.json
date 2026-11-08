@@ -1,0 +1,464 @@
+{
+  "utc": "2026-11-08T08:43:58.177Z",
+  "source": "D:\\code\\SpecForge\\.lint-review-a01",
+  "stage": "REPAIR_NOT_FINAL_PASS",
+  "semantics": "ESLint own fixes planned in memory for all packages before writes; import reorder/type/const fixes require diff/build/regressions, not claimed pure formatting.",
+  "members": [
+    {
+      "file": "packages/permission-engine/src/hard-rules.ts",
+      "before_sha256": "448b519312d8139e9fd6ec6784ed8f3cd354c48444542552fff10c99f02c5eab",
+      "after_sha256": "5386e315a34ddeb3cc009b6a6d73ec87859521fcb60aa2d581d5b738e96af8dc"
+    },
+    {
+      "file": "packages/permission-engine/src/services/plugin-loader-integration.ts",
+      "before_sha256": "38311d37be4a04b3f8cbe73a048965850e89f29a8e0fa3a9ffd11a127ae92e23",
+      "after_sha256": "72c98f361ba42381ff88c542f12ed0fa0f128517df2fddfd0d5349ba7abd8957"
+    },
+    {
+      "file": "packages/permission-engine/tests/unit/static-permission-logger-owner.test.ts",
+      "before_sha256": "f311e449b7e1c8c65b52329e1a0ef06ed787e10a432825761f0820ef5a7d1c73",
+      "after_sha256": "1c1732674d846f630aa3fcd2a0579e4646815ae817b4a40c4770ea02a5f8dde0"
+    },
+    {
+      "file": "packages/permission-engine/tests/unit/unknown-permission-boundary.test.ts",
+      "before_sha256": "513602123feb6dbb682aeab8de3f97751784b176a755d018dedde2dcb041f62f",
+      "after_sha256": "c81faeb5995fa3e22883c19bae821841de0e240bd9ee0865bafb9e4a965e96cb"
+    },
+    {
+      "file": "packages/opencode-adapter/src/OpenCodeAdapter.ts",
+      "before_sha256": "59fdf65394db44c8f18d6eb76d396b2966a587293d80566181ea5915ba83e5f5",
+      "after_sha256": "2657a7f84fa28552cf54bef00e118ce4950e82df4294ff8e5ae3e0308d18da72"
+    },
+    {
+      "file": "packages/opencode-adapter/src/configuration.ts",
+      "before_sha256": "3637eb4caf88ea201c2dbcc8d0e0665a43221e80216e9b40b5588cc618d84922",
+      "after_sha256": "3c5974b8bf31ce68271346cecc4fc0c1892206d61156ac3e16011d262be4b767"
+    },
+    {
+      "file": "packages/opencode-adapter/src/errors/ErrorClassifier.ts",
+      "before_sha256": "5dd1064650f4da708341649902ae9366c707e3807f8fcdf42e6ee3a54dea5ffb",
+      "after_sha256": "9922c0b97fd31d25081b3388795b3a9c749e08ef33cf5a4e492edf40d0cbcbf7"
+    },
+    {
+      "file": "packages/workflow-runtime/src/WorkflowEngine.ts",
+      "before_sha256": "c24604f3e55143c8896932b0c074ac4777f426497152421c50b792c6aaffbad4",
+      "after_sha256": "743003b6701ebf902294bd222e12ca4dceef4ac5013c983744ed9aadfad864b7"
+    },
+    {
+      "file": "packages/workflow-runtime/src/WorkflowErrorHandling.ts",
+      "before_sha256": "ecece6f106f9307d9e2937034fb7352c346d3b42d396f747a1e28c6df10d980c",
+      "after_sha256": "72a146ebc5a0575da130aa883d17b12708daeed59395603b5ead298768976ab3"
+    },
+    {
+      "file": "packages/workflow-runtime/src/engine/AgentWorkflowEngine.ts",
+      "before_sha256": "43e99f6c59e0a8bfd64c20da904bfbb4e0764d39de3447ec51dfe543c6c09ae6",
+      "after_sha256": "e0b7b67d89ef589de8581c0d6c4e3e3f5474f355127813e78a3f5a966391d79b"
+    },
+    {
+      "file": "packages/workflow-runtime/src/engine/WorkflowLoader.ts",
+      "before_sha256": "38ad0174414dd510d1f7fbb29db78ee3b9015892a6fd73c9ca4e66980fa30e98",
+      "after_sha256": "9d48ac57aa2743ee061a0b5cd2e232f123f52e0c58c506e0f16423ea78d305f4"
+    },
+    {
+      "file": "packages/workflow-runtime/src/event-integration.ts",
+      "before_sha256": "5f8569b53ef3bf747670b4da1a7f4b162a9ddda7b94565ae028098d6028c9c69",
+      "after_sha256": "9d725a904c167f2f34465bca80dbff7d7635f2ecf9b2350d65f7a7d9de4904ce"
+    },
+    {
+      "file": "packages/workflow-runtime/src/gates/AgentGateRunner.ts",
+      "before_sha256": "e76a1d0a40e4c6072a81e9ad0486f24e8fa1d8c34d6845a86eb77845486525b3",
+      "after_sha256": "f22ac2f8980510ad40fd75ffa167fcfae16bacc891c158a1f6ca71cefcd38b97"
+    },
+    {
+      "file": "packages/workflow-runtime/src/loaders/WorkflowDefinitionLoader.ts",
+      "before_sha256": "2c9c273bc170d25f30a2e19419626e05fe4d2bd29723cc6a214dd8c29e34ed28",
+      "after_sha256": "8be7853cd349391d33205058e54c84f4648e94647b667d26a4b6549970360f9f"
+    },
+    {
+      "file": "packages/workflow-runtime/src/rbac/PrincipalResolver.ts",
+      "before_sha256": "0a35412ea4a53dda018137ad05bf234679a0b3cd2189db89d5b7dbe8ad0948d2",
+      "after_sha256": "967d6ec68cf66e5e8d64fec3f69d39ee79daf1b5628f597e4a6df25beaffefb8"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/acceptance.test.ts",
+      "before_sha256": "434b56080247a962cdf6d879065f1f4b118eabd7faa66638aa20494b86da9a6c",
+      "after_sha256": "d43dfa13275edaf86691f0e4c271f78e74835b94fdaae4c65d8689c843edd378"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/engine/WorkflowInstance.test.ts",
+      "before_sha256": "bcbd60f6d82d569fd709debd65ea5feb0ae2a99f39cf26817f6bd6c970851145",
+      "after_sha256": "832f5497ab1cc00a8d8ac444f370f5d086e3f5472d9ea5b0bec4b1a9efa066b0"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/integration/event-integration.test.ts",
+      "before_sha256": "3c4f28b62994f6095db28ff96cccf0ed0bdfe2bdd5b4f1c5666a5143835f6d3d",
+      "after_sha256": "0c31366963b163efa89230a4b50f574a9d34c6c4eb32b0a9d0a3555ef8f947ae"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/performance/workflow-performance.test.ts",
+      "before_sha256": "584e011f064dc0c3a73cc0a4b053c64596ff6e512fa99ad803ab107ff88664f8",
+      "after_sha256": "cdd8212362dd4225a2f73ca41ab5f9df4e967ba1902485d76e78bd6fae762743"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/property/workflow-property-1.state-machine-consistency.test.ts",
+      "before_sha256": "b6da4c0eb936837d07c7f0bc80b7b2ff102ba1d56e401b8d8fa52c3e159bdbf4",
+      "after_sha256": "94a7fe2605007eccfa9f1d1ff2d06d31adbdeed0c5ffedcdf85e8de7df888849"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/property/workflow-property-6.event-ordering.test.ts",
+      "before_sha256": "0a3c0acc3708b0d7f029915a4f1565885a3b78855d18308f74a9fecb45d80f73",
+      "after_sha256": "35f40be3f9903d699d0df3bfe29b0eb2ab4fcd816e063daa89a664b9d4d79fe8"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/setup.ts",
+      "before_sha256": "b07d6a5d7f0ba8ec93aeb10d6f2bb32f8006df42300052ccfb225675e98bc85d",
+      "after_sha256": "52d30c95ce6d834fca8ba535869723f8ff1909765c46df2577161b11136f8a43"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/AgentGateRunner.test.ts",
+      "before_sha256": "2326e6a6647f049c2ac0bd72af7dacba50a196295ab2e907ea208fe39dfb6307",
+      "after_sha256": "fe284c29ace12524a4ea7a2c7a11af06eed9ce9c5f6da5a389f7fcf1dce7bed0"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/AgentWorkflowEngine.evidence-guard.test.ts",
+      "before_sha256": "073d68d7f4e26c980ea6e5d8d65d270605c87be8fd3cd1150f67270202cdcd13",
+      "after_sha256": "c4d85f1c97bffcbeb104173e6cf8492aecc1a302f65650eeb7b6a0a86048c711"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/AgentWorkflowEngine.test.ts",
+      "before_sha256": "209a431eec2ab5ba97eb7514828395d0b2e67b1e6f54af6fb1cc4bb081b629b4",
+      "after_sha256": "97b2924f86f4ee26ea07a860cbe0700374badacf2347bd615d47e4edb0b4334f"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/CompositeGateSerializer.test.ts",
+      "before_sha256": "94533ee333adf270706e86f06e78cda70e477f9fc9f5b3a6a9a606c035bd003b",
+      "after_sha256": "76bf1221a57f4f88298e8e0914fd7cd958223d7a66cbf8db48b6d6edb27aa9de"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/EventPublisher.test.ts",
+      "before_sha256": "cbfe37c6fd12200a5433aaa30cf7f86117048f42a610fa8af07c041cb4f8ecf7",
+      "after_sha256": "733a8518636f25bddc5dc1b0fffbaccaab995a09b77d4d77f759f058eda541b2"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/GateRunnerErrorHandling.test.ts",
+      "before_sha256": "1ad3f2a9ff9bb0fa9cd873e1b95ddae17e595f959f56f99474bf1a39c5eeb514",
+      "after_sha256": "327f2ade5ddf83364559747425f42a21dd2c442282d6fefcbe2c481ddeb983a0"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/WorkflowEngine.test.ts",
+      "before_sha256": "3559b734d7425ba1db2324a0ef44001319efaf7037f6e5baaab202b57216427b",
+      "after_sha256": "82d97b16a5f64c8725a8272f4d77295d2a8b802218d5add9d08de14e288781f7"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/WorkflowErrorHandling.test.ts",
+      "before_sha256": "42cd0bb6175281ae5513da6ef241a3334ab26c6488ab2d64af90333ab2d608d0",
+      "after_sha256": "5e33d5b6f3c73face94432e8e6835f92a45807bcc20757b0dbee52916ae15ddc"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/engine.test.ts",
+      "before_sha256": "7c7536a8572fd1fda684fbca7acb85a2b661c91e9f61043bb29996e1b7e1145c",
+      "after_sha256": "afbd5b40ee5e4db74bec589c1a1cfc3706e09e92fcc1ef3cadc51a2c845de036"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/error-propagation.test.ts",
+      "before_sha256": "d4e306f4d33e28b1b2be60f12ef8fdcab53e6ae8f472de6078d0d112f1a9c22a",
+      "after_sha256": "987cdbf21c24aeb85483015502958f386cf0f8e0387fdb320e69545e827fed7a"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/evidence-guard-v11.test.ts",
+      "before_sha256": "bece189233daa558e3a737632f821f56ae77fb27882ddd537ff6718f1778881c",
+      "after_sha256": "f7c29f7897bbfdec28587b6db7d7063913d0cbab6f05fb57062c74f86c166dfe"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/rbac/AuthorizationAuditLogger.test.ts",
+      "before_sha256": "68404679e310386e1b249dabdbc2b9107586a6e8e3f6ff2c64b846357fa3232d",
+      "after_sha256": "186c56755580aa2a84e4b897090a032a3cd5c603552387ad5dc9983252625952"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/rbac/seal-transitions.test.ts",
+      "before_sha256": "e3a05385f0a4675fa9b5576062aa02542c6f72166bb26e5c83d146ee1c38a5a9",
+      "after_sha256": "d4d31dbc8ab8d3eeced79336135a535efbe74a2e76843555348b6fd44d9a4407"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/v11/property/parsers.property.test.ts",
+      "before_sha256": "9c79d13b15c3fc131931184511f6c9824181ae11c3c7d762ada8197fb6d51e0b",
+      "after_sha256": "8642f7ecbe427a7684cf52944b4c1598376a54f3532d8ce9b627db5f004e9179"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/v11/unit/close-gate.test.ts",
+      "before_sha256": "f97e936400e2b268a2d52d933b2c671e7712ab8257b82a8b875ea9fb831538da",
+      "after_sha256": "864e068c946d58aa062c99b5557716355b984f0992caa4140a534f16b1bf5b83"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/v11/unit/json-parser.test.ts",
+      "before_sha256": "50bb3f61a6481a42b979f4fc7436c6bb60a0741014cbd75ebe7a7bfba9c15498",
+      "after_sha256": "73519dd5c9598398b2ab52add6fb876eb67fd601f4be559a7b77273584cf8d5e"
+    },
+    {
+      "file": "packages/daemon-core/src/daemon/Daemon.ts",
+      "before_sha256": "b0a0fe006731cba458aafea629ac929f243281a10ad857f32259c3520eeb84a9",
+      "after_sha256": "357e2231d1e0085062b09e53350b267c8a4c6de6e699366076e5f981184a0dff"
+    },
+    {
+      "file": "packages/daemon-core/src/daemon/HandshakeManager.ts",
+      "before_sha256": "f70a503c1f57306b8b19a678fbbbdd8d1b63f64c169a5e58e54a687d1c3a7e35",
+      "after_sha256": "a2b59e329c7139efdf0c831fffce820b8ee8523f3bd53ce26b27069559b7f96a"
+    },
+    {
+      "file": "packages/daemon-core/src/extensions/ExtensionLoader.ts",
+      "before_sha256": "a87993cf87aa25dd372f751a34adacc3cc693b6eb25eb5c65f4ca70abdbcfb00",
+      "after_sha256": "223359d5dae13eac3352a8fe3ebbb944aa47908c6ef568599fdedbe94e09863b"
+    },
+    {
+      "file": "packages/daemon-core/src/extensions/skill/SkillRegistry.ts",
+      "before_sha256": "fb9c4d91d2418b69c9d8041c87895cda27c283443d8c0a067f7d0cd84b29d9a7",
+      "after_sha256": "6c4325663d2f141b4ffb4e4dc97841eac924693838afb9dc10d543d5b43847ad"
+    },
+    {
+      "file": "packages/daemon-core/src/http/HTTPServer.test.ts",
+      "before_sha256": "93445aec7ffa3fadc3abf49358b5b5ce054e3a667fa7420ad81555cf6b8dc866",
+      "after_sha256": "cb33b4c3a2edb2d3a899eda835db16bcac59a5529e40f9e530fe704daae0fd25"
+    },
+    {
+      "file": "packages/daemon-core/src/http/HTTPServer.ts",
+      "before_sha256": "23f397fd4e91701c99dc3727da2f67206be58d4dbc9d1273ab1e7e19e3973ef3",
+      "after_sha256": "fe2b120dc90fdddad92e62cf12740773dc2eb5aa84aa354ff6006a5f161ccbe0"
+    },
+    {
+      "file": "packages/daemon-core/src/project/ProjectManager.ts",
+      "before_sha256": "de1f3a871d1b394211831354ef867724c8ef2d4999815624c3853c4472de2208",
+      "after_sha256": "1b81464b9244d1e6d26f980df7909d06703c7ddbe5c479d14b4d0405d9d62350"
+    },
+    {
+      "file": "packages/daemon-core/src/recovery/RecoverySubsystem.test.ts",
+      "before_sha256": "eed40052c7fe86eb636bb8bf6abd3a38e0ab79757d5a668238953726e1b38649",
+      "after_sha256": "8592ee56fec8629b2b5849e79e7a461c91c8b069adbe8ab3c4b6c79d27bc35d6"
+    },
+    {
+      "file": "packages/daemon-core/src/session/SessionRegistry.ts",
+      "before_sha256": "f98a3e2c7c5a7cd7a8ce00402a5db83a7fba5432959c70c7243b97c6a336f7fb",
+      "after_sha256": "954292cfd0b8070d78da2f7519c07ccbb5d00477e311418db5142b5cc5b381ca"
+    },
+    {
+      "file": "packages/daemon-core/src/state/StateManager.ts",
+      "before_sha256": "e575bb0ce01cd06fc54f8f7324a5903bdb164cf79c2c9b929fe10af8b400ce43",
+      "after_sha256": "92441242addcdf11407dfddab0f2addd24f880c53b5bdc4f6921b8de83ac6d56"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-hard-stop-resolve.ts",
+      "before_sha256": "63a2a19515e266bea5f4261623492cb0d132512b255015f67a31c7de9dc19f77",
+      "after_sha256": "7922c58c069678293d176881fd27d465b38e1b146a42f6d3524ec36ea314bb05"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-safe-bash.ts",
+      "before_sha256": "8ec5fe469faf84db5228906c2f97969b1559f469c0b9c37f4d98c299cf796be0",
+      "after_sha256": "f29e2404ab519e839c03a2e90055a51f3406b3d77d187764d2b7c75c0c9ff6c0"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/artifact-schema-validation.ts",
+      "before_sha256": "4f6a98acad5fb7080a1664b2c71e6eabdc3d18d43e7964bb295633460c7a4d69",
+      "after_sha256": "8b85895edaa525ef1960de072ffb23195b17b2082bed4a52a774b38a51806e40"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/gate-chain.ts",
+      "before_sha256": "f96d7836e473e677310142c4071c96834bb05cccf945beb640d0d24f2b33f320",
+      "after_sha256": "6d8a6827d607fd171df623393c89edc37671d644b793cb2c373d55c45a22ffff"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/new-project-governance-bootstrap.test.ts",
+      "before_sha256": "e4a67344b25b40d936ffa97296c80c1e0fda252251e383f34c4cda21b50230c1",
+      "after_sha256": "d0ced95e15f834dd691f85b3e91cb1af02e1ddd5213b368eeabad9acd2ea5b3c"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/rollback-runner-v11.ts",
+      "before_sha256": "a74a442e8f70efa2326872d696a5b2588acb1887d4a195dc34134d0e2ce0fdb5",
+      "after_sha256": "601844de836ac0d96df2d89cf2b7fc856b9e65336d241fe54d1733b8d2143f87"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_design_gate_core.ts",
+      "before_sha256": "fbafa97f41ac4bc57f6cfad6ba495593258b99c49c63b7ae5def66c89b2f67f8",
+      "after_sha256": "29783b8cb685d311ce1de7f9f0d4e4b306883b4cb8cd3408395e370647bdc5c8"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_doc_lint_core.ts",
+      "before_sha256": "5172a8c6d3de7f251e7fb99e4b414ceee8460d45402701d79999b3d0777e7c1f",
+      "after_sha256": "c373171a5ee5c012f92bf604c3136825762f8c00557f9a3e9ba0d4ba9e2cef16"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_ears_parser.ts",
+      "before_sha256": "0fa685955be63e804caf8f8e72e2f3096a4d5be604fe9560694f8ca5800d43e9",
+      "after_sha256": "442af873a15edd8d2583e40ed1370949119842b1b72634d3ff803b6b9ca7640f"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_project_init_core.test.ts",
+      "before_sha256": "0ff805139d4bd7e4b54dd9e2792ae6defedb0d2a0b6de3caa0c1d026fc0bcfaf",
+      "after_sha256": "2cabea16c95ddadcd389b36867692f5925dd916267aad45d003b8aad49b20e95"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_project_init_core.ts",
+      "before_sha256": "1b7f413a0b327d44373e2b4d6262d17004373d68c6a334753f7313f735ccb982",
+      "after_sha256": "2244351531dba51186c33f66029f0b6edb1376b2e7ee2525fdf3a076f4d07ab7"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/utils.ts",
+      "before_sha256": "c26d9b4cb8c6aae7a0352c72b5b6dc034f8b01c6fc58c85ca908fce54ea4ade7",
+      "after_sha256": "68feb1acdcb7fc0530d980cf41eeed63f8d044723c4dbe2954a8d29e5613f6b8"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/waiver.ts",
+      "before_sha256": "0f7dc8551474fb469576edc2d1bdaf4aca513d75b92d9cec4eb4ec80f074635d",
+      "after_sha256": "a5ef5ba201d9a8541c7bd2c4003bd9b49f635a4a3116b6750b1c9ac491f32063"
+    }
+  ],
+  "summaries": [
+    {
+      "name": "types",
+      "started_utc": "2026-11-08T08:42:32.933Z",
+      "finished_utc": "2026-11-08T08:42:37.097Z",
+      "files": 28,
+      "errors": 0,
+      "warnings": 0,
+      "rules": {}
+    },
+    {
+      "name": "version-unification",
+      "started_utc": "2026-11-08T08:42:37.104Z",
+      "finished_utc": "2026-11-08T08:42:37.151Z",
+      "files": 2,
+      "errors": 0,
+      "warnings": 0,
+      "rules": {}
+    },
+    {
+      "name": "configuration",
+      "started_utc": "2026-11-08T08:42:37.168Z",
+      "finished_utc": "2026-11-08T08:42:38.253Z",
+      "files": 13,
+      "errors": 0,
+      "warnings": 0,
+      "rules": {}
+    },
+    {
+      "name": "service-management",
+      "started_utc": "2026-11-08T08:42:38.286Z",
+      "finished_utc": "2026-11-08T08:42:38.642Z",
+      "files": 32,
+      "errors": 0,
+      "warnings": 0,
+      "rules": {}
+    },
+    {
+      "name": "host-profile",
+      "started_utc": "2026-11-08T08:42:38.653Z",
+      "finished_utc": "2026-11-08T08:42:38.771Z",
+      "files": 9,
+      "errors": 0,
+      "warnings": 0,
+      "rules": {}
+    },
+    {
+      "name": "observability",
+      "started_utc": "2026-11-08T08:42:38.782Z",
+      "finished_utc": "2026-11-08T08:42:47.550Z",
+      "files": 10,
+      "errors": 0,
+      "warnings": 0,
+      "rules": {}
+    },
+    {
+      "name": "permission-engine",
+      "started_utc": "2026-11-08T08:42:47.574Z",
+      "finished_utc": "2026-11-08T08:42:49.428Z",
+      "files": 48,
+      "errors": 3,
+      "warnings": 32,
+      "rules": {
+        "import/order": 2,
+        "@typescript-eslint/no-explicit-any": 32,
+        "@typescript-eslint/no-unused-vars": 1
+      }
+    },
+    {
+      "name": "opencode-adapter",
+      "started_utc": "2026-11-08T08:42:49.445Z",
+      "finished_utc": "2026-11-08T08:42:51.911Z",
+      "files": 21,
+      "errors": 0,
+      "warnings": 0,
+      "rules": {}
+    },
+    {
+      "name": "scope-gate",
+      "started_utc": "2026-11-08T08:42:51.941Z",
+      "finished_utc": "2026-11-08T08:43:23.122Z",
+      "files": 45,
+      "errors": 0,
+      "warnings": 0,
+      "rules": {}
+    },
+    {
+      "name": "workflow-runtime",
+      "started_utc": "2026-11-08T08:43:23.168Z",
+      "finished_utc": "2026-11-08T08:43:43.887Z",
+      "files": 119,
+      "errors": 451,
+      "warnings": 13,
+      "rules": {
+        "import/order": 24,
+        "@typescript-eslint/no-non-null-assertion": 7,
+        "no-console": 11,
+        "@typescript-eslint/no-explicit-any": 129,
+        "@typescript-eslint/no-unsafe-argument": 44,
+        "@typescript-eslint/no-unsafe-assignment": 59,
+        "@typescript-eslint/no-unsafe-member-access": 124,
+        "@typescript-eslint/no-unsafe-call": 5,
+        "@typescript-eslint/consistent-type-imports": 3,
+        "@typescript-eslint/explicit-function-return-type": 22,
+        "@typescript-eslint/no-floating-promises": 2,
+        "@typescript-eslint/no-misused-promises": 1,
+        "@typescript-eslint/no-base-to-string": 8,
+        "@typescript-eslint/restrict-template-expressions": 8,
+        "@typescript-eslint/no-redundant-type-constituents": 4,
+        "@typescript-eslint/no-unsafe-return": 4,
+        "import/no-duplicates": 2,
+        "@typescript-eslint/no-unused-vars": 2,
+        "@typescript-eslint/only-throw-error": 1,
+        "@typescript-eslint/prefer-promise-reject-errors": 1,
+        "@typescript-eslint/unbound-method": 3
+      }
+    },
+    {
+      "name": "cli",
+      "started_utc": "2026-11-08T08:43:43.925Z",
+      "finished_utc": "2026-11-08T08:43:44.284Z",
+      "files": 63,
+      "errors": 2,
+      "warnings": 0,
+      "rules": {
+        "@typescript-eslint/no-unused-vars": 2
+      }
+    },
+    {
+      "name": "daemon-core",
+      "started_utc": "2026-11-08T08:43:44.416Z",
+      "finished_utc": "2026-11-08T08:43:58.066Z",
+      "files": 231,
+      "errors": 342,
+      "warnings": 0,
+      "rules": {
+        "@typescript-eslint/no-unsafe-argument": 93,
+        "@typescript-eslint/no-floating-promises": 17,
+        "@typescript-eslint/ban-ts-comment": 4,
+        "@typescript-eslint/unbound-method": 1,
+        "@typescript-eslint/no-misused-promises": 1,
+        "@typescript-eslint/no-require-imports": 1,
+        "no-control-regex": 7,
+        "@typescript-eslint/no-base-to-string": 182,
+        "@typescript-eslint/no-redundant-type-constituents": 21,
+        "@typescript-eslint/no-unused-vars": 2,
+        "no-useless-escape": 12,
+        "@typescript-eslint/prefer-promise-reject-errors": 1
+      }
+    }
+  ]
+}

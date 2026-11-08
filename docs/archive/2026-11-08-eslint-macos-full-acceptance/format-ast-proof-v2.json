@@ -1,0 +1,1412 @@
+{
+  "utc": "2026-11-08T07:31:26.673Z",
+  "algorithm": "TypeScript forEachChild tree; canonical identifiers/literal cooked values and tagged-template raw values, operator/modifier kinds; unwrap redundant ParenthesizedExpression/Type; ignore trivia/positions only. Both parse diagnostics empty.",
+  "scope": "Exact original three Prettier-enabled package source scopes; no import sorting, type or behavior edits.",
+  "files": [
+    {
+      "file": "packages/configuration/src/accepted-config.ts",
+      "before_sha256": "87eefe636caf17980293b796acbe7d23d9dcdee816727eb741edfe39205a441b",
+      "after_sha256": "938dfbf0e35bf03da5aa807b9f398ae60e0d50eb6d978568a5fe0ed144845de4",
+      "semantic_sha256": "8b61983e0a6eee7812153c3e5075c17ef73182c4908b81b123cb0fa8472f6e3a"
+    },
+    {
+      "file": "packages/configuration/src/config-access.ts",
+      "before_sha256": "189d4b46a6fa3472e3da7fee71321b9f065969b11241d3b1583e47cbaeb7b0fa",
+      "after_sha256": "9d94a1852e11cc0b04cebeace9a361d61fb8e278105ce39e21fb234b9049bfae",
+      "semantic_sha256": "92f1b5a76ba8245962b5937484beab4176b923baf62adc715514af1a93f10d7f"
+    },
+    {
+      "file": "packages/configuration/src/config-loader.ts",
+      "before_sha256": "6e79ec267c00dcf81ea4653e789849764e842be94450eee10ae9e46749b53fc2",
+      "after_sha256": "a3f3a6f810c8ea34ce034c02317f9059315e7a4aee49e403e3137425864d5934",
+      "semantic_sha256": "bcb99f6df535efddbe19fb8b482bde55968ed1d0217a12fad9ecc91717e91b66"
+    },
+    {
+      "file": "packages/configuration/src/config-merge.ts",
+      "before_sha256": "004ac6c2912722b41cd21ee3e20111d9def8046c5c88f0a9da45adf06fd9385d",
+      "after_sha256": "aa71fcfb82a1545ad7bf4ec025d9ce23f1fbc056226c81bb8174d0ebbe707c26",
+      "semantic_sha256": "04f4c977dcad487e065d9d07b21b0285fdcff0918a829d34380835f886d97b06"
+    },
+    {
+      "file": "packages/configuration/src/config-validator.ts",
+      "before_sha256": "57a4849371204ca815aa0208ea6c675b0bd7b5eef5da86ab5041f948880776be",
+      "after_sha256": "3ce430e4a6fb0f70bbd13a4f6661406a0fed95ba1cc8a0d6344a085c5efc0dad",
+      "semantic_sha256": "5361ddb6ef0055ba722b72f3531f191497a9492e4eb0c57fbef434ad53c94ace"
+    },
+    {
+      "file": "packages/configuration/src/constants.ts",
+      "before_sha256": "6dc7de3c3356598b2e511f10c3d1bfe1c22a584237ce052bf1da1c26ec4d90b9",
+      "after_sha256": "30a57dd8bf3eedc8b46fce9a8b9f9f69deaa00f0baa8bf2d2a550a68f1992997",
+      "semantic_sha256": "fbd47b41901d37063cbc49d7b1d5e17fa50a2becbb8ea783166168845214b482"
+    },
+    {
+      "file": "packages/configuration/src/hot-reload.ts",
+      "before_sha256": "b78d631b564f6b5b93eba517f5ddfbb8ab1ed82f41864a71b4fad582bee49714",
+      "after_sha256": "11b64b3d30ca43fd0ac267db51a783759a626451882ad55a0753c6654b9a960e",
+      "semantic_sha256": "c5d7f15b9912f9cd564743d657b98498a751a326ada5b73efaebbdb9bd915996"
+    },
+    {
+      "file": "packages/configuration/src/index.ts",
+      "before_sha256": "9eb68c3da42e3110e6df89851e4d40fa3a08d0922d4a36f6aaef3064fc675c77",
+      "after_sha256": "3b917afbfe173f219949c91a2ae2ec9b9454434580b0430e4dfea32e4cf727a9",
+      "semantic_sha256": "e11c65079577b050e81bc8b8514eaff1bfa40e4008b3894ce9f05f00ff605c7a"
+    },
+    {
+      "file": "packages/configuration/src/logger.ts",
+      "before_sha256": "8c4408a2f98a2af77e24ecd3738e591758fb0c296afe1e2a85f866e317c50470",
+      "after_sha256": "ba047a128c744d3ede3e3c77f224a5bf7f66f4f0381678b00e450b2cb5adf0ef",
+      "semantic_sha256": "87f9d9a8903093e3ec19d2eaaefeb30e345e92270ed94c92c112dac55980c7bd"
+    },
+    {
+      "file": "packages/configuration/src/merge-engine.ts",
+      "before_sha256": "69929c0e47c8ef52eed215009d27767aa92024dd0915b99d3c0d6aa9a6bc29e8",
+      "after_sha256": "c3c0db84142c18d88b2d89f7517a3c809fcce2f422944c0f98e87b7bf1452295",
+      "semantic_sha256": "b8d727b00ac61ca8f943b0ba3b988f009945e7559f3c9827b6ca6fb3c958906a"
+    },
+    {
+      "file": "packages/configuration/src/project-schema-descriptor.ts",
+      "before_sha256": "68f656cb5602763c33849e2f7494f79a5b176113484855dc5633a47e9f884ce3",
+      "after_sha256": "2f2bd652af780110af88c6a675d74812c9966cf652b11c7acb48265c1d699072",
+      "semantic_sha256": "9e60e4a67fbb3870a49933705afd810bb44835eda867721a6b05b2b486c6988c"
+    },
+    {
+      "file": "packages/configuration/src/types.ts",
+      "before_sha256": "99ff53909b43f14de41f07c910a1304e900edbeaf38f898d24ef6cf0434a1b26",
+      "after_sha256": "df1f1617e93ac1d1b657cd026538220af1befdcf39909dfea5810d03503a2f51",
+      "semantic_sha256": "47f8e780b10dcc4a359718ea358baa915e77e7c1787a55fb520e4b7a84ff5cf2"
+    },
+    {
+      "file": "packages/opencode-adapter/src/OpenCodeAdapter.ts",
+      "before_sha256": "498baae3f5da0963d4ec261f3cad6a02e4b347610e32961d4aa5de77a32aebd4",
+      "after_sha256": "a58df8398df32f824429fd9d3b33c2346482c36e2323fd89acafd8411f8a7a12",
+      "semantic_sha256": "f3be7eb6dc297acb0341c1a850499bb7da4e2e8f035f0e9afb7b1111500b47e9"
+    },
+    {
+      "file": "packages/opencode-adapter/src/configuration.ts",
+      "before_sha256": "0a8278329ad248ed2cbc37917179abe88cdcf2447a071a7ec416e95ed00390ea",
+      "after_sha256": "62492c53d366f424a6157db33e1a7901793994b5d6f21cebfede8bcbcf9d51a4",
+      "semantic_sha256": "c61b0f8dec820c46f6dad0469634746049d07daf5c92516bfc8906d222b7293c"
+    },
+    {
+      "file": "packages/opencode-adapter/src/diagnostics/DiagnosticsLogger.ts",
+      "before_sha256": "46b9636a106fe1e6c7c6ddd1d544e7097e6d4cf5982827dbc7170fe5d61085ad",
+      "after_sha256": "c47e1f7a84587ca4cc181707e4fb68779b011288228715b2a47d04f357e93517",
+      "semantic_sha256": "8ef5c85dd79217e5af61985d1c86728afcd0ca912be9d0691b26165e73ab99e4"
+    },
+    {
+      "file": "packages/opencode-adapter/src/diagnostics/index.ts",
+      "before_sha256": "91610c855211bb699c975c4cdb3d6cec8ffd8815f14519888c39b33d9da80f9d",
+      "after_sha256": "6ea199fd5cec18efcf802cb6feaa87b449fd96c5d123e059771244ac97636ce7",
+      "semantic_sha256": "70d931cf764c1b9be1359bc5247fe4d2e107b5a143c24e0fbc7fc160264d4e4e"
+    },
+    {
+      "file": "packages/opencode-adapter/src/errors/ErrorClassifier.ts",
+      "before_sha256": "25cd267aeb52cc84be257dc65063327a26379a0293589ae330ce74a6ac8c35b6",
+      "after_sha256": "34c3455362863f6f95d60f06d708bd255aaa5fa33677858656216056d106aa61",
+      "semantic_sha256": "567b419b81c6ab5df1904d9d3d5f868e7f4a4b9e1ea2e4c985a6b2c84e1bb2df"
+    },
+    {
+      "file": "packages/opencode-adapter/src/errors/index.ts",
+      "before_sha256": "a340b90518cb8aa2215f8918874e14a43c8035e630b936f769917093299bb50d",
+      "after_sha256": "643ba43a47cc9ee78e0b6bf24f9d5764b212c50244db0f175125f96bd295a6b5",
+      "semantic_sha256": "5009d734f672d2cf5a908731c3c86c1299e63c988f44338f45dba22b5161eb25"
+    },
+    {
+      "file": "packages/opencode-adapter/src/event-logger/EventLogger.ts",
+      "before_sha256": "3d99ff168679b28743d3a31fba30a877c638d22200d71e03b17bba0fc1c64db6",
+      "after_sha256": "f5bcff2ad062a57e5ab20bf29f27be144efbb68e906072ff70308ec552748875",
+      "semantic_sha256": "27ae1f32a3a05f507daef01131f226dfd18907583272d10750c7fa926a8f1936"
+    },
+    {
+      "file": "packages/opencode-adapter/src/event-logger/index.ts",
+      "before_sha256": "aa55751a64534b380fe6174f48b1286a4be737683534baaeeeb396f5abd466f8",
+      "after_sha256": "b3e3d6f6bd1a7e5722a251168ad8c6ae0ee3866731c42eed0ba0b5ad9a7a9aba",
+      "semantic_sha256": "01db349e1da72356078dba33aeaf4868b8636b2d9110c25c4e33c98a6732991f"
+    },
+    {
+      "file": "packages/opencode-adapter/src/index.ts",
+      "before_sha256": "e7811d81280ce928ef2dda960c194b1582de38f511688bb52c61c074b50d9756",
+      "after_sha256": "ceacb84d0b3d8238f12f4239eba98dcee8289b5866bb5163a3d0b40b665c0c8e",
+      "semantic_sha256": "bf9dc5bb2efa6f5a652146fd19b589e900eb0bd3cec81d68798e6c78c9b56add"
+    },
+    {
+      "file": "packages/opencode-adapter/src/integration/OpenCodeHttpRuntimeClient.ts",
+      "before_sha256": "2ec9c8140acba54118355026207bdb16becca882ea6c9c5725b92ea8b4fa7439",
+      "after_sha256": "85b4a4e9ff860b4fcd80aa9f27f26e7f46f21f62e247306a6d07c0c3165a8789",
+      "semantic_sha256": "8c0d020717e860ce9ab24003de28bf32533c437d71fd8aeee74d6fee75b18ac5"
+    },
+    {
+      "file": "packages/opencode-adapter/src/integration/SessionRegistry.ts",
+      "before_sha256": "5929c9dffc6091411a12d18a9bd08e31c77a063efb776446cbdc315be9ebd10d",
+      "after_sha256": "867f3df356d3c30e69143794c4b1429b8d8f46b356ef789698297f2fcd3551ab",
+      "semantic_sha256": "c3aaa2dde3cfc398da6eba76e4561f479b93f5b0668a96c87e03023cffe8f654"
+    },
+    {
+      "file": "packages/opencode-adapter/src/integration/ThinPluginClient.ts",
+      "before_sha256": "475a0a663906d55a06bf017017b8031a19c8b14fb67c9764df290ca9ef8c7040",
+      "after_sha256": "b80b035c2965d204ff752885589af156a17398c21dcdaacb1ab90c18b75a3997",
+      "semantic_sha256": "42c5f1501b3620b97d522f567973d5b6d26a4f50fc65e5ea9972b827c91ed9d2"
+    },
+    {
+      "file": "packages/opencode-adapter/src/integration/index.ts",
+      "before_sha256": "42e211f49df752696af20e44a0a76e3c80bb38351c91bd61bc4712833753c7aa",
+      "after_sha256": "5b33cd13d4f2073410603cc3f866ad8491cbaa0ed4663c57af7126817a1ce9b1",
+      "semantic_sha256": "884f32949b4955025e858d3b88ac1eff0c36e5153616a5732442933188d946e9"
+    },
+    {
+      "file": "packages/opencode-adapter/src/translators/CapabilityTranslator.ts",
+      "before_sha256": "b81b8941de6d510282a3d06217c5b8e2331c1b8187cf80fe7c708cbd43299f98",
+      "after_sha256": "afb70c7dec57ed29323f847244ebcfa5a230338841092947767176d4bdc36777",
+      "semantic_sha256": "5aedd9387545f989d9f608bbe878fafe55ab5e82dd1939c7942eec97aaa8396b"
+    },
+    {
+      "file": "packages/opencode-adapter/src/translators/ContextTranslator.ts",
+      "before_sha256": "08b80004af2c0a4a8c26a5c122cd93a7e9f2f562ba367d017f69375187da29d7",
+      "after_sha256": "c4de4e0a277313c09920bac8bdf44dedd99f599d87308579c1e7e1c53c2cc9cd",
+      "semantic_sha256": "038b143985efa8a3f8f06b8b83c9c85a8786b6c7edc03c5e98664eef3245fac5"
+    },
+    {
+      "file": "packages/opencode-adapter/src/translators/ToolTranslator.ts",
+      "before_sha256": "a01dc0ed479b86f87547e9e9c5b469bad2103bb57f2e52373e135e209715a87a",
+      "after_sha256": "bdd4be7807513516ec1c88311adc14df6fd46199a5a22f2a4f4c249c6c103be4",
+      "semantic_sha256": "ba0eef2a8f676e611262ad896c83ebbbe77c0c0c0ec0780e2b1fe1f6dc2c6b2d"
+    },
+    {
+      "file": "packages/opencode-adapter/src/types/index.ts",
+      "before_sha256": "ec83b4e663230fe62c0147dea1588652f992508ca759448a9ce2e2704084e657",
+      "after_sha256": "18ac7d95994e2ea664e0a12fa1a6588073ca936e679cccbfb910569c37f6b1d1",
+      "semantic_sha256": "2d1337fe177bb48585f4563fbbd12fe1e1a9705be1be7d3ee5ff08e8b400cbc5"
+    },
+    {
+      "file": "packages/opencode-adapter/src/version-checker.ts",
+      "before_sha256": "8d458a4b3a390b68eea5adca5effcaf1a360f72d97f4e022aac9297e37c3e81f",
+      "after_sha256": "18aea56b4def25ff3bc15933f427e2e66c68c923727976e69522f20813d18123",
+      "semantic_sha256": "1941ec23b69eae57fabb50fbef909a0e119b428981a755d9499656da70ce752f"
+    },
+    {
+      "file": "packages/daemon-core/src/agent/KnowledgeTrigger.ts",
+      "before_sha256": "9d5ddc4fd28b22194182089749e58f474d55c15557d4e685581aae889fa86654",
+      "after_sha256": "d43f0c1fae7a77d00bb5b430bd7ee7863f601db9afdee74a76bda580b35446a0",
+      "semantic_sha256": "25a0cf19376aff39b48c6b15d2302728f863d81c7a5dab6054c8d5a9964445eb"
+    },
+    {
+      "file": "packages/daemon-core/src/cas/ContentAddressableStorage.ts",
+      "before_sha256": "2bf19debac5c03bf051c80909eb5fe443430e28105b3a96ee10a252e133eee79",
+      "after_sha256": "a0541ac8cc13c5419fbd0441a338f9b6eb27211121d11a638eb88ba630ecacd1",
+      "semantic_sha256": "62c25a8f4e625fa9f2a80168f888aaaa359526e13c031ac259633b45e3bff5f0"
+    },
+    {
+      "file": "packages/daemon-core/src/daemon/Daemon.ts",
+      "before_sha256": "78593c960023ae0147eda151d4d4ec037836b0612e96314135c2cc3feaaff4be",
+      "after_sha256": "0cf58d6f876a4f4010d32369185a474eccdae34d94885a28313480e3a536e974",
+      "semantic_sha256": "00a7e2ad8b2a71d6fed9a36c7f2c41340d5fef232c80f07ce2d5e04030a81c41"
+    },
+    {
+      "file": "packages/daemon-core/src/daemon/DaemonConfig.ts",
+      "before_sha256": "fa72552518932e9580f2b2a7d91c308b5e522a70bba6b45bfd5c1a8d06e4447a",
+      "after_sha256": "166cce120a96b3b0802e06a841aa751d3c220ee25d07bab461b3d29c2cd137b2",
+      "semantic_sha256": "27c8959bcc89c9f20d5398454d3384a25cdb843a0581bd9c16bfe573f8459670"
+    },
+    {
+      "file": "packages/daemon-core/src/daemon/HandshakeManager.ts",
+      "before_sha256": "cd146ff4e0d1d4a72bb65e4c493815390d33d3dd856a831a164c53ef036c577a",
+      "after_sha256": "9d5adc856eb9280b25d53d861cad59c4b080a4e0e930582f29883af2c22d61e3",
+      "semantic_sha256": "10f9066c5b75c821f4a16bd2528a20ce2b054a5a23fad64aff210939951189cd"
+    },
+    {
+      "file": "packages/daemon-core/src/daemon/path-resolver.ts",
+      "before_sha256": "3bdd72e5281deaf8051405991e81fdcea9db31ff7977c46b210e10cca3a2d235",
+      "after_sha256": "cd2dbc0b1777f3831dd20dafa9b0403d1da2509939d5532127ba3f785fd1aaeb",
+      "semantic_sha256": "428839d1d74cd87b2965a78a03ae5a34316417f58310585e20d41d7a3cd2b73c"
+    },
+    {
+      "file": "packages/daemon-core/src/event-bus/EventBus.test.ts",
+      "before_sha256": "9edcce9c9d88011cde5ac975d9bc0136406d7cd7d43664465aa8505b7cbbb76c",
+      "after_sha256": "b8ed1748f6105386097c38d9d188a0571bbdbad3718bbb7d7a89550d9b03e32d",
+      "semantic_sha256": "cd29b31ed823384642ed7b28dd6babbad6c6b509c997a22498530db3c563a474"
+    },
+    {
+      "file": "packages/daemon-core/src/event-bus/EventBus.ts",
+      "before_sha256": "1c0d77b11d0f384302e74877c4e7e13550621db39109418c59f3fae2e2e53364",
+      "after_sha256": "dcb6e5de73a851c201107a13f4089e6b19e50f890307c8c9487f351007ca5d0d",
+      "semantic_sha256": "ec05be8cbd1bf4d92b235156ca702bc00975d084c3fe89ac47d80f1983421274"
+    },
+    {
+      "file": "packages/daemon-core/src/extensions/ExtensionLoader.ts",
+      "before_sha256": "27ad623a9215c67ff0a2a5c163de804b62aa3ea22cf535c6b0c848a314a8d88a",
+      "after_sha256": "ab7e3ce21a29faf8568efa0da104aaf3eac8cdd8a783babb85a6e92aaf022fab",
+      "semantic_sha256": "1f5303aab964932035372a28bde8ab166bbba1d28e2e7383dd1218cd49400727"
+    },
+    {
+      "file": "packages/daemon-core/src/extensions/index.ts",
+      "before_sha256": "b1eb9ae4af9d0b787d90792aa8beecc0d532ea01add7c9ce2734e12aa3713791",
+      "after_sha256": "995a43e1ba4bb2e3fab0ca56586c039ce9eaaa3c51185cfa664548d871d55925",
+      "semantic_sha256": "9fdbfb03d5e06838544d853592aadf01b52fa0591202bd6cbabf34a8bc549c0b"
+    },
+    {
+      "file": "packages/daemon-core/src/extensions/skill/SkillLoader.ts",
+      "before_sha256": "c7adc56a009a4c743e337cdf55275636671e0db28488c1eacc88d24b1636f28c",
+      "after_sha256": "0e3c1de8bd3590d21169499344a8c190419bf982a50e55aa6762e3e3fcd34cc3",
+      "semantic_sha256": "4053cee5906a96702211278f7e12fa772ee6e01eccb19b23e483e3c9fc9b4212"
+    },
+    {
+      "file": "packages/daemon-core/src/extensions/skill/SkillMatcher.ts",
+      "before_sha256": "efc9d16808bb365374ad0b3031ea69e7870e22691831364aa17064b8bc117436",
+      "after_sha256": "b3a23f48a4b8fba4ad88970048b166eaef1aceb302d08ac076cce6a9f5e9d2a5",
+      "semantic_sha256": "3398638a645d8dc78198fbd34056a9c75247ac71a11c438f2408931951bdc5cf"
+    },
+    {
+      "file": "packages/daemon-core/src/extensions/skill/SkillRegistry.ts",
+      "before_sha256": "2bc7f24d107f61faa0c0104babdc841097b92d0f982ce6b3a7d6b7e5dc3f7861",
+      "after_sha256": "05f00ac6a0dfb4837f052a31c07c5f637c7ccfe7ffecd3bd15e81b5011213595",
+      "semantic_sha256": "5c7a9a4e56b32ea427e74f3a5bfb1257640a163eb8bf8585aa00e6daa6a95d3c"
+    },
+    {
+      "file": "packages/daemon-core/src/extensions/skill/index.ts",
+      "before_sha256": "c268ffdcc846908c4d61a0e9dba3ae02962eb4e58504db0a631e0cf9a2338c5f",
+      "after_sha256": "be851961d7df0385db2fe52b7f4a78476ba670967d321f0f048cf8b6a760cdca",
+      "semantic_sha256": "99f8c2e8d0ad38faebb462a58afbc169e9bdd77f9a6245b7b01c03828f06f499"
+    },
+    {
+      "file": "packages/daemon-core/src/http/HTTPServer.test.ts",
+      "before_sha256": "6896a8e84a68f10bf07fb7ad621294ee6a7b0982163b0ee1fa737cd9de60cfb7",
+      "after_sha256": "c50dae81228b8d26f138efbb20db5cdba1851b9cd3ec549bb58afa09e77f1af2",
+      "semantic_sha256": "f18a7b5f92c4fd5d2d25c6ef4d27e6d6d8db29cd3279a8e6fae07c3cf0a641f4"
+    },
+    {
+      "file": "packages/daemon-core/src/http/HTTPServer.ts",
+      "before_sha256": "cf48b1f95609bcad82665166d6c06bf8eae6233cc073cfeafc4df86c29c62232",
+      "after_sha256": "c66d8a8a7265f33c1cf61a5a4a3cb586f4a1ec84b39da411095cbfda588502bf",
+      "semantic_sha256": "295d63440d1b7ca5677b6d83924e0387025d856efe1bcac7efad744764b25ce6"
+    },
+    {
+      "file": "packages/daemon-core/src/index.ts",
+      "before_sha256": "dffa484a0aa60a92d8894e031d9e22456755e08cd601979193ff97a3054eb914",
+      "after_sha256": "ebbaf403317a99d00a7aba9a0034d7a1b7dbc00aa3c65049c35637e6666a2c1b",
+      "semantic_sha256": "373fe9819cfa14e10e63991679a3cec4fa7688eec54216ce27b84707b1156e65"
+    },
+    {
+      "file": "packages/daemon-core/src/logs/JsonlAppender.ts",
+      "before_sha256": "3b676bbbe40a87b3378ea15269b926f59723fa6a7ff4fc5945dcd91d57723f31",
+      "after_sha256": "9ce3c1816a998f74c7852ec02d989ac2d3f1078e9298055f47aaabaa1a89a46e",
+      "semantic_sha256": "e0174bea8f749b3c4e6286f3fe91b5495a9cd05c078ea4bcc45da634139c0c76"
+    },
+    {
+      "file": "packages/daemon-core/src/observability/observability-config.ts",
+      "before_sha256": "f08052225ff846e18b30e3e7588fe3b2300bfe33288d09a57211bea7617c5574",
+      "after_sha256": "e16d480fa7e63c1e70d63297cfd67972443720dd67448f71459b09afac6bb49a",
+      "semantic_sha256": "b20dd8de1658b952eb4359400ffc5fc8221b43b8da494d74197828840e368e64"
+    },
+    {
+      "file": "packages/daemon-core/src/observability/observability-recorder.ts",
+      "before_sha256": "301b8f01188ad3ecf49139f14fdc82f9cd301e4ea893afa9bea662c24d99f943",
+      "after_sha256": "d48e3d23ac2a9b611447cbe790d9d3b54690a1373c76e82b92ec01b0fe31e954",
+      "semantic_sha256": "84c9753f7c0276beebcc4db7ecba8107ec71e73816705103be9a17365b568137"
+    },
+    {
+      "file": "packages/daemon-core/src/observability/redaction.ts",
+      "before_sha256": "03fc3ff79192bb2e81347ce67a6989d40d8d175002ad489b0b3551e9f08b5cdf",
+      "after_sha256": "26c9f1349b0290a5d929b1804ea9a26e03acce4680fb7ce6d96cc9479226a6fb",
+      "semantic_sha256": "1b0baa49981a5cc2af48c1c3bcc0993e3539656a554ef475ca985e209651fe95"
+    },
+    {
+      "file": "packages/daemon-core/src/observability/trace.ts",
+      "before_sha256": "655b23b0821d67444f5abe8332cda35e3d0b90b5563e9d522d61ac41363a4495",
+      "after_sha256": "7e302d2aa66e9df9623cc1aeb16d7268ab5b35d4a63080733f5469e4131f1ada",
+      "semantic_sha256": "9d57063e4618acc53dbab78f13534c7b6a178e215f5e7ef8830d39bc643e83c2"
+    },
+    {
+      "file": "packages/daemon-core/src/payload-handler.ts",
+      "before_sha256": "46973a808bf67814c30a109bd72b4339e297b35ebd1764c6c859775989005b72",
+      "after_sha256": "af9200db72dc808ac74135b7689713fd59d3cb4efcb452ee817cd505ee707f7a",
+      "semantic_sha256": "4483c3b7ecaa841b17db3cb2b255806ca53893cc3963aad33078bc2be7ac3a98"
+    },
+    {
+      "file": "packages/daemon-core/src/project/ProjectManager.test.ts",
+      "before_sha256": "c08760400fab534838ab6d6bb117913d09a6598f702f228c334330e1d5e6956f",
+      "after_sha256": "48afcb94d1f40611c79d225a6cb79d048e85348623fc318f491ec46744d2ccb4",
+      "semantic_sha256": "f544b5a7d42821a49e454f150ac2f8bd7054cf443dc07779103c69c0a8ed3082"
+    },
+    {
+      "file": "packages/daemon-core/src/project/ProjectManager.ts",
+      "before_sha256": "773f0d8deca9b1bb8626bf891f330154d424580603d43fbac1edafac76366fb1",
+      "after_sha256": "c4b50b4a9cb3c8f39ee2992b449b9ef8523c9971a7d59719cdbbe33cf0340106",
+      "semantic_sha256": "7bd0ae08f1964a62d0e01283ecf2fa35cee1336ff375c96b835413e80ed20ae0"
+    },
+    {
+      "file": "packages/daemon-core/src/project/project-schema-descriptors.ts",
+      "before_sha256": "c577e1d8cf0a137099bb9f5ad5384fea1c927de82cc84e34e77bf60859824b26",
+      "after_sha256": "26fcdcc2ebb9d175e8fea7199f65cb46394aa04bb21d556c62375b5fb0664459",
+      "semantic_sha256": "fc8f9e0c5361140aee46756c8ad68e3b65c7049fac217c1fa7d2849a979bb9f0"
+    },
+    {
+      "file": "packages/daemon-core/src/recovery/ProjectArchiveRestore.ts",
+      "before_sha256": "5c368ba5b892f5ec888f2374ef447e86998c9281dbcfcc4ac07b5030911646e4",
+      "after_sha256": "ffb0e914fb3bcaa2d5a51ba7659bb4a5e42e8c461fad5c372c92a4082dcad5f4",
+      "semantic_sha256": "dfd3fce0dd65a4317bc651a0d40d1ad288a77c4d94fb7c20cfbe9bb04a4bf88c"
+    },
+    {
+      "file": "packages/daemon-core/src/recovery/RecoverySubsystem.test.ts",
+      "before_sha256": "628f5790982e78eda57252f106fa5969e6beeb1253b0020f91918922ea80fda1",
+      "after_sha256": "373b65aacf068eaccf73a0bf4e13c7ab7dcb8ea73b139075ce71ef91b043aeaa",
+      "semantic_sha256": "b057dc47620521c53fdb97c0356bc1efdef2f2851869ba905f6c601296e80ba3"
+    },
+    {
+      "file": "packages/daemon-core/src/recovery/RecoverySubsystem.ts",
+      "before_sha256": "766e7f98e3df7ef45847ff47aa81e7e5d67f1c95214578eb7a017e142c8ecf4a",
+      "after_sha256": "8cfd03c735000f3c3849e32f4bf7d6217c0c2bd31712b67d1a5d9948343626cf",
+      "semantic_sha256": "7be8c68346b1fd35b77b73b9ede370f9800d27477be7b8958093cb4c9f02ba61"
+    },
+    {
+      "file": "packages/daemon-core/src/session/AgentIdentity.ts",
+      "before_sha256": "7385bdeab62e2a35fe4a8766f05b740358f249b6a9d6c653f1f6d20ca58f2380",
+      "after_sha256": "2ec9a2f6b950351f5bb91c2e9cdfddd0d66570bb92b7cecaf232f3c5c77a8d55",
+      "semantic_sha256": "634ec488cdae24f616ae36f8e4b4b94b4d4148b4149ca803f850e497d0bd34ee"
+    },
+    {
+      "file": "packages/daemon-core/src/session/SessionRegistry.test.ts",
+      "before_sha256": "a7d2d57b3b92cc6b49e57aa436af31d2204fdc1a0c6a5b2f55d9bfed210fc1f8",
+      "after_sha256": "e853d140ed5ae08fa88967d5eb81f86068dc102189a317f705eee86ef0666086",
+      "semantic_sha256": "365f8a3426ad0ec0a3607bfe998263ca6f8dbf676158fa68c77a1d95ae741867"
+    },
+    {
+      "file": "packages/daemon-core/src/session/SessionRegistry.ts",
+      "before_sha256": "c860288183eda2fae2cf96d7c377fa6c91ecc68618ce345fde9cb9dd4f18b359",
+      "after_sha256": "74d82d74ce35af328218d213fcf27825810e29db971737098a7050cd32fab93b",
+      "semantic_sha256": "15ad18a9e9c0f36da37d32be1d59ad1621c31dccce73e76df500369c633e31b1"
+    },
+    {
+      "file": "packages/daemon-core/src/specforged.ts",
+      "before_sha256": "c45cc09c27056f38ad639c1fe4694ea4f1e1a31d379fa91b6b4d76a49fbe1b77",
+      "after_sha256": "9b9209c98a99f582123dfec476ed9f454b28a353d36c18bd282bd5bbbad1003b",
+      "semantic_sha256": "53b593edfcbb53a960192fe48cdd6219acd2b7ff50eef21b01d22266f2e370b8"
+    },
+    {
+      "file": "packages/daemon-core/src/state/StateManager.test.ts",
+      "before_sha256": "1d35263b639ac0f255e963738b0aa83b87498b6311cbc5a33fe6a8dce6c2c494",
+      "after_sha256": "5c0ff0d7a0f1687ff5ce37e8c6a28b3e22bb16c084def8c8cb46a4bfd57af924",
+      "semantic_sha256": "bb0cc323fc3d547ab456048b7c5b0f6ea051126de087658758a7cba403559764"
+    },
+    {
+      "file": "packages/daemon-core/src/state/StateManager.ts",
+      "before_sha256": "29984ed4a3729c120e7522d7dcb1aa49ad1961f08f1bd99fcb8d7ea99d95b171",
+      "after_sha256": "381a04bb855043ed30b9b208be3db1f284fed7a508fa95aa5dd86581e3e8742d",
+      "semantic_sha256": "1d82f0f78dfeb75c6f35dd068e533d090863bfeb5fc3fa6cb26541747dcf783a"
+    },
+    {
+      "file": "packages/daemon-core/src/state/runtime-schema-descriptors.ts",
+      "before_sha256": "89756e142df6cf198caf87b4e3d265e8b94b786f32b35ba80e450b9eba70088b",
+      "after_sha256": "96c6c99da418c2046cd14a93b739e67b7bd710b205d3ab93876fbbdcd49ee95a",
+      "semantic_sha256": "1d18a2fdcb9f52980915f766b6c41c19a9dab015bb4795557471d2bad5114191"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/ToolDispatcher.ts",
+      "before_sha256": "5ee444384b94fa614721341608f3ff9857dc050ba17bd3fe9f3294e985862a17",
+      "after_sha256": "f01b5b3a9864f7df531f808870edcf15519bedb6e9c27dab9bd1ca5b1f6af681",
+      "semantic_sha256": "941d02e03487067ad0eefdacf0fb2f9944bb258b6025581f0ee647732192fc55"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-artifact-write.ts",
+      "before_sha256": "785486618461071e9997cac4a499d5465dbc40a2bebcc5e272d695e168696085",
+      "after_sha256": "c6c70dc27832d4ea17fae2c8101621f23a9ddeea12e5ec65e474e8aa09aa0888",
+      "semantic_sha256": "378d21d6c34aed4da12af7037660c8c33b7552ff497550f6d19e0bf094209940"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-batch-verify.ts",
+      "before_sha256": "b9797c8058f56bb5ba8a6e60750fc89c5add053f44dd24c894075ccb65c38c6a",
+      "after_sha256": "c1233a0c4557e7c0ef1da5822db775fb09fac0660ae1148c8164b2c3c17ef220",
+      "semantic_sha256": "beffa60ee5edecf296980868b46f301bebab38329feede74651e2ba2f1687019"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-changed-files-audit.ts",
+      "before_sha256": "b7efcf81f936284fa5b01f433819a3ce8aad79f5c37d1fa0166f18b4d7672b41",
+      "after_sha256": "da57dbfa68ecc8403603dc9aea15c277c00f77316dbeafa7557ffc2a45b6fe75",
+      "semantic_sha256": "ad1f5284c117f46f9ddbbbbfc9ce05414437dc0ec0a9011efa9cb981c3b3138d"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-contract-register.ts",
+      "before_sha256": "dd76948316894c2ec3eae02e99f2133398982a5b63f5f2ab95b361435053ffe3",
+      "after_sha256": "bce9626ff987fe3c7e4975e4581bb86ec76ff65a3371b327e84debb16ec22450",
+      "semantic_sha256": "c9f79d016543226daf3446e614660980ae272569b65ad85aec209a8b6f6fa6c1"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-design-gate.ts",
+      "before_sha256": "e86ef77fc5471da84219e22780dffc5d86f8fca820fb505b08c4c20be820f5e8",
+      "after_sha256": "c950ee8ea887cf1923cf0137fbe14748583bdfb5e1e3ea708ab06967f057295d",
+      "semantic_sha256": "ae49ebc72656e3f06f02d7b55d554cec015a93d03eeb9e38a7a58008417014ac"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-doc-lint.ts",
+      "before_sha256": "af890afa02fa24e54451533615e4c2c8cdf81656050dd91a557cd0db3b709f1f",
+      "after_sha256": "f6c4e0836c13604f8f741877502eb40e5696e9ceb809d7654415984d00dac5af",
+      "semantic_sha256": "603b2b111cfe11795529edf7adbb80040e78f65a9f009cfd885b0980eead1ccc"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-git-agent-lock-acquire.ts",
+      "before_sha256": "2f9c5adde274fe3a8c0fe4e4b7ce85bb8097c097390643c53593d3cad6833634",
+      "after_sha256": "73e09208a0e55b0d66574b7ea50ea6a1704b5fcfec3a24c5516b5fca43a94aad",
+      "semantic_sha256": "28996b20eac9fd0abfa5493dfc20967ab21f888f6a4acc2e0ecb59b10965ddf8"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-git-agent-lock-release.ts",
+      "before_sha256": "436d2557531d7322bfeabca2e9a625f1a6c25cb2ac94186ebcb74b4f89cdfa6a",
+      "after_sha256": "093189f21ab9cdd536bec0fdc89cdb0971550a2c2b49ca76e4e94f5bbbf471e4",
+      "semantic_sha256": "1d34db1a5b71a8f7c56e3aa214e3fc96063c0f6dd7ea0ae395e05d8412ba8459"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-git-auth-profile-config.ts",
+      "before_sha256": "276f44f6e8753fa5b27c3d7976eaf465c5ab162c76613bd3d5fbb62539ba4b45",
+      "after_sha256": "51c71c25ac6ba0c1cb8b4249e2762c040bf87e614eb3baa4ac29761969298667",
+      "semantic_sha256": "29051aad7da2ff8c243b33f6eaf021fae226d6fb851572040682cdc2c977c82b"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-git-branch-create.ts",
+      "before_sha256": "f683d50bc741ad1913c8c8082d06706615877c747b8bc09ec19af1d0eb4dcbe8",
+      "after_sha256": "36a8bc4e4fa2bc4026234bed748adf2e46c4046e96b812f00d88c2ebab3c98d8",
+      "semantic_sha256": "32cfa4d4f8311772dd92ef28a209db06248c56ad6b7cd9338b6d83c217674a8c"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-git-branch-plan.ts",
+      "before_sha256": "16d3e383e942cac996d63d1636e0b85d82e924aa6f3c4d9a580530b4af2d2687",
+      "after_sha256": "a0e7c56d8d950581abd298c898d1dd1812e2b7a321128071bb1c0dbb8b351c5c",
+      "semantic_sha256": "b2cfc7638c7aad7264dfc9d2a3e52407c71246076fd3cd79993702d44e8ff02e"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-git-changed-files-audit.ts",
+      "before_sha256": "9a954bc3a3eeda543adfd5ff5c81b5403cd5a0aad120eeeb5fce3746ff4532c8",
+      "after_sha256": "ca45476a15d1137f033524ecf0c14e70f1a08204ba487bd4920890ca17615cea",
+      "semantic_sha256": "3906a58614367a3a25d4c3d95c8015cc90b5ed539ce209635ac1aa552a52b40b"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-git-checkpoint-commit.ts",
+      "before_sha256": "4e2afd3e71dd967e1959492d2f32191f120c514c24f62a99faa130b511c1b8c0",
+      "after_sha256": "7240e886b4e07a04153f488179b7ae85bc4f52ffefa84806f8797656751263e7",
+      "semantic_sha256": "2934710704c55cf6109c8519fb40efada241a7cecd2ffce42e05343077dcf8ac"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-git-code-permission-guard.ts",
+      "before_sha256": "c6490ed3cd940fa69f9644760c668d80983317f026bfe05b9ff1fe4876eeb96d",
+      "after_sha256": "7c7d2d968ef030d0153e6be149b57d9254e740f88ac847beaa97a2fda141cd88",
+      "semantic_sha256": "7e075c7ed7c03ea9295a2d6dfa96cbd58d288cab2be2953330b52dab75ea8cb3"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-git-ignore-analyze.ts",
+      "before_sha256": "df5422afe2c679797d878597312e46159009992223aab0ac935f25d0d1d36b54",
+      "after_sha256": "bc5f775e856c7a081ce902e42fee41000870112e2a341b429954395921786b7d",
+      "semantic_sha256": "27e1d07d71a04cd53bac0beafdabcd36f1e0043999c8051dc9edafe9c9a0ceea"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-git-ignore-decision-record.ts",
+      "before_sha256": "66aa1e4ecf2c5a329df4d6c8a1c08e92ca026ed8e4f63b8ffeab6410b83c7057",
+      "after_sha256": "2d6c710f74724912afbe978991dfb0876be0ed1bcf414d5edd8211915f62a37a",
+      "semantic_sha256": "26aa32c9f8f618241a20835754981b236d44f15336db714f0717e37361b798d8"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-git-merge-plan.ts",
+      "before_sha256": "1d394f8704f6d0368aef396c022402efea465c93bcb18a05879c444b8a620ab2",
+      "after_sha256": "564902574b67bb5f420ddbc5d4e30a0a08fe4965b74054882cf42de01b32f15a",
+      "semantic_sha256": "7cd0d6cfed1ebb16a2903ee8f00ab6004b3a05ea74aafb6a8964e9208dd902be"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-git-merge-run.ts",
+      "before_sha256": "a887923458d0b908e1a13ee81ec131c203b0e81e8683cb5a6542f772f73e29eb",
+      "after_sha256": "fd2b2ecfda5d4357ca2d24a686ccf52d5e3427c30d3c99f7410f37aa66f8efdd",
+      "semantic_sha256": "5791ff4887d26d2dca5557b4c5a79178edf56a5962a21e6ceb59f9e9ab5097b9"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-git-pr-plan.ts",
+      "before_sha256": "989ec8c02acaa00478a6f73e3202c25568f8c51eb9dc18f27b59fadbe9976e42",
+      "after_sha256": "103fd1b70eec12f302124f0e6cce0528d24365d585657fd8f5b020da187c72c2",
+      "semantic_sha256": "37f5dbaa436bf25f29fdf6e4f7c46c8d7975d62d0acd50a6a2baa982e8212ab1"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-git-preflight.ts",
+      "before_sha256": "f877a02bb9e0370ae09e34f41f0d25897b0053678dc09020306db05363613aa8",
+      "after_sha256": "47f7fbe120048305b5919a8fa2179f48a37e3675a5547c2a736c8a5c0f473a1b",
+      "semantic_sha256": "de1c5c5878280f7b9ac3dcb801e9a9bd8e2037b9b228ee7c187a478bdb2e8cd7"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-git-project-adopt.ts",
+      "before_sha256": "c7e2b70aa1ad4bce9f21aa4bc6067cf78e4020bb5a265d3f55ca2cb90dce2214",
+      "after_sha256": "335257fcead17adf8945db2aa57f702b7545db02725fd5862353c54708bc7a70",
+      "semantic_sha256": "3e1dc180e15958723895fba57eb66af67bb11b4282c4b7387bfb9110bb441f26"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-git-push-branch.ts",
+      "before_sha256": "12807a901356410d864b34777bb933279c45a02ced8d5494a17c65a3b1927071",
+      "after_sha256": "15225b9825c277e4f8fd978a03fea8c13cb69513484c24d8ee2f7ad6e1f67102",
+      "semantic_sha256": "4b4d2b67373d02fb03236d788a6699bf0b5e60ef5c9dd58b5d1e2929df4d1b15"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-git-release-tag-create.ts",
+      "before_sha256": "ebd1f63cd5d872eba9cfee75b245a936a1a06cb8a38d4efd5e5550ddb3ae7d3d",
+      "after_sha256": "806f532acbc3ca047983d03392c6ff2719485ca8ec257e56f91e95b392974b57",
+      "semantic_sha256": "9fb41956612d3ce12c60d2130681dff1a3ca8a4a7ee72e031cc3ea6ffbc12890"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-git-release-tag-plan.ts",
+      "before_sha256": "9080ba63d6eaad3cce731b4d1d51f916dbe78d5833cf62cf40ed6316ae0836da",
+      "after_sha256": "bc901a1b21c0473794abd7dc84b9e925eb8100d5341e12c2faa68463827e9a61",
+      "semantic_sha256": "0e3bd05cdd59d761cf67f7a60514d5ea7967c76b73aad558249afe2b0fce6012"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-git-remote-config.ts",
+      "before_sha256": "94a4cd78f2894c7daba5c57e5322782978ed47ef946e4a402da35197502f7c13",
+      "after_sha256": "c7b6ff09001e01956e12edd6dd5073c938886c09a5ac9e08214497dbd141a40b",
+      "semantic_sha256": "0a2dcb4291f85cc56debc7418ec8de356630572fc149a628c27d615311d0dc7c"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-git-remote-probe.ts",
+      "before_sha256": "f8d60fb9d725be549a630e37c785ccc9ab55ee8caccafa46ed71e2f60dfcaed8",
+      "after_sha256": "841bac48732bbb2ce9ed19b1825e524452d86e8a0379806a2fdb8665560d8513",
+      "semantic_sha256": "bdedd818be1395dd81792eef6204205ada5f81419630881d0cf19874a3c8fda8"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-git-stacked-branch-plan.ts",
+      "before_sha256": "a0fe3b2d22d47fe62e07fdcdd0f02155986f44907680d24b800ee33d86857c1e",
+      "after_sha256": "599635e3d37cba292afddb2163fa0c42225d2107cbe0d9ea172cb9d50805a9e2",
+      "semantic_sha256": "9264059f9d805beca436d67f0bc8f2757c833deeeb747f40b8ff71ace0c1e8aa"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-git-worktree-create.ts",
+      "before_sha256": "79b165f12500c5a1e84531da69df300a08ff7e66c03b537afc72965b25b03dc5",
+      "after_sha256": "a138111ceff74970c42d33a4c94cd3191bc9be0cb892bada53f2150cb889be14",
+      "semantic_sha256": "7c77e1f0bb7378242c16ba1a72898cf8a8092dd6dad1779e1a7edd80ccaa00bf"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-git-worktree-plan.ts",
+      "before_sha256": "716a3aa9bd5811d46e70305eb20784df07160600bb5ef7b65d395f881a2632c9",
+      "after_sha256": "415a18075a775386069e30492d7bc9be4e287c3a170cec72b902d8856751b34a",
+      "semantic_sha256": "ffc2eb1db5102f59e3ff76d92190890d4a99951af6cd5f8034f5d2089e1c93de"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-hard-stop-resolve.ts",
+      "before_sha256": "765d1edf71d135d86627ec182115bc61ece8d41005fd646d427de7c660f254f1",
+      "after_sha256": "4291dceed54d2f1bed52d2fc1acab4c23fc6aa038b2eeb900276a176185f182a",
+      "semantic_sha256": "147ea3598acb29b88868fb9a79ab538506c15ef2298033d618aacc3288d4d70d"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-knowledge-base.ts",
+      "before_sha256": "0c16d56f66f749633735a035ab1ab3e0e3b00b55cb812f5f132b2e1b57c1ebd6",
+      "after_sha256": "b59138c64cb80d1a6cac8fdf40afca64be3dbab58f7305c9440914e98a3f431e",
+      "semantic_sha256": "39d929749ab838661ef8494cd63b1cd4a566f9af467497ba91cb3ce971c21eb6"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-project-config.ts",
+      "before_sha256": "747fdaee8f8682dada1c791fd28fdd6b9ada5d271e4ec51c4201aa5b1131135d",
+      "after_sha256": "64b57254616f00195b6ba873a3df5409b0d4088598c3fe5004e27c088c8c4c94",
+      "semantic_sha256": "e8cc2677d9a487531b8f26099588ab0f234b0000d97ed5088ac57e373ab22568"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-requirements-gate.ts",
+      "before_sha256": "f499b98f2626019e9192463cfcb18a8614b861189dd87df54f33d1eb74683722",
+      "after_sha256": "baaa36830180472e90bc2400cd4bda7418e28597dde72f6cca5f4fe724798c88",
+      "semantic_sha256": "56fe5577a49351359a6df7c61763a75c804c04edf5695f1e0f1693d7cea4c493"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-safe-bash.ts",
+      "before_sha256": "65c1ddba98edff1db3b0b27cff43f3d655922860bfa0fd849e991ec8a6784333",
+      "after_sha256": "ffc3f50e4d0a7905106219564c1ff03ceae8fd32870b8848d63880923a6466da",
+      "semantic_sha256": "cdd314b898d06e763eab08bcdecb059be3958ffe80dc6926147a79dc260095c9"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-semantic-closure-run.ts",
+      "before_sha256": "6df9c1036aeb8c5606036d3531963eb0404ce5ed80da9aabf63bf03062f9516e",
+      "after_sha256": "d9068642b9e1b81d6a84a807e89b3b2e4db89652031da3961d1aec9829506f0f",
+      "semantic_sha256": "c0209a94c6995b26927864e8b73b517c0b4b7850fa59fd1f129d67fed4803cec"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-state-read.ts",
+      "before_sha256": "3b90b9081caff9b9b5bd2db08a660294b6d301ca0075f6bc01e4109e636e04df",
+      "after_sha256": "380a7f9e4bb6ca7d7a982be72472836c437650b7c7dee51e5148edd5e0362e09",
+      "semantic_sha256": "93f216bd28d580685caf72f5270300eadbedbf3282eb5bb7d4a9ba218419d760"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-state-transition.ts",
+      "before_sha256": "967a65d75705adfb2429c8ea3e3bb7cd751f2f5f534817318cbde83396d905c6",
+      "after_sha256": "afe1e46df8c6d99e86c53f180f668c7bf412869c91cf4dc79c1e5b0b730d440f",
+      "semantic_sha256": "460dfb3891cb26bca941b555d36f445d13eb14b6969adcc30522b4f878ceb254"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-v11-close-gate.ts",
+      "before_sha256": "5a9bf40caca19d13bd6fe613e7a0f365117d0e07b06b7660462f732bf740ff78",
+      "after_sha256": "e86dba017f123a08a71fd2b2866073d8e8d5abc412af454e8e852f7f1c1180e9",
+      "semantic_sha256": "81c35420ad40019e9fae2d8cd8cbac3096de3a0fdd297d8ab1fa89691f7961d4"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-v11-code-permission.ts",
+      "before_sha256": "7e79b789a0d502bc76c784cf7ef6483b3b43fdb58d544b5531b44efdba6b2749",
+      "after_sha256": "468e746f0cec4d46045f97c6fc31bf53da3fe8d9c1c0939f9a06753a065520a7",
+      "semantic_sha256": "158dd459b25eca9d02fafde16d1cf16905b988fc0337e718f1a0b37ceadf9e0c"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-v11-decision.ts",
+      "before_sha256": "4dad2408f88898b323aa344456ed6c5afc42ea1c09511068a601e5752c40db28",
+      "after_sha256": "f96706111cbeaf60d03d742b60e03bdb57379331979066ed58c2431fde26356a",
+      "semantic_sha256": "4275f671efa317f832cf43e4eefa42c49c76fd3b678bb66bc7de599cf7966b90"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-v11-gate-run.ts",
+      "before_sha256": "6c545da99d351d589ebaac1e0554c350b398a52c921b55511cae6af8c537c739",
+      "after_sha256": "d22ed635548e70df122d540004b0e78e57be1f64e376f5080ef90b98b9c17abd",
+      "semantic_sha256": "2ef01a6490063eb4db9b4e94422d6fc910033e95c3566ac751a3282c33587d8c"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-v11-handoff.ts",
+      "before_sha256": "1e9f79b5e9b05cbb08d40ddfa8ea3ed2c45073a06ee0694dae4629f360e9e906",
+      "after_sha256": "a1df393ba53f088291aa3e5dc6bfd2899836e5defd8c1e0137173391c335623b",
+      "semantic_sha256": "556507db1c50e73ba29229e207b0015fdae2412786105f051fdd201375aa7b42"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-v11-merge.ts",
+      "before_sha256": "6d50d5c7ad249a7a50505b1a3a429d0f90b9eb98182130e1046290eb1b0e5a82",
+      "after_sha256": "b7329fd44b337f816db9696c56922ea86bbc719b554a5eca8da2d3ed5b33b9f8",
+      "semantic_sha256": "3ed59ef1a90ac65e945c723b2ab7b6a89c1cfce7e53862e1481a1c955b74c6b9"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-v11-rollback.ts",
+      "before_sha256": "7cdab3e7667d9c9e4f93090d75d359d7e5fff0e05b61b1b9745939344f08d4e7",
+      "after_sha256": "530f71bc0ff9e74fbe14822c6d78a7221ddfccab1ae4e02fe0bcf06a6a3ddd9c",
+      "semantic_sha256": "5f4f7a7b09951a85c9e2834f4b249345226716ebe14633e32a1d293eb3678d90"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-v11-verification.ts",
+      "before_sha256": "e2d3530f8be943de641d17b643088f6a3a4bb29360ed8451e7a5dd02cffad019",
+      "after_sha256": "cb38a4b14dea498c2be59b9d74c451e5eb2875e806bcb2db86fbcb2b7ba01c5c",
+      "semantic_sha256": "4d541b256891c3140c0afaac2bae16298054caf5d3e334e7b67faec588547b64"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-v11-work-item-create.ts",
+      "before_sha256": "9f334c66a00daf94e6104555a3838cf793711f1d444942dcb0bf1080b56239ed",
+      "after_sha256": "e94f433e5a578d17b26ccf9ace56c4896f0fedd4c660d7aef8389f869fd2721f",
+      "semantic_sha256": "2fd3e381dce23e2e0fec601b6b528d8ee3fb893e3187fc71aaac03e9e348a313"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-verification-execution.ts",
+      "before_sha256": "6b843d93706604061567af38f40ea3956b29d59aa8c04a1d83affdbd7b53b05d",
+      "after_sha256": "f5833fc46ece155efdc740bba7625a69e704805a34b0e2529a21952fdf4d9588",
+      "semantic_sha256": "31c88e11834c323ad3117aeca8126bb1cb55bc3368fc054b939f0f1d21e1bfad"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-verification-gate.ts",
+      "before_sha256": "9cd9710697056b418de14315d13025f5a122c2594d51c8b3a914873cece46ec7",
+      "after_sha256": "866e5db73eaeb6616d71cd0b624b207c669e51e835ab24e28bb922f14391804c",
+      "semantic_sha256": "5659b8d353ca3f18c1fccde05570759ef03269732fda79e6578291f7d4c31f54"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/index.ts",
+      "before_sha256": "da124c0c68984bc0e14afb88efb8476b37d059521071bd7e75f93664bb10d006",
+      "after_sha256": "12789cf69d62edd9cd72dc999bb40872bd078f0a515470c325b7bd5718a92d6e",
+      "semantic_sha256": "5db950a0c9e687dc827d91b97f215fc46ec5599c35dcb65c9fe668acaf03a69b"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/agent-handoff-v11.ts",
+      "before_sha256": "7427173e404640375ea8654e5d1321f9798c2031381375649e6d4fc98352d234",
+      "after_sha256": "1dd212b3ed94e56a041da86ddcddd89bc214ad331e662f953463bdf0cf0adeaf",
+      "semantic_sha256": "88438d98d176241d20f22354407dcfccc7cda608f780b48fd86d8c5f28fe2f80"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/allowed-write-files.ts",
+      "before_sha256": "c6c59eebc99f94022362f657311b9d665752ab2b39cd6945306cd64ff842f05c",
+      "after_sha256": "54a46f87c389527619a86f799d4eb88bd8f238a872f44d2551ba31963447da7b",
+      "semantic_sha256": "f82b88de121c61e13dc53e52d6e953be502b6b79701f69e955bc4c0fd01537f3"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/architecture-governance-v7-regression.test.ts",
+      "before_sha256": "0e9d37c8bc1f9343a9eb62678fa0c732804e7ef56de5c5b197bb2f07fb2c83b3",
+      "after_sha256": "4b02d4afd3654b68672006196f829cca4406b8ec384e73b07b719f0ad3894eae",
+      "semantic_sha256": "c136aaeb5fc82ec9e2ed530090398bced51d3f3be8206b540ce0ed329d47e1bb"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/artifact-schema-validation.ts",
+      "before_sha256": "6c99c3586255550b14c3f5cc224d91e4b0fb364deb15b17b8a32c0e810fb366d",
+      "after_sha256": "280517505f11a6eb80f35f9c7cfa3cfbf48d82332fac487711e1fbb05e01ef22",
+      "semantic_sha256": "bd4d0daa8121c4c2b4b892882d430a3ebc35634ede2cdc30a6e6ebe92cf49159"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/atomic-spec-merge-write-provenance.ts",
+      "before_sha256": "71d989ebcb282eb0d8722616bd6bead7e41dd555e7be3ac63cbd0d1e5e77f94b",
+      "after_sha256": "18b52322613e1a1d03a6b594ed454bb2076b22fff247992f6169c9562fd8e611",
+      "semantic_sha256": "45260f9b043e5d892666dc64b97864388581305cd37c55efa662d8d2e4c294eb"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/authoritative-work-items.ts",
+      "before_sha256": "024d51ed5f45305c35f3cf6625543ffd63b93fc2fdcbff8bfefa5670d65aca1a",
+      "after_sha256": "525b704ea204a32ff8aa072e5353f28140c7b4c8fe17a46b8ebd4f89ab2fe4b2",
+      "semantic_sha256": "1d2a1478d87e712d7ff9d802e2b69551bce241d6a77190d547f3a2b777f610e3"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/bash-guard.ts",
+      "before_sha256": "fbff0598e9b9bca179cdb777b324779e154b4b8c2e25396f79655c307b47540e",
+      "after_sha256": "0caff836d3aa24c3ad4ca7d4bc0e836d71614497a7836ddad69e74aab13261ea",
+      "semantic_sha256": "f04198292648f17f2a7652ad6e9ac16c3757104ed265b4315bd45c284f8ace16"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/blocked-write-classification.ts",
+      "before_sha256": "05094b0a6dd6f1912c8d823837aefb710f1d814f7a1570894d9d694cc35b3b39",
+      "after_sha256": "e69212b2af2249b2979ee3d1757e49141953c1f200c055a5c9c5336d3b3aaba9",
+      "semantic_sha256": "da5156c3a5197d1909aa32ccbb27d99ddc394bb749cf189228a403f4e20729fb"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/candidate-freeze-v11.ts",
+      "before_sha256": "1472ecfa6f669bd100d6a6ceb8a5693bfa6944b1b6374df6b87d83bbbafa3658",
+      "after_sha256": "7edc945580a7f2aa9badac1070aa41b9f41d5a944b4c10244302f2dffa969dbd",
+      "semantic_sha256": "8bd54a8dbb402f6f651635cef37a5ac66775e0cb7f2ee2745be453e6abbb6f60"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/candidate-generation-integrity.ts",
+      "before_sha256": "41067e4017d277b98596d9c115b68a58d8b64b129405b28b8085e2a40faeb743",
+      "after_sha256": "62cf07b4a0af67af57982f66d2ef67e30481035e3b1f77ce3b3ee8c78b150818",
+      "semantic_sha256": "8ff9be32615dc4be8d544b57a075624bdf70eeade789bde384022d606e8309d9"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/candidate-manifest-owner.ts",
+      "before_sha256": "8840480ac66c9c99afe76208c7ee13131b132a518d3eadcbd25a78661cc38f59",
+      "after_sha256": "f80852e9f77160c3a0d46cda43806b2a291b633fc642c4b3627b04528d1f7a09",
+      "semantic_sha256": "1b4e0ae4029e66071afc52a8e5cbc367818ceeea277d7520a492086ebb161a39"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/candidate-requirement-reference-integrity.ts",
+      "before_sha256": "d7fd4bd963b627a95b35208b62dcc4692c8bdc5c9d0284faa76c08a18788a1cf",
+      "after_sha256": "90c0a4d011043ae65bffeac168817593ceb5039bf860514af78186e164b239e3",
+      "semantic_sha256": "960237cb7c6c876d123572091649101b423ab371f5a39621b6aeb8c33010e4ae"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/change-classification.ts",
+      "before_sha256": "d2e0f09ecc7c2f339d32039228cc91ffee1b6b8c5bb455e21e173b91273c5276",
+      "after_sha256": "bbc50857a8944a8ced9913541a206a20d623602d9cb20fd60052f6c798f1c040",
+      "semantic_sha256": "34b4493cfd52b93c8d6a6c54048bd6bdf8059e1605e953addcbac6dcfc236cd3"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/changed-files-audit-trusted-writes.ts",
+      "before_sha256": "3f105ac0d47a941d880340d498dbe987ef2726aa1aee02f7e4b6af337de750af",
+      "after_sha256": "5988d3c07c8e47cf9b298f0632c5f4045bc7cce34b280aafefda06f34a332a82",
+      "semantic_sha256": "fd7e4fa010cfa6986814facc2a9c24a89dc47bc407fd04781da15f37b0cdee4f"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/changed-files-audit-verdict.ts",
+      "before_sha256": "990b1c13bb5bb684d9f8cf79110ebd35cc2dfdca523af24ee32fbbd8b56f82f9",
+      "after_sha256": "8473b877304ceee142b510a3ab688c2dafba626a03aa6cc8a3d68c1b7db7efea",
+      "semantic_sha256": "2e688244888c9c602eaf2b4c6cd170fa4922214d3032b33ff17821a5aef18366"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/changed-files-audit.ts",
+      "before_sha256": "f6fd9f6c71be7bd45ef94e7cbd6edc10a00bf7313885dcb70a0aedc1d8b5f66b",
+      "after_sha256": "9aa542ad2e30ea1dcfb2cb099e63bacc276affdae4aec46fdfc54e0a9c444fbb",
+      "semantic_sha256": "8347ec22df280be931229fb637a8506d88552004d1555e95def737d374e47a05"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/close-gate.ts",
+      "before_sha256": "dd1ed7308e94becdf4f7aa35c7baff09cc5e72e5201e126cf1e80563875e154f",
+      "after_sha256": "75ad47a78040e3c2329ff98117427317a4003fe2216b8af873e56226a72f1629",
+      "semantic_sha256": "1ae07965747f98b115d8b3ac3bb234ffb442d95a4297aa20bff473283b509577"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/code-contract-verifier.ts",
+      "before_sha256": "4266f7f760f17f72c8f6ff14c292a9ee95e4a7768970d042fd666bbf2628e727",
+      "after_sha256": "20165ede8fe7b407f408768b6f28e881a1e6bd9551c2c13cae4d2598df58c516",
+      "semantic_sha256": "ea13c33088476a7676af866a2123b693ab4e73c96c007d8f4be9ea69ddfbb994"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/code-permission-service-v11.ts",
+      "before_sha256": "4546f5ee9981be9a94aefa657ce582d13cc268199b8b698432126e918a9b82e7",
+      "after_sha256": "9b3b5f8398a7db0b0b1693ca5c4d25e39f0e46e1e1cb00376810d4f241367bcd",
+      "semantic_sha256": "41702f75696a6b0d9f7e4e2575484f23d3520bcd086ead5be3cdfcba796b03f9"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/contract-authoring.ts",
+      "before_sha256": "cccfba109a85e48aa377b83a6cd7a7eafde896f9b12af7d71d2643853c076f12",
+      "after_sha256": "340efb0eda24b7a6cfd4b975444f1741543a86631794fdad894b63464c0fa7cc",
+      "semantic_sha256": "8e67dfdcd9fdbb16f9ea39b43bebe0362b07b2641026c289257a38a5a7ee2545"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/contract-integrity.test.ts",
+      "before_sha256": "5d92b75680a0841281fff0afc80a63e18b30bb47413476ea3c04cd3a6e54061a",
+      "after_sha256": "6b50136c81a8dbee7eb39e8d81b1be83bd65560fa3cd109d2e635fb70b957106",
+      "semantic_sha256": "ee0df10d9a05df22d46d2174c0271850be8922771bbc3645055ff11e52656960"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/contract-integrity.ts",
+      "before_sha256": "080aed5bb321a13533d5fa6fe0c563787d1a687d17e80e3dd2d910e818a8dcce",
+      "after_sha256": "49c91f637e208721d742f9e8a2b86ecd120f7baae31fe1614a303bdc2f16cac8",
+      "semantic_sha256": "297569b9ad8399a86d8b10c38cb8492af555caeb8c115c59119d5f597af26c20"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/contracts-registry.ts",
+      "before_sha256": "2fa3c05c32a307216855484fcf2eb271e317de84e1e3d7397b17f5e35f60f957",
+      "after_sha256": "f128157b4fa7644ef842742008ec2f41c00f85953b576a399c7b1ecb881e178d",
+      "semantic_sha256": "7cfd434bb762cbde7540cfe2cd9c7ca4778a626ec19ffe1d0619248b57c24157"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/evidence-manifest.ts",
+      "before_sha256": "a7c5706bb21d46721d0122dc5380c4433a2f3d01f41a8162b40bc39d9c832d0c",
+      "after_sha256": "fbaa9337220856f0b9bc3f7b94e9cdb25668d70b6b34473fa8ddf110cb3ee1d6",
+      "semantic_sha256": "f3e558bfb7a917971ad675ba3e990bf5f830d520266dea057aa23713f67a6ecc"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/filesystem-diff.ts",
+      "before_sha256": "85531db73035c09d8602a21a25d11b86bd37b398230605ffe48b489b4b166898",
+      "after_sha256": "ef6119e946c7fc92c14024099c3e1636ce12799349fda852499810ebfb1e94df",
+      "semantic_sha256": "60660f26dc82e26c438b8708a28c4210eff6dfa9bda5b3bee9da80a64b2d1ec1"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/gate-chain.ts",
+      "before_sha256": "81979a1b3a9e963d28a5535df911a9a49eb1035e8440e64ea16a975da99815e8",
+      "after_sha256": "8b283af00e60b00c260dbe068b55f4df2541941d32be3347247261dce308419e",
+      "semantic_sha256": "ef8d1a70a52f660a3340250e0afe8fea062780b54f17bce15873f500c9331869"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/gate-report.ts",
+      "before_sha256": "e2e79e32d2f6c75d099228c1face186be3c9aeaeaa1ca538cf39d49c5042fc2c",
+      "after_sha256": "c4057a96619f6892b140af6d655c091b0f23602dacc6e86940498c09dae68af5",
+      "semantic_sha256": "193815484eed734e6953eff865bec5bacba42aa7bbebfbcaaaec7887e7777b84"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/gate-runner-v11.ts",
+      "before_sha256": "4a38a6ebcd4e94044068ac3851dff5cb6d1880920707a820cd5c6262d39af47f",
+      "after_sha256": "d62089ba3581a2d4677aa460b0938efa574abcfd64fbb51cab9ec8b22f886a3d",
+      "semantic_sha256": "5d656121523f51486cb3d30054cc71848ffda15445cdbd8951bffe79f562fa80"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/git-detached-bootstrap.ts",
+      "before_sha256": "e95d7e1ae033d028020c384f7ab8bf136bbfe8cc1d081faaf147aa705f60d6de",
+      "after_sha256": "8ae741abc2b34f9368545c16c2bb6e68f2229e0660b4cbc882fd33db35ba98be",
+      "semantic_sha256": "273771719fc9ecc12a1335f88c030878d9c5b4c164a74a880027989665b80cc7"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/git-governance-core.ts",
+      "before_sha256": "2bbc611a66acde37f33d0f00e6da5ccb86b5cd12ace2139c2985d971e2de83d7",
+      "after_sha256": "17515720590d60340bed2af41b2f86b840aee082bf78616d437ab6d569fd8383",
+      "semantic_sha256": "6b23f5788d922f34191bc57f45396f3483c57f4ec6f71bedd10b3221bb5b7f35"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/git-governance-stage2.ts",
+      "before_sha256": "08fd95da59ecaea1cd4d69809e4ad68f427dcf37a723f9bcbb54f43016f5ba9c",
+      "after_sha256": "2d8dfb9d327e123400a377b469845cd5a86cfee70f4b7c5d0054bc1a0b76f938",
+      "semantic_sha256": "fe032f791252c888d408bdbf2976427344a14e0911afe425545abd115a223baf"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/git-governance-stage3.ts",
+      "before_sha256": "995d9e6f26816f2a9af87dbf2a60a0cdf914578059e7853f79f570a4e9de2995",
+      "after_sha256": "0a326334e72d5b9fe4ac0df02710f4e94012397cf95d41b665a8575dd5857fb1",
+      "semantic_sha256": "045a0fd76b5e27b36e4650ddec7e37a7e6fa0a1e61b634af67ff3149bf6ec92a"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/git-governance-stage4.ts",
+      "before_sha256": "4660c07c7814dc24b4ee667a7bce7cf7870d60a214da03f8fa87bdfa192cef66",
+      "after_sha256": "dcce0dd87cf5064c12c798665cc6375bd47ff9b359f14a1e8d5a244061b40110",
+      "semantic_sha256": "0abdd4348e50a8f364f6d159983e4d378cda9202eb80059f9c542857aef2e4f8"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/git-governance-write-provenance.ts",
+      "before_sha256": "23d4cac4012ee0fb805b67dc084da8c38644b05844188fd1c54f61070c41e5ee",
+      "after_sha256": "2c824427e79262caf849ce1630d08017b857a4db66ece33b3fc226e943630ccf",
+      "semantic_sha256": "73088ad05199b7f0c1009a2397ec74188fa817b458a0801a9d43a6285ff8d223"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/governance-invariants-v11.ts",
+      "before_sha256": "0c725c1d3349af2be393d2b6bac8960370ca7a9efa9cac59445b7ec6ea729dbe",
+      "after_sha256": "689fd1974d7bec83d24a6f45911bea87f5f5fc6e4dec75a5861587192ffc7377",
+      "semantic_sha256": "c3db5d4a565f644fdf71a656fcc681774c8e367216e60ab1f9b43570a4f6fded"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/governance-trace-model.ts",
+      "before_sha256": "241c68b196a4396e7a3116b338515b8dd125cb68e11762e9b603376efa267df4",
+      "after_sha256": "e1573aff505caea6b3c9d777c41a0910ab4811d45c693d71aa4161e9dc397b49",
+      "semantic_sha256": "5506f59132a10cf53bb5d4d733481998b836788b77c694984d5df4e0467f8501"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/hard-stop-latch.ts",
+      "before_sha256": "08c814c9d19a1aa8a7029e67d140c087b5f1ee9fe4248da237eae72b3d22c454",
+      "after_sha256": "90217ca3fd6c2cb6f885ef9d7f84164173cf7be88559a489fc560c59237d7d0e",
+      "semantic_sha256": "f678d0909b0c80103ed12fbd443dd4c85f43f11e9065f081ff900d7fc40e0b4e"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/hard-stop-resolution-log.ts",
+      "before_sha256": "a4f6bf7eb82d7daae882013497ea8b74fecc997afe3551054bf662435d720842",
+      "after_sha256": "a1fe4b2cf859569662fa1263ed6c9841e8b64dfc2d836e7490b7daa6d4d329a2",
+      "semantic_sha256": "88a4ad2ca06fb316416f4c44e5fb3a00da977cc05fe3aa1df48ce8886a291ba7"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/impact-analysis.ts",
+      "before_sha256": "420217e0089d8ce1a525c3cd81961e8d5969ac910f899afa4deb6f1ad50119b3",
+      "after_sha256": "a09e888b556fddab41847ac6f8ac125a4bf926e6114124ea2a7e15e3051cf5b9",
+      "semantic_sha256": "94a4e007ce6ed23dd1f34a2c1c0d56f28b8846547e9d6dd4f4bb02c8ecf26e03"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/implementation-baseline.ts",
+      "before_sha256": "36d294c50a3574977c8dd7d8dbf64374d3ee6e3da1618e436734292f7ea9bb26",
+      "after_sha256": "090cc5bb56c4cf5b31d98e546d51d2aef659b4c328f48cd7eb9baba48fed5274",
+      "semantic_sha256": "e1ddba34ad3a54956e811209aa3434b6caf7e027eec6d6ec52d40168ad30eb1f"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/invalid-closure-recovery-archive.ts",
+      "before_sha256": "d04b2223a73b3eb12546c610c24365fe142551557bd3a86dddb5dc648c2f97f2",
+      "after_sha256": "af6fec91fa4e92526b9d701d156d39a93829412bfec6a3e75aaffec39ca7f431",
+      "semantic_sha256": "b5248aaa19f66e6a8ec9529c5e964131d62fc5813a35aabeed06a0f09ef7853a"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/invalid-merged-spec-closure-recovery.ts",
+      "before_sha256": "18564279d9d37afaf5d51d926190302235f5551e83dfdd679b2d951d2c308eb8",
+      "after_sha256": "cfdaf834b8e3e4b2e35fc9025ddcd94015a909b17fbf83dc40167b581a770e8f",
+      "semantic_sha256": "16b31502ef2cc5e2461fd9991d3dcbd85afcb5303d12e00cba126d4984b1d942"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/merge-runner-v11.ts",
+      "before_sha256": "b62e952e770333cc1a6686c4ac18632a3a970f105852dbf4071ae7ef096ebe03",
+      "after_sha256": "2d19a4acd7ef597d8c407c0c0f89285a3186771a3098a85f53f93bf03d163b0f",
+      "semantic_sha256": "1f4851dece0282617949bfe2d08d72339621a041138a428f1dff06d881432125"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/native-write-boundary.ts",
+      "before_sha256": "f41723e20619a6561eb8c34f1bc7e3a8c3cb1849579f371e6a3048c9be3dbe1b",
+      "after_sha256": "1ce9688407620bb0bef3b12b71b71314beceadc1ad936820725d09681d82c4cf",
+      "semantic_sha256": "7f23ce17790b9fbc477c5f58eb4a139feecfd5ac5a9eaa530869634a09b493ee"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/path-identity.ts",
+      "before_sha256": "a2dad0299b71ca9ab3b0e770c217798edc487022c6cff9f276dba89d8aab2acc",
+      "after_sha256": "e74563116a7f358781eba16c8d90a3df8d432939637ad1cfe8717a65356b4c6f",
+      "semantic_sha256": "57905a3ee31af3243f78707da88b6fa23480de0122ade83e98bb23e7e93080ba"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/path-policy.ts",
+      "before_sha256": "6acf6f5ccff03f6cd58dabb07703dc3ffbb987ebdf46620980716c1abec19fce",
+      "after_sha256": "6c5be43c476ee992956bcbf6f983f051fb7aff2811d264ed7d4606a6dbc524ab",
+      "semantic_sha256": "5d8beaa8a010685fc22e9ad241251cc8cf279d3fb9706a4632d0d1ffdf6be9e4"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/project-governance-fresh04-module-consumer.test.ts",
+      "before_sha256": "ddcc8fad37b5dbfd90224053c021b894fd7a590cf9a93b46fd4bf3b45d752a0e",
+      "after_sha256": "99be8ed722c22518680eefada34d077808551d5b93549f6bc4ca3d1bbb63921b",
+      "semantic_sha256": "55cf3ae174d52084c94f336928eec02ee82c5b1458bd0bb0988a6f23ea8fb525"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/project-governance-greenfield-code-permission.test.ts",
+      "before_sha256": "673f2056f5567a68e63784cd5761bc7fb6cb02985f77ce540498113493bbe01a",
+      "after_sha256": "f30cba31b7ee54b0c3efda960769f5795823ea62460982fc0cf38caf049d86d2",
+      "semantic_sha256": "18c90cf7c6b0969c62e3939b4f7cb8c034307b301449d49305c86cc050bb5b0d"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/project-governance-greenfield-premerge.test.ts",
+      "before_sha256": "79b2927332866aed3d5b7e1b59760a95ac55025cb6e7230d22032575cfa3ed5c",
+      "after_sha256": "e759c12b6129f49a1786a973804ff49c9324540abb1cf8ee724997e4296d79f3",
+      "semantic_sha256": "79374c1b85bd848cb544354ae2630f2522c323d09fc41b6cb3525e4631a26a48"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/project-governance-task-scope.test.ts",
+      "before_sha256": "4a848cb66b48bad2f5c2ba1fe1c0e0bd6821bdfc04437501ad97a78e723d9a64",
+      "after_sha256": "7dcc76cfe6bb2d91b236497cbc4d9f63ba4cf58e9b1d8a77237231fdf9a65a2c",
+      "semantic_sha256": "3e60ca4ef9d3f7c1616aed9d1f81cf3070e78df59a42140d95aa5fcaeda872d8"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/project-governance-v2.test.ts",
+      "before_sha256": "ea2c7c6430f3e8b07ff0db2c543a8e664423ae04830e5096b7ed74fcb85bcfd9",
+      "after_sha256": "6c91a5d621a6150d47e868861bbb9b319187d6a276dd099149a4d2230f268d14",
+      "semantic_sha256": "07e7d548f41f6f048cfd4e278618440822c791f565e8ade314b2bebba2e8a117"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/project-governance-v2.ts",
+      "before_sha256": "23357246f6131c56cb5682923bc3e5c1a7c0494c82f5a5b571ae16eccea651d8",
+      "after_sha256": "3cc3f6ad9257584406409bd9d1017bc06ba153cac12f1fd7e75109bbc50861a4",
+      "semantic_sha256": "6d590511f6a9f6d7f0878ff3a6ba2b5c1942a829339bcc5025c4d503caf4faad"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/project-init-reconstruction.ts",
+      "before_sha256": "42460ab553bd4673448f3e2eabb0b51ee996e51a7cfba6225bda55e4fcbdb151",
+      "after_sha256": "49177dcf666cd9beff9b52a79c1d90bff27ca15913e72b68dafcbce9ebac06ef",
+      "semantic_sha256": "9e91fa595e7154ddcb3c61323995debf3211b1db18e1c64cc50f0fa1e87dec39"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/regenerable-artifact-governance.ts",
+      "before_sha256": "160a3d0a77d945c93243e40beb08d49c9b0e1ec95289c2501d8589f8648d1b30",
+      "after_sha256": "c4bf92e316b10ac6035032dff18fc48d6c493886d278319337caede8ff9563d2",
+      "semantic_sha256": "30eb69504647bcbffb157bc2804ed70503a83c3ee855a5fcd7c1353ad8e7bb57"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/required-files.ts",
+      "before_sha256": "6a3045b71ca79fd38698e3ae88b6aca361d99dc6a420ef57736b96926d28f3f1",
+      "after_sha256": "e4c43e89f710172bbdf845260fa8acea6380463c84788000bc7d71b39ed33ca7",
+      "semantic_sha256": "413c885afdba64b703215143488fcbe5823ac441b749cd428797f49cd463fb34"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/required-gates.ts",
+      "before_sha256": "96d8c400d725f580f73726793f186f3151358003016c961bbd4420523e275529",
+      "after_sha256": "f37f509d8e0d42f1ce230f74de6e6ad41c5b9af0a9161df07d6fada539a66b88",
+      "semantic_sha256": "41fb3f0a557f138ea03867a97ad980136bd8041913815947264216a031a99f3f"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/rollback-runner-v11.ts",
+      "before_sha256": "1df88250c840d47349bdf100a983fb2a10d1f0a5993331be2fbf9aba6ef8729f",
+      "after_sha256": "e0381a2f06b26036b28947982e94acd64040f4bd76c8af7c3452809c4bc36112",
+      "semantic_sha256": "717ab185ea7515bc6c7ba2c74dfab380e27833ab78847fb3bb217fd5f06dd521"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/semantic-closure-core.ts",
+      "before_sha256": "cb07194957bb14fbb73cf415621083d7a16643710b3a2966342f7a15205e6e54",
+      "after_sha256": "f6b2c0502e093c1b90f28bea31a5ad98f071c3956131777e1efcea5b90372226",
+      "semantic_sha256": "f4758dabfa6d73b3a208b93303f439c389d16bff59c17c2c01a02b56b939f8ba"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_batch_verify_core.ts",
+      "before_sha256": "afd1814ca5472274254f75226de078152a04bb97c44a82167da9de5888c8631e",
+      "after_sha256": "b40d1f537e52e5de012ce49a8b34031953e2b46d85c98afcb6da7b3af7966c2a",
+      "semantic_sha256": "f5e375ae87e9b0b4e50a6f9db195afa634904e78f28e8e9aa943615b5071adf0"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_design_gate_core.ts",
+      "before_sha256": "503b4c3331273e244c9bd96cd9a9d7677594a4f418649ba1585114a8845650dd",
+      "after_sha256": "74b989dd25ac249ed068f5cf459263cd10052551b62f83a0bc48b05e89204de6",
+      "semantic_sha256": "b7b4d9829443986e9e21aaf558193321f335b8b4e7b6286bb84607e92de61825"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_design_governance_policy.ts",
+      "before_sha256": "8d974d1c6e5fcf4ef288511fb1dc3c77ade7cd84623cc2c6b2ccd8da01fb43f7",
+      "after_sha256": "70a3172ec46f90f54273616d416414d01c28d1b1b50b584967093273e2d16cd4",
+      "semantic_sha256": "dcb97e5b95938810793f5f153d273820a582d9ce9e9ca321160ea52e55b36a19"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_doc_lint_core.ts",
+      "before_sha256": "123a108af87bd1b801292a12b5f1f18947d0bcd6c1d88cb3f4dd1c8e7b22e701",
+      "after_sha256": "89c944b520d31d3ff9f71b497ad3a416ffb10e32853f04ef402e14e8a4f54068",
+      "semantic_sha256": "f58b69f89dba512798085e6328b62047b3041460aacc0d81cee261849365ee55"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_doctor_core.ts",
+      "before_sha256": "621c0f30e92650d1a1996b4dc55a0e79165fcb4824e1140369170c9ea810912c",
+      "after_sha256": "48e1c8d2f824e28adc1e512886c0ea353ac855763efc05afe2f047527e10c5ec",
+      "semantic_sha256": "94af834a123106d3003e6ad74801bee1cb2396a7bcb9f5d2a05def83ae3005d1"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_ears_parser.ts",
+      "before_sha256": "7e0e5cad7107df8f57d470281c844d7d4ea25e1ed3bccc448d2535c453931eea",
+      "after_sha256": "52b0966f7a8a2f207384066c89c139b60becfec42556d83532d0cc194934357b",
+      "semantic_sha256": "80032411e8f3561f71bd0eb57f914cfeb5b2f964bb22e328f7dd90aff2935dbf"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_ears_types.ts",
+      "before_sha256": "911b5814f97e91fad4d593c60e2e813bce0318371a52d3d2496f508e64a001d4",
+      "after_sha256": "df0370c9459a33d548ef036f5d2a6bc2d8699d4cc3dcbc5605d7c3201a42908c",
+      "semantic_sha256": "71acac52b8f0df7345d1271c95ef03e45f820012e56dcf675bb94095041c6738"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_gate_types.ts",
+      "before_sha256": "d7be1a8542047a21b4d990904c9fa73e7ce31e1f534ba5698b0e195f8c457d88",
+      "after_sha256": "c278bf4d287a9b0e162792b283ace78c2dc9df8424797b631efb35c684e64183",
+      "semantic_sha256": "3ea8dabf9464cac86e08dde8cd4e15c5960fa58a8ed8e90470c8a990d1e0a136"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_knowledge_base_core.ts",
+      "before_sha256": "d501a934aea989b682df536c045eec4709ecd19a1db683888701e3e608fc23a7",
+      "after_sha256": "fa6853722a0ad88b2979c39a40da834e9f673e0063948091f3249ed8a603f045",
+      "semantic_sha256": "3fb035db0a1410546d0a88b1cd267611faca1884e0273f5ce399c23afea5c6b7"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_markdown_verification_parser.ts",
+      "before_sha256": "873f6a32f324dd51c3114a8b332bcb053c73878f60bd63b71d60102150d95a42",
+      "after_sha256": "2a2d08c75674efacbcb9822536ef3ed6badd493208dc559dba41ae4568e76220",
+      "semantic_sha256": "cbff668a8b9534ab48075e8672e261630ffae09ddd54ae614d375ae44e5f9dc3"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_project_init_core.test.ts",
+      "before_sha256": "c1ca4c33b5056010a04e7ec1ba9b8fea7185e621158015e47c6fdd7423c17044",
+      "after_sha256": "5b03ca259396fa4022dbb65cc63e7e895faf2ae085cf235e5cd1b0d4155ce0cd",
+      "semantic_sha256": "1782f066d03dfb932b1382d02231cacade4700d287187aba8f1434724aa71ecb"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_project_init_core.ts",
+      "before_sha256": "64bce0d36f3a04a3a64fd4b94707e7282b37ec0b8b57d6fc058bfa66a9659038",
+      "after_sha256": "cfcab1ca65f02762e1c5f4a6d30b3a8b543cd4524d185c1d8ecaa05f41a3fac5",
+      "semantic_sha256": "552b7fd817450c4ba278723ae703f998d1ff5d0fbb458ed4de4c0859b83b0bdc"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_requirements_gate_core.ts",
+      "before_sha256": "6d1baad3d1aaa0a97f9a4f2e320c897e376e3320c2121ab2871762caaa4b79e3",
+      "after_sha256": "384bcbfab24fe4f5355877b06992b0a08c3e42743c2aa96add1d167f63f8aeb3",
+      "semantic_sha256": "f2b38c67572ff08e81c9dfffa9d9bf397dc6bbeab38535efc4fd6b8656eb9cb1"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_core.ts",
+      "before_sha256": "f36720a654541cb963a3fbb449e36a7041581a0d071b1a60b3dceb92619d2255",
+      "after_sha256": "14a8c5e42971ce13764768857d59f034ee4dcf14f7e454bd5e8191e7c0368f35",
+      "semantic_sha256": "99af7e34db39770a578bf33b2bdd3146a86bcf3de8cd6adda017f69dd4030b21"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_executor.ts",
+      "before_sha256": "f0770286fddfc450f65b2711c98a7414f223efd9beeb11042eec41f41e5406f0",
+      "after_sha256": "154e6b17d51183d9c0c251af75745c56605a348a2077840e8bec37f94b935ac6",
+      "semantic_sha256": "af8c5a9d84c3552f32fb9b86fd234c1394f3fd7c0b6649363bbde853cf6f67f8"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "before_sha256": "08c4f8ac9610a29f75434360951bd5c130485ae2f1383cfcf56d19b84d96fd7f",
+      "after_sha256": "52ab07857d9a43dd4293b8b232175b1337279a7224dde4f9902b14d7f2ea0a01",
+      "semantic_sha256": "e8e4cfeacd5c942728b087204a2ea1184dc451da7f3b86bac9000083403b2356"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_types.ts",
+      "before_sha256": "82d28448b6c6ee039c0cc7c7d3e1e763f18d3f5c7fd4291b16a19ef5d81a2701",
+      "after_sha256": "423342efb5dc853619f3cc6026be401308a29cec2b6cf23d53cdfeaf6be143af",
+      "semantic_sha256": "83189b7f955c9f28587d16821fad5bc47a75acef70cf4917e011bdc7bd123d80"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_section_matcher.ts",
+      "before_sha256": "4f800f946668dd1a2e494c62c9a4690375e4aa5134e37b6d12abebd9eb9ba92a",
+      "after_sha256": "2c8e75d1b184163f6d2da2b2516b8205a80c9953bc0564f4e5b59b77c035ccbd",
+      "semantic_sha256": "b6be60a4a680f8c3d6c18724744f452b9605ecf430003884db03dcff75cf6634"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_tasks_gate_core.ts",
+      "before_sha256": "982676e890668aa58f7e6cdc3628fe78208ac4b4d14cb301f43ea07befc979b7",
+      "after_sha256": "d8be21843991d61fd310ba3515e3b8d4822e94645a9b2bc3b7cc605d42e51bdb",
+      "semantic_sha256": "9f85d4867279878bc899712468a551b7e5bafec92d8cb3d6d7754fdc84af2637"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_trace_matrix_core.test.ts",
+      "before_sha256": "6ca7ef73cbfc6cc98d4c18e4f1f0e516a49e64f65c523fdd9dff7bfacea7c1cd",
+      "after_sha256": "12d3a437fbbc14b5e9ca646b3472e1a2606da722dda46a05fbadbe7a38e58c1d",
+      "semantic_sha256": "22b706b760a902256e6da4558628e533294028bee930b1710916dc7a055bbfa4"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_trace_matrix_core.ts",
+      "before_sha256": "727a434d29ca44eed777f39aa02acf3406e0aae0b201e0c74f186799cc283cfd",
+      "after_sha256": "edd0749bae48aaef9c1666d8cd54ae794851ceed2e44b6fa8542b08f0360cc40",
+      "semantic_sha256": "90c131418392ae4e6543035a4f48751e6105a1ccc40f93d3e404f2d2f7a26747"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_verification_gate_core.ts",
+      "before_sha256": "043b1fda212176048dac86655eb9f322f959f9247f2ea6ff6ce8aafdd5fcc5d1",
+      "after_sha256": "8fe2918add6ce061ce94adfab3aa63e85da0c591cf6b76f703cb776786a7f7f3",
+      "semantic_sha256": "22762170b39f28459951f3d150d37e6297f9dce6b8ee52f32b01acc14b9fea10"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_verification_types.ts",
+      "before_sha256": "27312dd939c16eb9e7dfc24feebd8beddda2daae586b0bbe06ba98f244ca07c7",
+      "after_sha256": "c42c8493960fd910598668b3089395a7f1837908096c19594706c1014fa8527c",
+      "semantic_sha256": "4eeeca5a7a13a68f6faccc9e762c049ed8f2c60a24999f3cbae707c4e290ab3c"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/shell-command-write-intent.ts",
+      "before_sha256": "3880951cad7d86ea0fe6b7a9086533cd2c50e7681fef0239a6ee4d4abb4a6d17",
+      "after_sha256": "1ad03ad4f5478545f1b782bdb109aa5454c4fcd227923a3adbeaff28ecc00d00",
+      "semantic_sha256": "214d6ad617279a6790ff1c12c04a154ee2ac76d7942d01611a88abad571ba7e0"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/spec-migration-trace-contract.ts",
+      "before_sha256": "bba900a066f27bc85bce50c539039ce6c5288b0d982a244a78e46694bfff81f5",
+      "after_sha256": "569ada39e624673e3a70949708c6f171620fc111f7ce8ef1559bf9418ab2ccab",
+      "semantic_sha256": "fd052d05dd882e285d333e8e56c5475d2968553ab1e0a68c879328f6ea3acd2a"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/state-coordinator-v11.ts",
+      "before_sha256": "79639d821b5bd44457e0c6ad89acad68e7771e91855994a1348301cc259a7d87",
+      "after_sha256": "09384778b8e69c9963f3ad29d32c00d7fc1f7241d239434dad84c51d4f4a02a4",
+      "semantic_sha256": "162ef82b696a446ca89326b23ceb511453b02d29c548ef67d1f25b468592989b"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/state-machine-v11.ts",
+      "before_sha256": "c5f59ca164d8ee86d6723b610b8c9ce84c3664c93056ad6a35c9b45add6a49fe",
+      "after_sha256": "47b15e0bec79c3fc148e1ec6260c934f7df5e3ce46a7574510d7cb7d0705c77d",
+      "semantic_sha256": "1d0e587b365e04dbf6c6a485389026a11875872446a2ad0b3d3c767f890f3ece"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/state_machine.ts",
+      "before_sha256": "6e3b138de6ebac45568e16308db386575f5dfdc7cb6adc7841da62a80299ece7",
+      "after_sha256": "d17615efe5a06405ed370c2ea3ac65a3355488bc17981760cdd42dd837124ae9",
+      "semantic_sha256": "b93bbf50dd4357cf6d4463a9e2482b284b3f5ec9ddb72adf1ff1602946f4d54b"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/tool-permissions.ts",
+      "before_sha256": "d20455dc36389a6c29378f8fca4dd9ff253942fb98091cd308e3425620bb1a84",
+      "after_sha256": "1c36935be440d302abec7d8a5486a98ab6b9c68f814785d1cb8d15a862dc89cd",
+      "semantic_sha256": "4a3f4d999b027460f1ddbea90a88fc5485e9f545a6a7dc535594f4cd68af6b8c"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/tool-wrapper.ts",
+      "before_sha256": "2c7249382d814a6ccada8d50154f9e2fa8299eebb69567e3697b835dab06bcec",
+      "after_sha256": "6cb8b695e108d5897da082d3c36a011fd35e8c0d5270056c010cbc1d2cf93483",
+      "semantic_sha256": "175da14dde7259bbcef1fac55b946ca22e1c4c9acf449e89b7b662200cca5054"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/user-decision-recorder-v11.ts",
+      "before_sha256": "e31da10f14902880af0c90f384842dc4ae2a0cc5f11cda61d879e9652762aa11",
+      "after_sha256": "f42df684f704e1d454f96d3a8bc389471e48f4438ba800556a4b89f9a6b308f6",
+      "semantic_sha256": "18f3b21d8a9b9dc9461987b3daec3f40974993faaf4834b3e561ae162b6fb08b"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/utils.ts",
+      "before_sha256": "566199d607fe7fea22662019105815e9d3ad453984ca004fc4a3bfb3baca994e",
+      "after_sha256": "fc93b27167094e55cf712238a42e3e7bc34fbe27471547aea9f0475a443be417",
+      "semantic_sha256": "3866832b270054c0dc063e0f74fa0299daab3fc6729d51615a04e39d1f8905d2"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/verification-evidence-integrity.ts",
+      "before_sha256": "d5387761ed490dc8e4359743d725b6dc72d6c464139d7a3870167f11e5cf0458",
+      "after_sha256": "92010a8e5f63a6665df86f33ccd5c546f9ccdb7a0dd2aae4d0f0b709adfedfae",
+      "semantic_sha256": "8f8ceb41bc9068b2da06aad9273a706815a4b155178699363ebd3af2704b8132"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/verification-evidence-v11.ts",
+      "before_sha256": "bcd2d62800948ddee2f5891581b6d87eec91fe1fc54b4a0fe6ea67218914d098",
+      "after_sha256": "96998cb04b880ceb723c87cbe23fef9cbf7debcf3dc0a3a38ed61ddbe56d61dd",
+      "semantic_sha256": "cfe339fb50a339880f481a5f4f6ab76c91eaa18811bfdeb43497c27fee6b9874"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/verification-governance-contract.ts",
+      "before_sha256": "4a208f8e4128e9e3e40c196f9d1bcfa7976a35e6bb07a1d69965545156f32d67",
+      "after_sha256": "30d7f3fa1878c6d1d2a3ca1ad04aeae1842d34f0290fc0f84ead7a531f65c064",
+      "semantic_sha256": "429e969efce7bcad4832374d0f6dbfc8f59775b72fc2959ceb178b825b8d2be3"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/verification-report-contract.ts",
+      "before_sha256": "2233e78b8a88bf8a826e2930c3724474a8bdeb9c70201b5d02f2ad89a08308dd",
+      "after_sha256": "222cb5409d64471d0a66737d48bc83f1a175680dc2b64cceaebe12e653a0735e",
+      "semantic_sha256": "3ff5386c67c03bd3557dea2682f14a243335b711c26e48d5fe41ce1e886efad7"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/verification-report.ts",
+      "before_sha256": "d824dce6ba47ca23f7d475e106ea4103201790cb938f9deb3747a72ba35c9386",
+      "after_sha256": "e58c69a265b6a6ea8b0f114784a5f68e16a10d61cac5787e6c240b9d32391db3",
+      "semantic_sha256": "5dad6f6b6c9e8ff54a16ea58ba1eadc64aeed7f1b87a9443be5a58ecc2280e23"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/work-item-lifecycle-v11.ts",
+      "before_sha256": "5306257840dc173e21c0806a0b86429672a722c22deff8f2eb3391cdcc0b7313",
+      "after_sha256": "e0c7c85df2632422f75b4c39643bad3941bcdb5a2f0e897083ce64f5c299b42e",
+      "semantic_sha256": "48506f5ffab83667d1f031688984f9053178fdaa0bafbeea7b5c2f33fd013cfd"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/work-item-metadata.ts",
+      "before_sha256": "134164e8843453265ce0394087f5bf0fb83930444508fbec74024e2353af5996",
+      "after_sha256": "bb60cd6e7e3cd02f18077cbfbdcf965da1c7beb1500a25348537e6a9c0168b64",
+      "semantic_sha256": "2254f6d2d02d960b87fa11a9d52f6c6292865739ff310b42adac1928b917ddb6"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/workflow-path-selector-v11.ts",
+      "before_sha256": "2875e87a4dd9cbbf0eb01ac35aed11efe50b2bd94b3ca205416baa27264a15b1",
+      "after_sha256": "a31c7f90179003674d6ad9eb47426a8594ce0737eaf12deb96b95955f931700e",
+      "semantic_sha256": "0985cec2253cefeabf9b67d13b6e22575747a1bfcca33b2108a738505eae78a7"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/write-guard-audit-binding.ts",
+      "before_sha256": "08e6d2a0fe7c41b990d8e082e28a858eee08fe5a59f02ece1d494278ee90b32b",
+      "after_sha256": "b16873ed58817646ab858383bbe5689cc27a6634b9326ffed53202991e33dd2d",
+      "semantic_sha256": "62415f6dee8f04d76416a233f8bb8d424f14fee0dca1fa55a1d8d3f73fec3847"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/write-guard-authorization-log.ts",
+      "before_sha256": "f9f541740d507dce8681311172efbe7fd94cb7dda006d8c5e7dffb7521c197e3",
+      "after_sha256": "cc5b1d9786407e4008249ca057d896137368ba165b5d8b82ac2c4444a5e4cc3a",
+      "semantic_sha256": "9676f89fbe39b10307399fd82c407fa47d308eea95d8dcae84ef3bdaa4c4af8a"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/write-guard-runtime-v12.ts",
+      "before_sha256": "771550d1ae4de71befe0cc5c3799a774050359ab057455a3b4ad20fddd7fd8b1",
+      "after_sha256": "b13db9408fbd69746211f67f8b7d09294f6588322e509da15f542af132da89e4",
+      "semantic_sha256": "f633c8131ffafc1680c64d1b62704c21c3e5dbfb6b98e26ea75a81b537bf7cfa"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/write-guard-v11.ts",
+      "before_sha256": "2ba28944edda763ca4fd4039c134c48163ab19f26c3e34936e0763d2ea4df4f1",
+      "after_sha256": "e0e5f28b1d3b46f7d79c676b145f57555cfbef4af75daf890391a30294be380b",
+      "semantic_sha256": "26597e842984d2b6a4b60d51574d15233ad999ec4b26f639542421e9f8990f9d"
+    },
+    {
+      "file": "packages/daemon-core/src/types.test.ts",
+      "before_sha256": "cfec65e32c5b08b0c9294d550ace287d59ff4a5a4c82d71b3dee4c2cca9c1b1c",
+      "after_sha256": "b628760318e7ee15ed6d0a7c28698a4d38969c2e35d624d08203999f1a7bb64f",
+      "semantic_sha256": "f49076e57d3f39dfd97a4c094206880e5f9842f888613aafed6f3e2b04d919b0"
+    },
+    {
+      "file": "packages/daemon-core/src/verification/VerificationRuntime.ts",
+      "before_sha256": "cd80ac1879a87991a745f00e8d28f8a4badff28a692976c496be1dd492678d9c",
+      "after_sha256": "1bd77c28ca73ac1f5d9681b2e9a0777dfc1073da94b47ff663de2107f0a6e64c",
+      "semantic_sha256": "76e5044f7f1cedc190a7e95e6db948af870084bf48059f78755bd6ad547ea20f"
+    },
+    {
+      "file": "packages/daemon-core/src/verification/authority-snapshot.ts",
+      "before_sha256": "8128318ed76f08d66be26eeb5a7b54c95957a62010064282e2edc530cfd89271",
+      "after_sha256": "926501264e8d978a450cb465130c9f57e351c8b6f07ddc423d1c231dbee540bd",
+      "semantic_sha256": "1e5606f9bc3776631f68d9833889997a34ead4408fea119096ddd3f7960028f2"
+    },
+    {
+      "file": "packages/daemon-core/src/verification/execution-evidence-consumer.ts",
+      "before_sha256": "cabf35e2304977eea8d9748b0c98f73be37973b392f1f93861221c5a0e3200aa",
+      "after_sha256": "e7b985eabe3f0b94b1a8a252d731930d961d8c98580dfda0dfb0f240e03dbb06",
+      "semantic_sha256": "7354f901899e4e248383a19d2ec1acbc31ebe375ab9ca341259426ba154794de"
+    },
+    {
+      "file": "packages/daemon-core/src/verification/invocation-lease.ts",
+      "before_sha256": "5d8b669279222e93e9071807c88324b21dd8366b631e0d913d6ee4900ab4bfa5",
+      "after_sha256": "d64ea4189795d593ba28aad0a04f71453b001f370aa1ddc6725f409be1c49a31",
+      "semantic_sha256": "b7f9b5ac4b4897bbd49bb204991a4f9bd8d50e28a8ed83a8fa8991718c149e50"
+    },
+    {
+      "file": "packages/daemon-core/src/verification/native-executor.ts",
+      "before_sha256": "0424ce9c0810c40f80810af9a521cb76a646b6aa299f4b72c4c10a74edb496ba",
+      "after_sha256": "a56acfd3be62663c9f744f0ab5fa9f43901814a7b9eb59b0ea76159748207e06",
+      "semantic_sha256": "79bb5be091fa0bc34547213a693dd29323bf2adef797d688671cdff4e83de1b5"
+    },
+    {
+      "file": "packages/daemon-core/src/verification/node-command-contract.ts",
+      "before_sha256": "81d526d7bb8042c77ff7cf3aea8ca21bcb2b7bb32f918c7bbb2185ec34fd2515",
+      "after_sha256": "6ad12eb4c525f07863d0f63c8b724f2c7caaab72aee04bb73538cf08a00cead2",
+      "semantic_sha256": "1dcc0827ef8deed5d56da761a44bc7d9027d266ebd70032d76e9259624773a41"
+    },
+    {
+      "file": "packages/daemon-core/src/verification/owner-store.ts",
+      "before_sha256": "321c1bc5519bd9c681b823bafa62f1e1da01bddc40881965cbe42b6aa512fcd2",
+      "after_sha256": "bfecddfaff5c384ebb4038603a2e929f2d9537fe38fc57364cde0727cd71df09",
+      "semantic_sha256": "d44daa013e6a3bb4523c9c3695050cdad8fe8eba9c89f5c14130c8a981e1020b"
+    },
+    {
+      "file": "packages/daemon-core/src/verification/rejection-diagnostic.ts",
+      "before_sha256": "28863f32b203ddc5d1dbe6c45e637534e0c3c3be057125c1f07afa18175432c9",
+      "after_sha256": "ac8f0e44390b2232c7171f713b4081c5e5e69c83f0e79f3823503dbc7c489d7e",
+      "semantic_sha256": "0045d639d3a853cee1635de266e0360ce5aad343b0dc293bd9584bc9f6c85851"
+    },
+    {
+      "file": "packages/daemon-core/src/verification/request-context.ts",
+      "before_sha256": "878a611dba059c196a774665051f06d7e17b43fccd99060a14b813667530a24a",
+      "after_sha256": "beff4effe22359909d684ccdc899b1b5983cf9046d038b05560d70f347931596",
+      "semantic_sha256": "20c75a0975a4f58c77b442b5f58c77f8cf3368cfe236eb4538b6495ab3ffba33"
+    },
+    {
+      "file": "packages/daemon-core/src/verification/source-snapshot.ts",
+      "before_sha256": "fe14fa7443619948713f98c7a994ce01686342357da4118ff9d932aea9b13fd2",
+      "after_sha256": "8fb9dc2b1bd7490805bb36a5aaa5f0ac4c2efc078a2813a1f78607be9750d66e",
+      "semantic_sha256": "37f1832f552ba52c50c5102d8ed58609dd2296b5f1a27dd1e404af643af4b4cd"
+    },
+    {
+      "file": "packages/daemon-core/src/verification/static-task-command.ts",
+      "before_sha256": "afb756a3c37e65408fcee856272b3464c1849756015067096bf0799a9f716a2c",
+      "after_sha256": "6c970f02f2b09961ae0353750232e9bbb1ad8f1475dfcb4186635830d05b882f",
+      "semantic_sha256": "292ed6f23f86824afdb83e6e1a238e022c58000aa2eaeac0ffcbc0bddaf4948e"
+    },
+    {
+      "file": "packages/daemon-core/src/verification/verification-assets.ts",
+      "before_sha256": "eb42833a7a4af46587c674009c41a59bcb78198fccc7b32680cc358e0342d0e0",
+      "after_sha256": "bc901b9572e63ae0ce08ea8265a8c225c23f60ef1f1c73f6ea7459f0f09a6020",
+      "semantic_sha256": "96928b99f25b0e081a6bb7c2f311536893096dfd2f53fbd49215e04ba095a9c7"
+    },
+    {
+      "file": "packages/daemon-core/src/verification/verification-plan.ts",
+      "before_sha256": "a8e0214d581813d2d42afb96c3272c5f2e7bbf7e935f150175990866cb947442",
+      "after_sha256": "20a9e57ca3098211f2b602ba1335a16143cce491f1a3977956fb540519719688",
+      "semantic_sha256": "fc28d9f898693c208842211717cf7ff19380afd48df634f5eb9b138c4e4610a6"
+    },
+    {
+      "file": "packages/daemon-core/src/verification/verification-schema.ts",
+      "before_sha256": "66f9355c7405bffcf025d33f81399428bdcf27a4265b415b40d96a796b2afcbf",
+      "after_sha256": "8bfb93db81f0b87d7a4525e9242d65f2f0f2121fdf52d113bdeecbae9866e424",
+      "semantic_sha256": "993d9125316cefa1ecb6b0294f677db2186f046273e91d2124665a9b0899ddd3"
+    },
+    {
+      "file": "packages/daemon-core/src/wal/WAL.ts",
+      "before_sha256": "578471380e8372ba5e216ca04855fb891d0058bfe045ca38b66fb78e335407d1",
+      "after_sha256": "db285fc3fa7f0671b7ee59c9cda2af101d41836be769e899d2ffe5b6ad115c75",
+      "semantic_sha256": "475e98352e438ea99ab0990aaa7c2b87252abac5a5c90f53071a62f794f860d8"
+    }
+  ],
+  "result": "PASS_ALL_SEMANTIC_TREES_EQUAL"
+}

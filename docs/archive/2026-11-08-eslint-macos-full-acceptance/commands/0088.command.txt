@@ -1,0 +1,67 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "test",
+    "--",
+    "tests/unit/composite-observation.test.ts",
+    "tests/integration/workflow-e2e-property-29.test.ts",
+    "tests/property/composite-gate-parallel.property.test.ts",
+    "tests/property/composite-gate-property-4.parallel-execution.test.ts",
+    "tests/property/composite-gate-property-5.fail-fast-parallel.test.ts",
+    "tests/property/fail-fast-parallel.property.test.ts",
+    "--maxWorkers=1",
+    "--minWorkers=1"
+  ],
+  "cwd": "D:\\code\\SpecForge\\.lint-review-a01\\packages\\workflow-runtime",
+  "purpose": "checked-composite-property-and-integration-regressions",
+  "expected_writes": "private-fixture-tests-only",
+  "started_utc": "2026-11-08T09:04:14.260Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 3,
+      "path": "D:\\code\\SpecForge\\.lint-review-a01\\packages\\workflow-runtime\\tests\\unit\\composite-observation.test.ts",
+      "sha256": "dcc5d630a541c8453ed287ee260d2c922b405d141f1fe9b8cf0ef502e04b4567",
+      "size": 1163,
+      "extension": ".ts"
+    },
+    {
+      "argument_index": 4,
+      "path": "D:\\code\\SpecForge\\.lint-review-a01\\packages\\workflow-runtime\\tests\\integration\\workflow-e2e-property-29.test.ts",
+      "sha256": "bfdbc27578699182caacaff03c8ba4b9e4c5caadf09bd427293c18c97cd15d31",
+      "size": 36856,
+      "extension": ".ts"
+    },
+    {
+      "argument_index": 5,
+      "path": "D:\\code\\SpecForge\\.lint-review-a01\\packages\\workflow-runtime\\tests\\property\\composite-gate-parallel.property.test.ts",
+      "sha256": "57e37538cef5f59f1be8371bd7d4ababe5f425688e7f8d13d9fd0410e3857687",
+      "size": 22951,
+      "extension": ".ts"
+    },
+    {
+      "argument_index": 6,
+      "path": "D:\\code\\SpecForge\\.lint-review-a01\\packages\\workflow-runtime\\tests\\property\\composite-gate-property-4.parallel-execution.test.ts",
+      "sha256": "688e21211bb9cb3b2139f4b5b5e4cdd3565a65e3f7a2f8514d2c78624c40d94e",
+      "size": 21778,
+      "extension": ".ts"
+    },
+    {
+      "argument_index": 7,
+      "path": "D:\\code\\SpecForge\\.lint-review-a01\\packages\\workflow-runtime\\tests\\property\\composite-gate-property-5.fail-fast-parallel.test.ts",
+      "sha256": "1e6e453141db07286e4d75918766ab3716d55ed5e6da876c1e5e5bcfa29a09ad",
+      "size": 20639,
+      "extension": ".ts"
+    },
+    {
+      "argument_index": 8,
+      "path": "D:\\code\\SpecForge\\.lint-review-a01\\packages\\workflow-runtime\\tests\\property\\fail-fast-parallel.property.test.ts",
+      "sha256": "445cf816d9cfb618f76a76e587c4b8bc50758dd64eb034626e7ce744090f3b78",
+      "size": 18905,
+      "extension": ".ts"
+    }
+  ]
+}

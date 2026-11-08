@@ -1,0 +1,23 @@
+{
+  "utc": "2026-11-08T10:33:32.421Z",
+  "input_sha256": "8a6aad50fe01954438d4277ef7a73ad7a33c020d5628e739ecbd5b7a40264c88",
+  "reason": "Actual record parsing and checked preflight type predicate retain narrowings; malformed SHA/size/expiry/commit values cannot coerce into acceptance.",
+  "required_verification": "Build lint and complete platform tests",
+  "members": [
+    {
+      "file": "packages/daemon-core/src/tools/lib/gate-runner-v11.ts",
+      "before": "3061b275b948fa5b95adeee9236f54a5c3effbfed4b394fdea1c2d0e956aad30",
+      "after": "0695e87f01359b747e617754249ac3d0bc2ccc285069eddbeed837956f749b8b"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/project-governance-v2.ts",
+      "before": "3b75a03e3cab06585ec99fc2cb0bae43f42d0a9f2a6efc6c58d9844446e5e7dd",
+      "after": "875892b3b3cbe73fe071e94d213af8292c1819ac8ac02d6cb2355b033af2a09a"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/filesystem-diff.ts",
+      "before": "03bc2a29e1159f4b8c2010705cb51fb777a03a35c7b53d361e60a7609e713512",
+      "after": "9dcc9a667fc0ff3f87cc8a2e6780ca52143a387a9be7ad96dced1efd46628598"
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "git",
+  "args": [
+    "-c",
+    "core.longpaths=true",
+    "worktree",
+    "add",
+    "--detach",
+    "-q",
+    "D:/code/SpecForge/docs/archive/2026-11-08-eslint-macos-full-acceptance/local-assets/review",
+    "3549c23c64c53ad29761104a125b87ff50a53cc5"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "create-exact-owned-isolated-lint-worktree",
+  "expected_writes": "REPOSITORY_TRACKED_WRITES:owned Git worktree registration;RUNTIME_OBSERVER_WRITES:private exact source fixture;EXTERNAL_EVIDENCE_WRITES:receipt",
+  "started_utc": "2026-11-08T07:15:57.036Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": []
+}

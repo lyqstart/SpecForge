@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/repair-redundant-types-and-dead-owners.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "simplify-existing-redundant-types-and-dead-helpers-v2",
+  "expected_writes": "private-fixture-source-and-plans-only",
+  "started_utc": "2026-11-08T09:58:25.974Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\repair-redundant-types-and-dead-owners.cjs",
+      "sha256": "c3cd449b5bbd37ed5c9dabe442765ccd36a7aaf11df1cfd3bb8c588884f669f0",
+      "size": 5275,
+      "extension": ".cjs"
+    }
+  ]
+}

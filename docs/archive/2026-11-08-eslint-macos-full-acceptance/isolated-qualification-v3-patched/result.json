@@ -1,0 +1,32 @@
+{
+  "utc": "2026-11-08T12:21:41.789Z",
+  "leg": "patched",
+  "passed": true,
+  "completed_phases": [
+    {
+      "phase": "install",
+      "exit": 0
+    },
+    {
+      "phase": "clean",
+      "exit": 0
+    },
+    {
+      "phase": "build",
+      "exit": 0
+    },
+    {
+      "phase": "workspace",
+      "exit": 0
+    },
+    {
+      "phase": "root",
+      "exit": 0
+    },
+    {
+      "phase": "installer",
+      "exit": 0
+    }
+  ],
+  "classification": "LEG_EXECUTION_PASSED_COMPARISON_STILL_REQUIRED"
+}

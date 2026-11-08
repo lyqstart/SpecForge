@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/prepare-ci-payload-v2.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "prepare-validated-external-yaml-ci-payload",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES:CI payload and official references;no product source mutation",
+  "started_utc": "2026-11-08T07:42:32.890Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\prepare-ci-payload-v2.cjs",
+      "sha256": "2683c8379814e4c2e1301c2d81455a84cf41d5fc07e6b46496abde488f005d86",
+      "size": 1716,
+      "extension": ".cjs"
+    }
+  ]
+}

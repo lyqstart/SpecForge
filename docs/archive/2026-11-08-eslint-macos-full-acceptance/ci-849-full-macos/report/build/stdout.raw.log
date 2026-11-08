@@ -1,0 +1,48 @@
+[build-workspace] Deterministic workspace build start
+[build-workspace] Bun executable: /Users/runner/.bun/bin/bun
+
+[build-workspace] Building @specforge/types
+[build-workspace] OK @specforge/types
+
+[build-workspace] Building @specforge/version-unification
+[build-workspace] OK @specforge/version-unification
+
+[build-workspace] Building @specforge/configuration
+[build-workspace] OK @specforge/configuration
+
+[build-workspace] Building @specforge/service-management
+[build-workspace] OK @specforge/service-management
+
+[build-workspace] Building @specforge/host-profile
+[build-workspace] OK @specforge/host-profile
+
+[build-workspace] Building @specforge/observability
+[build-workspace] OK @specforge/observability
+
+[build-workspace] Building @specforge/permission-engine
+[build-workspace] OK @specforge/permission-engine
+
+[build-workspace] Building @specforge/opencode-adapter
+[build-workspace] OK @specforge/opencode-adapter
+
+[build-workspace] Building @specforge/scope-gate
+[build-workspace] OK @specforge/scope-gate
+
+[build-workspace] Building @specforge/workflow-runtime
+[build-workspace] OK @specforge/workflow-runtime
+
+[build-workspace] Building @specforge/cli
+[build-workspace] OK @specforge/cli
+
+[build-workspace] Building @specforge/daemon-core
+[build-workspace] OK @specforge/daemon-core
+
+[build-workspace] Deterministic workspace build complete
+{
+  "version": "1.0.25",
+  "candidateId": "commit-849fbf12ae8f5f9198f50da2c173e7ffa4f44f3c",
+  "platform": "darwin",
+  "architecture": "arm64",
+  "install_files": 114,
+  "precheck_passed": true
+}

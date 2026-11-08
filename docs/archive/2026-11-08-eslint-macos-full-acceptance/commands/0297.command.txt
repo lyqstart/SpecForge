@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/qualify-signal-complete-packet-v4.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "qualify-actual-complete527-tested-source-packet",
+  "expected_writes": "Actual complete527 Git delta, exact source hashes and all passed qualification; inactive config-data storage",
+  "started_utc": "2026-11-08T13:22:05.412Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\qualify-signal-complete-packet-v4.cjs",
+      "sha256": "14c5a5cfd735fc7c2bcfb3ae1f87f0c93f2118081c93ed2108f40b2830a54c24",
+      "size": 3980,
+      "extension": ".cjs"
+    }
+  ]
+}

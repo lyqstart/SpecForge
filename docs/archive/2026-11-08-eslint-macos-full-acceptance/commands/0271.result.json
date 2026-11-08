@@ -1,0 +1,32 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "git",
+  "args": [
+    "-c",
+    "core.longpaths=true",
+    "add",
+    "--renormalize",
+    "--",
+    "bun.lock"
+  ],
+  "cwd": "D:\\code\\SpecForge\\.lint-signal-a01",
+  "purpose": "renormalize-owned-lock-index-under-explicit-lf-attribute",
+  "expected_writes": "Same confirmed e9d65f Git blob and3f physical SHA; refresh staged normalization metadata, require no staged content delta",
+  "started_utc": "2026-11-08T12:57:29.772Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [],
+  "finished_utc": "2026-11-08T12:57:29.989Z",
+  "carrier_exit_code": 0,
+  "inner_exit_code": 0,
+  "numeric_inner_exit_code_available": true,
+  "process_started": true,
+  "child_pid": 2112,
+  "spawn_error": null,
+  "signal": null,
+  "observed_writes": {
+    "repository_status_before": " D docs/archive/2026-11-07-verification-production/consumer-source-review/current/docs/archive/2026-11-07-verification-production/evidence-guidance-baseline/setup/userlevel-opencode/skills/superpowers-verification-before-completion/SKILL.md\n",
+    "repository_status_after": " D docs/archive/2026-11-07-verification-production/consumer-source-review/current/docs/archive/2026-11-07-verification-production/evidence-guidance-baseline/setup/userlevel-opencode/skills/superpowers-verification-before-completion/SKILL.md\n",
+    "other": "See expected writes and owner-specific receipt; status does not enumerate external runtime writes."
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "utc": "2026-11-08T07:15:49.517Z",
+  "classification": "PARTIALLY_SUPPORTED",
+  "first_deviation": "Tooling/Workspace lint configuration and CI validation coverage",
+  "actual_chain": [
+    "bun run lint",
+    "run-root-task lint workflow-doc check",
+    "lint-workspace current12 owner",
+    "package scripts:10 run,2 skipped",
+    "mixed ESLint/plugin versions and missing/legacy/flat configs",
+    "file scopes:src for6 and src+tests for4 existing entry packages"
+  ],
+  "minimal_extension": [
+    "one root ESLint9 flat composition owner using original registered package profile rules",
+    "pinned matching actual tooling dependencies; declare root import resolver and plugins",
+    "cwd-independent API runner with explicit repository config and package-specific TS lint program including existing tests",
+    "all12 package scripts mandatory; no silently skipped lint owner",
+    "retain exact existing source/test scopes; add types/host-profile sources",
+    "fix all resulting diagnostics, formatting with AST invariance evidence and explicit semantic fixes with regressions",
+    "real3platform full workspace/Root plus root lint CI, artifact raw results"
+  ],
+  "authority_changes": "No new product capability, no D18/D23 widening. Tooling profiles consume implementation rules, not product scope authority.",
+  "validation": {
+    "required": [
+      "whole lint numeric0, no ignored current source scopes or error baselines",
+      "frozen12 builds,11 test-package suites,Root onWindows/Linux/macOS",
+      "scope/install/deployment as affected",
+      "review complete diff and raw snapshots;clean live main READY"
+    ],
+    "rule_protection": "Existing enabled semantic/typed/import/format rules retained; existing documented package exceptions do not become new global exceptions. Newly missing profiles use shared recommended base. No arbitrary unknown capability."
+  },
+  "isolated_fixture": "docs/archive/2026-11-08-eslint-macos-full-acceptance/local-assets/review",
+  "original_business": "Preserved; no new WI, state mutation or model prompt.",
+  "recovery": "Original tracked Git3549c23c and exact before-byte snapshots; do not delete historical evidence or overwrite user changes."
+}

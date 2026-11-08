@@ -1,0 +1,18 @@
+{
+  "utc": "2026-11-08T10:30:52.328Z",
+  "input_sha256": "1f8782ad4390181ec631028337be934eb569cb2b755a97e7338e3614902d143b",
+  "reason": "Actual getHeadCommit producer permits null; observation trace/timestamp fields remain untrusted until checked. Preserve optionality and reject malformed provenance before reading payload.",
+  "required_verification": "Complete build then lint and full actual package regression",
+  "members": [
+    {
+      "file": "packages/daemon-core/src/tools/lib/git-governance-stage2.ts",
+      "before": "770e4f117ccaa5079c8eadfc1c913a66f10c6c03115026a076c121bb9978b4d0",
+      "after": "773e79ce09bac75f4cad5a1003b1b434ec5a04dfb4f692c6fcd6357afce01137"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/filesystem-diff.ts",
+      "before": "c2a299fb2275b5d1b24ab76776e7d428e5f34c71b313786bfd0d5048d7b647ee",
+      "after": "8a4f4508ae57d71cfef3049a1a6e510f30eca4e320b7f25236e25ba5ea2a234d"
+    }
+  ]
+}

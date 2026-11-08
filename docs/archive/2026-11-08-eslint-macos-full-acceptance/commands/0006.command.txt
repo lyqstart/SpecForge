@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/apply-toolchain-fixture.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "apply-frozen-toolchain-plan-to-owned-fixture",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES:private review tree only;EXTERNAL_EVIDENCE_WRITES:exact before bytes and hashes",
+  "started_utc": "2026-11-08T07:18:21.801Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\apply-toolchain-fixture.cjs",
+      "sha256": "f19143467555255d7b5591bcbf017e494ef0f1b6dd9f2aefdf2e3b00f7cfe828",
+      "size": 4012,
+      "extension": ".cjs"
+    }
+  ]
+}

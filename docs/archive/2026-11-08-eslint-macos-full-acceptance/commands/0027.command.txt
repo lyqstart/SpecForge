@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/prepare-ci-payload.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "prepare-real-three-platform-full-regression-pipeline",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES:reviewable CI payload and primary tooling source references;no source mutation",
+  "started_utc": "2026-11-08T07:41:15.849Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\prepare-ci-payload.cjs",
+      "sha256": "ed5dfd9eb2a10c7a672ad13a6c300f9d6b494a5adc3b480b211e809888403ffa",
+      "size": 3470,
+      "extension": ".cjs"
+    }
+  ]
+}

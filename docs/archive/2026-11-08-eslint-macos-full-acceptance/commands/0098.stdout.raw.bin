@@ -1,0 +1,290 @@
+
+ RUN  v3.2.4 D:/code/SpecForge/.lint-review-a01/packages/daemon-core
+
+stdout | src/http/HTTPServer.test.ts > CAS compression for oversized payloads > should CAS-store oversized JSON body with data field and return 200 (not 413)
+Handshake file written to: C:\Users\lyq\AppData\Local\Temp\specforge-http-cas-UzPdBt\specforge-user\runtime\handshake.json
+
+stdout | src/http/HTTPServer.test.ts > CAS compression for oversized payloads > should CAS-store oversized JSON body with data field and return 200 (not 413)
+[PAYLOAD] Stored oversized payload in CAS: blob://90f9e9e0fb0b427981135e1418ef5c02a367c092e832e037b65204bdd4d28ab6 (66610 bytes)
+
+stdout | src/http/HTTPServer.test.ts > CAS compression for oversized payloads > should CAS-store oversized JSON body with data field and return 200 (not 413)
+[PAYLOAD] CAS compression successful, body reduced to 240 bytes
+
+stdout | src/http/HTTPServer.test.ts > CAS compression for oversized payloads > should CAS-store oversized JSON body with data field and return 200 (not 413)
+Cleaning up handshake file and releasing lock...
+
+stdout | src/http/HTTPServer.test.ts > CAS compression for oversized payloads > should CAS-store oversized JSON body with data field and return 200 (not 413)
+Handshake file deleted: C:\Users\lyq\AppData\Local\Temp\specforge-http-cas-UzPdBt\specforge-user\runtime\handshake.json
+
+stdout | src/http/HTTPServer.test.ts > CAS compression for oversized payloads > should CAS-store oversized JSON body with data field and return 200 (not 413)
+Cleanup completed
+
+stdout | src/http/HTTPServer.test.ts > CAS compression for oversized payloads > should return 413 when CAS store fails
+Handshake file written to: C:\Users\lyq\AppData\Local\Temp\specforge-http-cas-7X8hJA\specforge-user\runtime\handshake.json
+
+stdout | src/http/HTTPServer.test.ts > CAS compression for oversized payloads > should return 413 when CAS store fails
+Cleaning up handshake file and releasing lock...
+
+stdout | src/http/HTTPServer.test.ts > CAS compression for oversized payloads > should return 413 when CAS store fails
+Handshake file deleted: C:\Users\lyq\AppData\Local\Temp\specforge-http-cas-7X8hJA\specforge-user\runtime\handshake.json
+
+stdout | src/http/HTTPServer.test.ts > CAS compression for oversized payloads > should return 413 when CAS store fails
+Cleanup completed
+
+stdout | src/http/HTTPServer.test.ts > CAS compression for oversized payloads > should NOT trigger CAS for body at exactly maxSize (64 KiB)
+Handshake file written to: C:\Users\lyq\AppData\Local\Temp\specforge-http-cas-eI2nGI\specforge-user\runtime\handshake.json
+
+stdout | src/http/HTTPServer.test.ts > CAS compression for oversized payloads > should NOT trigger CAS for body at exactly maxSize (64 KiB)
+Cleaning up handshake file and releasing lock...
+
+stdout | src/http/HTTPServer.test.ts > CAS compression for oversized payloads > should NOT trigger CAS for body at exactly maxSize (64 KiB)
+Handshake file deleted: C:\Users\lyq\AppData\Local\Temp\specforge-http-cas-eI2nGI\specforge-user\runtime\handshake.json
+
+stdout | src/http/HTTPServer.test.ts > CAS compression for oversized payloads > should NOT trigger CAS for body at exactly maxSize (64 KiB)
+Cleanup completed
+
+stdout | src/http/HTTPServer.test.ts > CAS compression for oversized payloads > should return 413 for oversized non-JSON body
+Handshake file written to: C:\Users\lyq\AppData\Local\Temp\specforge-http-cas-oQpc4C\specforge-user\runtime\handshake.json
+
+stdout | src/http/HTTPServer.test.ts > CAS compression for oversized payloads > should return 413 for oversized non-JSON body
+Cleaning up handshake file and releasing lock...
+
+stdout | src/http/HTTPServer.test.ts > CAS compression for oversized payloads > should return 413 for oversized non-JSON body
+Handshake file deleted: C:\Users\lyq\AppData\Local\Temp\specforge-http-cas-oQpc4C\specforge-user\runtime\handshake.json
+
+stdout | src/http/HTTPServer.test.ts > CAS compression for oversized payloads > should return 413 for oversized non-JSON body
+Cleanup completed
+
+stdout | src/http/HTTPServer.test.ts > CAS compression for oversized payloads > should return 413 for oversized JSON without data field
+Handshake file written to: C:\Users\lyq\AppData\Local\Temp\specforge-http-cas-ma8k4m\specforge-user\runtime\handshake.json
+
+stdout | src/http/HTTPServer.test.ts > CAS compression for oversized payloads > should return 413 for oversized JSON without data field
+Cleaning up handshake file and releasing lock...
+
+stdout | src/http/HTTPServer.test.ts > CAS compression for oversized payloads > should return 413 for oversized JSON without data field
+Handshake file deleted: C:\Users\lyq\AppData\Local\Temp\specforge-http-cas-ma8k4m\specforge-user\runtime\handshake.json
+
+stdout | src/http/HTTPServer.test.ts > CAS compression for oversized payloads > should return 413 for oversized JSON without data field
+Cleanup completed
+
+ ✓ src/http/HTTPServer.test.ts (13 tests) 135ms
+stdout | src/event-bus/EventBus.test.ts > EventBus > should start and stop
+[EventBus] Started
+[EventBus] Stopped
+
+stdout | src/event-bus/EventBus.test.ts > EventBus > should publish and subscribe to events
+[EventBus] Started
+[EventBus] Subscribe: test.event (handler: 0yysglqwtiymw7mculs)
+[EventBus] Publish: test.event {
+  eventId: '1',
+  projectId: 'test',
+  source: 'daemon',
+  timestamp: '2026-11-08T09:17:39.184Z'
+}
+
+stdout | src/event-bus/EventBus.test.ts > EventBus > should not publish when stopped
+[EventBus] Subscribe: test.event (handler: jwswc95j329mw7mculu)
+
+stdout | src/event-bus/EventBus.test.ts > EventBus > should support topic pattern matching with wildcard
+[EventBus] Started
+[EventBus] Subscribe: session.* (handler: c71cxdnyjxrmw7mculv)
+[EventBus] Publish: session.created {
+  eventId: '1',
+  projectId: 'test',
+  source: 'daemon',
+  timestamp: '2026-11-08T09:17:39.187Z'
+}
+
+stdout | src/event-bus/EventBus.test.ts > EventBus > should support multiple wildcard levels
+[EventBus] Started
+[EventBus] Subscribe: project.*.* (handler: vm1tyunthgjmw7mculv)
+[EventBus] Publish: project.created {
+  eventId: '1',
+  projectId: 'test',
+  source: 'daemon',
+  timestamp: '2026-11-08T09:17:39.187Z'
+}
+
+stdout | src/event-bus/EventBus.test.ts > EventBus > should support multiple wildcard levels
+[EventBus] Publish: project.updated {
+  eventId: '2',
+  projectId: 'test',
+  source: 'daemon',
+  timestamp: '2026-11-08T09:17:39.187Z'
+}
+
+stdout | src/event-bus/EventBus.test.ts > EventBus > should support global wildcard *
+[EventBus] Started
+[EventBus] Subscribe: * (handler: 1axwrkenmg5mw7mculw)
+[EventBus] Publish: session.created {
+  eventId: '1',
+  projectId: 'test',
+  source: 'daemon',
+  timestamp: '2026-11-08T09:17:39.188Z'
+}
+
+stdout | src/event-bus/EventBus.test.ts > EventBus > should support global wildcard *
+[EventBus] Publish: project.updated {
+  eventId: '2',
+  projectId: 'test',
+  source: 'daemon',
+  timestamp: '2026-11-08T09:17:39.188Z'
+}
+
+stdout | src/event-bus/EventBus.test.ts > EventBus > should support unsubscribe
+[EventBus] Started
+[EventBus] Subscribe: test.event (handler: u5ps9svm2wmw7mculw)
+[EventBus] Publish: test.event {
+  eventId: '1',
+  projectId: 'test',
+  source: 'daemon',
+  timestamp: '2026-11-08T09:17:39.188Z'
+}
+
+stdout | src/event-bus/EventBus.test.ts > EventBus > should support unsubscribe
+[EventBus] Unsubscribe: test.event (handler: u5ps9svm2wmw7mculw)
+[EventBus] Publish: test.event {
+  eventId: '2',
+  projectId: 'test',
+  source: 'daemon',
+  timestamp: '2026-11-08T09:17:39.189Z'
+}
+
+stdout | src/event-bus/EventBus.test.ts > EventBus > should support multiple handlers for same topic
+[EventBus] Started
+[EventBus] Subscribe: test.event (handler: g52r4103ekqmw7mculx)
+[EventBus] Subscribe: test.event (handler: 5r93nncscxkmw7mculx)
+[EventBus] Publish: test.event {
+  eventId: '1',
+  projectId: 'test',
+  source: 'daemon',
+  timestamp: '2026-11-08T09:17:39.189Z'
+}
+
+stdout | src/event-bus/EventBus.test.ts > EventBus > should handle errors in handlers gracefully
+[EventBus] Started
+[EventBus] Subscribe: test.event (handler: 32ep8ze1qq9mw7mculx)
+[EventBus] Subscribe: test.event (handler: 7j5dr4t88dvmw7mculx)
+[EventBus] Publish: test.event {
+  eventId: '1',
+  projectId: 'test',
+  source: 'daemon',
+  timestamp: '2026-11-08T09:17:39.189Z'
+}
+
+stdout | src/event-bus/EventBus.test.ts > EventBus > should support observability hooks
+[EventBus] Started
+[EventBus] Subscribe: test.event (handler: 1d88zq7x03qmw7mcum3)
+[EventBus] Publish: test.event {
+  eventId: '1',
+  projectId: 'test',
+  source: 'daemon',
+  timestamp: '2026-11-08T09:17:39.195Z'
+}
+
+stdout | src/event-bus/EventBus.test.ts > EventBus > should support observability hooks
+[EventBus] Unsubscribe: test.event (handler: 1d88zq7x03qmw7mcum3)
+
+ ✓ src/event-bus/EventBus.test.ts (10 tests) 17ms
+stdout | tests/unit/optional-file-lock-owner.test.ts > optional native file lock ownership > uses exclusive nonblocking acquisition, matching unlock and the filesystem receiver
+Cleaning up handshake file and releasing lock...
+Handshake cleanup skipped (not owned by this instance): C:\Users\lyq\AppData\Local\Temp\sf-optional-lock-Ef1Ur4\handshake.json
+
+stdout | tests/unit/optional-file-lock-owner.test.ts > optional native file lock ownership > uses exclusive nonblocking acquisition, matching unlock and the filesystem receiver
+Cleanup completed
+
+stdout | tests/unit/optional-file-lock-owner.test.ts > optional native file lock ownership > uses exclusive nonblocking acquisition, matching unlock and the filesystem receiver
+Cleaning up handshake file and releasing lock...
+Handshake cleanup skipped (not owned by this instance): C:\Users\lyq\.config\opencode\sf-user\runtime\handshake.json
+
+stdout | tests/unit/optional-file-lock-owner.test.ts > optional native file lock ownership > uses exclusive nonblocking acquisition, matching unlock and the filesystem receiver
+Cleanup completed
+
+stdout | tests/unit/optional-file-lock-owner.test.ts > optional native file lock ownership > preserves PID fallback and rejects an already live PID when flock is absent
+Cleaning up handshake file and releasing lock...
+Handshake cleanup skipped (not owned by this instance): C:\Users\lyq\.config\opencode\sf-user\runtime\handshake.json
+
+stdout | tests/unit/optional-file-lock-owner.test.ts > optional native file lock ownership > preserves PID fallback and rejects an already live PID when flock is absent
+Cleanup completed
+
+stdout | tests/unit/optional-file-lock-owner.test.ts > optional native file lock ownership > fails closed on incomplete native flags and closes the owned descriptor
+Cleaning up handshake file and releasing lock...
+Handshake cleanup skipped (not owned by this instance): C:\Users\lyq\.config\opencode\sf-user\runtime\handshake.json
+
+stdout | tests/unit/optional-file-lock-owner.test.ts > optional native file lock ownership > fails closed on incomplete native flags and closes the owned descriptor
+Cleanup completed
+
+stdout | tests/unit/optional-file-lock-owner.test.ts > optional native file lock ownership > closes the descriptor after an actual lock operation rejects
+Cleaning up handshake file and releasing lock...
+Handshake cleanup skipped (not owned by this instance): C:\Users\lyq\.config\opencode\sf-user\runtime\handshake.json
+
+stdout | tests/unit/optional-file-lock-owner.test.ts > optional native file lock ownership > closes the descriptor after an actual lock operation rejects
+Cleanup completed
+
+stdout | tests/unit/optional-file-lock-owner.test.ts > optional native file lock ownership > closes the descriptor even if native unlock throws
+Cleaning up handshake file and releasing lock...
+Handshake cleanup skipped (not owned by this instance): C:\Users\lyq\AppData\Local\Temp\sf-optional-lock-CBNF2U\handshake.json
+
+stdout | tests/unit/optional-file-lock-owner.test.ts > optional native file lock ownership > closes the descriptor even if native unlock throws
+Cleanup completed
+
+stdout | tests/unit/optional-file-lock-owner.test.ts > optional native file lock ownership > closes the descriptor even if native unlock throws
+Cleaning up handshake file and releasing lock...
+Handshake cleanup skipped (not owned by this instance): C:\Users\lyq\.config\opencode\sf-user\runtime\handshake.json
+
+stdout | tests/unit/optional-file-lock-owner.test.ts > optional native file lock ownership > closes the descriptor even if native unlock throws
+Cleanup completed
+
+stdout | tests/unit/optional-file-lock-owner.test.ts > optional native file lock ownership > releases the lock even if owned handshake deletion fails
+Cleaning up handshake file and releasing lock...
+
+stdout | tests/unit/optional-file-lock-owner.test.ts > optional native file lock ownership > releases the lock even if owned handshake deletion fails
+Cleaning up handshake file and releasing lock...
+Handshake cleanup skipped (not owned by this instance): C:\Users\lyq\.config\opencode\sf-user\runtime\handshake.json
+
+stdout | tests/unit/optional-file-lock-owner.test.ts > optional native file lock ownership > releases the lock even if owned handshake deletion fails
+Cleanup completed
+
+ ✓ tests/unit/optional-file-lock-owner.test.ts (6 tests) 35ms
+stdout | tests/unit/handshake-ownership.test.ts > HandshakeManager ownership-safe cleanup > does not delete a handshake that this manager never wrote
+Cleaning up handshake file and releasing lock...
+Handshake cleanup skipped (not owned by this instance): C:\Users\lyq\AppData\Local\Temp\sf-handshake-ownership-AHMhuj\handshake.json
+
+stdout | tests/unit/handshake-ownership.test.ts > HandshakeManager ownership-safe cleanup > does not delete a handshake that this manager never wrote
+Cleanup completed
+
+stdout | tests/unit/handshake-ownership.test.ts > HandshakeManager ownership-safe cleanup > deletes the handshake when the current file still matches this manager
+Handshake file written to: C:\Users\lyq\AppData\Local\Temp\sf-handshake-ownership-F2WMbD\handshake.json
+
+stdout | tests/unit/handshake-ownership.test.ts > HandshakeManager ownership-safe cleanup > deletes the handshake when the current file still matches this manager
+Cleaning up handshake file and releasing lock...
+
+stdout | tests/unit/handshake-ownership.test.ts > HandshakeManager ownership-safe cleanup > deletes the handshake when the current file still matches this manager
+Handshake file deleted: C:\Users\lyq\AppData\Local\Temp\sf-handshake-ownership-F2WMbD\handshake.json
+
+stdout | tests/unit/handshake-ownership.test.ts > HandshakeManager ownership-safe cleanup > deletes the handshake when the current file still matches this manager
+Cleanup completed
+
+stdout | tests/unit/handshake-ownership.test.ts > HandshakeManager ownership-safe cleanup > writes the V6 current local bind address required by CLI consumers
+Handshake file written to: C:\Users\lyq\AppData\Local\Temp\sf-handshake-ownership-BrojUe\handshake.json
+
+stdout | tests/unit/handshake-ownership.test.ts > HandshakeManager ownership-safe cleanup > preserves a handshake replaced by another daemon after this manager wrote
+Handshake file written to: C:\Users\lyq\AppData\Local\Temp\sf-handshake-ownership-u8xQol\handshake.json
+
+stdout | tests/unit/handshake-ownership.test.ts > HandshakeManager ownership-safe cleanup > preserves a handshake replaced by another daemon after this manager wrote
+Cleaning up handshake file and releasing lock...
+
+stdout | tests/unit/handshake-ownership.test.ts > HandshakeManager ownership-safe cleanup > preserves a handshake replaced by another daemon after this manager wrote
+Handshake cleanup skipped (ownership changed): C:\Users\lyq\AppData\Local\Temp\sf-handshake-ownership-u8xQol\handshake.json
+
+stdout | tests/unit/handshake-ownership.test.ts > HandshakeManager ownership-safe cleanup > preserves a handshake replaced by another daemon after this manager wrote
+Cleanup completed
+
+ ✓ tests/unit/handshake-ownership.test.ts (4 tests) 22ms
+ ✓ tests/unit/ascii-control-boundary.test.ts (1 test) 11ms
+
+ Test Files  5 passed (5)
+      Tests  34 passed (34)
+   Start at  17:17:37
+   Duration  3.55s (transform 749ms, setup 0ms, collect 1.67s, tests 220ms, environment 1ms, prepare 595ms)
+

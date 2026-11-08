@@ -1,0 +1,820 @@
+{
+  "utc": "2026-11-08T13:37:59.219Z",
+  "version": "1.0.25",
+  "source_head": "6ec81b1f61b285877da3745efc42be1fa0d86e9e",
+  "verdict": "PASS_CURRENT_ENABLED_SPECIFICATION_AND_REQUESTED_QUALITY_ACCEPTANCE",
+  "known_confirmed_open_product_conformance_gaps": [],
+  "rows": [
+    {
+      "number": 1,
+      "requirement": "Authority Registry 只指向一份 Product Specification，不再存在并列产品 authority。",
+      "grade": "CONFIRMED",
+      "finding": "唯一SPS/Registry身份、优先级及当前发布投影一致。",
+      "limit": "登记关系不等于对任意实现的自动背书。",
+      "primary_evidence": [
+        "final-primary-facts.json",
+        "signal-final-platform-gates.json",
+        "signal-qualified-complete-packet/manifest.json",
+        "three-leg-comparison-signal.json",
+        "consumer-delta-review-signal.json",
+        "consumer-delta-owner-review.md",
+        "actual-linux-systemd-02/result.json"
+      ]
+    },
+    {
+      "number": 2,
+      "requirement": "release precheck、Scope Gate 和 architecture-governance tests 不再把 .kiro V6 requirements/design 当作产品 authority。",
+      "grade": "CONFIRMED",
+      "finding": "真实冷构建/发布预检、Scope及权威消费者测试通过；根.kiro缺失。",
+      "limit": "历史测试只读取归档，不重新赋予其产品权威。",
+      "primary_evidence": [
+        "final-primary-facts.json",
+        "signal-final-platform-gates.json",
+        "signal-qualified-complete-packet/manifest.json",
+        "three-leg-comparison-signal.json",
+        "consumer-delta-review-signal.json",
+        "consumer-delta-owner-review.md",
+        "actual-linux-systemd-02/result.json"
+      ]
+    },
+    {
+      "number": 3,
+      "requirement": "当前运行代码对 ~/.specforge 的写入为零。",
+      "grade": "CORROBORATED",
+      "finding": "当前路径owner与实际安装/运行均落在OpenCode config root和sf-user。",
+      "limit": "没有对任意配置、任意未来负载做全机写入追踪；不以此声称数学意义的全时零写入。",
+      "primary_evidence": [
+        "final-primary-facts.json",
+        "signal-final-platform-gates.json",
+        "signal-qualified-complete-packet/manifest.json",
+        "three-leg-comparison-signal.json",
+        "consumer-delta-review-signal.json",
+        "consumer-delta-owner-review.md",
+        "actual-linux-systemd-02/result.json"
+      ]
+    },
+    {
+      "number": 4,
+      "requirement": "user-level Manifest 位于 OpenCode config root；私有数据位于 sf-user。",
+      "grade": "CONFIRMED",
+      "finding": "本机Manifest根位置与117物理项逐字核验；三平台正式安装通过。",
+      "limit": "当前验证过的默认/自有配置根；任意用户自定义环境需对应验证。",
+      "primary_evidence": [
+        "final-primary-facts.json",
+        "signal-final-platform-gates.json",
+        "signal-qualified-complete-packet/manifest.json",
+        "three-leg-comparison-signal.json",
+        "consumer-delta-review-signal.json",
+        "consumer-delta-owner-review.md",
+        "actual-linux-systemd-02/result.json"
+      ]
+    },
+    {
+      "number": 5,
+      "requirement": "Thin Plugin 不启动、停止或重启 Daemon。",
+      "grade": "CORROBORATED",
+      "finding": "正式CLI独立冷启动新Daemon；自有Kernel退出后Daemon仍健康，源码生命周期归属一致。",
+      "limit": "不是任意第三方OpenCode插件行为的证明。",
+      "primary_evidence": [
+        "final-primary-facts.json",
+        "signal-final-platform-gates.json",
+        "signal-qualified-complete-packet/manifest.json",
+        "three-leg-comparison-signal.json",
+        "consumer-delta-review-signal.json",
+        "consumer-delta-owner-review.md",
+        "actual-linux-systemd-02/result.json"
+      ]
+    },
+    {
+      "number": 6,
+      "requirement": "Daemon 可作为独立共享服务运行，客户端连接失败时治理写入 fail closed。",
+      "grade": "CONFIRMED",
+      "finding": "Windows/Linux/macOS真实独立生命周期通过，当前1.0.25 Daemon另在真实Linux systemd完成安装、启停、健康身份、重启、禁用及卸载。",
+      "limit": "Windows/macOS按当前规格走独立进程；未启用不受支持的服务后端。",
+      "primary_evidence": [
+        "final-primary-facts.json",
+        "signal-final-platform-gates.json",
+        "signal-qualified-complete-packet/manifest.json",
+        "three-leg-comparison-signal.json",
+        "consumer-delta-review-signal.json",
+        "consumer-delta-owner-review.md",
+        "actual-linux-systemd-02/result.json"
+      ]
+    },
+    {
+      "number": 7,
+      "requirement": "Project workflow state 可以从 events.jsonl 重放重建；state.json 只是 checkpoint/projection。",
+      "grade": "CONFIRMED",
+      "finding": "新1.0.25 StateManager返回rebuilt_from_events=true、closed；重放/损坏恢复回归通过。",
+      "limit": "没有在原项目删除或损坏事件做实验。",
+      "primary_evidence": [
+        "final-primary-facts.json",
+        "signal-final-platform-gates.json",
+        "signal-qualified-complete-packet/manifest.json",
+        "three-leg-comparison-signal.json",
+        "consumer-delta-review-signal.json",
+        "consumer-delta-owner-review.md",
+        "actual-linux-systemd-02/result.json"
+      ]
+    },
+    {
+      "number": 8,
+      "requirement": "不再存在 runtime/wal.jsonl 当前合同或生产 consumer。",
+      "grade": "CONFIRMED",
+      "finding": "当前路径/生产owner、全量回归与发布预检绑定events.jsonl。",
+      "limit": "WAL类名保留语义，不恢复runtime/wal.jsonl合同。",
+      "primary_evidence": [
+        "final-primary-facts.json",
+        "signal-final-platform-gates.json",
+        "signal-qualified-complete-packet/manifest.json",
+        "three-leg-comparison-signal.json",
+        "consumer-delta-review-signal.json",
+        "consumer-delta-owner-review.md",
+        "actual-linux-systemd-02/result.json"
+      ]
+    },
+    {
+      "number": 9,
+      "requirement": "Project Spec 初始化只创建当前 Core 文件；不会默认创建 D09 暂缓的 multi-view/ADR Detail 文件。",
+      "grade": "CORROBORATED",
+      "finding": "当前Project Init/Core与D09排除的实际回归通过，未重新初始化已交付原项目。",
+      "limit": "沿用明确绑定源码的既有初始化证据与本轮合成回归。",
+      "primary_evidence": [
+        "final-primary-facts.json",
+        "signal-final-platform-gates.json",
+        "signal-qualified-complete-packet/manifest.json",
+        "three-leg-comparison-signal.json",
+        "consumer-delta-review-signal.json",
+        "consumer-delta-owner-review.md",
+        "actual-linux-systemd-02/result.json"
+      ]
+    },
+    {
+      "number": 10,
+      "requirement": "Project Spec 修改必须通过 Candidate/Gate/Decision/Merge 受控链路。",
+      "grade": "CORROBORATED",
+      "finding": "原真实Candidate/Gate/Decision/Merge/Close交付、5代码/9封存证据及main提交保留，当前受控链回归通过。",
+      "limit": "本轮未再发模型提示、重开原WI或执行原应用。",
+      "primary_evidence": [
+        "final-primary-facts.json",
+        "signal-final-platform-gates.json",
+        "signal-qualified-complete-packet/manifest.json",
+        "three-leg-comparison-signal.json",
+        "consumer-delta-review-signal.json",
+        "consumer-delta-owner-review.md",
+        "actual-linux-systemd-02/result.json"
+      ]
+    },
+    {
+      "number": 11,
+      "requirement": "Work Item authoritative state 不保存在 work_item.json。",
+      "grade": "CONFIRMED",
+      "finding": "状态由事件owner重建；通用work_item写入口全部拒绝，权限及身份不能经产物工具覆盖。",
+      "limit": "历史元数据不是当前状态来源。",
+      "primary_evidence": [
+        "final-primary-facts.json",
+        "signal-final-platform-gates.json",
+        "signal-qualified-complete-packet/manifest.json",
+        "three-leg-comparison-signal.json",
+        "consumer-delta-review-signal.json",
+        "consumer-delta-owner-review.md",
+        "actual-linux-systemd-02/result.json"
+      ]
+    },
+    {
+      "number": 12,
+      "requirement": "Write Guard / code permission 覆盖真实写入口，越权写入可审计并拒绝。",
+      "grade": "CORROBORATED",
+      "finding": "当前Guard/权限回归通过；新旧原生程序除已解析的编译标识外全部字节相同，重用已核验隔离与恢复证据。",
+      "limit": "未把本轮零参数拒绝当作新完整LPAC矩阵；受控执行仅限D23 Windows x64固定Node24.19单进程只读。",
+      "primary_evidence": [
+        "final-primary-facts.json",
+        "signal-final-platform-gates.json",
+        "signal-qualified-complete-packet/manifest.json",
+        "three-leg-comparison-signal.json",
+        "consumer-delta-review-signal.json",
+        "consumer-delta-owner-review.md",
+        "actual-linux-systemd-02/result.json"
+      ]
+    },
+    {
+      "number": 13,
+      "requirement": "Migration 模块退出当前 release surface；仍有效 schema validation 已迁移到中立/owner contract。",
+      "grade": "CONFIRMED",
+      "finding": "Migration不在当前发布集合；Workflow/Gate/Closure/metadata/Knowledge各owner执行独立版本校验。",
+      "limit": "未知或损坏格式阻断并保留，不自动转换。",
+      "primary_evidence": [
+        "final-primary-facts.json",
+        "signal-final-platform-gates.json",
+        "signal-qualified-complete-packet/manifest.json",
+        "three-leg-comparison-signal.json",
+        "consumer-delta-review-signal.json",
+        "consumer-delta-owner-review.md",
+        "actual-linux-systemd-02/result.json"
+      ]
+    },
+    {
+      "number": 14,
+      "requirement": "Multimodal、Self-Healing、third-party Plugin Loader、OpenClaw 不出现在 current release 正向运行/安装集合。",
+      "grade": "CONFIRMED",
+      "finding": "当前12包/45工具/10角色/8Skill/物理清单与SPS发布投影一致，未来模块不进入正向安装。",
+      "limit": "保留源码、通用技术模板与历史算法不等于功能启用。",
+      "primary_evidence": [
+        "final-primary-facts.json",
+        "signal-final-platform-gates.json",
+        "signal-qualified-complete-packet/manifest.json",
+        "three-leg-comparison-signal.json",
+        "consumer-delta-review-signal.json",
+        "consumer-delta-owner-review.md",
+        "actual-linux-systemd-02/result.json"
+      ]
+    },
+    {
+      "number": 15,
+      "requirement": "OpenCode Adapter 存在真实 Daemon production consumer 和端到端验证后，方可从 REQUIRED_NOT_YET_ENABLED 升为 ENABLED。",
+      "grade": "CORROBORATED",
+      "finding": "真实Daemon Adapter既有生产接线与原真实Kernel链证据保留；本轮新Kernel实际加载10/8/45并匹配安装身份。",
+      "limit": "元数据加载不冒充新的模型业务行为验收。",
+      "primary_evidence": [
+        "final-primary-facts.json",
+        "signal-final-platform-gates.json",
+        "signal-qualified-complete-packet/manifest.json",
+        "three-leg-comparison-signal.json",
+        "consumer-delta-review-signal.json",
+        "consumer-delta-owner-review.md",
+        "actual-linux-systemd-02/result.json"
+      ]
+    },
+    {
+      "number": 16,
+      "requirement": "Version Unification 不再承担 Migration、release scope 或 installer ownership。",
+      "grade": "CONFIRMED",
+      "finding": "根/12workspace/SPS发布身份为1.0.25，技术Schema独立；Version/Scope/Installer职责保持分离。",
+      "limit": "旧1.0.23标签保持，未把Schema机械改成产品版本。",
+      "primary_evidence": [
+        "final-primary-facts.json",
+        "signal-final-platform-gates.json",
+        "signal-qualified-complete-packet/manifest.json",
+        "three-leg-comparison-signal.json",
+        "consumer-delta-review-signal.json",
+        "consumer-delta-owner-review.md",
+        "actual-linux-systemd-02/result.json"
+      ]
+    },
+    {
+      "number": 17,
+      "requirement": "Installer 只安装 release manifest 批准的物理集合，并支持可验证的 install/upgrade/verify/uninstall。",
+      "grade": "CONFIRMED",
+      "finding": "三平台实际install/upgrade/verify/uninstall及留存检查通过；本机官方stop/upgrade/verify117、私有owner及原项目保护通过。",
+      "limit": "未在用户真实安装上做卸载破坏性复验；卸载在独立自有配置中执行。",
+      "primary_evidence": [
+        "final-primary-facts.json",
+        "signal-final-platform-gates.json",
+        "signal-qualified-complete-packet/manifest.json",
+        "three-leg-comparison-signal.json",
+        "consumer-delta-review-signal.json",
+        "consumer-delta-owner-review.md",
+        "actual-linux-systemd-02/result.json"
+      ]
+    },
+    {
+      "number": 18,
+      "requirement": "Scope Gate 只验证 release/build，不作为业务 Runtime。",
+      "grade": "CONFIRMED",
+      "finding": "Scope仅在正式发布/构建链使用，实际Owner快照与依赖边界回归通过。",
+      "limit": "不以开发脚本调用Scope推断业务Runtime使用Scope。",
+      "primary_evidence": [
+        "final-primary-facts.json",
+        "signal-final-platform-gates.json",
+        "signal-qualified-complete-packet/manifest.json",
+        "three-leg-comparison-signal.json",
+        "consumer-delta-review-signal.json",
+        "consumer-delta-owner-review.md",
+        "actual-linux-systemd-02/result.json"
+      ]
+    },
+    {
+      "number": 19,
+      "requirement": "代码、README、错误提示、帮助文本、模板、测试和安装资产与当前路径和 lifecycle 模型一致。",
+      "grade": "CORROBORATED",
+      "finding": "576份文档按现有角色/适用性逐文件身份复核；1147源文件6251表达式枚举；95项新增结构变化逐项owner复核；三平台23项帮助和HTTP/错误拒绝合同通过；完整ESLint630文件零错误零警告。",
+      "limit": "语法枚举不等于动态分支穷举。全量指当前12包正式lint输入范围与11个有测试包加Root，不把历史/未来模块、任意脚本和所有测试TS语义检查计作已通过。",
+      "primary_evidence": [
+        "final-primary-facts.json",
+        "signal-final-platform-gates.json",
+        "signal-qualified-complete-packet/manifest.json",
+        "three-leg-comparison-signal.json",
+        "consumer-delta-review-signal.json",
+        "consumer-delta-owner-review.md",
+        "actual-linux-systemd-02/result.json"
+      ]
+    },
+    {
+      "number": 20,
+      "requirement": "Future Capability Registry 中的内容不会仅因“文档存在”进入当前验收范围。",
+      "grade": "CONFIRMED",
+      "finding": "未来能力按显式SPS分类处理，不因文档或私有算法存在而进入当前验收。",
+      "limit": "不推广多进程、任意Shell、框架/网络验证或其他D23后端。",
+      "primary_evidence": [
+        "final-primary-facts.json",
+        "signal-final-platform-gates.json",
+        "signal-qualified-complete-packet/manifest.json",
+        "three-leg-comparison-signal.json",
+        "consumer-delta-review-signal.json",
+        "consumer-delta-owner-review.md",
+        "actual-linux-systemd-02/result.json"
+      ]
+    }
+  ],
+  "chapters": [
+    {
+      "chapter": 1,
+      "title": "产品目标与边界",
+      "owner": "packages/scope-gate/src/release-authority-projection.ts",
+      "owner_sha256": "6d408bffddc5831a889b78d557d89cfea6317b62d7b1812b112698bbd61619c0",
+      "evidence": [
+        "final-primary-facts.json",
+        "signal-final-platform-gates.json",
+        "signal-qualified-complete-packet/manifest.json",
+        "three-leg-comparison-signal.json",
+        "consumer-delta-review-signal.json",
+        "consumer-delta-owner-review.md",
+        "actual-linux-systemd-02/result.json"
+      ],
+      "judgment": "Re-evaluated against current enabled SPS scope and actual final release evidence; explicit per-clause limits retained."
+    },
+    {
+      "chapter": 2,
+      "title": "总体架构",
+      "owner": "packages/daemon-core/src/daemon/Daemon.ts",
+      "owner_sha256": "cfca7133a2d9c8f67d3c114fb5d2f51e5560ec21af5383e8d5597eb3c78ac59f",
+      "evidence": [
+        "final-primary-facts.json",
+        "signal-final-platform-gates.json",
+        "signal-qualified-complete-packet/manifest.json",
+        "three-leg-comparison-signal.json",
+        "consumer-delta-review-signal.json",
+        "consumer-delta-owner-review.md",
+        "actual-linux-systemd-02/result.json"
+      ],
+      "judgment": "Re-evaluated against current enabled SPS scope and actual final release evidence; explicit per-clause limits retained."
+    },
+    {
+      "chapter": 3,
+      "title": "权威与事实模型",
+      "owner": "packages/daemon-core/src/state/StateManager.ts",
+      "owner_sha256": "92441242addcdf11407dfddab0f2addd24f880c53b5bdc4f6921b8de83ac6d56",
+      "evidence": [
+        "final-primary-facts.json",
+        "signal-final-platform-gates.json",
+        "signal-qualified-complete-packet/manifest.json",
+        "three-leg-comparison-signal.json",
+        "consumer-delta-review-signal.json",
+        "consumer-delta-owner-review.md",
+        "actual-linux-systemd-02/result.json"
+      ],
+      "judgment": "Re-evaluated against current enabled SPS scope and actual final release evidence; explicit per-clause limits retained."
+    },
+    {
+      "chapter": 4,
+      "title": "文件与目录",
+      "owner": "packages/types/src/user-level-paths.ts",
+      "owner_sha256": "9f4c4bc477812a94ac56a167d1cb5fbf4b050d842dcc5000608a8681a0da073f",
+      "evidence": [
+        "final-primary-facts.json",
+        "signal-final-platform-gates.json",
+        "signal-qualified-complete-packet/manifest.json",
+        "three-leg-comparison-signal.json",
+        "consumer-delta-review-signal.json",
+        "consumer-delta-owner-review.md",
+        "actual-linux-systemd-02/result.json"
+      ],
+      "judgment": "Re-evaluated against current enabled SPS scope and actual final release evidence; explicit per-clause limits retained."
+    },
+    {
+      "chapter": 5,
+      "title": "配置",
+      "owner": "packages/configuration/src/accepted-config.ts",
+      "owner_sha256": "938dfbf0e35bf03da5aa807b9f398ae60e0d50eb6d978568a5fe0ed144845de4",
+      "evidence": [
+        "final-primary-facts.json",
+        "signal-final-platform-gates.json",
+        "signal-qualified-complete-packet/manifest.json",
+        "three-leg-comparison-signal.json",
+        "consumer-delta-review-signal.json",
+        "consumer-delta-owner-review.md",
+        "actual-linux-systemd-02/result.json"
+      ],
+      "judgment": "Re-evaluated against current enabled SPS scope and actual final release evidence; explicit per-clause limits retained."
+    },
+    {
+      "chapter": 6,
+      "title": "Work Item治理链",
+      "owner": "packages/daemon-core/src/tools/handlers/sf-v11-work-item-create.ts",
+      "owner_sha256": "e94f433e5a578d17b26ccf9ace56c4896f0fedd4c660d7aef8389f869fd2721f",
+      "evidence": [
+        "final-primary-facts.json",
+        "signal-final-platform-gates.json",
+        "signal-qualified-complete-packet/manifest.json",
+        "three-leg-comparison-signal.json",
+        "consumer-delta-review-signal.json",
+        "consumer-delta-owner-review.md",
+        "actual-linux-systemd-02/result.json"
+      ],
+      "judgment": "Re-evaluated against current enabled SPS scope and actual final release evidence; explicit per-clause limits retained."
+    },
+    {
+      "chapter": 7,
+      "title": "Daemon",
+      "owner": "packages/daemon-core/src/daemon/Daemon.ts",
+      "owner_sha256": "cfca7133a2d9c8f67d3c114fb5d2f51e5560ec21af5383e8d5597eb3c78ac59f",
+      "evidence": [
+        "final-primary-facts.json",
+        "signal-final-platform-gates.json",
+        "signal-qualified-complete-packet/manifest.json",
+        "three-leg-comparison-signal.json",
+        "consumer-delta-review-signal.json",
+        "consumer-delta-owner-review.md",
+        "actual-linux-systemd-02/result.json"
+      ],
+      "judgment": "Re-evaluated against current enabled SPS scope and actual final release evidence; explicit per-clause limits retained."
+    },
+    {
+      "chapter": 8,
+      "title": "Workflow",
+      "owner": "packages/workflow-runtime/src/engine/WorkflowLoader.ts",
+      "owner_sha256": "9d48ac57aa2743ee061a0b5cd2e232f123f52e0c58c506e0f16423ea78d305f4",
+      "evidence": [
+        "final-primary-facts.json",
+        "signal-final-platform-gates.json",
+        "signal-qualified-complete-packet/manifest.json",
+        "three-leg-comparison-signal.json",
+        "consumer-delta-review-signal.json",
+        "consumer-delta-owner-review.md",
+        "actual-linux-systemd-02/result.json"
+      ],
+      "judgment": "Re-evaluated against current enabled SPS scope and actual final release evidence; explicit per-clause limits retained."
+    },
+    {
+      "chapter": 9,
+      "title": "权限/Guard/HardStop",
+      "owner": "packages/daemon-core/src/verification/VerificationRuntime.ts",
+      "owner_sha256": "1bd77c28ca73ac1f5d9681b2e9a0777dfc1073da94b47ff663de2107f0a6e64c",
+      "evidence": [
+        "final-primary-facts.json",
+        "signal-final-platform-gates.json",
+        "signal-qualified-complete-packet/manifest.json",
+        "three-leg-comparison-signal.json",
+        "consumer-delta-review-signal.json",
+        "consumer-delta-owner-review.md",
+        "actual-linux-systemd-02/result.json"
+      ],
+      "judgment": "Re-evaluated against current enabled SPS scope and actual final release evidence; explicit per-clause limits retained."
+    },
+    {
+      "chapter": 10,
+      "title": "OpenCode集成",
+      "owner": "packages/opencode-adapter/src/OpenCodeAdapter.ts",
+      "owner_sha256": "2657a7f84fa28552cf54bef00e118ce4950e82df4294ff8e5ae3e0308d18da72",
+      "evidence": [
+        "final-primary-facts.json",
+        "signal-final-platform-gates.json",
+        "signal-qualified-complete-packet/manifest.json",
+        "three-leg-comparison-signal.json",
+        "consumer-delta-review-signal.json",
+        "consumer-delta-owner-review.md",
+        "actual-linux-systemd-02/result.json"
+      ],
+      "judgment": "Re-evaluated against current enabled SPS scope and actual final release evidence; explicit per-clause limits retained."
+    },
+    {
+      "chapter": 11,
+      "title": "CLI",
+      "owner": "packages/cli/src/help/HelpSystem.ts",
+      "owner_sha256": "56256be5fc66fa54b440f126244e057f3e77ce1e67211f43bac3e4194a57f98f",
+      "evidence": [
+        "final-primary-facts.json",
+        "signal-final-platform-gates.json",
+        "signal-qualified-complete-packet/manifest.json",
+        "three-leg-comparison-signal.json",
+        "consumer-delta-review-signal.json",
+        "consumer-delta-owner-review.md",
+        "actual-linux-systemd-02/result.json"
+      ],
+      "judgment": "Re-evaluated against current enabled SPS scope and actual final release evidence; explicit per-clause limits retained."
+    },
+    {
+      "chapter": 12,
+      "title": "Installer/Distribution",
+      "owner": "scripts/sf-installer.ts",
+      "owner_sha256": "99707343a881b74b24bf5b4c490b5eed11b3b7c0208ac0a0fb08b26a78a2d19a",
+      "evidence": [
+        "final-primary-facts.json",
+        "signal-final-platform-gates.json",
+        "signal-qualified-complete-packet/manifest.json",
+        "three-leg-comparison-signal.json",
+        "consumer-delta-review-signal.json",
+        "consumer-delta-owner-review.md",
+        "actual-linux-systemd-02/result.json"
+      ],
+      "judgment": "Re-evaluated against current enabled SPS scope and actual final release evidence; explicit per-clause limits retained."
+    },
+    {
+      "chapter": 13,
+      "title": "Service/Host Profile",
+      "owner": "packages/service-management/src/service-manager/systemd-service-manager.ts",
+      "owner_sha256": "ec2d0623e32cd252b2d244293d627cce69fc88feea28eee1df1d96c55800c481",
+      "evidence": [
+        "final-primary-facts.json",
+        "signal-final-platform-gates.json",
+        "signal-qualified-complete-packet/manifest.json",
+        "three-leg-comparison-signal.json",
+        "consumer-delta-review-signal.json",
+        "consumer-delta-owner-review.md",
+        "actual-linux-systemd-02/result.json"
+      ],
+      "judgment": "Re-evaluated against current enabled SPS scope and actual final release evidence; explicit per-clause limits retained."
+    },
+    {
+      "chapter": 14,
+      "title": "Observability",
+      "owner": "packages/daemon-core/src/observability/observability-recorder.ts",
+      "owner_sha256": "d48e3d23ac2a9b611447cbe790d9d3b54690a1373c76e82b92ec01b0fe31e954",
+      "evidence": [
+        "final-primary-facts.json",
+        "signal-final-platform-gates.json",
+        "signal-qualified-complete-packet/manifest.json",
+        "three-leg-comparison-signal.json",
+        "consumer-delta-review-signal.json",
+        "consumer-delta-owner-review.md",
+        "actual-linux-systemd-02/result.json"
+      ],
+      "judgment": "Re-evaluated against current enabled SPS scope and actual final release evidence; explicit per-clause limits retained."
+    },
+    {
+      "chapter": 15,
+      "title": "持久Schema",
+      "owner": "packages/daemon-core/src/tools/lib/work-item-metadata.ts",
+      "owner_sha256": "bb60cd6e7e3cd02f18077cbfbdcf965da1c7beb1500a25348537e6a9c0168b64",
+      "evidence": [
+        "final-primary-facts.json",
+        "signal-final-platform-gates.json",
+        "signal-qualified-complete-packet/manifest.json",
+        "three-leg-comparison-signal.json",
+        "consumer-delta-review-signal.json",
+        "consumer-delta-owner-review.md",
+        "actual-linux-systemd-02/result.json"
+      ],
+      "judgment": "Re-evaluated against current enabled SPS scope and actual final release evidence; explicit per-clause limits retained."
+    },
+    {
+      "chapter": 16,
+      "title": "Version",
+      "owner": "scripts/lib/product-identity.ts",
+      "owner_sha256": "678d8b260b480d2349bb917dc7fa2c51294604fe5c2a15aa3279ff84fb32960c",
+      "evidence": [
+        "final-primary-facts.json",
+        "signal-final-platform-gates.json",
+        "signal-qualified-complete-packet/manifest.json",
+        "three-leg-comparison-signal.json",
+        "consumer-delta-review-signal.json",
+        "consumer-delta-owner-review.md",
+        "actual-linux-systemd-02/result.json"
+      ],
+      "judgment": "Re-evaluated against current enabled SPS scope and actual final release evidence; explicit per-clause limits retained."
+    },
+    {
+      "chapter": 17,
+      "title": "Release/Scope",
+      "owner": "scripts/lib/current-release-precheck.ts",
+      "owner_sha256": "b1528e723429d7f964a5e3fe2c1691660f2a57d228b0a3973601dd8aaf872057",
+      "evidence": [
+        "final-primary-facts.json",
+        "signal-final-platform-gates.json",
+        "signal-qualified-complete-packet/manifest.json",
+        "three-leg-comparison-signal.json",
+        "consumer-delta-review-signal.json",
+        "consumer-delta-owner-review.md",
+        "actual-linux-systemd-02/result.json"
+      ],
+      "judgment": "Re-evaluated against current enabled SPS scope and actual final release evidence; explicit per-clause limits retained."
+    },
+    {
+      "chapter": 18,
+      "title": "当前模块集合",
+      "owner": "scripts/lib/workspace-packages.ts",
+      "owner_sha256": "e0178f99adc340be3c04b235eaef834ddbbb175449e43ce8cef329b92a3c5a0d",
+      "evidence": [
+        "final-primary-facts.json",
+        "signal-final-platform-gates.json",
+        "signal-qualified-complete-packet/manifest.json",
+        "three-leg-comparison-signal.json",
+        "consumer-delta-review-signal.json",
+        "consumer-delta-owner-review.md",
+        "actual-linux-systemd-02/result.json"
+      ],
+      "judgment": "Re-evaluated against current enabled SPS scope and actual final release evidence; explicit per-clause limits retained."
+    },
+    {
+      "chapter": 19,
+      "title": "验收条款",
+      "owner": "docs/product-specification/specforge-product-specification.md",
+      "owner_sha256": "b03174778f6bd1efb72227708152c422b7b0102e4cf8129a5a4d9d5e752afff0",
+      "evidence": [
+        "final-primary-facts.json",
+        "signal-final-platform-gates.json",
+        "signal-qualified-complete-packet/manifest.json",
+        "three-leg-comparison-signal.json",
+        "consumer-delta-review-signal.json",
+        "consumer-delta-owner-review.md",
+        "actual-linux-systemd-02/result.json"
+      ],
+      "judgment": "Re-evaluated against current enabled SPS scope and actual final release evidence; explicit per-clause limits retained."
+    },
+    {
+      "chapter": 20,
+      "title": "Gap记录",
+      "owner": "docs/project-status.md",
+      "owner_sha256": "e1882446cefaddb0c411c4c26e11d4d840ad75bc961864c247d1089e9d377f12",
+      "evidence": [
+        "final-primary-facts.json",
+        "signal-final-platform-gates.json",
+        "signal-qualified-complete-packet/manifest.json",
+        "three-leg-comparison-signal.json",
+        "consumer-delta-review-signal.json",
+        "consumer-delta-owner-review.md",
+        "actual-linux-systemd-02/result.json"
+      ],
+      "judgment": "Re-evaluated against current enabled SPS scope and actual final release evidence; explicit per-clause limits retained."
+    },
+    {
+      "chapter": 21,
+      "title": "Future晋升",
+      "owner": "docs/product-specification/specforge-product-specification.md",
+      "owner_sha256": "b03174778f6bd1efb72227708152c422b7b0102e4cf8129a5a4d9d5e752afff0",
+      "evidence": [
+        "final-primary-facts.json",
+        "signal-final-platform-gates.json",
+        "signal-qualified-complete-packet/manifest.json",
+        "three-leg-comparison-signal.json",
+        "consumer-delta-review-signal.json",
+        "consumer-delta-owner-review.md",
+        "actual-linux-systemd-02/result.json"
+      ],
+      "judgment": "Re-evaluated against current enabled SPS scope and actual final release evidence; explicit per-clause limits retained."
+    },
+    {
+      "chapter": 22,
+      "title": "权威与连续性",
+      "owner": "scripts/project-session-bootstrap.mjs",
+      "owner_sha256": "51ddf3830add187bd281f04f1452838247c5407a1d67e9d35cb7baa910abd34e",
+      "evidence": [
+        "final-primary-facts.json",
+        "signal-final-platform-gates.json",
+        "signal-qualified-complete-packet/manifest.json",
+        "three-leg-comparison-signal.json",
+        "consumer-delta-review-signal.json",
+        "consumer-delta-owner-review.md",
+        "actual-linux-systemd-02/result.json"
+      ],
+      "judgment": "Re-evaluated against current enabled SPS scope and actual final release evidence; explicit per-clause limits retained."
+    }
+  ],
+  "validation": {
+    "actual_platforms": [
+      {
+        "os": "windows",
+        "root_tests": 753,
+        "workspace_file_case_summaries": [
+          " Test Files  1 passed (1)",
+          "      Tests  2 passed (2)",
+          " Test Files  13 passed (13)",
+          "      Tests  198 passed (198)",
+          " Test Files  17 passed (17)",
+          "      Tests  236 passed (236)",
+          " Test Files  1 passed (1)",
+          "      Tests  2 passed (2)",
+          " Test Files  5 passed (5)",
+          "      Tests  60 passed (60)",
+          " Test Files  23 passed (23)",
+          "      Tests  379 passed (379)",
+          " Test Files  35 passed (35)",
+          "      Tests  940 passed (940)",
+          " Test Files  37 passed (37)",
+          "      Tests  166 passed (166)",
+          " Test Files  69 passed (69)",
+          "      Tests  1390 passed (1390)",
+          " Test Files  41 passed (41)",
+          "      Tests  794 passed (794)",
+          " Test Files  249 passed (249)",
+          "      Tests  2454 passed (2454)"
+        ],
+        "installed_files": 117,
+        "help_cases": 23
+      },
+      {
+        "os": "linux",
+        "root_tests": 753,
+        "workspace_file_case_summaries": [
+          " Test Files  1 passed (1)",
+          "      Tests  2 passed (2)",
+          " Test Files  13 passed (13)",
+          "      Tests  198 passed (198)",
+          " Test Files  17 passed (17)",
+          "      Tests  236 passed (236)",
+          " Test Files  1 passed (1)",
+          "      Tests  2 passed (2)",
+          " Test Files  5 passed (5)",
+          "      Tests  60 passed (60)",
+          " Test Files  23 passed (23)",
+          "      Tests  379 passed (379)",
+          " Test Files  35 passed (35)",
+          "      Tests  940 passed (940)",
+          " Test Files  37 passed (37)",
+          "      Tests  165 passed | 1 skipped (166)",
+          " Test Files  69 passed (69)",
+          "      Tests  1390 passed (1390)",
+          " Test Files  41 passed (41)",
+          "      Tests  794 passed (794)",
+          " Test Files  249 passed (249)",
+          "      Tests  2453 passed | 1 skipped (2454)"
+        ],
+        "installed_files": 114,
+        "help_cases": 23
+      },
+      {
+        "os": "macos",
+        "root_tests": 753,
+        "workspace_file_case_summaries": [
+          " Test Files  1 passed (1)",
+          "      Tests  2 passed (2)",
+          " Test Files  13 passed (13)",
+          "      Tests  198 passed (198)",
+          " Test Files  17 passed (17)",
+          "      Tests  236 passed (236)",
+          " Test Files  1 passed (1)",
+          "      Tests  2 passed (2)",
+          " Test Files  5 passed (5)",
+          "      Tests  60 passed (60)",
+          " Test Files  23 passed (23)",
+          "      Tests  379 passed (379)",
+          " Test Files  35 passed (35)",
+          "      Tests  940 passed (940)",
+          " Test Files  37 passed (37)",
+          "      Tests  165 passed | 1 skipped (166)",
+          " Test Files  69 passed (69)",
+          "      Tests  1390 passed (1390)",
+          " Test Files  41 passed (41)",
+          "      Tests  794 passed (794)",
+          " Test Files  249 passed (249)",
+          "      Tests  2453 passed | 1 skipped (2454)"
+        ],
+        "installed_files": 114,
+        "help_cases": 23
+      }
+    ],
+    "complete_eslint": {
+      "packages": 12,
+      "files": 630,
+      "errors": 0,
+      "warnings": 0,
+      "scope": "Every current package required configured source/test scope; does not claim archives and all development scripts are ESLint inputs."
+    },
+    "typescript": "All12 official production builds and validator-contract/release-owner-snapshot/installer typechecks passed; no claim that every test source passes a separate whole-test tsc.",
+    "same_lock_product_ab": {
+      "comparable_files": 520,
+      "incomparable_files": 22,
+      "definition": "Unmatched/changed collections keep null new-failure counts; complete final candidate independently passes all collected cases."
+    },
+    "deployment": {
+      "managed": 117,
+      "agents": 10,
+      "skills": 8,
+      "tools": 45,
+      "original_state": "closed",
+      "owner_key_content_read": false
+    }
+  },
+  "remaining_limits": {
+    "d23": "Windows x64 fixed Node24.19 strict single-process read-only only. macOS full development regression does not enable a product execution backend.",
+    "historical_genuine_chain": "Original authorized real Kernel/model business chain and unchanged normalized native program evidence explicitly reused; no original application, WI transition or new model prompt performed.",
+    "test_type_debt": "Earlier supplementary Workflow full-test semantic inventories contain pre-existing diagnostics (see negative-types-compiler-review-v2.json); not relabelled as a successful whole-test tsc. Official production and three required script typechecks pass.",
+    "dynamic_exhaustiveness": "No claim about every arbitrary configuration, future workflow/module or unexercised error branch.",
+    "old_pre_probe_loss": "INSUFFICIENT_EVIDENCE remains for old missing现场 cause; authorized reconstruction was not byte-exact pre-probe recovery."
+  },
+  "primary_facts": "final-primary-facts.json",
+  "ci": [
+    {
+      "id": 42482685665,
+      "name": "Distribution Smoke Tests",
+      "url": "https://github.com/lyqstart/SpecForge/actions/runs/42482685665",
+      "conclusion": "success"
+    },
+    {
+      "id": 42482685725,
+      "name": "Code Quality",
+      "url": "https://github.com/lyqstart/SpecForge/actions/runs/42482685725",
+      "conclusion": "success"
+    }
+  ]
+}

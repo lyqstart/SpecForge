@@ -1,0 +1,52 @@
+{
+  "collected_utc": "2026-11-08 10:42:14 UTC",
+  "source": "https://api.github.com/repos/lyqstart/SpecForge/actions/runs?per_page=5",
+  "purpose": "Read-only pre-candidate reachability and live baseline; these old runs do not qualify current uncommitted repairs.",
+  "runs": [
+    {
+      "id": 42457048318,
+      "name": "Distribution Smoke Tests",
+      "branch": "main",
+      "sha": "3549c23c64c53ad29761104a125b87ff50a53cc5",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/lyqstart/SpecForge/actions/runs/42457048318"
+    },
+    {
+      "id": 42457048049,
+      "name": "Code Quality",
+      "branch": "main",
+      "sha": "3549c23c64c53ad29761104a125b87ff50a53cc5",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/lyqstart/SpecForge/actions/runs/42457048049"
+    },
+    {
+      "id": 42453849631,
+      "name": "Distribution Smoke Tests",
+      "branch": "main",
+      "sha": "f17a532a98d5716cfbae57b26916ae3dfdfce4b8",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/lyqstart/SpecForge/actions/runs/42453849631"
+    },
+    {
+      "id": 42453849580,
+      "name": "Code Quality",
+      "branch": "main",
+      "sha": "f17a532a98d5716cfbae57b26916ae3dfdfce4b8",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/lyqstart/SpecForge/actions/runs/42453849580"
+    },
+    {
+      "id": 42452534001,
+      "name": "Distribution Smoke Tests",
+      "branch": "main",
+      "sha": "c0fff6b9aa88313efd01f9e10211dd5676661e79",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/lyqstart/SpecForge/actions/runs/42452534001"
+    }
+  ]
+}

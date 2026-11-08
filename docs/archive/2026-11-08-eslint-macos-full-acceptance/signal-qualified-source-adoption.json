@@ -1,0 +1,21 @@
+{
+  "utc": "2026-11-08T13:22:55.671Z",
+  "source_head": "6ec81b1f61b285877da3745efc42be1fa0d86e9e",
+  "previous": "3549c23c64c53ad29761104a125b87ff50a53cc5",
+  "product_files": 527,
+  "all_physical_hashes_equal": true,
+  "existing_four_execution_metadata_preserved": {
+    ".gitignore": "99f0a9646fd0e370f66a5cf4cdfcccc7824f33e80c303a62cf50b7e2ceffa6ab",
+    "docs/project-status.md": "9a1bb8451c937e94c8d9e13e4e95e3c4c366555a2525d2abb341a3c6bc1f9ac7",
+    "docs/rule/specforge-active-development-rules.md": "ca4e06e247572f2d3c7efc2832f0d1e07fcc12988844d48deb76d37797a36830",
+    "docs/rule/specforge-development-error-ledger-and-experience.md": "fc7091cd221e23d679724c83d98fdc453429c66166129e14764f5f28da4e9591"
+  },
+  "attributes": {
+    "before_sha256": "07e6c9205bce27b6483fb76c08cccfa8dfc1c738f8e34a1d6963f9d639c7097c",
+    "after_sha256": "274d926ea319cd65f6ffa5e956f6428668e791edc8cbad24186509fd85bc8760",
+    "existing_task_archive_delivery_attribute_preserved": true,
+    "only_addition": "Explicit LF for bun.lock and .gitattributes, already fully qualified in candidate."
+  },
+  "local_main_unchanged": true,
+  "method": "Exact frozen packet gate followed by Git fast-forward, with separately proven recovery of task-owned attribute overlay; no business governance/truth-source operation."
+}

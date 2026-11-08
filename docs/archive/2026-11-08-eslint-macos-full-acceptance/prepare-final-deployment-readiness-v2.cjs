@@ -1,0 +1,1 @@
+const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');let s=fs.readFileSync(path.join(__dirname,'prepare-signal-root-deployment.cjs'),'utf8');assert.equal(s.split('exact526').length,2);s=s.replace('exact526','complete527');fs.writeFileSync(path.join(__dirname,'prepare-signal-root-deployment-v2.cjs'),s,{flag:'wx'});

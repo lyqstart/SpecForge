@@ -1,0 +1,147 @@
+name: Code Quality
+
+# 触发时机：向 main 推送，或提交 PR 到 main
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+env:
+  GIT_CONFIG_COUNT: '1'
+  GIT_CONFIG_KEY_0: core.longpaths
+  GIT_CONFIG_VALUE_0: 'true'
+
+jobs:
+  # ─── Windows 源码行尾治理 ────────────────────────────────────────────────────
+  windows-line-ending-governance:
+    name: Windows 源码 LF 检出治理
+    runs-on: windows-latest
+    timeout-minutes: 5
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 验证源码在索引和 Windows 工作树中均为 LF
+        shell: pwsh
+        run: |
+          $patterns = @(
+            '*.ts',
+            '*.tsx',
+            '*.mts',
+            '*.cts',
+            '*.js',
+            '*.jsx',
+            '*.mjs',
+            '*.cjs'
+          )
+
+          $eolState = git ls-files --eol -- $patterns ':(exclude)docs/archive/**' ':(exclude).patch-backups/**' ':(exclude).specforge/**'
+          $violations = @(
+            $eolState | Where-Object {
+              $_ -notmatch '^i/lf\s+w/lf\s+attr/text eol=lf\s+'
+            }
+          )
+
+          if ($violations.Count -gt 0) {
+            Write-Error '以下源码文件未同时满足 index=LF、Windows worktree=LF、attribute=eol=lf：'
+            $violations | ForEach-Object { Write-Error $_ }
+            exit 1
+          }
+
+          Write-Host "Validated $($eolState.Count) source files: index=LF, worktree=LF, attribute=eol=lf."
+
+  # ─── 异步资源规范审查 ────────────────────────────────────────────────────────
+  async-resource-audit:
+    name: 异步资源规范审查
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+      - name: 安装 Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: '1.3.14'
+      - name: 安装依赖
+        run: bun install --frozen-lockfile
+      - name: 运行异步资源规范审查
+        run: bun run scripts/audit-async-resources.ts
+        # 脚本发现 error 级别问题时返回 exit code 1，GitHub Actions 自动标记失败
+
+  # ─── 工作流文档同步检查 ──────────────────────────────────────────────────────
+  workflow-docs-sync:
+    name: 工作流文档同步检查
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+      - name: 安装 Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: '1.3.14'
+      - name: 安装依赖
+        run: bun install --frozen-lockfile
+      - name: Verify workflow docs in sync with JSON
+        run: bun run check-workflows
+
+  # ─── 单元测试 ────────────────────────────────────────────────────────────────
+  test:
+    name: 单元测试
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+      - name: 安装 Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: '1.3.14'
+      - name: 安装依赖
+        run: bun install --frozen-lockfile
+      - name: 构建当前发布 workspace
+        run: bun scripts/prepare-current-release.ts
+      - name: 运行当前发布 workspace 测试
+        run: bun scripts/test-workspace.ts
+      - name: 运行当前 Root 测试
+        run: node scripts/run-root-tests.mjs current
+
+  # ─── 硬编码路径 Lint ────────────────────────────────────────────────────────
+  lint-hardcoded-paths:
+    name: 硬编码路径 Lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+      - name: 安装 Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: '1.3.14'
+      - name: 安装依赖
+        run: bun install --frozen-lockfile
+      - name: 运行硬编码路径 Lint
+        run: bun run scripts/lint/check-hardcoded-paths.ts
+
+  # ─── 目录布局一致性检查 ──────────────────────────────────────────────────────
+  render-layout-consistency:
+    name: 目录布局一致性检查
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+      - name: 安装 Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: '1.3.14'
+      - name: 安装依赖
+        run: bun install --frozen-lockfile
+      - name: 生成目录布局
+        run: bun run scripts/render-layout.ts
+      - name: 检查生成物与提交一致
+        run: git diff --exit-code -- README.md AGENTS.md docs/conventions/directory-layout.md

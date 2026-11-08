@@ -1,0 +1,18 @@
+{
+  "utc": "2026-11-08T07:42:33.771Z",
+  "sources": [
+    {
+      "url": "https://eslint.org/docs/latest/use/configure/migration-guide",
+      "use": "FlatCompat translates existing package rule sources to one flat composition owner."
+    },
+    {
+      "url": "https://typescript-eslint.io/users/dependency-versions/",
+      "use": "Actual supported tool versions checked; installed8.59.3, ESLint9.39.4 pinned and exercised."
+    },
+    {
+      "url": "https://github.com/import-js/eslint-import-resolver-typescript",
+      "use": "Explicit TypeScript project resolver owner."
+    }
+  ],
+  "product_authority_changed": false
+}

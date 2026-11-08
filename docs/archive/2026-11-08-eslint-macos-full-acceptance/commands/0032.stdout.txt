@@ -1,0 +1,1 @@
+{"files":3,"fix":"explicit producer types and real predicate;no rule disabled"}

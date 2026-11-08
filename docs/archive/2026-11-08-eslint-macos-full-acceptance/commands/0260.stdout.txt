@@ -1,0 +1,40 @@
+
+ RUN  v3.2.4 D:/code/SpecForge/.lint-signal-a01/packages/service-management
+
+stdout | tests/unit/graceful-shutdown-handler.test.ts > GracefulShutdownHandler > SIGTERM signal handling > should not attach twice if already attached
+[GracefulShutdown] Resources disposed
+
+stdout | tests/unit/graceful-shutdown-handler.test.ts > GracefulShutdownHandler > SIGTERM signal handling > releases exact signal callbacks and preserves foreign listeners across repeated lifecycles
+[GracefulShutdown] Resources disposed
+
+ ❯ tests/unit/graceful-shutdown-handler.test.ts (22 tests | 2 failed | 20 skipped) 17ms
+   ↓ GracefulShutdownHandler > Priority order execution > should execute tasks in correct priority order (stop-accepting → drain → flush → close → release)
+   ↓ GracefulShutdownHandler > Priority order execution > should execute same-priority tasks in reverse registration order (later registered runs first)
+   ↓ GracefulShutdownHandler > Priority order execution > should execute 5 priority stages in correct order with multiple tasks
+   ↓ GracefulShutdownHandler > Single task timeout (3s) > should not block subsequent tasks when a single task times out
+   ↓ GracefulShutdownHandler > Single task timeout (3s) > should warn but continue when task times out after 3s
+   ↓ GracefulShutdownHandler > Total shutdown timeout (10s) > should call process.exit(1) when total timeout of 10s is exceeded
+   ↓ GracefulShutdownHandler > Total shutdown timeout (10s) > should not exit early when tasks complete within timeout
+   ↓ GracefulShutdownHandler > Total shutdown timeout (10s) > should allow 10s total for all priorities combined
+   ↓ GracefulShutdownHandler > Idempotency > should only execute once when trigger is called multiple times
+   ↓ GracefulShutdownHandler > Idempotency > should report correct shutdown reason from first trigger
+   ↓ GracefulShutdownHandler > Idempotency > should set isShuttingDown() to true after first trigger
+   ↓ GracefulShutdownHandler > SIGTERM signal handling > should trigger shutdown when SIGTERM is received
+   × GracefulShutdownHandler > SIGTERM signal handling > should not attach twice if already attached 13ms
+     → expected 1 to be +0 // Object.is equality
+   × GracefulShutdownHandler > SIGTERM signal handling > releases exact signal callbacks and preserves foreign listeners across repeated lifecycles 3ms
+     → expected [ Array(3) ] to deeply equal [ [Function], [Function foreign] ]
+   ↓ GracefulShutdownHandler > SIGTERM signal handling > should log shutdown reason on SIGTERM
+   ↓ GracefulShutdownHandler > Resource cleanup > should have zero active tasks after shutdown completes
+   ↓ GracefulShutdownHandler > Resource cleanup > should have zero active timers after shutdown completes
+   ↓ GracefulShutdownHandler > Resource cleanup > should clean up timers when dispose is called
+   ↓ GracefulShutdownHandler > Error handling > should continue shutdown even if a task throws
+   ↓ GracefulShutdownHandler > Error handling > should provide AbortSignal to tasks
+   ↓ GracefulShutdownHandler > createGracefulShutdownHandler > should create handler without auto-attach
+   ↓ GracefulShutdownHandler > createGracefulShutdownHandler > should auto-attach when autoAttach option is true
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 20 skipped (22)
+   Start at  20:51:49
+   Duration  1.04s (transform 51ms, setup 0ms, collect 69ms, tests 17ms, environment 0ms, prepare 732ms)
+

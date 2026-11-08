@@ -1,0 +1,22 @@
+{
+  "utc": "2026-11-08T12:16:54.981Z",
+  "records": [
+    {
+      "source": "../2026-11-08-crossplatform-consumer-audit/upgrade-final-user.cjs",
+      "source_sealed_sha256": "88fcb4bec9466503197f5643aa15109a21eeac62a80e10e0d91dc11e8aa27a38",
+      "target": "upgrade-final-user.cjs",
+      "target_sha256": "991931f6b38986a0b07c5c2fc1ff43edd7a7371461df2a60418635ab6e853f32",
+      "changes": "Only expected prior/new product release identities; controlled official paths and evidence boundaries preserved."
+    },
+    {
+      "source": "../2026-11-08-crossplatform-consumer-audit/verify-final-loader-03.cjs",
+      "source_sealed_sha256": "0ccfba29359e554d82d233d3245f1152b2c649ff413d074318f9794298d2edf3",
+      "target": "verify-final-loader-03.cjs",
+      "target_sha256": "ed79ea1cc607f9e36d02d1c7981982b63b0f9b518d3ce154edbe3af21c42e04a",
+      "changes": "Only expected prior/new product release identities; controlled official paths and evidence boundaries preserved."
+    }
+  ],
+  "inventory_sha256": "d9e1a3ccaf624b83785d4bbab296d5d797cf9ae14c09aef5e5aafd2759d0251d",
+  "execution_performed": false,
+  "prerequisites": "Final same-lock full qualification, all3 actual full regression plus official install, exact qualified source adopted and all12 build/precheck, release/native lineage/managed drift verified before official stop/upgrade/verify. No original business application or model execution."
+}

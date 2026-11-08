@@ -1,0 +1,19 @@
+{
+  "owner": "version-unification",
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "test",
+    "--",
+    "--maxWorkers=1",
+    "--reporter=json",
+    "--outputFile=D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\structured-qualification-patched\\version-unification.vitest.json"
+  ],
+  "cwd": "D:\\code\\SpecForge\\.lint-shortpath-a01\\packages\\version-unification",
+  "context_sha256": "6718af96ad6d72872663e3feadf61af12de0cdc94afdd0ba7e1b02a71ab1908b",
+  "started_utc": "2026-11-08T12:36:32.073Z",
+  "finished_utc": "2026-11-08T12:36:33.078Z",
+  "exit": 0,
+  "stdout_sha256": "060295f76ea7e4256a96a7eb9c57be4dec34c7107138181f9b28b57df9e17e0e",
+  "stderr_sha256": "3a3339d93914ab633e45bbff9ed7505df5806e84e53b7ec361c11aeb6a934fa0"
+}

@@ -1,0 +1,7 @@
+{
+  "utc": "2026-11-08T12:34:15.441Z",
+  "source": "../2026-11-08-crossplatform-consumer-audit/preserve-original-and-read-current-state.cjs",
+  "source_sealed_sha256": "cb218aabf531d1a06d010c4335febfefb5d54039622171bfa57134222486513d",
+  "derived_sha256": "b798db943e05720edfdc71eb58fe0acdc6c8215dc68e958c10c57f21ad72493e",
+  "changes": "Current expected release1.0.25 only; specific original project path and5 code/9 sealed evidence identities retained. Authenticated read-only state owner, no original application/model execution."
+}

@@ -1,0 +1,52 @@
+{
+  "utc": "2026-11-08T09:07:07.773Z",
+  "members": [
+    {
+      "file": "packages/daemon-core/src/daemon/Daemon.ts",
+      "before": "357e2231d1e0085062b09e53350b267c8a4c6de6e699366076e5f981184a0dff",
+      "after": "cfca7133a2d9c8f67d3c114fb5d2f51e5560ec21af5383e8d5597eb3c78ac59f"
+    },
+    {
+      "file": "packages/daemon-core/src/project/ProjectManager.ts",
+      "before": "1b81464b9244d1e6d26f980df7909d06703c7ddbe5c479d14b4d0405d9d62350",
+      "after": "012bef1368148f2e21163f0d00456192a7b0c1aaf2eec2d14174d1b69c16f871"
+    },
+    {
+      "file": "packages/daemon-core/src/extensions/ExtensionLoader.ts",
+      "before": "223359d5dae13eac3352a8fe3ebbb944aa47908c6ef568599fdedbe94e09863b",
+      "after": "0d4be40c59590b5aebaa13050663a425a5db3af305159727e73d42122e80d07e"
+    },
+    {
+      "file": "packages/daemon-core/src/http/HTTPServer.ts",
+      "before": "fe2b120dc90fdddad92e62cf12740773dc2eb5aa84aa354ff6006a5f161ccbe0",
+      "after": "ed60c5b321c0199d8a3b96db7d01922b8f6772544e9d905d07b92951487df6a0"
+    },
+    {
+      "file": "packages/daemon-core/src/index.ts",
+      "before": "ebbaf403317a99d00a7aba9a0034d7a1b7dbc00aa3c65049c35637e6666a2c1b",
+      "after": "3baf8e44d8edf558aaa037784590e9909bdb109cf52ab8ea498148fc2e571572"
+    },
+    {
+      "file": "packages/daemon-core/src/verification/source-snapshot.ts",
+      "before": "d4f096b4e53f11293e3d0b7ac39ec23e02296ebcb38c5d2882f03a75b9e5319a",
+      "after": "745e4d45afa801fa63fed29063a663e321584a3b17d13abf407acdb75e03e3b1"
+    },
+    {
+      "file": "packages/daemon-core/src/http/HTTPServer.test.ts",
+      "before": "cb33b4c3a2edb2d3a899eda835db16bcac59a5529e40f9e530fe704daae0fd25",
+      "after": "04748483d4918aa7190fed8929deeeb25f6dc2cb7fa8f8dc219a62c132634fea"
+    },
+    {
+      "file": "packages/daemon-core/src/event-bus/EventBus.test.ts",
+      "before": "b8ed1748f6105386097c38d9d188a0571bbdbad3718bbb7d7a89550d9b03e32d",
+      "after": "f31ea69934d061f15c05268ff3d41aba4de289c591c8f7c53d0142ca742b191a"
+    },
+    {
+      "file": "packages/daemon-core/src/daemon/HandshakeManager.ts",
+      "before": "a2b59e329c7139efdf0c831fffce820b8ee8523f3bd53ce26b27069559b7f96a",
+      "after": "b4521b1ced8a667f8703385272340d207546a3b6d285701f96bbdd9ef961ed04"
+    }
+  ],
+  "facts": "Current shared daemon passes no daemon-global business StateManager; property/getter types now state that fact, project managers unchanged. Event publications that advertise Promise now adopt WAL/fanout result; extension callers await publication. Auth rejection remains immediate rejection and observes publication failure with fixed safe diagnostic. HTTP event callback has an observed promise instead of async void. Native optional lock capability has typed presence/positive integer flags, preserved receiver, bound unlock, no @ts-ignore; no native capability means existing PID fallback. Descriptor closes even if handshake unlink or unlock fails.",
+  "required": "All12 build; EventBus and HTTP suites; handshake ownership/PID fallback and synthetic optional flock capability cases, including incomplete flags/unlock failure/unlink failure; whole Daemon suite and actual three-OS installer/lifecycle."
+}

@@ -1,0 +1,1 @@
+{"inventory":"98 files complete;11 references","supported_kinds":["standalone assignment retaining effects","standalone unobserved numeric increment"],"owner_match":"named function and describe/it/test lexical ancestry","unknown_kinds":"REFUSED_BEFORE_WRITES"}

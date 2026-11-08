@@ -1,0 +1,24 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/run-isolated-qualification-leg-v5.cjs",
+    "patched",
+    ".lint-signal-a01"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "signal-final-literal-same-lock-cold-qualification",
+  "expected_writes": "Final6ec source526 exact, actual same3f lock; isolated cold official full workspace Root installer; previous successful execution/mismatch evidence retained",
+  "started_utc": "2026-11-08T12:58:38.865Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\run-isolated-qualification-leg-v5.cjs",
+      "sha256": "2c0d2de8088df0571033b30e97168f92c35b8d39d1963e23f6eb47f88d5cc292",
+      "size": 7047,
+      "extension": ".cjs"
+    }
+  ]
+}

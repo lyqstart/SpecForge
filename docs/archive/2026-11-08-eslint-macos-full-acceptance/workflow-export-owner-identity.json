@@ -1,0 +1,1882 @@
+{
+  "utc": "2026-11-08T08:19:07.133Z",
+  "before_sha256": "268bed6a7251cf277787a7f1f708f67d39b4340b37816faa6b959746871b1047",
+  "after_sha256": "3acd456f9bf92d6180cf7347d0e6a943123532999f6f011408e5a06c444d65ec",
+  "exports": [
+    {
+      "name": "WorkflowEngine",
+      "type_only": false,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/WorkflowEngine.ts",
+          "start": 2475,
+          "end": 34951
+        }
+      ]
+    },
+    {
+      "name": "WorkflowEvent",
+      "type_only": true,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/WorkflowEngine.ts",
+          "start": 1235,
+          "end": 1492
+        }
+      ]
+    },
+    {
+      "name": "WorkflowEngineConfig",
+      "type_only": true,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/WorkflowEngine.ts",
+          "start": 1492,
+          "end": 2127
+        }
+      ]
+    },
+    {
+      "name": "GateRunner",
+      "type_only": false,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/GateRunner.ts",
+          "start": 1593,
+          "end": 8180
+        }
+      ]
+    },
+    {
+      "name": "SimpleGateRunner",
+      "type_only": false,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/GateRunner.ts",
+          "start": 8180,
+          "end": 10211
+        }
+      ]
+    },
+    {
+      "name": "CompositeGateRunner",
+      "type_only": false,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/GateRunner.ts",
+          "start": 10211,
+          "end": 21660
+        }
+      ]
+    },
+    {
+      "name": "createGateRunner",
+      "type_only": false,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/GateRunner.ts",
+          "start": 21660,
+          "end": 22188
+        }
+      ]
+    },
+    {
+      "name": "ErrorPropagationManager",
+      "type_only": false,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/error-propagation.ts",
+          "start": 1019,
+          "end": 8682
+        }
+      ]
+    },
+    {
+      "name": "ErrorPropagationContext",
+      "type_only": true,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/error-propagation.ts",
+          "start": 295,
+          "end": 544
+        }
+      ]
+    },
+    {
+      "name": "ErrorPropagationResult",
+      "type_only": true,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/error-propagation.ts",
+          "start": 781,
+          "end": 1019
+        }
+      ]
+    },
+    {
+      "name": "ErrorPropagationUtils",
+      "type_only": false,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/error-propagation.ts",
+          "start": 8682,
+          "end": 11904
+        }
+      ]
+    },
+    {
+      "name": "createErrorPropagationManager",
+      "type_only": false,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/error-propagation.ts",
+          "start": 11904,
+          "end": 12074
+        }
+      ]
+    },
+    {
+      "name": "EventPublisher",
+      "type_only": false,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/events/EventPublisher.ts",
+          "start": 449,
+          "end": 5808
+        }
+      ]
+    },
+    {
+      "name": "createEventPublisher",
+      "type_only": false,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/events/EventPublisher.ts",
+          "start": 5808,
+          "end": 6114
+        }
+      ]
+    },
+    {
+      "name": "WorkflowLifecycleEventType",
+      "type_only": true,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/events/EventTypes.ts",
+          "start": 181,
+          "end": 381
+        }
+      ]
+    },
+    {
+      "name": "GateEventType",
+      "type_only": true,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/events/EventTypes.ts",
+          "start": 381,
+          "end": 564
+        }
+      ]
+    },
+    {
+      "name": "WorkflowEventType",
+      "type_only": true,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/events/EventTypes.ts",
+          "start": 661,
+          "end": 797
+        }
+      ]
+    },
+    {
+      "name": "WorkflowLifecyclePayload",
+      "type_only": true,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/events/EventTypes.ts",
+          "start": 797,
+          "end": 1099
+        }
+      ]
+    },
+    {
+      "name": "GateEventPayload",
+      "type_only": true,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/events/EventTypes.ts",
+          "start": 1099,
+          "end": 1420
+        }
+      ]
+    },
+    {
+      "name": "EventPublisherConfig",
+      "type_only": true,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/events/EventPublisher.ts",
+          "start": 278,
+          "end": 449
+        }
+      ]
+    },
+    {
+      "name": "GateCancellationPayload",
+      "type_only": true,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/events/EventTypes.ts",
+          "start": 1639,
+          "end": 1922
+        }
+      ]
+    },
+    {
+      "name": "IEventBus",
+      "type_only": true,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/types.ts",
+          "start": 3794,
+          "end": 4169
+        }
+      ]
+    },
+    {
+      "name": "Event",
+      "type_only": true,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/types.ts",
+          "start": 4169,
+          "end": 4441
+        }
+      ]
+    },
+    {
+      "name": "Subscription",
+      "type_only": true,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/types.ts",
+          "start": 4441,
+          "end": 4603
+        }
+      ]
+    },
+    {
+      "name": "STATE_ADVANCEMENT_SUBJECTS",
+      "type_only": false,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/types/state-machine.ts",
+          "start": 2349,
+          "end": 2597
+        }
+      ]
+    },
+    {
+      "name": "StateAdvancementSubject",
+      "type_only": true,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/types/state-machine.ts",
+          "start": 2598,
+          "end": 2682
+        }
+      ]
+    },
+    {
+      "name": "EventSubscriptionManager",
+      "type_only": false,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/event-subscription.ts",
+          "start": 739,
+          "end": 5067
+        }
+      ]
+    },
+    {
+      "name": "createEventSubscriptionManager",
+      "type_only": false,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/event-subscription.ts",
+          "start": 5067,
+          "end": 5265
+        }
+      ]
+    },
+    {
+      "name": "EventHandler",
+      "type_only": true,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/event-subscription.ts",
+          "start": 391,
+          "end": 498
+        }
+      ]
+    },
+    {
+      "name": "EventSubscription",
+      "type_only": true,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/event-subscription.ts",
+          "start": 498,
+          "end": 739
+        }
+      ]
+    },
+    {
+      "name": "EventFilter",
+      "type_only": false,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/event-filter.ts",
+          "start": 836,
+          "end": 5555
+        }
+      ]
+    },
+    {
+      "name": "createEventFilter",
+      "type_only": false,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/event-filter.ts",
+          "start": 5555,
+          "end": 5796
+        }
+      ]
+    },
+    {
+      "name": "FilterCriteria",
+      "type_only": true,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/event-filter.ts",
+          "start": 252,
+          "end": 836
+        }
+      ]
+    },
+    {
+      "name": "WorkflowErrorHandler",
+      "type_only": false,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/WorkflowErrorHandling.ts",
+          "start": 1102,
+          "end": 10488
+        }
+      ]
+    },
+    {
+      "name": "WorkflowStateManager",
+      "type_only": false,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/WorkflowErrorHandling.ts",
+          "start": 10488,
+          "end": 12746
+        }
+      ]
+    },
+    {
+      "name": "createErrorHandler",
+      "type_only": false,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/WorkflowErrorHandling.ts",
+          "start": 12746,
+          "end": 12924
+        }
+      ]
+    },
+    {
+      "name": "RetryConfig",
+      "type_only": true,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/WorkflowErrorHandling.ts",
+          "start": 533,
+          "end": 771
+        }
+      ]
+    },
+    {
+      "name": "DEFAULT_RETRY_CONFIG",
+      "type_only": false,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/WorkflowErrorHandling.ts",
+          "start": 824,
+          "end": 1101
+        }
+      ]
+    },
+    {
+      "name": "withRetry",
+      "type_only": false,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/retry.ts",
+          "start": 3168,
+          "end": 6369
+        }
+      ]
+    },
+    {
+      "name": "shouldRetryError",
+      "type_only": false,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/retry.ts",
+          "start": 2000,
+          "end": 2979
+        }
+      ]
+    },
+    {
+      "name": "calculateDelay",
+      "type_only": false,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/retry.ts",
+          "start": 1182,
+          "end": 2000
+        }
+      ]
+    },
+    {
+      "name": "createRetryDecorator",
+      "type_only": false,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/retry.ts",
+          "start": 6369,
+          "end": 6936
+        }
+      ]
+    },
+    {
+      "name": "getRetryStats",
+      "type_only": false,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/retry.ts",
+          "start": 6936,
+          "end": 7539
+        }
+      ]
+    },
+    {
+      "name": "validateRetryConfig",
+      "type_only": false,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/retry.ts",
+          "start": 7539,
+          "end": 8698
+        }
+      ]
+    },
+    {
+      "name": "DEFAULT_RETRY_CONFIG",
+      "type_only": false,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/retry.ts",
+          "start": 374,
+          "end": 731
+        }
+      ]
+    },
+    {
+      "name": "RetryConfig",
+      "type_only": true,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/types.ts",
+          "start": 4700,
+          "end": 5866
+        }
+      ]
+    },
+    {
+      "name": "RetryState",
+      "type_only": true,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/types.ts",
+          "start": 5866,
+          "end": 6034
+        }
+      ]
+    },
+    {
+      "name": "RetryStrategy",
+      "type_only": true,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/types.ts",
+          "start": 4603,
+          "end": 4700
+        }
+      ]
+    },
+    {
+      "name": "GateError",
+      "type_only": false,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/error-handler.ts",
+          "start": 463,
+          "end": 2094
+        }
+      ]
+    },
+    {
+      "name": "GateTimeoutError",
+      "type_only": false,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/error-handler.ts",
+          "start": 2094,
+          "end": 3202
+        }
+      ]
+    },
+    {
+      "name": "GateExecutionError",
+      "type_only": false,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/error-handler.ts",
+          "start": 3202,
+          "end": 4723
+        }
+      ]
+    },
+    {
+      "name": "GateValidationError",
+      "type_only": false,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/error-handler.ts",
+          "start": 4723,
+          "end": 5740
+        }
+      ]
+    },
+    {
+      "name": "GateConfigurationError",
+      "type_only": false,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/error-handler.ts",
+          "start": 5740,
+          "end": 6931
+        }
+      ]
+    },
+    {
+      "name": "GateDependencyError",
+      "type_only": false,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/error-handler.ts",
+          "start": 6931,
+          "end": 7989
+        }
+      ]
+    },
+    {
+      "name": "GateCancellationError",
+      "type_only": false,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/error-handler.ts",
+          "start": 7989,
+          "end": 9019
+        }
+      ]
+    },
+    {
+      "name": "GateResourceError",
+      "type_only": false,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/error-handler.ts",
+          "start": 9019,
+          "end": 10394
+        }
+      ]
+    },
+    {
+      "name": "handleGateError",
+      "type_only": false,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/error-handler.ts",
+          "start": 10394,
+          "end": 14968
+        }
+      ]
+    },
+    {
+      "name": "isGateError",
+      "type_only": false,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/error-handler.ts",
+          "start": 14968,
+          "end": 15118
+        }
+      ]
+    },
+    {
+      "name": "getErrorCode",
+      "type_only": false,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/error-handler.ts",
+          "start": 15118,
+          "end": 15364
+        }
+      ]
+    },
+    {
+      "name": "isRetryableError",
+      "type_only": false,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/error-handler.ts",
+          "start": 15364,
+          "end": 15553
+        }
+      ]
+    },
+    {
+      "name": "getErrorType",
+      "type_only": false,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/error-handler.ts",
+          "start": 15553,
+          "end": 15759
+        }
+      ]
+    },
+    {
+      "name": "createErrorResult",
+      "type_only": false,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/error-handler.ts",
+          "start": 15759,
+          "end": 16424
+        }
+      ]
+    },
+    {
+      "name": "AgentScheduler",
+      "type_only": false,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/AgentRunner.ts",
+          "start": 1684,
+          "end": 9451
+        }
+      ]
+    },
+    {
+      "name": "WorkflowAgentRunner",
+      "type_only": false,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/AgentRunner.ts",
+          "start": 9451,
+          "end": 11297
+        }
+      ]
+    },
+    {
+      "name": "createAgentScheduler",
+      "type_only": false,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/AgentRunner.ts",
+          "start": 11297,
+          "end": 11489
+        }
+      ]
+    },
+    {
+      "name": "createWorkflowAgentRunner",
+      "type_only": false,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/AgentRunner.ts",
+          "start": 11489,
+          "end": 11674
+        }
+      ]
+    },
+    {
+      "name": "AgentRole",
+      "type_only": true,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/AgentRunner.ts",
+          "start": 330,
+          "end": 530
+        }
+      ]
+    },
+    {
+      "name": "SpawnAgentParams",
+      "type_only": true,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/AgentRunner.ts",
+          "start": 530,
+          "end": 739
+        }
+      ]
+    },
+    {
+      "name": "AgentExecutionResult",
+      "type_only": true,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/AgentRunner.ts",
+          "start": 739,
+          "end": 980
+        }
+      ]
+    },
+    {
+      "name": "AgentSchedulerConfig",
+      "type_only": true,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/AgentRunner.ts",
+          "start": 980,
+          "end": 1172
+        }
+      ]
+    },
+    {
+      "name": "AgentExecutionContext",
+      "type_only": true,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/AgentRunner.ts",
+          "start": 1172,
+          "end": 1430
+        }
+      ]
+    },
+    {
+      "name": "WorkflowDefinitionLoader",
+      "type_only": false,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/loaders/WorkflowDefinitionLoader.ts",
+          "start": 723,
+          "end": 21775
+        }
+      ]
+    },
+    {
+      "name": "ValidationError",
+      "type_only": true,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/loaders/WorkflowDefinitionLoader.ts",
+          "start": 479,
+          "end": 608
+        }
+      ]
+    },
+    {
+      "name": "ValidationResult",
+      "type_only": true,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/loaders/WorkflowDefinitionLoader.ts",
+          "start": 608,
+          "end": 723
+        }
+      ]
+    },
+    {
+      "name": "initializeEventBusIntegration",
+      "type_only": false,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/event-integration.ts",
+          "start": 730,
+          "end": 1753
+        }
+      ]
+    },
+    {
+      "name": "shutdownEventBusIntegration",
+      "type_only": false,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/event-integration.ts",
+          "start": 1753,
+          "end": 2074
+        }
+      ]
+    },
+    {
+      "name": "subscribeToWorkflowEvents",
+      "type_only": false,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/event-integration.ts",
+          "start": 2074,
+          "end": 2564
+        }
+      ]
+    },
+    {
+      "name": "unsubscribeFromWorkflowEvents",
+      "type_only": false,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/event-integration.ts",
+          "start": 2564,
+          "end": 2856
+        }
+      ]
+    },
+    {
+      "name": "EventBusIntegrationConfig",
+      "type_only": true,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/event-integration.ts",
+          "start": 543,
+          "end": 730
+        }
+      ]
+    },
+    {
+      "name": "AgentWorkflowEngine",
+      "type_only": false,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/engine/AgentWorkflowEngine.ts",
+          "start": 795,
+          "end": 11013
+        }
+      ]
+    },
+    {
+      "name": "createAgentWorkflowEngine",
+      "type_only": false,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/engine/AgentWorkflowEngine.ts",
+          "start": 11013,
+          "end": 11203
+        }
+      ]
+    },
+    {
+      "name": "AgentWorkflowEngineConfig",
+      "type_only": true,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/engine/AgentWorkflowEngine.ts",
+          "start": 604,
+          "end": 795
+        }
+      ]
+    },
+    {
+      "name": "SUPPORTED_WORKFLOW_DEFINITION_SCHEMAS",
+      "type_only": false,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/types.ts",
+          "start": 160,
+          "end": 224
+        }
+      ]
+    },
+    {
+      "name": "WorkflowDefinitionSchemaVersion",
+      "type_only": true,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/types.ts",
+          "start": 225,
+          "end": 325
+        }
+      ]
+    },
+    {
+      "name": "WorkflowEventData",
+      "type_only": true,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/types.ts",
+          "start": 325,
+          "end": 533
+        }
+      ]
+    },
+    {
+      "name": "GateResult",
+      "type_only": true,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/types.ts",
+          "start": 533,
+          "end": 1376
+        }
+      ]
+    },
+    {
+      "name": "GateType",
+      "type_only": true,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/types.ts",
+          "start": 1376,
+          "end": 1457
+        }
+      ]
+    },
+    {
+      "name": "SimpleGateDefinition",
+      "type_only": true,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/types.ts",
+          "start": 1457,
+          "end": 1904
+        }
+      ]
+    },
+    {
+      "name": "CompositeGateMode",
+      "type_only": true,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/types.ts",
+          "start": 1904,
+          "end": 2006
+        }
+      ]
+    },
+    {
+      "name": "FailPolicy",
+      "type_only": true,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/types.ts",
+          "start": 2006,
+          "end": 2104
+        }
+      ]
+    },
+    {
+      "name": "CompositeGateDefinition",
+      "type_only": true,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/types.ts",
+          "start": 2104,
+          "end": 2372
+        }
+      ]
+    },
+    {
+      "name": "GateDefinition",
+      "type_only": true,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/types.ts",
+          "start": 2372,
+          "end": 2491
+        }
+      ]
+    },
+    {
+      "name": "WorkflowState",
+      "type_only": true,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/types.ts",
+          "start": 2491,
+          "end": 2718
+        }
+      ]
+    },
+    {
+      "name": "StateMachine",
+      "type_only": true,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/types.ts",
+          "start": 2718,
+          "end": 2900
+        }
+      ]
+    },
+    {
+      "name": "ArtifactDefinition",
+      "type_only": true,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/types.ts",
+          "start": 2900,
+          "end": 3021
+        }
+      ]
+    },
+    {
+      "name": "WorkflowDefinition",
+      "type_only": true,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/types.ts",
+          "start": 3021,
+          "end": 3264
+        }
+      ]
+    },
+    {
+      "name": "WorkflowInstanceStatus",
+      "type_only": true,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/types.ts",
+          "start": 3264,
+          "end": 3397
+        }
+      ]
+    },
+    {
+      "name": "WorkflowInstance",
+      "type_only": true,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/types.ts",
+          "start": 3397,
+          "end": 3654
+        }
+      ]
+    },
+    {
+      "name": "WorkflowContext",
+      "type_only": true,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/types.ts",
+          "start": 3654,
+          "end": 3794
+        }
+      ]
+    },
+    {
+      "name": "WorkflowLoader",
+      "type_only": false,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/engine/WorkflowLoader.ts",
+          "start": 439,
+          "end": 8749
+        }
+      ]
+    },
+    {
+      "name": "WorkflowInstanceFactory",
+      "type_only": false,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/engine/WorkflowInstance.ts",
+          "start": 800,
+          "end": 3294
+        }
+      ]
+    },
+    {
+      "name": "WorkflowInstanceTracker",
+      "type_only": false,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/engine/WorkflowInstance.ts",
+          "start": 3294,
+          "end": 5737
+        }
+      ]
+    },
+    {
+      "name": "WorkflowInstanceStateManager",
+      "type_only": false,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/engine/WorkflowInstance.ts",
+          "start": 5737,
+          "end": 9125
+        }
+      ]
+    },
+    {
+      "name": "CreateInstanceOptions",
+      "type_only": true,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/engine/WorkflowInstance.ts",
+          "start": 264,
+          "end": 486
+        }
+      ]
+    },
+    {
+      "name": "BaseGate",
+      "type_only": false,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/gates/BasicGates.ts",
+          "start": 421,
+          "end": 1308
+        }
+      ]
+    },
+    {
+      "name": "RequirementsGate",
+      "type_only": false,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/gates/BasicGates.ts",
+          "start": 1308,
+          "end": 4291
+        }
+      ]
+    },
+    {
+      "name": "DesignGate",
+      "type_only": false,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/gates/BasicGates.ts",
+          "start": 4291,
+          "end": 6442
+        }
+      ]
+    },
+    {
+      "name": "TasksGate",
+      "type_only": false,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/gates/BasicGates.ts",
+          "start": 6442,
+          "end": 10198
+        }
+      ]
+    },
+    {
+      "name": "VerificationGate",
+      "type_only": false,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/gates/BasicGates.ts",
+          "start": 10198,
+          "end": 13266
+        }
+      ]
+    },
+    {
+      "name": "createBasicGate",
+      "type_only": false,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/gates/BasicGates.ts",
+          "start": 13266,
+          "end": 13894
+        }
+      ]
+    },
+    {
+      "name": "AgentGateRunner",
+      "type_only": false,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/gates/AgentGateRunner.ts",
+          "start": 355,
+          "end": 4751
+        }
+      ]
+    },
+    {
+      "name": "createAgentGateRunner",
+      "type_only": false,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/gates/AgentGateRunner.ts",
+          "start": 4751,
+          "end": 5064
+        }
+      ]
+    },
+    {
+      "name": "CompositeGateSerializer",
+      "type_only": false,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/gates/CompositeGateSerializer.ts",
+          "start": 1161,
+          "end": 9680
+        }
+      ]
+    },
+    {
+      "name": "validateCompositeGate",
+      "type_only": false,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/gates/CompositeGateSerializer.ts",
+          "start": 9680,
+          "end": 11512
+        }
+      ]
+    },
+    {
+      "name": "SerializedCompositeGate",
+      "type_only": true,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/gates/CompositeGateSerializer.ts",
+          "start": 438,
+          "end": 717
+        }
+      ]
+    },
+    {
+      "name": "SerializedGateDefinition",
+      "type_only": true,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/gates/CompositeGateSerializer.ts",
+          "start": 717,
+          "end": 866
+        }
+      ]
+    },
+    {
+      "name": "SerializedSimpleGate",
+      "type_only": true,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/gates/CompositeGateSerializer.ts",
+          "start": 866,
+          "end": 1043
+        }
+      ]
+    },
+    {
+      "name": "RBACEngine",
+      "type_only": false,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/rbac/RBACEngine.ts",
+          "start": 1748,
+          "end": 5876
+        }
+      ]
+    },
+    {
+      "name": "createRBACEngine",
+      "type_only": false,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/rbac/RBACEngine.ts",
+          "start": 5876,
+          "end": 6009
+        }
+      ]
+    },
+    {
+      "name": "RBACConfig",
+      "type_only": true,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/rbac/RBACEngine.ts",
+          "start": 998,
+          "end": 1368
+        }
+      ]
+    },
+    {
+      "name": "PrincipalResolver",
+      "type_only": false,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/rbac/PrincipalResolver.ts",
+          "start": 1061,
+          "end": 2791
+        }
+      ]
+    },
+    {
+      "name": "createPrincipalResolver",
+      "type_only": false,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/rbac/PrincipalResolver.ts",
+          "start": 2791,
+          "end": 2927
+        }
+      ]
+    },
+    {
+      "name": "TransitionAuthorizer",
+      "type_only": false,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/rbac/TransitionAuthorizer.ts",
+          "start": 1757,
+          "end": 4509
+        }
+      ]
+    },
+    {
+      "name": "createTransitionAuthorizer",
+      "type_only": false,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/rbac/TransitionAuthorizer.ts",
+          "start": 4509,
+          "end": 4698
+        }
+      ]
+    },
+    {
+      "name": "TransitionAuthorizationInput",
+      "type_only": true,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/rbac/TransitionAuthorizer.ts",
+          "start": 806,
+          "end": 1425
+        }
+      ]
+    },
+    {
+      "name": "TransitionAuthorizerConfig",
+      "type_only": true,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/rbac/TransitionAuthorizer.ts",
+          "start": 1425,
+          "end": 1757
+        }
+      ]
+    },
+    {
+      "name": "ProtectedFileMatcher",
+      "type_only": false,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/rbac/ProtectedFileMatcher.ts",
+          "start": 2441,
+          "end": 4538
+        }
+      ]
+    },
+    {
+      "name": "matchProtectedFile",
+      "type_only": false,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/rbac/ProtectedFileMatcher.ts",
+          "start": 4539,
+          "end": 4696
+        }
+      ]
+    },
+    {
+      "name": "FileAuthorizationPolicy",
+      "type_only": false,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/rbac/FileAuthorizationPolicy.ts",
+          "start": 2859,
+          "end": 7214
+        }
+      ]
+    },
+    {
+      "name": "createFileAuthorizationPolicy",
+      "type_only": false,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/rbac/FileAuthorizationPolicy.ts",
+          "start": 7214,
+          "end": 7418
+        }
+      ]
+    },
+    {
+      "name": "FileAuthorizationInput",
+      "type_only": true,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/rbac/FileAuthorizationPolicy.ts",
+          "start": 2460,
+          "end": 2859
+        }
+      ]
+    },
+    {
+      "name": "AuthorizationAuditLogger",
+      "type_only": false,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/rbac/AuthorizationAuditLogger.ts",
+          "start": 1990,
+          "end": 3716
+        }
+      ]
+    },
+    {
+      "name": "createAuthorizationAuditLogger",
+      "type_only": false,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/rbac/AuthorizationAuditLogger.ts",
+          "start": 3716,
+          "end": 3922
+        }
+      ]
+    },
+    {
+      "name": "InMemoryAuditSink",
+      "type_only": false,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/rbac/AuthorizationAuditLogger.ts",
+          "start": 1188,
+          "end": 1990
+        }
+      ]
+    },
+    {
+      "name": "AuthorizationAuditRecord",
+      "type_only": true,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/rbac/AuthorizationAuditLogger.ts",
+          "start": 364,
+          "end": 836
+        }
+      ]
+    },
+    {
+      "name": "AuditSink",
+      "type_only": true,
+      "origins": [
+        {
+          "file": "packages/workflow-runtime/src/rbac/AuthorizationAuditLogger.ts",
+          "start": 836,
+          "end": 1188
+        }
+      ]
+    },
+    {
+      "name": "PrincipalRole",
+      "type_only": true,
+      "origins": [
+        {
+          "file": "packages/types/dist/principal.d.ts",
+          "start": 1223,
+          "end": 1486
+        }
+      ]
+    },
+    {
+      "name": "PrincipalSource",
+      "type_only": true,
+      "origins": [
+        {
+          "file": "packages/types/dist/principal.d.ts",
+          "start": 909,
+          "end": 1223
+        }
+      ]
+    },
+    {
+      "name": "Principal",
+      "type_only": true,
+      "origins": [
+        {
+          "file": "packages/types/dist/principal.d.ts",
+          "start": 1486,
+          "end": 2018
+        }
+      ]
+    },
+    {
+      "name": "Permission",
+      "type_only": true,
+      "origins": [
+        {
+          "file": "packages/types/dist/permissions.d.ts",
+          "start": 1102,
+          "end": 1315
+        }
+      ]
+    },
+    {
+      "name": "PermissionContext",
+      "type_only": true,
+      "origins": [
+        {
+          "file": "packages/types/dist/permissions.d.ts",
+          "start": 1315,
+          "end": 1841
+        }
+      ]
+    },
+    {
+      "name": "PermissionDecision",
+      "type_only": true,
+      "origins": [
+        {
+          "file": "packages/types/dist/permissions.d.ts",
+          "start": 1841,
+          "end": 2230
+        }
+      ]
+    },
+    {
+      "name": "ResourceType",
+      "type_only": true,
+      "origins": [
+        {
+          "file": "packages/types/dist/permissions.d.ts",
+          "start": 0,
+          "end": 838
+        }
+      ]
+    },
+    {
+      "name": "Operation",
+      "type_only": true,
+      "origins": [
+        {
+          "file": "packages/types/dist/permissions.d.ts",
+          "start": 838,
+          "end": 1102
+        }
+      ]
+    },
+    {
+      "name": "SealTransitionEntry",
+      "type_only": true,
+      "origins": [
+        {
+          "file": "packages/types/dist/seal-transitions.d.ts",
+          "start": 0,
+          "end": 632
+        }
+      ]
+    }
+  ],
+  "projected_stars": [
+    {
+      "module": "./types.js",
+      "entries": [
+        {
+          "name": "ArtifactDefinition",
+          "type_only": true
+        },
+        {
+          "name": "CompositeGateDefinition",
+          "type_only": true
+        },
+        {
+          "name": "CompositeGateMode",
+          "type_only": true
+        },
+        {
+          "name": "FailPolicy",
+          "type_only": true
+        },
+        {
+          "name": "GateDefinition",
+          "type_only": true
+        },
+        {
+          "name": "GateResult",
+          "type_only": true
+        },
+        {
+          "name": "GateType",
+          "type_only": true
+        },
+        {
+          "name": "SimpleGateDefinition",
+          "type_only": true
+        },
+        {
+          "name": "StateMachine",
+          "type_only": true
+        },
+        {
+          "name": "SUPPORTED_WORKFLOW_DEFINITION_SCHEMAS",
+          "type_only": false
+        },
+        {
+          "name": "WorkflowContext",
+          "type_only": true
+        },
+        {
+          "name": "WorkflowDefinition",
+          "type_only": true
+        },
+        {
+          "name": "WorkflowDefinitionSchemaVersion",
+          "type_only": true
+        },
+        {
+          "name": "WorkflowEventData",
+          "type_only": true
+        },
+        {
+          "name": "WorkflowInstance",
+          "type_only": true
+        },
+        {
+          "name": "WorkflowInstanceStatus",
+          "type_only": true
+        },
+        {
+          "name": "WorkflowState",
+          "type_only": true
+        }
+      ],
+      "side_effect_import_retained": true
+    },
+    {
+      "module": "./engine/index.js",
+      "entries": [
+        {
+          "name": "CreateInstanceOptions",
+          "type_only": true
+        },
+        {
+          "name": "WorkflowInstanceFactory",
+          "type_only": false
+        },
+        {
+          "name": "WorkflowInstanceStateManager",
+          "type_only": false
+        },
+        {
+          "name": "WorkflowInstanceTracker",
+          "type_only": false
+        },
+        {
+          "name": "WorkflowLoader",
+          "type_only": false
+        }
+      ],
+      "side_effect_import_retained": true
+    },
+    {
+      "module": "./gates/index.js",
+      "entries": [
+        {
+          "name": "AgentGateRunner",
+          "type_only": false
+        },
+        {
+          "name": "BaseGate",
+          "type_only": false
+        },
+        {
+          "name": "CompositeGateSerializer",
+          "type_only": false
+        },
+        {
+          "name": "createAgentGateRunner",
+          "type_only": false
+        },
+        {
+          "name": "createBasicGate",
+          "type_only": false
+        },
+        {
+          "name": "DesignGate",
+          "type_only": false
+        },
+        {
+          "name": "RequirementsGate",
+          "type_only": false
+        },
+        {
+          "name": "SerializedCompositeGate",
+          "type_only": true
+        },
+        {
+          "name": "SerializedGateDefinition",
+          "type_only": true
+        },
+        {
+          "name": "SerializedSimpleGate",
+          "type_only": true
+        },
+        {
+          "name": "TasksGate",
+          "type_only": false
+        },
+        {
+          "name": "validateCompositeGate",
+          "type_only": false
+        },
+        {
+          "name": "VerificationGate",
+          "type_only": false
+        }
+      ],
+      "side_effect_import_retained": true
+    },
+    {
+      "module": "./rbac/index.js",
+      "entries": [
+        {
+          "name": "AuditSink",
+          "type_only": true
+        },
+        {
+          "name": "AuthorizationAuditLogger",
+          "type_only": false
+        },
+        {
+          "name": "AuthorizationAuditRecord",
+          "type_only": true
+        },
+        {
+          "name": "createAuthorizationAuditLogger",
+          "type_only": false
+        },
+        {
+          "name": "createFileAuthorizationPolicy",
+          "type_only": false
+        },
+        {
+          "name": "createPrincipalResolver",
+          "type_only": false
+        },
+        {
+          "name": "createRBACEngine",
+          "type_only": false
+        },
+        {
+          "name": "createTransitionAuthorizer",
+          "type_only": false
+        },
+        {
+          "name": "FileAuthorizationInput",
+          "type_only": true
+        },
+        {
+          "name": "FileAuthorizationPolicy",
+          "type_only": false
+        },
+        {
+          "name": "InMemoryAuditSink",
+          "type_only": false
+        },
+        {
+          "name": "matchProtectedFile",
+          "type_only": false
+        },
+        {
+          "name": "Operation",
+          "type_only": true
+        },
+        {
+          "name": "Permission",
+          "type_only": true
+        },
+        {
+          "name": "PermissionContext",
+          "type_only": true
+        },
+        {
+          "name": "PermissionDecision",
+          "type_only": true
+        },
+        {
+          "name": "Principal",
+          "type_only": true
+        },
+        {
+          "name": "PrincipalResolver",
+          "type_only": false
+        },
+        {
+          "name": "PrincipalRole",
+          "type_only": true
+        },
+        {
+          "name": "PrincipalSource",
+          "type_only": true
+        },
+        {
+          "name": "ProtectedFileMatcher",
+          "type_only": false
+        },
+        {
+          "name": "RBACConfig",
+          "type_only": true
+        },
+        {
+          "name": "RBACEngine",
+          "type_only": false
+        },
+        {
+          "name": "ResourceType",
+          "type_only": true
+        },
+        {
+          "name": "SealTransitionEntry",
+          "type_only": true
+        },
+        {
+          "name": "TransitionAuthorizationInput",
+          "type_only": true
+        },
+        {
+          "name": "TransitionAuthorizer",
+          "type_only": false
+        },
+        {
+          "name": "TransitionAuthorizerConfig",
+          "type_only": true
+        }
+      ],
+      "side_effect_import_retained": true
+    }
+  ],
+  "all_export_names_origin_and_type_value_kind_equal": true,
+  "side_effect_module_requests": "Every original star module remains explicitly imported in the same declaration order; redundant public names now have one selected owner."
+}

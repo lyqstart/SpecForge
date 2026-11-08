@@ -1,0 +1,74 @@
+$ vitest run tests/performance.test.ts "--maxWorkers=1"
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+stderr | tests/performance.test.ts > Daemon Performance Tests > Startup Time > should start daemon within 3 seconds
+[SessionRegistry] WAL not injected — running in memory-only mode
+
+stderr | tests/performance.test.ts > Daemon Performance Tests > Startup Time > should have consistent startup times across multiple starts
+[SessionRegistry] WAL not injected — running in memory-only mode
+
+stderr | tests/performance.test.ts > Daemon Performance Tests > Startup Time > should have consistent startup times across multiple starts
+[SessionRegistry] WAL not injected — running in memory-only mode
+
+stderr | tests/performance.test.ts > Daemon Performance Tests > Startup Time > should have consistent startup times across multiple starts
+[SessionRegistry] WAL not injected — running in memory-only mode
+
+(node:39548) Warning: Closing file descriptor 4 on garbage collection
+(node:39548) [DEP0137] DeprecationWarning: Closing a FileHandle object on garbage collection is deprecated. Please close FileHandle objects explicitly using FileHandle.prototype.close(). In the future, an error will be thrown if a file descriptor is closed during garbage collection.
+(node:39548) Warning: Closing file descriptor 6 on garbage collection
+stderr | tests/performance.test.ts > Daemon Performance Tests > Startup Time > should have consistent startup times across multiple starts
+[SessionRegistry] WAL not injected — running in memory-only mode
+
+stderr | tests/performance.test.ts > Daemon Performance Tests > Startup Time > should have consistent startup times across multiple starts
+[SessionRegistry] WAL not injected — running in memory-only mode
+
+stderr | tests/performance.test.ts > Daemon Performance Tests > Startup Time > should have consistent startup times across multiple starts
+[SessionRegistry] WAL not injected — running in memory-only mode
+
+stderr | tests/performance.test.ts > Concurrent Session Support Tests > should support 100+ concurrent sessions
+[SessionRegistry] WAL not injected — running in memory-only mode
+
+stderr | tests/performance.test.ts > Concurrent Session Support Tests > should handle rapid session creation and termination
+[SessionRegistry] WAL not injected — running in memory-only mode
+
+stderr | tests/performance.test.ts > Concurrent Session Support Tests > should maintain session lookup performance with many sessions
+[SessionRegistry] WAL not injected — running in memory-only mode
+
+stderr | tests/performance.test.ts > Memory Usage Tests > should maintain stable memory usage under load
+[SessionRegistry] WAL not injected — running in memory-only mode
+
+stderr | tests/performance.test.ts > Memory Usage Tests > should maintain stable memory usage under load
+[SessionRegistry] WAL not injected — running in memory-only mode
+
+stderr | tests/performance.test.ts > Memory Usage Tests > should not leak memory on repeated start/stop cycles
+[SessionRegistry] WAL not injected — running in memory-only mode
+
+stderr | tests/performance.test.ts > Memory Usage Tests > should not leak memory on repeated start/stop cycles
+[SessionRegistry] WAL not injected — running in memory-only mode
+
+stderr | tests/performance.test.ts > Memory Usage Tests > should not leak memory on repeated start/stop cycles
+[SessionRegistry] WAL not injected — running in memory-only mode
+
+stderr | tests/performance.test.ts > Memory Usage Tests > should not leak memory on repeated start/stop cycles
+[SessionRegistry] WAL not injected — running in memory-only mode
+
+stderr | tests/performance.test.ts > Memory Usage Tests > should not leak memory on repeated start/stop cycles
+[SessionRegistry] WAL not injected — running in memory-only mode
+
+(node:39548) MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 SIGTERM listeners added to [process]. MaxListeners is 10. Use emitter.setMaxListeners() to increase limit
+    at genericNodeError (node:internal/errors:985:15)
+    at wrappedFn (node:internal/errors:539:14)
+    at _addListener (node:events:590:17)
+    at process.addListener (node:events:608:10)
+    at GracefulShutdownHandler.attachToProcess (D:\code\SpecForge\.lint-toolchain-a01\packages\service-management\src\shutdown\graceful-shutdown-handler.ts:133:15)
+    at Daemon.start (D:\code\SpecForge\.lint-toolchain-a01\packages\daemon-core\src\daemon\Daemon.ts:173:34)
+    at D:\code\SpecForge\.lint-toolchain-a01\packages\daemon-core\tests\performance.test.ts:388:7
+    at file:///D:/code/SpecForge/.lint-toolchain-a01/node_modules/.bun/@vitest+runner@3.2.4/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20
+stderr | tests/performance.test.ts > Memory Usage Tests > should not leak memory on repeated start/stop cycles
+[SessionRegistry] WAL not injected — running in memory-only mode
+
+stderr | tests/performance.test.ts > End-to-End Performance Tests > should handle realistic workload
+[SessionRegistry] WAL not injected — running in memory-only mode
+
+stderr | tests/performance.test.ts > End-to-End Performance Tests > should handle realistic workload
+[SessionRegistry] WAL not injected — running in memory-only mode
+

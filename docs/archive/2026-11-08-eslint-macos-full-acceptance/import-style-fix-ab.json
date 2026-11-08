@@ -1,0 +1,34 @@
+{
+  "utc": "2026-11-08T08:28:58.684Z",
+  "original_input": "import { WorkflowAgentRunner, AgentExecutionContext, type AgentRole } from '../AgentRunner.js';\nexport const runtimeClass = WorkflowAgentRunner;\nexport type PublicContext = AgentExecutionContext;\nexport type PublicRole = AgentRole;\n",
+  "actual_pinned_tools": true,
+  "rows": [
+    {
+      "mode": "old-separate-mixed",
+      "output": "import type { AgentExecutionContext, WorkflowAgentRunner, type AgentRole } from '../AgentRunner.js';\nexport const runtimeClass = WorkflowAgentRunner;\nexport type PublicContext = AgentExecutionContext;\nexport type PublicRole = AgentRole;\n",
+      "runtime_import_type_only": true,
+      "stable_after_second_fix": true,
+      "messages": [
+        {
+          "ruleId": "specforge/no-unbound-runtime-reference",
+          "severity": 2,
+          "message": "Type-only import WorkflowAgentRunner cannot provide a runtime value.",
+          "line": 2,
+          "column": 29,
+          "nodeType": "Identifier",
+          "messageId": "typeOnly",
+          "endLine": 2,
+          "endColumn": 48
+        }
+      ]
+    },
+    {
+      "mode": "aligned-inline",
+      "output": "import { WorkflowAgentRunner, type AgentExecutionContext, type AgentRole } from '../AgentRunner.js';\nexport const runtimeClass = WorkflowAgentRunner;\nexport type PublicContext = AgentExecutionContext;\nexport type PublicRole = AgentRole;\n",
+      "runtime_import_type_only": false,
+      "stable_after_second_fix": true,
+      "messages": []
+    }
+  ],
+  "qualification": "First-party installed rule sources documented prefer-inline and inline-type-imports. A/B actual output decides whether the exact internal interaction is reproduced; no inference from names alone."
+}

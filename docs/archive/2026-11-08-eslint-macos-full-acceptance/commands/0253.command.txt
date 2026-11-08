@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/trace-baseline-listener-warning.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "trace-original-toolchain-baseline-listener-warning",
+  "expected_writes": "Read-only unchanged baseline source; isolated performance fixture actual warning trace; no product repair inferred before owner attribution",
+  "started_utc": "2026-11-08T12:46:36.472Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\trace-baseline-listener-warning.cjs",
+      "sha256": "c98d2b8d8dca5e855204ebcc5984fd24cfbdf0050c30238817560dafabb5a220",
+      "size": 688,
+      "extension": ".cjs"
+    }
+  ]
+}

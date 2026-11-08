@@ -1,0 +1,73 @@
+{
+  "utc": "2026-11-08T08:48:12.202Z",
+  "members": [
+    {
+      "file": "packages/opencode-adapter/src/configuration.ts",
+      "before": "3c5974b8bf31ce68271346cecc4fc0c1892206d61156ac3e16011d262be4b767",
+      "after": "74e1a7a4bc335d58a8e5913841750cb3683724b386a388caed3e5bd431fc6f70"
+    },
+    {
+      "file": "packages/cli/src/cli.ts",
+      "before": "9a97423efe4fc8d23812e320fc8af31e7584deb656ca093e401e267133c8b7f0",
+      "after": "333d83ba563a5ba8a7f516d245c2a70f0e3aec0e0d696ed00ab286c5f43d46e4"
+    },
+    {
+      "file": "packages/workflow-runtime/src/event-integration.ts",
+      "before": "9d725a904c167f2f34465bca80dbff7d7635f2ecf9b2350d65f7a7d9de4904ce",
+      "after": "44c389eb5e08536ab68f69c9649e1952768d931dcf2d5a0d5e0cf5aa8c828144"
+    },
+    {
+      "file": "packages/workflow-runtime/src/gates/CompositeGateSerializer.ts",
+      "before": "5642f49c6cf7794da5b6100af69921c9de46e617033d4b3da4df2ad1f148a6a0",
+      "after": "d4bbe76ad894d4e7715d64bb505b253cbbe92fc06f2ae4b5202e3fbd8d041a3b"
+    },
+    {
+      "file": "packages/workflow-runtime/src/gates/AgentGateRunner.ts",
+      "before": "f22ac2f8980510ad40fd75ffa167fcfae16bacc891c158a1f6ca71cefcd38b97",
+      "after": "f9db228d206f5c1222408dfef516fd656e57df87c80c51ce4467c7be0ebb31d9"
+    },
+    {
+      "file": "packages/workflow-runtime/src/retry.ts",
+      "before": "2c274feb4642a5f71cf9a3ad830945b9d08bca729f2a150b1e836a46cf970295",
+      "after": "ee20f5ee0d270761c8d3505711865f769e8880d720e6d01347dd72a0ad8699d6"
+    },
+    {
+      "file": "packages/workflow-runtime/src/AgentRunner.ts",
+      "before": "4ed9bacc05c5580af754dcd84f573368b654c4d38d499d677a4b545f8c47fb6d",
+      "after": "2b4e7cb568d33b2af96f2b9cf1a38a172dfd55fdb48b0a6fabda0a7130bdd37d"
+    },
+    {
+      "file": "packages/workflow-runtime/src/WorkflowErrorHandling.ts",
+      "before": "72a146ebc5a0575da130aa883d17b12708daeed59395603b5ead298768976ab3",
+      "after": "2404ecf2003af83920076f652929245eed2c039f2ca05e3e5ce9dae1c56ef85c"
+    },
+    {
+      "file": "packages/workflow-runtime/src/agent/LLMKernelIntegration.ts",
+      "before": "f1a04dd7b1e8123eb281e932c56e5d0af530d1dd09c10b7493ec38cca7fb19ca",
+      "after": "bbe1e1790a2ade83cd67f9d711ebe8f39c9aec10db33d96c19c70dfa162ae5f0"
+    },
+    {
+      "file": "packages/workflow-runtime/src/error-propagation.ts",
+      "before": "4d3ef6cb3f2dfa6fbd6d4eabfee174efd460456cd416dfdf34f087a55f062abb",
+      "after": "4e761c1d582f6c8df4e94988250c5aec690cbcc7a86e7284871e1ee6d1950dc4"
+    },
+    {
+      "file": "packages/workflow-runtime/src/event-subscription.ts",
+      "before": "8d99fc7549e1b258c3c5b5fc7fbfbe16736e52db65abbd09aafeda58f4b20a58",
+      "after": "a531503b179d066a6400429fff61d16ccf3133450a341705afeb7abf88462526"
+    },
+    {
+      "file": "packages/workflow-runtime/src/GateRunner.ts",
+      "before": "3e797d675e4f93d029f17457b9423e24a3b0fe3a53a890c33696d7765f083a32",
+      "after": "07a54444e6c2095b407fc93d5bcae48d8cde9c0c99accfc02d849ffc21de86d6"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/property/helpers.ts",
+      "before": "86871468e490cff436ac9f736921bd697d2229ce028a62c8e410b6a978d4a06a",
+      "after": "b4509e4af38cef88009c07667a174f6fdda33fd76afcdff278836604f049c25f"
+    }
+  ],
+  "runtime_changes": "Default INFO/DEBUG and property progress use stderr diagnostics; no global console. Retry decorator now exposes its existing async return truth. Cancellation adopts injected publish promise and preserves receiver. Reflect.apply is used only after actual object/callable checks; raw result is unknown and adopted, never interpreted. Timer and default-strategy checks preserve supported paths and fail if ownership invariant is absent. No capability/role/schema expanded.",
+  "cli_removed": "Four uncalled private functions, two null-only module variables, and their four exclusive imports; AST proves no references survive. No init/call side effects removed.",
+  "required": "All12 type builds, full actual Workflow/leaf suites and compiler regression for retry generic args/results; diagnostics streams and publisher rejection/receiver tests. Adapter previous14 TS4111 failure retained; bracket access only."
+}

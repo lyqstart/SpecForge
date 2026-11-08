@@ -1,0 +1,241 @@
+{
+  "leg": "patched",
+  "passed": true,
+  "results": [
+    {
+      "owner": "version-unification",
+      "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+      "args": [
+        "run",
+        "test",
+        "--",
+        "--maxWorkers=1",
+        "--reporter=json",
+        "--outputFile=D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\structured-qualification-patched\\version-unification.vitest.json"
+      ],
+      "cwd": "D:\\code\\SpecForge\\.lint-shortpath-a01\\packages\\version-unification",
+      "context_sha256": "6718af96ad6d72872663e3feadf61af12de0cdc94afdd0ba7e1b02a71ab1908b",
+      "started_utc": "2026-11-08T12:36:32.073Z",
+      "finished_utc": "2026-11-08T12:36:33.078Z",
+      "exit": 0,
+      "stdout_sha256": "060295f76ea7e4256a96a7eb9c57be4dec34c7107138181f9b28b57df9e17e0e",
+      "stderr_sha256": "3a3339d93914ab633e45bbff9ed7505df5806e84e53b7ec361c11aeb6a934fa0"
+    },
+    {
+      "owner": "configuration",
+      "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+      "args": [
+        "run",
+        "test",
+        "--",
+        "--maxWorkers=1",
+        "--minWorkers=1",
+        "--reporter=json",
+        "--outputFile=D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\structured-qualification-patched\\configuration.vitest.json"
+      ],
+      "cwd": "D:\\code\\SpecForge\\.lint-shortpath-a01\\packages\\configuration",
+      "context_sha256": "6718af96ad6d72872663e3feadf61af12de0cdc94afdd0ba7e1b02a71ab1908b",
+      "started_utc": "2026-11-08T12:36:33.082Z",
+      "finished_utc": "2026-11-08T12:36:40.059Z",
+      "exit": 0,
+      "stdout_sha256": "9dc7d5605fd08109bb6afbb9dcc911d1a2e4940edb0a42bf77df9c37fd2bb270",
+      "stderr_sha256": "02fc3b789631b082d26ae919f4644cdfc40be006e5a441845f3388fd9af52131"
+    },
+    {
+      "owner": "service-management",
+      "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+      "args": [
+        "run",
+        "test",
+        "--",
+        "--maxWorkers=1",
+        "--reporter=json",
+        "--outputFile=D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\structured-qualification-patched\\service-management.vitest.json"
+      ],
+      "cwd": "D:\\code\\SpecForge\\.lint-shortpath-a01\\packages\\service-management",
+      "context_sha256": "6718af96ad6d72872663e3feadf61af12de0cdc94afdd0ba7e1b02a71ab1908b",
+      "started_utc": "2026-11-08T12:36:40.061Z",
+      "finished_utc": "2026-11-08T12:36:47.009Z",
+      "exit": 0,
+      "stdout_sha256": "c3d936ccc1a64885f85cc1dc90d09234dc73b9ddd727eea0cd3ea3d7a3f9c6af",
+      "stderr_sha256": "67821a177322eeb435d10fe68988c49876dc7bb462d27c23be654d5ae55681e2"
+    },
+    {
+      "owner": "host-profile",
+      "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+      "args": [
+        "run",
+        "test",
+        "--",
+        "--maxWorkers=1",
+        "--reporter=json",
+        "--outputFile=D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\structured-qualification-patched\\host-profile.vitest.json"
+      ],
+      "cwd": "D:\\code\\SpecForge\\.lint-shortpath-a01\\packages\\host-profile",
+      "context_sha256": "6718af96ad6d72872663e3feadf61af12de0cdc94afdd0ba7e1b02a71ab1908b",
+      "started_utc": "2026-11-08T12:36:47.011Z",
+      "finished_utc": "2026-11-08T12:36:47.900Z",
+      "exit": 0,
+      "stdout_sha256": "6de88966a5487c48ab5388c324f89b997c9e7647acc5d42bbfdb735648ab3573",
+      "stderr_sha256": "ede444f14aab76520e175c9bd12f97da6a80055a63146efca67237fc649410c6"
+    },
+    {
+      "owner": "observability",
+      "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+      "args": [
+        "run",
+        "test",
+        "--",
+        "--maxWorkers=1",
+        "--minWorkers=1",
+        "--reporter=json",
+        "--outputFile=D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\structured-qualification-patched\\observability.vitest.json"
+      ],
+      "cwd": "D:\\code\\SpecForge\\.lint-shortpath-a01\\packages\\observability",
+      "context_sha256": "6718af96ad6d72872663e3feadf61af12de0cdc94afdd0ba7e1b02a71ab1908b",
+      "started_utc": "2026-11-08T12:36:47.902Z",
+      "finished_utc": "2026-11-08T12:36:51.141Z",
+      "exit": 0,
+      "stdout_sha256": "3a1efac68ce12f7142577c177885ea10bdd721eca828f02a28fc64800d832631",
+      "stderr_sha256": "e36296d7e5604939cd24522e9d6bf610c0f9c419a332f890714a7e34adce165f"
+    },
+    {
+      "owner": "permission-engine",
+      "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+      "args": [
+        "run",
+        "test",
+        "--",
+        "--maxWorkers=1",
+        "--minWorkers=1",
+        "--reporter=json",
+        "--outputFile=D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\structured-qualification-patched\\permission-engine.vitest.json"
+      ],
+      "cwd": "D:\\code\\SpecForge\\.lint-shortpath-a01\\packages\\permission-engine",
+      "context_sha256": "6718af96ad6d72872663e3feadf61af12de0cdc94afdd0ba7e1b02a71ab1908b",
+      "started_utc": "2026-11-08T12:36:51.144Z",
+      "finished_utc": "2026-11-08T12:37:11.101Z",
+      "exit": 0,
+      "stdout_sha256": "e847cb1a8c3b11d6b057ed94a9ff6fe2042b6e4aea46c9917f76afa5a5fcf1cc",
+      "stderr_sha256": "52577cc2444452b932156b329d055c79239d3640a1184e0c2bc7decaaac2cd7c"
+    },
+    {
+      "owner": "opencode-adapter",
+      "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+      "args": [
+        "run",
+        "test",
+        "--",
+        "--maxWorkers=1",
+        "--reporter=json",
+        "--outputFile=D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\structured-qualification-patched\\opencode-adapter.vitest.json"
+      ],
+      "cwd": "D:\\code\\SpecForge\\.lint-shortpath-a01\\packages\\opencode-adapter",
+      "context_sha256": "6718af96ad6d72872663e3feadf61af12de0cdc94afdd0ba7e1b02a71ab1908b",
+      "started_utc": "2026-11-08T12:37:11.103Z",
+      "finished_utc": "2026-11-08T12:37:39.017Z",
+      "exit": 0,
+      "stdout_sha256": "079b1b57b40b2f694b46ab45a6a6476f7319a6ef11df14d2c0a715ebc5aa3960",
+      "stderr_sha256": "e4a6a0bc6fcdac343c224739ee5ebfddc326df71a4c7e2de1e2849eee119ee9c"
+    },
+    {
+      "owner": "scope-gate",
+      "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+      "args": [
+        "run",
+        "test",
+        "--",
+        "--maxWorkers=1",
+        "--minWorkers=1",
+        "--reporter=json",
+        "--outputFile=D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\structured-qualification-patched\\scope-gate.vitest.json"
+      ],
+      "cwd": "D:\\code\\SpecForge\\.lint-shortpath-a01\\packages\\scope-gate",
+      "context_sha256": "6718af96ad6d72872663e3feadf61af12de0cdc94afdd0ba7e1b02a71ab1908b",
+      "started_utc": "2026-11-08T12:37:39.019Z",
+      "finished_utc": "2026-11-08T12:38:19.705Z",
+      "exit": 0,
+      "stdout_sha256": "c908d3d8932ebcf6e882667a2650c288979016fe0577a781376c0a00ca068248",
+      "stderr_sha256": "5616a7046b5a79841dd1630796e4c88295962ddd7a59b9b23c27da03aa034548"
+    },
+    {
+      "owner": "workflow-runtime",
+      "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+      "args": [
+        "run",
+        "test",
+        "--",
+        "--maxWorkers=1",
+        "--minWorkers=1",
+        "--reporter=json",
+        "--outputFile=D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\structured-qualification-patched\\workflow-runtime.vitest.json"
+      ],
+      "cwd": "D:\\code\\SpecForge\\.lint-shortpath-a01\\packages\\workflow-runtime",
+      "context_sha256": "6718af96ad6d72872663e3feadf61af12de0cdc94afdd0ba7e1b02a71ab1908b",
+      "started_utc": "2026-11-08T12:38:19.707Z",
+      "finished_utc": "2026-11-08T12:39:04.694Z",
+      "exit": 0,
+      "stdout_sha256": "658650481a67818aa533838335a366ad88175b0f5d46e16dcde34b8f5e9bb9d3",
+      "stderr_sha256": "5da104653b31be879aee427866989d4ea8e2ea30591913b58cd26a9bfa52e98a"
+    },
+    {
+      "owner": "cli",
+      "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+      "args": [
+        "run",
+        "test",
+        "--",
+        "--maxWorkers=1",
+        "--minWorkers=1",
+        "--reporter=json",
+        "--outputFile=D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\structured-qualification-patched\\cli.vitest.json"
+      ],
+      "cwd": "D:\\code\\SpecForge\\.lint-shortpath-a01\\packages\\cli",
+      "context_sha256": "6718af96ad6d72872663e3feadf61af12de0cdc94afdd0ba7e1b02a71ab1908b",
+      "started_utc": "2026-11-08T12:39:04.696Z",
+      "finished_utc": "2026-11-08T12:39:45.530Z",
+      "exit": 0,
+      "stdout_sha256": "f2b2ea0e88fef6d65a60f3302765ac7c90abf031aa9889728d7d450783be3b26",
+      "stderr_sha256": "bc044257d6c65f2ece0e8da1f2f35f5bd33e02fd69ddb4792ae91018b3d7d674"
+    },
+    {
+      "owner": "daemon-core",
+      "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+      "args": [
+        "run",
+        "test",
+        "--",
+        "--maxWorkers=1",
+        "--reporter=json",
+        "--outputFile=D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\structured-qualification-patched\\daemon-core.vitest.json"
+      ],
+      "cwd": "D:\\code\\SpecForge\\.lint-shortpath-a01\\packages\\daemon-core",
+      "context_sha256": "6718af96ad6d72872663e3feadf61af12de0cdc94afdd0ba7e1b02a71ab1908b",
+      "started_utc": "2026-11-08T12:39:45.532Z",
+      "finished_utc": "2026-11-08T12:45:50.249Z",
+      "exit": 0,
+      "stdout_sha256": "90dfc669bd0ff7d239bca741207b5b6a9b2a8109d4434d941491b59ec76e6081",
+      "stderr_sha256": "fc0a56148e42cc7c6801dd6db251e6556c91da4f54a17b04f2034e187eb852a2"
+    },
+    {
+      "owner": "root",
+      "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+      "args": [
+        "run",
+        "test:root",
+        "--",
+        "--maxWorkers=1",
+        "--reporter=json",
+        "--outputFile=D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\structured-qualification-patched\\root.vitest.json"
+      ],
+      "cwd": "D:\\code\\SpecForge\\.lint-shortpath-a01",
+      "context_sha256": "6718af96ad6d72872663e3feadf61af12de0cdc94afdd0ba7e1b02a71ab1908b",
+      "started_utc": "2026-11-08T12:45:50.250Z",
+      "finished_utc": "2026-11-08T12:46:16.338Z",
+      "exit": 0,
+      "stdout_sha256": "8cc728b367cf9bc458cc974b385917f3cc8428fa9e1dd7a8c75a7654724c40aa",
+      "stderr_sha256": "00c19612dd2abd6a20f669b83e04b76c8b8b214b44f50e66fa93d7937196e7ee"
+    }
+  ],
+  "role": "Additional equal reporter-only full collection supplement; does not replace the cold-build official entry runs."
+}

@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "D:/code/SpecForge/docs/archive/2026-11-08-eslint-macos-full-acceptance/verify-native-program-lineage.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge\\.lint-platform-a01",
+  "purpose": "final-candidate-native-program-lineage",
+  "expected_writes": "Read installed qualified broker and new compiled broker; no-arg rejection only, no LPAC matrix or business execution",
+  "started_utc": "2026-11-08T12:13:04.435Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\verify-native-program-lineage.cjs",
+      "sha256": "b0f3aa7397b3bb3a3c668560f4f3c0dfbc24f8bf5352a748b9c8e0388eecdf6d",
+      "size": 4485,
+      "extension": ".cjs"
+    }
+  ]
+}

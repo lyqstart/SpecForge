@@ -1,0 +1,48 @@
+{
+  "utc": "2026-11-08T10:20:07.923Z",
+  "edit_collector_sha256": "2982bb1b55cb368df0961671246a58e4a7b07083f7070cce7ff7d9d13dc8ed87",
+  "members": [
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_project_init_core.ts",
+      "before": "2244351531dba51186c33f66029f0b6edb1376b2e7ee2525fdf3a076f4d07ab7",
+      "after": "c5ad3b53cffe1809904b52db329e684f3df8c25aaf4e544a0c1879fe75481e0b"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/governance-invariants-v11.ts",
+      "before": "1eeb25a110b203339fe892c5f563664c39b74a82d1f3aa661933596d47122547",
+      "after": "41a6abece8924c8db7eba7e01cf5670d1098139251e34de54d7b416b45b81d9e"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-v11-close-gate.ts",
+      "before": "51602b7d70627124f33c9ef3a060ef1ed1bb30d13298cbb4ebff7b73952bba39",
+      "after": "ce11e15640e494614d4e2bf27a2e2c197a08a4f011b63138be34056306a332c8"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/agent-handoff-v11.ts",
+      "before": "6dbe77dc220e4140ff93db08c9d030348e6ce60df78eacb3a57c6780f9bd7fe7",
+      "after": "b6c02c8c6e5b0f2b9a18872a1fdc4bcb85339d7238d1f6c53013f6f988097354"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/write-guard-audit-binding.ts",
+      "before": "b16873ed58817646ab858383bbe5689cc27a6634b9326ffed53202991e33dd2d",
+      "after": "e77445043f80774427cd8e5b1ecdf887969fa3b6025d10d165513140f33f5e96"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/semantic-closure-builder.ts",
+      "before": "d13750f54f11f54549f1878c9677c5ef2b8e77de4f41690248310379fc98a72d",
+      "after": "8cb239bc4079b2368a3a1fd09bb82f3c135d99646cc923a7c1995129629ce953"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_knowledge_base_core.ts",
+      "before": "bffe6d797c550c1041a128c7f821320e7e990681a830a16174801df8eeb26736",
+      "after": "03a46acb3dc9f4b7585d62c85382297f846ceeabfd17055be53109e76f7bdaf8"
+    },
+    {
+      "file": "packages/daemon-core/src/http/HTTPServer.ts",
+      "before": "f009e68f569853389a6b70d5ecd1c659a30e9c66acf68ad99a5d3372e6194c43",
+      "after": "3fcc8a05f8b9fc4d6de78d0bef761f521750b36678d564575f79385dfd7e6c32"
+    }
+  ],
+  "policy": "Use real LAYOUT property and actual SessionRegistry method contracts (existing optional ports preserved). Validate HTTP native arguments as records before use; projectPath has an explicit unknown wire field and existing absolute-path guard. Unknown governance paths/actors reject nonstrings instead of accepting object coercion. Workflow route mapping is an unchanged strict switch with an honest unknown input type. Handoff fields/knowledge store/counters and evidence supports are structurally checked before typed consumers; malformed audit log records throw rather than disappearing from denial counts. No role/permission/state/evidence ownership boundary expanded.",
+  "required": "All12 compilation, all affected actual native-write/ingest/session/handoff/knowledge/semantic/audit suites plus full lint and entire platform matrix."
+}

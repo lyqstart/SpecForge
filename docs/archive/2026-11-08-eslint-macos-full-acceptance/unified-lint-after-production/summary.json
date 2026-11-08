@@ -1,0 +1,75 @@
+{
+  "utc": "2026-11-08T08:51:23.758Z",
+  "members": [
+    {
+      "name": "permission-engine",
+      "exit": 1,
+      "files": 48,
+      "errors": 3,
+      "warnings": 32,
+      "rules": {
+        "import/order": 2,
+        "@typescript-eslint/no-explicit-any": 32,
+        "@typescript-eslint/no-unused-vars": 1
+      }
+    },
+    {
+      "name": "workflow-runtime",
+      "exit": 1,
+      "files": 120,
+      "errors": 392,
+      "warnings": 2,
+      "rules": {
+        "import/order": 25,
+        "@typescript-eslint/consistent-type-imports": 4,
+        "@typescript-eslint/no-unsafe-assignment": 55,
+        "@typescript-eslint/no-unsafe-member-access": 108,
+        "@typescript-eslint/no-floating-promises": 2,
+        "@typescript-eslint/no-non-null-assertion": 1,
+        "@typescript-eslint/no-misused-promises": 1,
+        "@typescript-eslint/restrict-template-expressions": 7,
+        "@typescript-eslint/no-base-to-string": 6,
+        "import/no-duplicates": 2,
+        "@typescript-eslint/explicit-function-return-type": 20,
+        "@typescript-eslint/no-unsafe-argument": 42,
+        "@typescript-eslint/no-explicit-any": 109,
+        "@typescript-eslint/no-unsafe-call": 2,
+        "@typescript-eslint/no-unsafe-return": 2,
+        "@typescript-eslint/no-unused-vars": 2,
+        "@typescript-eslint/only-throw-error": 1,
+        "@typescript-eslint/prefer-promise-reject-errors": 1,
+        "@typescript-eslint/unbound-method": 3,
+        "@typescript-eslint/no-this-alias": 1
+      }
+    },
+    {
+      "name": "daemon-core",
+      "exit": 1,
+      "files": 231,
+      "errors": 342,
+      "warnings": 0,
+      "rules": {
+        "@typescript-eslint/no-unsafe-argument": 93,
+        "@typescript-eslint/no-floating-promises": 17,
+        "@typescript-eslint/ban-ts-comment": 4,
+        "@typescript-eslint/unbound-method": 1,
+        "@typescript-eslint/no-misused-promises": 1,
+        "@typescript-eslint/no-require-imports": 1,
+        "no-control-regex": 7,
+        "@typescript-eslint/no-base-to-string": 182,
+        "@typescript-eslint/no-redundant-type-constituents": 21,
+        "@typescript-eslint/no-unused-vars": 2,
+        "no-useless-escape": 12,
+        "@typescript-eslint/prefer-promise-reject-errors": 1
+      }
+    },
+    {
+      "name": "cli",
+      "exit": 0,
+      "files": 63,
+      "errors": 0,
+      "warnings": 0,
+      "rules": {}
+    }
+  ]
+}

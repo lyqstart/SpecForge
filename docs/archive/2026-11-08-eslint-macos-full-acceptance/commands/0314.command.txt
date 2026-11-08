@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/prepare-signal-sealer-and-final-archive-guard.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "prepare-final-correct-source-sealer",
+  "expected_writes": "Final6ec seal source identity and explicit refusal of active nested Git attr evidence configs",
+  "started_utc": "2026-11-08T13:41:24.323Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\prepare-signal-sealer-and-final-archive-guard.cjs",
+      "sha256": "f52ce5468be11db46baa2c91a3546c0f426beac76cc4967e45df7be34c8d0b8c",
+      "size": 1057,
+      "extension": ".cjs"
+    }
+  ]
+}

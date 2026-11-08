@@ -1,0 +1,1 @@
+{"fixture":"D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\local-assets\\review","planned_files":23,"pins":{"eslint":"9.39.4","@typescript-eslint/eslint-plugin":"8.59.3","@typescript-eslint/parser":"8.59.3","eslint-config-prettier":"10.1.8","eslint-plugin-import":"2.32.0","prettier":"3.8.3","eslint-plugin-prettier":"5.5.5"},"apply":"PASS"}

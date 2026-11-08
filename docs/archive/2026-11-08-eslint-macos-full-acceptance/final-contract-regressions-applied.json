@@ -1,0 +1,23 @@
+{
+  "utc": "2026-11-08T10:49:41.164Z",
+  "input_sha256": "0ef7374137e043e66124462259f6c5984399dbdc6d2f1d9bc59d28587b6c86cb",
+  "reason": "Keep the actual runtime-reference protection under CI regression; preserve the distinct new incomplete-lock-capability diagnostic instead of misreporting a competing daemon.",
+  "required_verification": "Full build, ESLint, workspace and actual three-platform CI",
+  "members": [
+    {
+      "file": "packages/scope-gate/tests/eslint-runtime-binding-contract.test.ts",
+      "before": "ABSENT",
+      "after": "85259faa4039b7369ef4e2e826c5f3e57b8aea443ec3c97d7b63a672e7689d75"
+    },
+    {
+      "file": "packages/daemon-core/src/daemon/HandshakeManager.ts",
+      "before": "e607414d979beca4bd1880f002f29405ef06b47dff983954041b4ae35b3f9e0f",
+      "after": "3fd014acc4cb471da6f3b4d6ba69565b647c0f95486545b3c8c9b09fa5d3abf9"
+    },
+    {
+      "file": "packages/daemon-core/tests/unit/optional-file-lock-owner.test.ts",
+      "before": "b36e486dc4a8ba58aa6e1a3022c17d3e0b5b951e9286b9cb741c416f74a70296",
+      "after": "5876bf931e42fdeef3afd3f1806c2c70e548b84ce4737312fcdecb58242787c6"
+    }
+  ]
+}

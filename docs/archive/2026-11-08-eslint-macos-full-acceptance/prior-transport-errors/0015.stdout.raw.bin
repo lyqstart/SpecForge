@@ -1,0 +1,1 @@
+{"utc":"2026-11-08T07:03:23.491Z","failure_receipt":"0014","cause":"Git default non-z path quoting encodes Unicode path names; prefix comparison must consume NUL raw paths.","quoted_paths":1,"actual_nul_paths":4994,"all_actual_paths_whitelisted":true,"product_change":false,"original_failed_entry_preserved":true}

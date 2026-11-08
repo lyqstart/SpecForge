@@ -1,0 +1,5 @@
+const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');const prior=path.resolve(__dirname,'../2026-11-08-crossplatform-consumer-audit');const pairs={
+ 'export-linux-source.cjs':[['/mnt/d/code/SpecForge','/mnt/d/code/SpecForge/.lint-shortpath-a01'],['/tmp/specforge-crossplatform-20261108-a01','/tmp/specforge-eslint-macos-20261108-a01']],
+ 'prepare-linux-fixture.mjs':[['/tmp/specforge-crossplatform-20261108-a01','/tmp/specforge-eslint-macos-20261108-a01'],["path.join(evidence,'local-assets/bun-linux-x64.zip')","'/mnt/d/code/SpecForge/docs/archive/2026-11-08-crossplatform-consumer-audit/local-assets/bun-linux-x64.zip'"]],
+ 'verify-linux-daemon-systemd.mjs':[['1.0.24','1.0.25']]
+};for(const[file,changes]of Object.entries(pairs)){let s=fs.readFileSync(path.join(prior,file),'utf8');for(const[a,b]of changes){assert(s.includes(a),a);s=s.split(a).join(b);}fs.writeFileSync(path.join(__dirname,file),s,{flag:'wx'});}console.log('Separate hash-bound actual ext4/systemd fixture, fixed existing qualified Bun1.3.14, no prior fixture mutation.');

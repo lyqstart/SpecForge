@@ -1,0 +1,363 @@
+{
+  "utc": "2026-11-08T12:41:30.992Z",
+  "source_head": "05713b7337b3dc55f1f3ed563cf342439643657f",
+  "runs": [
+    {
+      "id": 42480186446,
+      "name": "Distribution Smoke Tests",
+      "url": "https://github.com/lyqstart/SpecForge/actions/runs/42480186446",
+      "conclusion": "success"
+    },
+    {
+      "id": 42480186536,
+      "name": "Code Quality",
+      "url": "https://github.com/lyqstart/SpecForge/actions/runs/42480186536",
+      "conclusion": "success"
+    }
+  ],
+  "rows": [
+    {
+      "os": "windows",
+      "context": {
+        "temporary_directory": {
+          "requested": "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp",
+          "canonical": "C:\\Users\\runneradmin\\AppData\\Local\\Temp",
+          "ancestors": [
+            {
+              "path": "C:\\",
+              "kind": "directory"
+            },
+            {
+              "path": "C:\\Users",
+              "kind": "directory"
+            },
+            {
+              "path": "C:\\Users\\RUNNER~1",
+              "kind": "directory"
+            },
+            {
+              "path": "C:\\Users\\RUNNER~1\\AppData",
+              "kind": "directory"
+            },
+            {
+              "path": "C:\\Users\\RUNNER~1\\AppData\\Local",
+              "kind": "directory"
+            },
+            {
+              "path": "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp",
+              "kind": "directory"
+            }
+          ]
+        },
+        "source_commit": "05713b7337b3dc55f1f3ed563cf342439643657f",
+        "platform": "win32",
+        "arch": "x64",
+        "os_release": "10.0.26100",
+        "node": "v24.19.0",
+        "node_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+        "node_sha256": "3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237",
+        "bun": "1.3.14",
+        "bun_path": "C:\\Users\\runneradmin\\.bun\\bin\\bun.exe",
+        "bun_sha256": "0187f68d843f825a72ada4a7eca60db896ed753759a7f8252edcd31ac1bf1b9c"
+      },
+      "phases": [
+        {
+          "phase": "build",
+          "exit": 0,
+          "receipt_sha256": "9dbcd469c4fe454fb98da13990bb8dcfdbda83a53600cc7423aca830211f7429",
+          "manifest_sha256": "fa5c71af9b840d88ccf2ea9e1233f90614357a413e81cda9b9caeba286e7928e"
+        },
+        {
+          "phase": "lint",
+          "exit": 0,
+          "receipt_sha256": "ca502aab8212791fedc4795335a659849f1b51b332b2538e42087ce24f5e9f58",
+          "manifest_sha256": "d7c34f7619c7bbdac04219c8891cbcc56f3b76062db2fb15aef1edd6a21326af"
+        },
+        {
+          "phase": "workspace",
+          "exit": 0,
+          "receipt_sha256": "d9a62c04aa90f9caa195ce1def7234996f08acb00ca1bd00ec1b378f18c03813",
+          "manifest_sha256": "e8d9fc834796748ad0db9a8ba2dce89413f7813c9a182a68681845998e20933b"
+        },
+        {
+          "phase": "root",
+          "exit": 0,
+          "receipt_sha256": "e07fb01c91bbe7a589fa54c61e37470691189ff14fa6dbad375698a2bf08d18b",
+          "manifest_sha256": "110c29051562675eca5e09c59423f23c9b25c578ae45d3a4c69060316a2e22ad"
+        }
+      ],
+      "installed_files": 117,
+      "help_cases": 23,
+      "workspace_owner_success": 11,
+      "root_tests": 753,
+      "workspace_file_case_summaries": [
+        " Test Files  1 passed (1)",
+        "      Tests  2 passed (2)",
+        " Test Files  13 passed (13)",
+        "      Tests  198 passed (198)",
+        " Test Files  17 passed (17)",
+        "      Tests  235 passed (235)",
+        " Test Files  1 passed (1)",
+        "      Tests  2 passed (2)",
+        " Test Files  5 passed (5)",
+        "      Tests  60 passed (60)",
+        " Test Files  23 passed (23)",
+        "      Tests  379 passed (379)",
+        " Test Files  35 passed (35)",
+        "      Tests  940 passed (940)",
+        " Test Files  37 passed (37)",
+        "      Tests  166 passed (166)",
+        " Test Files  69 passed (69)",
+        "      Tests  1390 passed (1390)",
+        " Test Files  41 passed (41)",
+        "      Tests  794 passed (794)",
+        " Test Files  249 passed (249)",
+        "      Tests  2454 passed (2454)"
+      ],
+      "installer": {
+        "utc": "2026-11-08T12:27:19.350Z",
+        "platform": "win32",
+        "architecture": "x64",
+        "inner_exit_code": 0,
+        "checks": {
+          "installed_files": 117,
+          "help_cases": 23,
+          "unauthorized_governance_write": "REFUSED_401",
+          "current_read_examples": "PASS",
+          "protected_and_unsupported_routes": "PASS",
+          "official_start_restart_stop": "PASS",
+          "uninstall_private_and_unmanaged_retained": true
+        },
+        "failure": null,
+        "commands": 39,
+        "original_business_touched": false,
+        "product_authority_modified": false,
+        "scope": "Official release build/precheck,actual installed bytes,current help/unsupported commands,independent Daemon/auth refusal/restart/stop,upgrade/verify/uninstall retention. D23 readonly Node execution remains Windows x64 only;no unsupported platform is promoted."
+      }
+    },
+    {
+      "os": "linux",
+      "context": {
+        "temporary_directory": {
+          "requested": "/tmp",
+          "canonical": "/tmp",
+          "ancestors": [
+            {
+              "path": "/",
+              "kind": "directory"
+            },
+            {
+              "path": "/tmp",
+              "kind": "directory"
+            }
+          ]
+        },
+        "source_commit": "05713b7337b3dc55f1f3ed563cf342439643657f",
+        "platform": "linux",
+        "arch": "x64",
+        "os_release": "7.0.0-1019-azure",
+        "node": "v24.19.0",
+        "node_path": "/opt/hostedtoolcache/node/24.19.0/x64/bin/node",
+        "node_sha256": "bc17c508ffeed0ec622934f9b7fa72f8e78da65350e63c3eceb56fa688aa5e12",
+        "bun": "1.3.14",
+        "bun_path": "/home/runner/.bun/bin/bun",
+        "bun_sha256": "9fd36f87e4b90b07632b987a2e4ec81ca15a62c81bf983190cea6d715be2ad74"
+      },
+      "phases": [
+        {
+          "phase": "build",
+          "exit": 0,
+          "receipt_sha256": "322ffae67a588199a79f8f0a219a9e3d816349f449cb4b21f239676e843e3e02",
+          "manifest_sha256": "ec378febfd2529268b845287bc3006bb0b6fa924c48e2265d3fdba53378b3465"
+        },
+        {
+          "phase": "lint",
+          "exit": 0,
+          "receipt_sha256": "0f5f9dfca9e59f76066a151915021747716363557ef84a0befb0f329acccd4cb",
+          "manifest_sha256": "b812bee881d8eb2bd51cf98c7e715c13c2209ab88e72a3a6cd18bb315fe4aad7"
+        },
+        {
+          "phase": "workspace",
+          "exit": 0,
+          "receipt_sha256": "f07a6a166e8714d18328d576388efc8ca04dc91cdb7483437bcd142ed92a67b7",
+          "manifest_sha256": "d9f1dc1bed735b6c76e11e2918dd13fe9564dd433cd02dfbfc853aee1b827bb8"
+        },
+        {
+          "phase": "root",
+          "exit": 0,
+          "receipt_sha256": "31243c6fd31c97b8b8b57af70eea0d445d256583e13d0769d254b971c5d62beb",
+          "manifest_sha256": "a3ab6eac53e2447e53c065cd7646a04418890325f8bea8a75991c5e46f1ba7d2"
+        }
+      ],
+      "installed_files": 114,
+      "help_cases": 23,
+      "workspace_owner_success": 11,
+      "root_tests": 753,
+      "workspace_file_case_summaries": [
+        " Test Files  1 passed (1)",
+        "      Tests  2 passed (2)",
+        " Test Files  13 passed (13)",
+        "      Tests  198 passed (198)",
+        " Test Files  17 passed (17)",
+        "      Tests  235 passed (235)",
+        " Test Files  1 passed (1)",
+        "      Tests  2 passed (2)",
+        " Test Files  5 passed (5)",
+        "      Tests  60 passed (60)",
+        " Test Files  23 passed (23)",
+        "      Tests  379 passed (379)",
+        " Test Files  35 passed (35)",
+        "      Tests  940 passed (940)",
+        " Test Files  37 passed (37)",
+        "      Tests  165 passed | 1 skipped (166)",
+        " Test Files  69 passed (69)",
+        "      Tests  1390 passed (1390)",
+        " Test Files  41 passed (41)",
+        "      Tests  794 passed (794)",
+        " Test Files  249 passed (249)",
+        "      Tests  2453 passed | 1 skipped (2454)"
+      ],
+      "installer": {
+        "utc": "2026-11-08T12:26:44.146Z",
+        "platform": "linux",
+        "architecture": "x64",
+        "inner_exit_code": 0,
+        "checks": {
+          "installed_files": 114,
+          "help_cases": 23,
+          "unauthorized_governance_write": "REFUSED_401",
+          "current_read_examples": "PASS",
+          "protected_and_unsupported_routes": "PASS",
+          "official_start_restart_stop": "PASS",
+          "uninstall_private_and_unmanaged_retained": true
+        },
+        "failure": null,
+        "commands": 39,
+        "original_business_touched": false,
+        "product_authority_modified": false,
+        "scope": "Official release build/precheck,actual installed bytes,current help/unsupported commands,independent Daemon/auth refusal/restart/stop,upgrade/verify/uninstall retention. D23 readonly Node execution remains Windows x64 only;no unsupported platform is promoted."
+      }
+    },
+    {
+      "os": "macos",
+      "context": {
+        "temporary_directory": {
+          "requested": "/var/folders/h5/t85nd63d71x27_8gl5gw3l_w0000gn/T",
+          "canonical": "/private/var/folders/h5/t85nd63d71x27_8gl5gw3l_w0000gn/T",
+          "ancestors": [
+            {
+              "path": "/",
+              "kind": "directory"
+            },
+            {
+              "path": "/var",
+              "kind": "symlink",
+              "target": "private/var"
+            },
+            {
+              "path": "/var/folders",
+              "kind": "directory"
+            },
+            {
+              "path": "/var/folders/h5",
+              "kind": "directory"
+            },
+            {
+              "path": "/var/folders/h5/t85nd63d71x27_8gl5gw3l_w0000gn",
+              "kind": "directory"
+            },
+            {
+              "path": "/var/folders/h5/t85nd63d71x27_8gl5gw3l_w0000gn/T",
+              "kind": "directory"
+            }
+          ]
+        },
+        "source_commit": "05713b7337b3dc55f1f3ed563cf342439643657f",
+        "platform": "darwin",
+        "arch": "arm64",
+        "os_release": "25.6.0",
+        "node": "v24.19.0",
+        "node_path": "/Users/runner/hostedtoolcache/node/24.19.0/arm64/bin/node",
+        "node_sha256": "27db838bb204ef7c21df2931f5656e4c8fb32e6e947f363a402b49714d32b5b1",
+        "bun": "1.3.14",
+        "bun_path": "/Users/runner/.bun/bin/bun",
+        "bun_sha256": "e0c90ec15d33363e6b70713d56bc3b2c7585c17f40a0fe0f8fd9305901d4e233"
+      },
+      "phases": [
+        {
+          "phase": "build",
+          "exit": 0,
+          "receipt_sha256": "b9b13945ed42428ea3f834ff6cebb390d509bb649002bc526caa953b1b4c93fd",
+          "manifest_sha256": "1e5ca914d2bab3a1d769a4630237036e0948b5dee0663d19af657e710088ac06"
+        },
+        {
+          "phase": "lint",
+          "exit": 0,
+          "receipt_sha256": "949545deb89183b298acbde79204b71a078ea3a70a333294cbdfd7f510da933e",
+          "manifest_sha256": "23d378477e69ec7721e5d23da5eae0c6dada7d9390adff0ec5bf83cc4006f0fc"
+        },
+        {
+          "phase": "workspace",
+          "exit": 0,
+          "receipt_sha256": "97d8b0d84d97061a67d48612a6f2653b5ad740cf7ba60d039a532316b7d8511c",
+          "manifest_sha256": "2929d782816cbcd1154375755d8035766821a2e51ba47281b8161634b9d7d4fe"
+        },
+        {
+          "phase": "root",
+          "exit": 0,
+          "receipt_sha256": "99dacf46b9edf574c80a2563c3e0d8131e5df0c549a38988fbd1568c1e663ab4",
+          "manifest_sha256": "d44b0e8be647853b5c45b0c8f914ebec86da6f0db94c6a4bedf85e100b1d9ffe"
+        }
+      ],
+      "installed_files": 114,
+      "help_cases": 23,
+      "workspace_owner_success": 11,
+      "root_tests": 753,
+      "workspace_file_case_summaries": [
+        " Test Files  1 passed (1)",
+        "      Tests  2 passed (2)",
+        " Test Files  13 passed (13)",
+        "      Tests  198 passed (198)",
+        " Test Files  17 passed (17)",
+        "      Tests  235 passed (235)",
+        " Test Files  1 passed (1)",
+        "      Tests  2 passed (2)",
+        " Test Files  5 passed (5)",
+        "      Tests  60 passed (60)",
+        " Test Files  23 passed (23)",
+        "      Tests  379 passed (379)",
+        " Test Files  35 passed (35)",
+        "      Tests  940 passed (940)",
+        " Test Files  37 passed (37)",
+        "      Tests  165 passed | 1 skipped (166)",
+        " Test Files  69 passed (69)",
+        "      Tests  1390 passed (1390)",
+        " Test Files  41 passed (41)",
+        "      Tests  794 passed (794)",
+        " Test Files  249 passed (249)",
+        "      Tests  2453 passed | 1 skipped (2454)"
+      ],
+      "installer": {
+        "utc": "2026-11-08T12:26:36.774Z",
+        "platform": "darwin",
+        "architecture": "arm64",
+        "inner_exit_code": 0,
+        "checks": {
+          "installed_files": 114,
+          "help_cases": 23,
+          "unauthorized_governance_write": "REFUSED_401",
+          "current_read_examples": "PASS",
+          "protected_and_unsupported_routes": "PASS",
+          "official_start_restart_stop": "PASS",
+          "uninstall_private_and_unmanaged_retained": true
+        },
+        "failure": null,
+        "commands": 39,
+        "original_business_touched": false,
+        "product_authority_modified": false,
+        "scope": "Official release build/precheck,actual installed bytes,current help/unsupported commands,independent Daemon/auth refusal/restart/stop,upgrade/verify/uninstall retention. D23 readonly Node execution remains Windows x64 only;no unsupported platform is promoted."
+      }
+    }
+  ],
+  "qualification": "Actual3OS exact-source build/full lint/current11 test owners/Root753 and official install/lifecycle all numeric0, raw manifest/self-hash verified. Platform-specific skips remain distinct from passing cases."
+}

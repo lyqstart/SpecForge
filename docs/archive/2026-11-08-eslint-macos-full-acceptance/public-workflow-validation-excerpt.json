@@ -1,0 +1,13 @@
+{
+  "utc": "2026-11-08T11:20:51.899Z",
+  "url": "https://github.com/lyqstart/SpecForge/actions/runs/42475137148",
+  "status": 200,
+  "raw_local_path": "local-assets/workflow-validation-page/public-page.html",
+  "sha256": "908d864a02e0793855761bd03c8ccf7bc9272d9d93ba1e323178f69920aeede8",
+  "matches": [
+    "Invalid workflow file:  \n                        .github/workflows/code-quality.yml#L1\n                       \n                       \n                         \n                           (Line: 102, Col: 32): Unrecognized named-value: 'runner'. Located at position 1 within expression: runner.temp \n                         \n                         Show more \n                         Show less \n                       \n                     \n                   \n                 \n               \n         \n       \n   \n\n\n  \n \n\n\n \n     \n         \n   \n\n\n \n\n\n   \n\n \n\n html { scroll-behavior: smooth } \n\n \n\n\n     \n   \n\n   \n\n\n    <ghcc-consent id=\"ghcc\" class=\"position-fixed bottom-0 left-0\" style=\"z-index: 999999\"\n      data-locale=\"en\"\n      data-initial-cookie-con",
+    "Unrecognized named-value: 'runner'. Located at position 1 within expression: runner.temp \n                         \n                         Show more \n                         Show less \n                       \n                     \n                   \n                 \n               \n         \n       \n   \n\n\n  \n \n\n\n \n     \n         \n   \n\n\n \n\n\n   \n\n \n\n html { scroll-behavior: smooth } \n\n \n\n\n     \n   \n\n   \n\n\n    <ghcc-co",
+    ".github/workflows/code-quality.yml           ",
+    ".github/workflows/code-quality.yml#L1"
+  ]
+}

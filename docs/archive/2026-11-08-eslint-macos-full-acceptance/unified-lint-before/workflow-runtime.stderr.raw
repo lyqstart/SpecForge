@@ -1,0 +1,10 @@
+file:///D:/code/SpecForge/.lint-review-a01/scripts/lint-package.mjs:36
+    throw new Error(`LINT_INPUT_NOT_VALIDATED: ${name}`);
+          ^
+
+Error: LINT_INPUT_NOT_VALIDATED: workflow-runtime
+    at lintPackage (file:///D:/code/SpecForge/.lint-review-a01/scripts/lint-package.mjs:36:11)
+    at async main (file:///D:/code/SpecForge/.lint-review-a01/scripts/lint-package.mjs:46:18)
+    at async file:///D:/code/SpecForge/.lint-review-a01/scripts/lint-package.mjs:57:90
+
+Node.js v24.19.0

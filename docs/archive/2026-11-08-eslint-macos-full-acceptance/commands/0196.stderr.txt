@@ -1,0 +1,27 @@
+node:assert:152
+  throw new AssertionError(obj);
+  ^
+
+AssertionError [ERR_ASSERTION]: FROZEN_PREVIOUS_DRIFT:.github/workflows/code-quality.yml
++ actual - expected
+
++ '0741b0df466f237d1e3aee42226678e35739a9752860b7291b4a5ac4587e7ba8'
+- '7b543bd4bc073a73e61336d74f00b095f1eae84dc6a70e32c6a403c4980576cb'
+
+    at Object.<anonymous> (D:\code\SpecForge\docs\archive\2026-11-08-eslint-macos-full-acceptance\freeze-platform-candidate.cjs:9:184)
+    at Module._compile (node:internal/modules/cjs/loader:1872:14)
+    at Object..js (node:internal/modules/cjs/loader:2003:10)
+    at Module.load (node:internal/modules/cjs/loader:1594:32)
+    at Module._load (node:internal/modules/cjs/loader:1396:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)
+    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)
+    at node:internal/main/run_main_module:33:47 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: '0741b0df466f237d1e3aee42226678e35739a9752860b7291b4a5ac4587e7ba8',
+  expected: '7b543bd4bc073a73e61336d74f00b095f1eae84dc6a70e32c6a403c4980576cb',
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.19.0

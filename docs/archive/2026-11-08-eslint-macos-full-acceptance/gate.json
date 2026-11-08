@@ -1,0 +1,158 @@
+{
+  "utc": "2026-11-08T07:12:05.738Z",
+  "mode": "CODEX_DIRECT",
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "baseline_head": "3549c23c64c53ad29761104a125b87ff50a53cc5",
+  "baseline_main_live_remote_equal": true,
+  "initial_worktree": "CLEAN except current new evidence initializer",
+  "user_goal": "Fix complete ESLint, actual macOS complete workspace+Root regression, final acceptance; no original business rerun/model prompt.",
+  "EXPERIENCE_FILE_READ": "YES",
+  "ACTIVE_EXPERIENCE_RULES_FILE_READ": "YES",
+  "APPLICABLE_EXPERIENCE_RULES": [
+    "EXP-002",
+    "EXP-004",
+    "EXP-007",
+    "EXP-008",
+    "EXP-009",
+    "EXP-011",
+    "EXP-016",
+    "EXP-032",
+    "EXP-033",
+    "EXP-039",
+    "EXP-052",
+    "EXP-060",
+    "EXP-074",
+    "EXP-102",
+    "EXP-117",
+    "EXP-137",
+    "EXP-179",
+    "EXP-193",
+    "EXP-195",
+    "EXP-251",
+    "EXP-260",
+    "EXP-261",
+    "EXP-276",
+    "EXP-283"
+  ],
+  "HISTORICAL_LEDGER_SEARCH": "ESLint/Prettier/macOS/parser/unused; ERR1653,1787,2031,2047,2048,2049,2050,2051..2055; EXP002/007/008/039/044/117/137/179/195/251/261/276",
+  "PRIOR_FAILURE_RECONCILIATION": "PASS",
+  "BACKFILLED_ERROR_IDS": [
+    "ERR-2055"
+  ],
+  "UNRECORDED_FAILURES": 0,
+  "REPEATED_ERROR_CHECK": "PASS",
+  "rules": [
+    {
+      "file": "docs/rule/specforge-active-development-rules.md",
+      "sha256": "678d838160f2ab80146d60d5921f2604bf456ae93e1cd63a3e7706f730a82272",
+      "lines": 2650,
+      "chunks": [
+        {
+          "first_line": 1,
+          "last_line": 600,
+          "sha256": "e90b9981c8aa1975f9e45799986eb749b6ed4e785abcfe7eaa8d27b22129c48c"
+        },
+        {
+          "first_line": 601,
+          "last_line": 1200,
+          "sha256": "32bd2e9322f29a5c90024df3787d597b6c555464092ebc5929dadd0aeec5c015"
+        },
+        {
+          "first_line": 1201,
+          "last_line": 1800,
+          "sha256": "559755c839310e77e695ac8629376746dde37003c33aa671b6f45f2c17c9a00c"
+        },
+        {
+          "first_line": 1801,
+          "last_line": 2400,
+          "sha256": "10465fd5e2fbaad1a9f6c2e0f2a6b27e18af0f496fc866a9b370d342bf4e78e5"
+        },
+        {
+          "first_line": 2401,
+          "last_line": 2650,
+          "sha256": "4840a7056515729be26d174c5974a90591b5dee65d39ff985daf7449c7ec147e"
+        }
+      ],
+      "coverage_to_eof": true
+    },
+    {
+      "file": "docs/product-specification/authority-registry.md",
+      "sha256": "5ba13ce20545eb660aa8556097f2d5cbdea0a018c46ce60674985784e87d9a1e",
+      "lines": 144,
+      "chunks": [
+        {
+          "first_line": 1,
+          "last_line": 144,
+          "sha256": "5ba13ce20545eb660aa8556097f2d5cbdea0a018c46ce60674985784e87d9a1e"
+        }
+      ],
+      "coverage_to_eof": true
+    },
+    {
+      "file": "docs/product-specification/specforge-product-specification.md",
+      "sha256": "8fe594be130fd751e60eef1a9a916867ef5dd8b401dbe6881a1f5295a43333ed",
+      "lines": 1691,
+      "chunks": [
+        {
+          "first_line": 1,
+          "last_line": 350,
+          "sha256": "ca74ed6d0192763f826d476193761d39566793a1a36824b361052c48e007be70"
+        },
+        {
+          "first_line": 351,
+          "last_line": 700,
+          "sha256": "bd105332c5084a84098862de9c01e6591c783716e90c5fa98d563e6f5dde6430"
+        },
+        {
+          "first_line": 701,
+          "last_line": 1050,
+          "sha256": "d36e195bfdd5c6cb05c1a662c2bdcd1a87465fcbcc1ff0e80f6da343ac375768"
+        },
+        {
+          "first_line": 1051,
+          "last_line": 1400,
+          "sha256": "216a6f64d31423174a239ef1c3a7cccfe7d13744e8d2c9baa92f7007b1d5b9e1"
+        },
+        {
+          "first_line": 1401,
+          "last_line": 1691,
+          "sha256": "6deaf092ebd7a2bf26e335686f51382b75f73fd5bccddb0eaaec5b9d8579ec69"
+        }
+      ],
+      "coverage_to_eof": true
+    },
+    {
+      "file": "docs/design/SpecForge架构一致性治理最终实施方案.md",
+      "sha256": "956df3943a44d1b99636790a32e9b2a0dc266b7116f50b60b7b8c6f2614423ac",
+      "lines": 232,
+      "chunks": [
+        {
+          "first_line": 1,
+          "last_line": 220,
+          "sha256": "127de3279a1bb4e1b3d461a4bf194e85350807f5e40d68ae6954801d2430ee66"
+        },
+        {
+          "first_line": 221,
+          "last_line": 232,
+          "sha256": "f9cba129483203265b759fb5b3abacf249b8efd9257c3e1fccba7d368311b733"
+        }
+      ],
+      "coverage_to_eof": true
+    },
+    {
+      "file": "docs/rule/specforge-execution-mode-and-evidence-protocol.md",
+      "sha256": "166db21aecece99aa7787bc62978a1bdb89c8b17750182ea1030fedd17a063ef",
+      "lines": 182,
+      "chunks": [
+        {
+          "first_line": 1,
+          "last_line": 182,
+          "sha256": "166db21aecece99aa7787bc62978a1bdb89c8b17750182ea1030fedd17a063ef"
+        }
+      ],
+      "coverage_to_eof": true
+    }
+  ],
+  "bootstrap": "Actual read-only READY on3549c23c, local/live remote equal, clean before initialization.",
+  "reading_note": "Early oversized UI reads truncated; retried bounded complete chunks and final overlap, no truncation counted as full reading. Hash/chunk concatenation independently verifies to EOF."
+}

@@ -1,0 +1,11 @@
+$ tsc
+$ tsc
+$ tsc
+$ tsc
+$ tsc
+$ tsc
+$ tsc
+$ tsc
+$ rimraf dist && tsc
+$ bun ../../scripts/build-workflow-runtime.ts
+[build-workspace] FAILED @specforge/workflow-runtime exitCode=2

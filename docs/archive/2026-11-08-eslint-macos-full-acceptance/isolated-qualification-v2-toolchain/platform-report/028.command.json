@@ -1,0 +1,13 @@
+{
+  "number": "028",
+  "name": "unsupported-command-rejected",
+  "executable": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-eslint-macos-A01-v2-toolchain\\temp\\sf-platform-acceptance-b8zWMM\\opencode\\sf-user\\bin\\specforge.exe",
+  "args": [
+    "job"
+  ],
+  "started_utc": "2026-11-08T11:42:34.408Z",
+  "finished_utc": "2026-11-08T11:42:34.608Z",
+  "inner_exit_code": 1,
+  "signal": null,
+  "spawn_error": null
+}

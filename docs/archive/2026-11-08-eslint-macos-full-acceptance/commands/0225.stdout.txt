@@ -1,0 +1,31 @@
+
+ RUN  v3.2.4 D:/code/SpecForge/.lint-shortpath-a01/packages/daemon-core
+
+ ✓ tests/unit/candidate-generation-integrity.test.ts (10 tests) 274ms
+stdout | tests/unit/verification-source-snapshot.test.ts > verification raw source and Git identity > records a bounded stage for a failed Git read without logging the project path
+QUALIFICATION_GIT_IDENTITY={"platform":"win32","root":"C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-verification-source-test-TtYVMn","canonical":"C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-verification-source-test-TtYVMn","metadata_directory":true,"plain":{"top":{"exit":0,"stdout":"C:/Users/lyq/AppData/Local/Temp/sf-verification-source-test-TtYVMn\n","stderr":""},"common":{"exit":0,"stdout":".git\n","stderr":""}},"source_reader_environment":{"top":{"exit":0,"stdout":"C:/Users/lyq/AppData/Local/Temp/sf-verification-source-test-TtYVMn\n","stderr":""},"common":{"exit":0,"stdout":".git\n","stderr":""}}}
+
+stdout | tests/unit/verification-source-snapshot.test.ts > verification raw source and Git identity > captures current raw input and rejects a changed source without invoking clean filters
+QUALIFICATION_GIT_IDENTITY={"platform":"win32","root":"C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-verification-source-test-geqOwM","canonical":"C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-verification-source-test-geqOwM","metadata_directory":true,"plain":{"top":{"exit":0,"stdout":"C:/Users/lyq/AppData/Local/Temp/sf-verification-source-test-geqOwM\n","stderr":""},"common":{"exit":0,"stdout":".git\n","stderr":""}},"source_reader_environment":{"top":{"exit":0,"stdout":"C:/Users/lyq/AppData/Local/Temp/sf-verification-source-test-geqOwM\n","stderr":""},"common":{"exit":0,"stdout":".git\n","stderr":""}}}
+
+stdout | tests/unit/verification-source-snapshot.test.ts > verification raw source and Git identity > rejects undeclared untracked code and hardlinked tracked input
+QUALIFICATION_GIT_IDENTITY={"platform":"win32","root":"C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-verification-source-test-3bQ3zy","canonical":"C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-verification-source-test-3bQ3zy","metadata_directory":true,"plain":{"top":{"exit":0,"stdout":"C:/Users/lyq/AppData/Local/Temp/sf-verification-source-test-3bQ3zy\n","stderr":""},"common":{"exit":0,"stdout":".git\n","stderr":""}},"source_reader_environment":{"top":{"exit":0,"stdout":"C:/Users/lyq/AppData/Local/Temp/sf-verification-source-test-3bQ3zy\n","stderr":""},"common":{"exit":0,"stdout":".git\n","stderr":""}}}
+
+stdout | tests/unit/verification-source-snapshot.test.ts > verification raw source and Git identity > binds branch, index and repository configuration
+QUALIFICATION_GIT_IDENTITY={"platform":"win32","root":"C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-verification-source-test-ahduZC","canonical":"C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-verification-source-test-ahduZC","metadata_directory":true,"plain":{"top":{"exit":0,"stdout":"C:/Users/lyq/AppData/Local/Temp/sf-verification-source-test-ahduZC\n","stderr":""},"common":{"exit":0,"stdout":".git\n","stderr":""}},"source_reader_environment":{"top":{"exit":0,"stdout":"C:/Users/lyq/AppData/Local/Temp/sf-verification-source-test-ahduZC\n","stderr":""},"common":{"exit":0,"stdout":".git\n","stderr":""}}}
+
+stdout | tests/unit/verification-source-snapshot.test.ts > verification raw source and Git identity > freezes only reachable code and package metadata, without reading unrelated tracked files
+QUALIFICATION_GIT_IDENTITY={"platform":"win32","root":"C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-verification-source-test-nC5uhu","canonical":"C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-verification-source-test-nC5uhu","metadata_directory":true,"plain":{"top":{"exit":0,"stdout":"C:/Users/lyq/AppData/Local/Temp/sf-verification-source-test-nC5uhu\n","stderr":""},"common":{"exit":0,"stdout":".git\n","stderr":""}},"source_reader_environment":{"top":{"exit":0,"stdout":"C:/Users/lyq/AppData/Local/Temp/sf-verification-source-test-nC5uhu\n","stderr":""},"common":{"exit":0,"stdout":".git\n","stderr":""}}}
+
+ ✓ tests/unit/verification-source-snapshot.test.ts (5 tests) 8699ms
+   ✓ verification raw source and Git identity > records a bounded stage for a failed Git read without logging the project path  852ms
+   ✓ verification raw source and Git identity > captures current raw input and rejects a changed source without invoking clean filters  1640ms
+   ✓ verification raw source and Git identity > rejects undeclared untracked code and hardlinked tracked input  1187ms
+   ✓ verification raw source and Git identity > binds branch, index and repository configuration  2875ms
+   ✓ verification raw source and Git identity > freezes only reachable code and package metadata, without reading unrelated tracked files  2143ms
+
+ Test Files  2 passed (2)
+      Tests  15 passed (15)
+   Start at  20:24:06
+   Duration  11.23s (transform 514ms, setup 0ms, collect 1.26s, tests 8.97s, environment 0ms, prepare 524ms)
+

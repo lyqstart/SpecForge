@@ -1,0 +1,26 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "pwsh",
+  "args": [
+    "-NoProfile",
+    "-File",
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/extract-ci-artifact-tree.ps1",
+    "-Label",
+    "ci-df9-macos-failed"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "extract-macos-failed-regression-primary-receipts",
+  "expected_writes": "safe owned evidence extraction only; no artifact execution",
+  "started_utc": "2026-11-08T11:35:10.078Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 2,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\extract-ci-artifact-tree.ps1",
+      "sha256": "b4ddfddd0d041996a92a4cadb6cc1fd472123cf1f119946a8b39d93cdc15b07c",
+      "size": 1906,
+      "extension": ".ps1"
+    }
+  ]
+}

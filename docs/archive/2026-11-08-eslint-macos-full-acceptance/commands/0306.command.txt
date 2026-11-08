@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/upgrade-final-user.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "official-managed-user-upgrade-1-0-25",
+  "expected_writes": "Controlled official stop with PID/exe/creation identity, upgrade/verify117, immutable owner/key metadata and full original-project install-interval preservation; no model/business execution",
+  "started_utc": "2026-11-08T13:29:19.185Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\upgrade-final-user.cjs",
+      "sha256": "991931f6b38986a0b07c5c2fc1ff43edd7a7371461df2a60418635ab6e853f32",
+      "size": 8182,
+      "extension": ".cjs"
+    }
+  ]
+}

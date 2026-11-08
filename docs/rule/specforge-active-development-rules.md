@@ -933,6 +933,9 @@ CLI文件同时承担可执行入口和可复用模块时，顶层直接运行�
 `transpileModule()`、Babel转译或字符串检查只能证明语法可生成，不能证明名称解析和作用域正确。封包前必须补充TypeScript Program语义诊断或等价的完整类型检查；用户环境仍必须执行项目正式TypeScript和定向测试。
 <!-- source: ledger Part3/4 verbatim (audited), view L1903-2944 -->
 
+删除局部绑定前必须核对它的完整词法引用集合：只写不读的赋值和更新仍是引用，不能仅删声明留下未绑定写入。可能有副作用的初始化与右值必须保留；不能证明无外部可观察读取的更新不得自动删除。测试未进入生产tsc时，须用相同源码的符号绑定或TypeScript-aware运行值引用门禁补验，并重跑原失败所属完整测试包；构建通过不能替代测试局部绑定验证。
+<!-- source: ERR-2066/ERR-2067; binding-reference closure supplement -->
+
 ## EXP-092：跨编码边界必须显式解码、使用Unicode协议并完成真实往返
 
 文件编码正确只证明静态字节，不证明命令管道、剪贴板、终端或下游消费者仍得到相同文本。非ASCII文本跨越边界时固定执行：
@@ -1400,6 +1403,14 @@ patched  = detached exact HEAD + exact payload + install + workspace build
 4. baseline和patched均不得直接使用真实开发工作树；
 5. 定向测试、全量A/B、TypeScript、构建、Installer和Diff审计全部通过后，才允许把已验证的完整文件写入真实仓库；
 6. A/B验证脚本必须用历史错误证据执行纯函数回归，至少覆盖“Suite级失败对用例级失败不得比较”。
+
+工具链/锁文件本身属于明确授权的修改目标时，单组同锁 A/B 不能同时表示“原始依赖”和“更新依赖”。此时必须增加三腿验证，不得把不同锁的结果冒称同锁 A/B：
+
+1. Original：精确基线 HEAD、原始 manifest/锁、冻结安装、完整构建与全量测试，保留原始结果。
+2. Toolchain baseline：另一精确基线 HEAD，仅叠加逐字段封存的开发工具依赖与候选同锁；可同步产品版本及 SPS release header 以满足既有身份检查，不改规范行为、运行时依赖、源码、API exports、权限、状态或测试。不得称其工作树为未经修改的基线。
+3. Patched：精确基线 HEAD 加完整候选，采用与第二腿逐字相同的锁、Bun、安装/构建/测试入口与参数。
+
+第二/三腿形成同锁产品修复 A/B；第一/第二腿单独报告工具链影响。三腿均使用独立 HOME/TEMP/APPDATA/OPENCODE_CONFIG_DIR。工具链叠加不得夹带产品修复，须用精确 HEAD 源码/测试/API 哈希与逐字段 manifest 差分证明；运行时依赖发生变化时不适用本开发工具特例。三腿仍执行上述收集层级、失败集合、不可比较、封包和安装验证要求；缺腿或构建/收集失败不能以旧报告、跳过或汇总退出码补造通过。
 <!-- source: ledger view L3916-3943 format H2COLON (purity-filtered) -->
 
 ## EXP-123：机器协议stdout与诊断stderr必须分离

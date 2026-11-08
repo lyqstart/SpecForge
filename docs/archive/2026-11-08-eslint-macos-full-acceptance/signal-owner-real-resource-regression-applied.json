@@ -1,0 +1,13 @@
+{
+  "utc": "2026-11-08T12:51:28.723Z",
+  "input_sha256": "1489e6702d536bdbefd8d7c0a4fc890dd42f5d6d459ae1d776b229053fa3b35b",
+  "reason": "0253 real unchanged-baseline trace attributes accumulated SIGTERM callbacks to actual GracefulShutdownHandler.attachToProcess. Registration uses anonymous closures but disposal stores/removes handleSignal, a different function. Daemon stop triggers owner disposal, so fix belongs existing service-management shutdown owner; first prove red actual process listener-count regression without raising limits or masking warnings.",
+  "required_verification": "Red resource test on old owner, exact callback fix, full service/daemon lifecycle, all12 lint/build/typecheck and final symmetric cold/structured qualification/3OS/install/deployment.",
+  "members": [
+    {
+      "file": "packages/service-management/tests/unit/graceful-shutdown-handler.test.ts",
+      "before": "62581d345464d4781f4471fdc96071933257a3c521da7a690389629424ba35f3",
+      "after": "fdfbe09395abdcdb41b8dd2ca916fbdab1f2ccc0a88b8bff978a516946ca49cf"
+    }
+  ]
+}

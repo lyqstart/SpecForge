@@ -1,0 +1,13 @@
+{
+  "utc": "2026-11-08T10:30:23.796Z",
+  "input_sha256": "a540e53bc84248570a5b9bc9438de15c394b27fa85bb79401359a3d13c93a6fd",
+  "reason": "Exercise the actual governance/trace owners against valid and hostile values; verify no opaque object coercion and no malformed approval data acceptance.",
+  "required_verification": "Actual package tests, full lint/build and all platform workspace suites",
+  "members": [
+    {
+      "file": "packages/daemon-core/tests/unit/input-boundary-contracts.test.ts",
+      "before": "ABSENT",
+      "after": "ae3638d6d62cde7c881584fff2b09b9979b2e9470e4d43f1bc1bcd7f1c512b19"
+    }
+  ]
+}

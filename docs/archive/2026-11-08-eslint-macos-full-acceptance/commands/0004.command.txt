@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/prepare-repair.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "freeze-tooling-owner-repair-and-boundaries",
+  "expected_writes": "REPOSITORY_TRACKED_WRITES:archive attributes,ignored private fixture,ledger;TRUTH_SOURCE_WRITES:unique status;EXTERNAL_EVIDENCE_WRITES:contract",
+  "started_utc": "2026-11-08T07:15:48.707Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\prepare-repair.cjs",
+      "sha256": "91f6cb7df2844f5f966c219ef476b4220652ba032b2e4864e180a6a5ca678d6b",
+      "size": 4578,
+      "extension": ".cjs"
+    }
+  ]
+}

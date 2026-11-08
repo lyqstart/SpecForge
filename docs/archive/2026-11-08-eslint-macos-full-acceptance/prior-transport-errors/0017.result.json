@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-CROSSPLATFORM-CONSUMER-A01",
+  "mode": "CODEX_DIRECT",
+  "purpose": "close-final-ci-and-clean-publication-proof",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES:ignored final first-party CI/provenance proof;all target checks read-only",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-crossplatform-consumer-audit/publication-live/close-final-ci.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "started_utc": "2026-11-08T07:07:09.407Z",
+  "carrier_source_sha256": "e9228d76b550893f1781e6e8309b93c9ff554cf85cb9390e597e151a6bec142f",
+  "finished_utc": "2026-11-08T07:07:09.791Z",
+  "inner_exit_code": 1,
+  "carrier_exit_code": 1,
+  "signal": null,
+  "spawn_error": null,
+  "observed_writes": {
+    "repository_status_before": "",
+    "repository_status_after": ""
+  }
+}

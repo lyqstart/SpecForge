@@ -1,0 +1,9 @@
+{
+  "id": "producer-optional-fields",
+  "reason": "Actual getHeadCommit producer permits null; observation trace/timestamp fields remain untrusted until checked. Preserve optionality and reject malformed provenance before reading payload.",
+  "required_verification": "Complete build then lint and full actual package regression",
+  "files": [
+    {"file":"packages/daemon-core/src/tools/lib/git-governance-stage2.ts","changes":[{"from":"base_commit: string; head_commit: string;","to":"base_commit: string; head_commit: string | null;"}]},
+    {"file":"packages/daemon-core/src/tools/lib/filesystem-diff.ts","changes":[{"from":"typeof entry?.payload_file === 'string' &&","to":"typeof entry?.payload_file === 'string' &&\n          typeof entry.timestamp === 'string' &&\n          (entry.trace_id === undefined || typeof entry.trace_id === 'string') &&"},{"from":"preflight_trace_id: preflight.index.trace_id,","to":"preflight_trace_id: typeof preflight.index.trace_id === 'string' ? preflight.index.trace_id : undefined,"},{"from":"preflight_timestamp: preflight.index.timestamp,","to":"preflight_timestamp: typeof preflight.index.timestamp === 'string' ? preflight.index.timestamp : undefined,"}]}
+  ]
+}

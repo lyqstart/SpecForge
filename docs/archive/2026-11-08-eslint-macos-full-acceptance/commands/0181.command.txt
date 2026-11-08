@@ -1,0 +1,20 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "git",
+  "args": [
+    "-c",
+    "core.longpaths=true",
+    "worktree",
+    "add",
+    "--detach",
+    "D:/code/SpecForge/.lint-platform-a01",
+    "df9f572cf4150fb1f03fbac9f2ba028e9c4cfa8a"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "create-separate-platform-repair-worktree",
+  "expected_writes": "owned detached candidate checkout; keeps ongoing frozen qualification inputs unchanged",
+  "started_utc": "2026-11-08T11:38:49.666Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": []
+}

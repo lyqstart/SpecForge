@@ -1,0 +1,16 @@
+$ vitest run tests/unit/scalar-json-boundary.test.ts tests/unit/delay-timer-owner.test.ts tests/unit/production-lint-boundaries.test.ts "--maxWorkers=1" "--minWorkers=1"
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/scalar-json-boundary.test.ts [ tests/unit/scalar-json-boundary.test.ts ]
+Error: Transform failed with 1 error:
+D:/code/SpecForge/.lint-review-a01/packages/workflow-runtime/tests/unit/scalar-json-boundary.test.ts:6:208: ERROR: Expected "]" but found ")"
+ ❯ failureErrorWithLog ../../node_modules/.bun/esbuild@0.21.5/node_modules/esbuild/lib/main.js:1472:15
+ ❯ ../../node_modules/.bun/esbuild@0.21.5/node_modules/esbuild/lib/main.js:755:50
+ ❯ responseCallbacks.<computed> ../../node_modules/.bun/esbuild@0.21.5/node_modules/esbuild/lib/main.js:622:9
+ ❯ handleIncomingPacket ../../node_modules/.bun/esbuild@0.21.5/node_modules/esbuild/lib/main.js:677:12
+ ❯ Socket.readFromStdout ../../node_modules/.bun/esbuild@0.21.5/node_modules/esbuild/lib/main.js:600:7
+ ❯ Socket.emit node:events:509:28
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+error: script "test" exited with code 1

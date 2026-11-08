@@ -1,0 +1,20 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "git",
+  "args": [
+    "-c",
+    "core.longpaths=true",
+    "-c",
+    "core.safecrlf=false",
+    "commit",
+    "-m",
+    "fix: bind CI report directory in supported step contexts"
+  ],
+  "cwd": "D:\\code\\SpecForge\\.lint-review-a01",
+  "purpose": "commit-supported-ci-expression-context-fix",
+  "expected_writes": "private candidate follow-up commit; main unchanged",
+  "started_utc": "2026-11-08T11:22:53.591Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": []
+}

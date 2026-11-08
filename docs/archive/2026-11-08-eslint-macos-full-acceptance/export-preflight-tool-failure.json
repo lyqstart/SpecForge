@@ -1,0 +1,13 @@
+{
+  "copied_utc": "2026-11-08T08:18:54.168Z",
+  "method": "Tool-native exec_command output retained in desktop transcript; syntax-only preflight, no product execution.",
+  "command": [
+    "node",
+    "--check",
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/deduplicate-workflow-export-owners.cjs"
+  ],
+  "exit_code": 1,
+  "message": "SyntaxError: Identifier 'module' has already been declared",
+  "original_source_preserved": true,
+  "original_command_utc_not_inferred": true
+}

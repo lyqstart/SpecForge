@@ -1,0 +1,1 @@
+$ vitest run "--maxWorkers=1" "--minWorkers=1" "--reporter=json" "--outputFile=D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\structured-qualification-original\\scope-gate.vitest.json"

@@ -1,0 +1,156 @@
+{
+  "summary": {
+    "name": "host-profile",
+    "started_utc": "2026-11-08T07:32:34.262Z",
+    "finished_utc": "2026-11-08T07:32:34.344Z",
+    "files": 9,
+    "errors": 2,
+    "warnings": 0,
+    "rules": {
+      "@typescript-eslint/no-unused-vars": 2
+    }
+  },
+  "results": [
+    {
+      "filePath": "D:\\code\\SpecForge\\.lint-review-a01\\packages\\host-profile\\src\\build-rules.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "D:\\code\\SpecForge\\.lint-review-a01\\packages\\host-profile\\src\\index.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "D:\\code\\SpecForge\\.lint-review-a01\\packages\\host-profile\\src\\probe-os.ts",
+      "messages": [
+        {
+          "ruleId": "@typescript-eslint/no-unused-vars",
+          "severity": 2,
+          "message": "'existsSync' is defined but never used.",
+          "line": 8,
+          "column": 10,
+          "nodeType": "Identifier",
+          "messageId": "unusedVar",
+          "endLine": 8,
+          "endColumn": 20,
+          "suggestions": [
+            {
+              "messageId": "removeUnusedImportDeclaration",
+              "data": {
+                "varName": "existsSync"
+              },
+              "fix": {
+                "range": [
+                  95,
+                  133
+                ],
+                "text": ""
+              },
+              "desc": "Remove unused import declaration."
+            }
+          ]
+        }
+      ],
+      "suppressedMessages": [],
+      "errorCount": 1,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "source": "/**\n * OS 信息探测\n *\n * 不需要 spawn，纯 node:os API + 系统命令获取额外信息。\n */\n\nimport * as os from 'node:os';\nimport { existsSync } from 'node:fs';\nimport type { OsInfo, LocaleInfo } from './types.js';\nimport { safeSpawn, detectCI, whichCommand } from './probe-utils.js';\n\n/**\n * 探测 OS 基础信息\n */\nexport async function probeOs(): Promise<OsInfo> {\n  const platform = os.platform();\n  const release = os.release();\n  const arch = os.arch() as NodeJS.Architecture;\n\n  const totalmem_gb = Math.round(os.totalmem() / (1024 * 1024 * 1024));\n  const cpu_count = os.cpus().length;\n\n  // 拿人类可读的版本号（Windows 11 Pro 24H2 / macOS 14.5 Sonoma 等）\n  const version = await getHumanReadableOsVersion(platform, release);\n\n  return {\n    platform,\n    release,\n    version,\n    arch,\n    totalmem_gb,\n    cpu_count,\n  };\n}\n\n/**\n * 在 Windows 上跑 PowerShell 命令并强制 UTF-8 输出\n *\n * 核心：在命令前注入编码设置，强制 stdout 编码为 UTF-8。\n *\n * 注意：pwsh 在交互式终端中默认 UTF-8，但被 Node spawn 调用时（无控制台），\n * `$OutputEncoding` 默认是 `[System.Text.ASCIIEncoding]`，**必须**显式设置才能正确输出非 ASCII 字符。\n *\n * 优先用 pwsh.exe，找不到才用 powershell.exe。\n */\nasync function runWindowsPowerShell(\n  scriptCommand: string,\n  timeoutMs = 3000\n): Promise<string | null> {\n  // 编码设置前缀（pwsh 和 powershell 通用）\n  const encodingPrefix = [\n    '$OutputEncoding = [System.Text.Encoding]::UTF8',\n    '[Console]::OutputEncoding = [System.Text.Encoding]::UTF8',\n    '[Console]::InputEncoding = [System.Text.Encoding]::UTF8',\n  ].join('; ');\n\n  const wrapped = `${encodingPrefix}; ${scriptCommand}`;\n\n  // 优先 pwsh\n  const pwshPath = await whichCommand('pwsh');\n  if (pwshPath) {\n    const result = await safeSpawn(\n      pwshPath,\n      ['-NoProfile', '-NonInteractive', '-Command', wrapped],\n      { timeoutMs }\n    );\n    if (result.exitCode === 0 && result.stdout.trim()) {\n      return result.stdout.trim();\n    }\n  }\n\n  // 降级到 powershell.exe（同样注入编码）\n  const result = await safeSpawn(\n    'powershell.exe',\n    ['-NoProfile', '-NonInteractive', '-Command', wrapped],\n    { timeoutMs }\n  );\n  if (result.exitCode === 0 && result.stdout.trim()) {\n    return result.stdout.trim();\n  }\n  return null;\n}\n\n/**\n * 获取人类可读的 OS 版本字符串\n */\nasync function getHumanReadableOsVersion(platform: NodeJS.Platform, release: string): Promise<string> {\n  if (platform === 'win32') {\n    // Windows: 用 PowerShell 拿 ProductName，自动处理编码\n    const caption = await runWindowsPowerShell(\n      '(Get-CimInstance Win32_OperatingSystem).Caption'\n    );\n    if (caption) return caption;\n    return `Windows ${release}`;\n  }\n\n  if (platform === 'darwin') {\n    // macOS: sw_vers\n    const result = await safeSpawn('sw_vers', ['-productName'], { timeoutMs: 2000 });\n    const ver = await safeSpawn('sw_vers', ['-productVersion'], { timeoutMs: 2000 });\n    if (result.exitCode === 0 && ver.exitCode === 0) {\n      return `${result.stdout.trim()} ${ver.stdout.trim()}`;\n    }\n    return `macOS ${release}`;\n  }\n\n  if (platform === 'linux') {\n    // Linux: 优先 /etc/os-release\n    try {\n      const fs = await import('node:fs/promises');\n      const content = await fs.readFile('/etc/os-release', 'utf-8');\n      const prettyName = content.match(/^PRETTY_NAME=\"?([^\"\\n]+)\"?/m)?.[1];\n      if (prettyName) return prettyName;\n    } catch {\n      // 文件不存在，降级\n    }\n    return `Linux ${release}`;\n  }\n\n  return `${platform} ${release}`;\n}\n\n/**\n * 探测 Locale 信息\n */\nexport async function probeLocale(platform: NodeJS.Platform): Promise<LocaleInfo> {\n  // 时区（Node 内置 Intl 拿就行，无需 spawn）\n  const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';\n  // getTimezoneOffset 返回的符号和 IANA 偏移相反（中国 UTC+8 → -480）\n  const tz_offset_minutes = -new Date().getTimezoneOffset();\n\n  // 系统语言\n  const system_lang = await getSystemLanguage(platform);\n\n  // Windows 控制台代码页\n  let console_codepage: number | null = null;\n  if (platform === 'win32') {\n    console_codepage = await getWindowsCodepage();\n  }\n\n  return {\n    system_lang,\n    console_codepage,\n    encoding: 'UTF-8',\n    timezone,\n    tz_offset_minutes,\n    datetime_now: new Date().toISOString(),\n  };\n}\n\n/**\n * 获取系统语言\n *\n * Windows: PowerShell `(Get-Culture).Name`\n * macOS / Linux: 环境变量 LANG / LC_ALL\n */\nasync function getSystemLanguage(platform: NodeJS.Platform): Promise<string> {\n  if (platform === 'win32') {\n    const lang = await runWindowsPowerShell('(Get-Culture).Name');\n    if (lang) return lang;\n    // 降级：Node 的 process.env.LANG\n    return process.env.LANG || process.env.LC_ALL || 'en-US';\n  }\n\n  // POSIX\n  const lang = process.env.LANG || process.env.LC_ALL || process.env.LC_MESSAGES;\n  if (lang) {\n    // \"en_US.UTF-8\" → \"en-US\"\n    return lang.split('.')[0]?.replace('_', '-') || 'en-US';\n  }\n  return 'en-US';\n}\n\n/**\n * 获取 Windows 控制台代码页\n *\n * 跑 `chcp` 解析输出：\"活动代码页：936\" 或 \"Active code page: 936\"\n */\nasync function getWindowsCodepage(): Promise<number | null> {\n  const result = await safeSpawn('cmd.exe', ['/c', 'chcp'], { timeoutMs: 2000 });\n  if (result.exitCode !== 0) return null;\n  const match = result.stdout.match(/(\\d+)/);\n  return match ? parseInt(match[1], 10) : null;\n}\n\n/**\n * 探测是否在 CI 环境（导出供其他模块使用）\n */\nexport { detectCI };\n",
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "D:\\code\\SpecForge\\.lint-review-a01\\packages\\host-profile\\src\\probe-shells.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "D:\\code\\SpecForge\\.lint-review-a01\\packages\\host-profile\\src\\probe-tools.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "D:\\code\\SpecForge\\.lint-review-a01\\packages\\host-profile\\src\\probe-utils.ts",
+      "messages": [
+        {
+          "ruleId": "@typescript-eslint/no-unused-vars",
+          "severity": 2,
+          "message": "'execAsync' is assigned a value but never used.",
+          "line": 17,
+          "column": 7,
+          "nodeType": "Identifier",
+          "messageId": "unusedVar",
+          "endLine": 17,
+          "endColumn": 16
+        }
+      ],
+      "suppressedMessages": [],
+      "errorCount": 1,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "source": "/**\n * 通用探测工具：spawn + 超时 + 错误吞掉\n *\n * 设计原则（来自 lessons-injected）：\n * - A1: Promise.race 超时时 finally 中清理败者 timer\n * - C1: 命令本身用 spawn，超时用 SIGKILL 强制终止\n * - 探测失败不抛错，标记为不可用\n */\n\nimport { spawn } from 'node:child_process';\nimport { promisify } from 'node:util';\nimport { exec } from 'node:child_process';\nimport * as path from 'node:path';\nimport * as fs from 'node:fs/promises';\nimport { existsSync } from 'node:fs';\n\nconst execAsync = promisify(exec);\n\n/** 默认探测超时（5 秒） */\nexport const PROBE_TIMEOUT_MS = 5000;\n\nexport interface SpawnResult {\n  stdout: string;\n  stderr: string;\n  exitCode: number | null;\n  timedOut: boolean;\n  spawnError?: string;\n}\n\n/**\n * 安全 spawn：带超时、不抛错、必返回。\n *\n * - 超时：SIGKILL 强杀子进程，timedOut=true\n * - spawn 错误（ENOENT 等）：返回 exitCode=null + spawnError\n * - 正常退出：返回 stdout/stderr/exitCode\n *\n * Windows 特殊处理：执行 `.cmd` / `.bat` 文件时自动用 `cmd.exe /c` 包裹，\n * 因为 Node spawn 不能直接执行这些（它们是 cmd 脚本，不是 PE 可执行文件）。\n */\nexport async function safeSpawn(\n  command: string,\n  args: string[],\n  options: { timeoutMs?: number; cwd?: string; env?: NodeJS.ProcessEnv } = {}\n): Promise<SpawnResult> {\n  const timeoutMs = options.timeoutMs ?? PROBE_TIMEOUT_MS;\n\n  // Windows 上 .cmd / .bat 需要通过 cmd.exe 执行\n  const isWin = process.platform === 'win32';\n  let actualCommand = command;\n  let actualArgs = args;\n  if (isWin) {\n    const lower = command.toLowerCase();\n    if (lower.endsWith('.cmd') || lower.endsWith('.bat')) {\n      actualCommand = 'cmd.exe';\n      actualArgs = ['/c', command, ...args];\n    }\n  }\n\n  return new Promise<SpawnResult>(resolve => {\n    let stdout = '';\n    let stderr = '';\n    let timer: NodeJS.Timeout | null = null;\n    let resolved = false;\n\n    const finalize = (result: SpawnResult) => {\n      if (resolved) return;\n      resolved = true;\n      if (timer) {\n        clearTimeout(timer);\n        timer = null;\n      }\n      resolve(result);\n    };\n\n    let child;\n    try {\n      child = spawn(actualCommand, actualArgs, {\n        cwd: options.cwd,\n        env: options.env,\n        windowsHide: true,\n        shell: false,\n      });\n    } catch (err) {\n      finalize({\n        stdout: '',\n        stderr: '',\n        exitCode: null,\n        timedOut: false,\n        spawnError: (err as Error).message,\n      });\n      return;\n    }\n\n    child.on('error', err => {\n      finalize({\n        stdout,\n        stderr,\n        exitCode: null,\n        timedOut: false,\n        spawnError: (err as Error).message,\n      });\n    });\n\n    child.stdout?.on('data', (data: Buffer) => {\n      stdout += data.toString('utf-8');\n    });\n    child.stderr?.on('data', (data: Buffer) => {\n      stderr += data.toString('utf-8');\n    });\n\n    child.on('exit', code => {\n      finalize({ stdout, stderr, exitCode: code, timedOut: false });\n    });\n\n    timer = setTimeout(() => {\n      try {\n        child.kill('SIGKILL');\n      } catch {\n        // 进程可能已经退出，忽略\n      }\n      finalize({ stdout, stderr, exitCode: null, timedOut: true });\n    }, timeoutMs);\n  });\n}\n\n/**\n * 找命令的绝对路径（跨平台 which/where）\n *\n * Windows: 用 where 命令（可能返回多行，包括无扩展名文件）\n * macOS / Linux: 用 which 命令\n *\n * 返回找到的**第一个真实存在 + 可执行**的绝对路径，未找到返回 null。\n *\n * 注意：Windows 上 npm 安装的工具会有多个候选（如 bun / bun.cmd / bun.ps1），\n * `where` 会列出所有，包括无扩展名的 stub 文件（实际不可直接 spawn 执行）。\n * 这里只取 .exe / .cmd / .bat 扩展名的，因为这些才是 Node spawn 能直接调用的。\n */\nexport async function whichCommand(name: string): Promise<string | null> {\n  const isWin = process.platform === 'win32';\n  const cmd = isWin ? 'where' : 'which';\n  const args = isWin ? [name] : [name];\n\n  const result = await safeSpawn(cmd, args, { timeoutMs: 3000 });\n\n  if (result.spawnError || result.exitCode !== 0) {\n    return null;\n  }\n\n  const lines = result.stdout\n    .split(/\\r?\\n/)\n    .map(l => l.trim())\n    .filter(l => l.length > 0);\n\n  if (isWin) {\n    // Windows: 优先返回 .exe / .cmd / .bat，跳过 .ps1 和无扩展名 stub\n    const executableExts = ['.exe', '.cmd', '.bat', '.com'];\n    for (const line of lines) {\n      const lower = line.toLowerCase();\n      if (executableExts.some(ext => lower.endsWith(ext)) && existsSync(line)) {\n        return line;\n      }\n    }\n    return null;\n  }\n\n  // POSIX: 取第一个真实存在的（通常 which 只返回一行）\n  for (const line of lines) {\n    if (existsSync(line)) {\n      return line;\n    }\n  }\n  return null;\n}\n\n/**\n * 从命令输出中提取 SemVer 风格的版本号\n *\n * 示例匹配：\n *   \"git version 2.45.0\" → \"2.45.0\"\n *   \"1.3.11\" → \"1.3.11\"\n *   \"v22.5.1\" → \"22.5.1\"\n *   \"PowerShell 7.5.0\" → \"7.5.0\"\n */\nexport function extractVersion(output: string): string | null {\n  if (!output) return null;\n  // 匹配 X.Y.Z 或 X.Y.Z.W 形式\n  const match = output.match(/(\\d+)\\.(\\d+)\\.(\\d+)(?:\\.(\\d+))?/);\n  return match ? match[0] : null;\n}\n\n/**\n * 检测 CI 环境\n *\n * 任一环境变量存在即认为是 CI 环境。\n */\nexport function detectCI(): boolean {\n  const indicators = [\n    'CI',\n    'GITHUB_ACTIONS',\n    'GITLAB_CI',\n    'CIRCLECI',\n    'TRAVIS',\n    'JENKINS_HOME',\n    'BUILDKITE',\n    'TEAMCITY_VERSION',\n    'TF_BUILD', // Azure DevOps\n  ];\n  return indicators.some(key => process.env[key]);\n}\n\n/**\n * 让 promises 并行运行，失败的不影响其他。\n *\n * 等价于 Promise.allSettled，但更明确地把每个结果归类成 ok/err。\n */\nexport async function parallelProbe<T>(\n  probes: Array<{ name: string; fn: () => Promise<T> }>\n): Promise<Array<{ name: string; ok: true; value: T } | { name: string; ok: false; error: string }>> {\n  const results = await Promise.allSettled(probes.map(p => p.fn()));\n  return results.map((r, i) => {\n    const name = probes[i].name;\n    if (r.status === 'fulfilled') {\n      return { name, ok: true as const, value: r.value };\n    }\n    return {\n      name,\n      ok: false as const,\n      error: r.reason instanceof Error ? r.reason.message : String(r.reason),\n    };\n  });\n}\n\n/**\n * 原子写入 JSON 文件\n *\n * 1. 写入临时文件\n * 2. fsync 保证数据落盘\n * 3. rename 到目标路径\n *\n * 避免扫描中途崩溃留下残缺文件。\n */\nexport async function atomicWriteJson(filePath: string, data: unknown): Promise<void> {\n  const dir = path.dirname(filePath);\n  await fs.mkdir(dir, { recursive: true });\n\n  // 用随机后缀避免并发冲突\n  const tmpPath = `${filePath}.tmp.${process.pid}.${Date.now()}`;\n  const content = JSON.stringify(data, null, 2) + '\\n';\n\n  try {\n    await fs.writeFile(tmpPath, content, 'utf-8');\n    await fs.rename(tmpPath, filePath);\n  } catch (err) {\n    // 失败时尝试清理临时文件\n    try {\n      await fs.unlink(tmpPath);\n    } catch {\n      // 临时文件可能不存在，忽略\n    }\n    throw err;\n  }\n}\n\n/**\n * 安全读取 JSON 文件\n *\n * 失败（文件不存在 / 解析失败）返回 null。\n */\nexport async function safeReadJson<T>(filePath: string): Promise<T | null> {\n  try {\n    const content = await fs.readFile(filePath, 'utf-8');\n    return JSON.parse(content) as T;\n  } catch {\n    return null;\n  }\n}\n",
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "D:\\code\\SpecForge\\.lint-review-a01\\packages\\host-profile\\src\\scanner.test.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "D:\\code\\SpecForge\\.lint-review-a01\\packages\\host-profile\\src\\scanner.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "D:\\code\\SpecForge\\.lint-review-a01\\packages\\host-profile\\src\\types.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    }
+  ]
+}

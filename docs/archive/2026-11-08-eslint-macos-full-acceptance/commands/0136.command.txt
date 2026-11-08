@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "scripts/test-workspace.ts"
+  ],
+  "cwd": "D:\\code\\SpecForge\\.lint-review-a01",
+  "purpose": "full-private-workspace-regression-after-lint-repairs",
+  "expected_writes": "owned test fixtures runtime outputs and immutable raw receipts",
+  "started_utc": "2026-11-08T10:35:26.756Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\.lint-review-a01\\scripts\\test-workspace.ts",
+      "sha256": "ca07c9f9c24d5e07df939f435a0c611c313c0764e94ee1df8e11ecb3e54bce13",
+      "size": 2071,
+      "extension": ".ts"
+    }
+  ]
+}

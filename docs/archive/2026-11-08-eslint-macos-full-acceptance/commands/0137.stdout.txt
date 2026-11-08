@@ -1,0 +1,11 @@
+[root-test-registry] {"CURRENT_HERMETIC":51,"CURRENT_ENVIRONMENTAL":1,"MIGRATED_DUPLICATE":14,"HISTORICAL_EVIDENCE":122}
+[root-test-registry] mode=current selected=51
+
+ RUN  v4.1.5 D:/code/SpecForge/.lint-review-a01
+
+
+ Test Files  51 passed (51)
+      Tests  753 passed (753)
+   Start at  18:39:18
+   Duration  11.46s (transform 9.83s, setup 0ms, import 15.88s, tests 34.16s, environment 22ms)
+

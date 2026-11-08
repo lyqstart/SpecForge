@@ -1,0 +1,1 @@
+{"artifact_id":13617172633,"sha256":"8bca23252778bab8788f59de24c91ec99f321403f218db64bc232785761f41f6","bytes":178010,"dir":"D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\ci-057-full-windows"}

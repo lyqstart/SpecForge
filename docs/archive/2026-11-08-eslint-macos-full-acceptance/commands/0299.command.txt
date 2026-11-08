@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/inventory-owned-root-build-outputs.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "inventory-owned-root-dist-before-official-clean",
+  "expected_writes": "Read-only original compiler output hashes and exact workspace-owned12 dist boundaries, reject private/linked entries",
+  "started_utc": "2026-11-08T13:24:37.576Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\inventory-owned-root-build-outputs.cjs",
+      "sha256": "ae0ae98d26589bb6d24a5873d1183a6c9774abc09044c6160e619b99671df76a",
+      "size": 1841,
+      "extension": ".cjs"
+    }
+  ]
+}

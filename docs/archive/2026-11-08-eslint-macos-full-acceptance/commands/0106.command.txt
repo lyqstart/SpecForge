@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/apply-aligned-style-fixes-v3.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "aligned-style-format-import-repair-v3",
+  "expected_writes": "private-fixture-source-reviewed-rule-fixes-only",
+  "started_utc": "2026-11-08T09:30:17.088Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\apply-aligned-style-fixes-v3.cjs",
+      "sha256": "d9f1f2739fbb99e43f140b34fc98e24477dceb167b698905d00279ceb8032b1d",
+      "size": 3136,
+      "extension": ".cjs"
+    }
+  ]
+}

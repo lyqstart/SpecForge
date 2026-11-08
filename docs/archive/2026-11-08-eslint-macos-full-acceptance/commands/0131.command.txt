@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/close-lint-boundary-narrowing.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "close-last-lint-unknown-narrowings",
+  "expected_writes": "private source and immutable boundary snapshots",
+  "started_utc": "2026-11-08T10:33:31.125Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\close-lint-boundary-narrowing.cjs",
+      "sha256": "d86e8445a5c1ada1e8145c663974354551b495ad3dc47bf06935b30adee4aae7",
+      "size": 2934,
+      "extension": ".cjs"
+    }
+  ]
+}

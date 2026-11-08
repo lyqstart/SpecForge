@@ -1,0 +1,19 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "git",
+  "args": [
+    "-C",
+    ".lint-signal-a01",
+    "push",
+    "-u",
+    "origin",
+    "codex/eslint-macos-signal-validation"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "publish-signal-final-ci-branch",
+  "expected_writes": "Push exact recovered source commit for all3OS full regression and install; no main or PR",
+  "started_utc": "2026-11-08T12:57:57.790Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": []
+}

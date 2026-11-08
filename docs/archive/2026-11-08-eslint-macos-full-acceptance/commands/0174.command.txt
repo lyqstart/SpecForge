@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/verify-qualification-git-boundary.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "verify-actual-isolation-git-observer-effect",
+  "expected_writes": "two owned empty directories; actual read-only original bootstrap collector; immutable outputs",
+  "started_utc": "2026-11-08T11:25:51.670Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\verify-qualification-git-boundary.cjs",
+      "sha256": "7ca6947b064f2e021515f8f0f95c2758f12b4f5f92944a04187576ecfc997f71",
+      "size": 1949,
+      "extension": ".cjs"
+    }
+  ]
+}

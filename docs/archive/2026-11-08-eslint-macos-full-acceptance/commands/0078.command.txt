@@ -1,0 +1,23 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/apply-reviewed-edits.cjs",
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/scalar-json-timer-regressions.json"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "register-scalar-json-timer-owner-regressions",
+  "expected_writes": "private-fixture-tests-and-plan-only",
+  "started_utc": "2026-11-08T08:55:13.576Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\apply-reviewed-edits.cjs",
+      "sha256": "d5505a99486eb10c12c799972c88983b80fd2d54b8e96a968ada428f99807883",
+      "size": 2060,
+      "extension": ".cjs"
+    }
+  ]
+}

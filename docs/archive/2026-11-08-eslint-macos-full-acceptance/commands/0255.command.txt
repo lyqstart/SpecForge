@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/compare-qualification-results-v2.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "compare-qualified057-three-leg-case-granularity",
+  "expected_writes": "All3 actual structured cases; preserve alternate Runtime and changed collections as incomparable",
+  "started_utc": "2026-11-08T12:48:39.063Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\compare-qualification-results-v2.cjs",
+      "sha256": "96418b404b9bf6d899f572bd27c92295e3e8df92217eadc1547448c87b59d1fb",
+      "size": 6201,
+      "extension": ".cjs"
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "utc": "2026-11-08T12:51:31.132Z",
+  "lock_before_sha256": "9a4050e45608d2746a446455a256270b5116e179e695a281b2be51dd5fc144f0",
+  "lock_after_sha256": "3f60323fd1c3303673a8d79d4253257198725d247d3e6551e7648d0826db4438",
+  "attributes_before_sha256": "a87914a8b4de39dbe830a5ea43e965c901ecb814c75589c53f75a3b084c57e81",
+  "attributes_after_sha256": "6e2fc521146e94c6bcc8784b62c7212abb7bda0b2de0c7147d7a6e0aff86a10a",
+  "root_existing_archive_delivery_attribute_preserved": true,
+  "logical_dependency_change": false,
+  "reason": "Actual0255 compare failed byte identity;0256 proves only CRLF checkout differences. Set explicit owner LF attr and rerun final full qualification with literal same3f lock. V4 passing execution not relabelled same-lock qualified."
+}

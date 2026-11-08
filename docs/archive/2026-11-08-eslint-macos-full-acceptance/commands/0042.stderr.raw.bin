@@ -1,0 +1,182 @@
+$ vitest run "--maxWorkers=1" "--minWorkers=1"
+stderr | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Configuration Integrity > should validate configuration after engine restart
+Hard rule conflicts detected: [
+  {
+    rule: {
+      id: 'hard-004',
+      description: 'Agent must not bypass Gate checks',
+      condition: [Function: condition],
+      effect: 'deny',
+      priority: 90,
+      layer: 'hard'
+    },
+    conflict: 'Configuration attempts to override hard rule: Agent must not bypass Gate checks'
+  }
+]
+
+stderr | tests/unit/event-logging.test.ts > Permission Engine Event Logging > Hard Rule Conflict Event Logging > should log hard rule conflict event when configuration conflicts
+Hard rule conflicts detected: [
+  {
+    rule: {
+      id: 'hard-004',
+      description: 'Agent must not bypass Gate checks',
+      condition: [Function: condition],
+      effect: 'deny',
+      priority: 90,
+      layer: 'hard'
+    },
+    conflict: 'Configuration attempts to override hard rule: Agent must not bypass Gate checks'
+  }
+]
+
+stderr | tests/unit/event-logging.test.ts > Permission Engine Event Logging > Hard Rule Conflict Event Logging > should log multiple conflict events for multiple conflicts
+Hard rule conflicts detected: [
+  {
+    rule: {
+      id: 'hard-004',
+      description: 'Agent must not bypass Gate checks',
+      condition: [Function: condition],
+      effect: 'deny',
+      priority: 90,
+      layer: 'hard'
+    },
+    conflict: 'Configuration attempts to override hard rule: Agent must not bypass Gate checks'
+  },
+  {
+    rule: {
+      id: 'hard-005',
+      description: 'Agent must not forge verification',
+      condition: [Function: condition],
+      effect: 'deny',
+      priority: 90,
+      layer: 'hard'
+    },
+    conflict: 'Configuration attempts to override hard rule: Agent must not forge verification'
+  }
+]
+
+stderr | tests/unit/plugin-permission-validator.test.ts > PluginPermissionValidator > Edge Cases > should handle invalid manifest gracefully
+Invalid plugin manifest: ZodError: [
+  {
+    "code": "invalid_type",
+    "expected": "string",
+    "received": "undefined",
+    "path": [
+      "id"
+    ],
+    "message": "Required"
+  }
+]
+    at Object.get error [as error] (file:///D:/code/SpecForge/.lint-review-a01/node_modules/.bun/zod@3.25.76/node_modules/zod/v3/types.js:39:31)
+    at ZodObject.parse (file:///D:/code/SpecForge/.lint-review-a01/node_modules/.bun/zod@3.25.76/node_modules/zod/v3/types.js:114:22)
+    at PluginPermissionValidator.parseManifest (D:\code\SpecForge\.lint-review-a01\packages\permission-engine\src\services\plugin-permission-validator.ts:186:35)
+    at PluginPermissionValidator.validate (D:\code\SpecForge\.lint-review-a01\packages\permission-engine\src\services\plugin-permission-validator.ts:126:33)
+    at D:\code\SpecForge\.lint-review-a01\packages\permission-engine\tests\unit\plugin-permission-validator.test.ts:241:32
+    at file:///D:/code/SpecForge/.lint-review-a01/node_modules/.bun/@vitest+runner@1.6.1/node_modules/@vitest/runner/dist/index.js:135:14
+    at file:///D:/code/SpecForge/.lint-review-a01/node_modules/.bun/@vitest+runner@1.6.1/node_modules/@vitest/runner/dist/index.js:60:26
+    at runTest (file:///D:/code/SpecForge/.lint-review-a01/node_modules/.bun/@vitest+runner@1.6.1/node_modules/@vitest/runner/dist/index.js:781:17)
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at runSuite (file:///D:/code/SpecForge/.lint-review-a01/node_modules/.bun/@vitest+runner@1.6.1/node_modules/@vitest/runner/dist/index.js:909:15) {
+  issues: [
+    {
+      code: 'invalid_type',
+      expected: 'string',
+      received: 'undefined',
+      path: [Array],
+      message: 'Required'
+    }
+  ],
+  addIssue: [Function (anonymous)],
+  addIssues: [Function (anonymous)]
+}
+
+stderr | tests/unit/permission-engine.test.ts > PermissionEngine > Hard Rule Integration > should detect hard rule conflicts in configuration
+Hard rule conflicts detected: [
+  {
+    rule: {
+      id: 'hard-004',
+      description: 'Agent must not bypass Gate checks',
+      condition: [Function: condition],
+      effect: 'deny',
+      priority: 90,
+      layer: 'hard'
+    },
+    conflict: 'Configuration attempts to override hard rule: Agent must not bypass Gate checks'
+  }
+]
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 22 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/integration/remote-access-integration.test.ts > Remote Access Integration > API Key Manager Integration > should create and validate API keys
+ FAIL  tests/integration/remote-access-integration.test.ts > Remote Access Integration > API Key Manager Integration > should enforce IP whitelist
+ FAIL  tests/integration/remote-access-integration.test.ts > Remote Access Integration > API Key Manager Integration > should handle CIDR notation
+ FAIL  tests/integration/remote-access-integration.test.ts > Remote Access Integration > Two-Step Confirmation Integration > should require confirmation for sensitive operations
+ FAIL  tests/integration/remote-access-integration.test.ts > Remote Access Integration > Two-Step Confirmation Integration > should not require confirmation for non-sensitive operations
+ FAIL  tests/integration/remote-access-integration.test.ts > Remote Access Integration > Two-Step Confirmation Integration > should create and track pending confirmations
+ FAIL  tests/integration/remote-access-integration.test.ts > Remote Access Integration > Two-Step Confirmation Integration > should track multiple pending confirmations
+ FAIL  tests/integration/remote-access-integration.test.ts > Remote Access Integration > Remote Access Guard > should enable and disable remote mode
+ FAIL  tests/integration/remote-access-integration.test.ts > Remote Access Integration > Remote Access Guard > should validate requests when enabled
+ FAIL  tests/integration/remote-access-integration.test.ts > Remote Access Integration > Complete Remote Access Flow > should complete flow: create key -> validate -> check sensitive operation
+ FAIL  tests/integration/remote-access-integration.test.ts > Remote Access Integration > Complete Remote Access Flow > should fail at IP check
+ FAIL  tests/integration/remote-access-integration.test.ts > Remote Access Integration > Complete Remote Access Flow > should require confirmation for sensitive operations
+ FAIL  tests/integration/remote-access-integration.test.ts > Remote Access Integration > Remote Mode Configuration > should respect enabled flag
+ FAIL  tests/integration/remote-access-integration.test.ts > Remote Access Integration > IP Handling Edge Cases > should handle exact IP match
+ FAIL  tests/integration/remote-access-integration.test.ts > Remote Access Integration > IP Handling Edge Cases > should handle localhost
+ReferenceError: validApiKey is not defined
+ ❯ tests/integration/remote-access-integration.test.ts:62:5
+     60|       ipWhitelist: [validIp, '10.0.0.0/8']
+     61|     });
+     62|     validApiKey = key;
+       |     ^
+     63| 
+     64|     // Initialize Remote Access Guard with the API key manager
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/28]⎯
+
+ FAIL  tests/property/permission-decision-traceability-property-10.test.ts > Property 10: Permission Decision Traceability > 10.1: All permission decisions produce events with six required fields > for random (actor, action, resource) tuples, events contain all six required fields
+ FAIL  tests/property/permission-decision-traceability-property-10.test.ts > Property 10: Permission Decision Traceability > 10.2: Each decision produces unique traceable events > each permission decision has unique eventId and timestamp
+ FAIL  tests/property/permission-decision-traceability-property-10.test.ts > Property 10: Permission Decision Traceability > 10.3: Deny decisions are traceable to matched_rule and rule_layer > deny decisions contain correct matched_rule and rule_layer for traceability
+ FAIL  tests/property/permission-decision-traceability-property-10.test.ts > Property 10: Permission Decision Traceability > 10.4: Event logging includes projectId for multi-project traceability > events contain correct projectId for the decision context
+ FAIL  tests/property/permission-decision-traceability-property-10.test.ts > Property 10: Permission Decision Traceability > 10.5: Events contain complete context for debugging > events include decision (allow/deny) for audit purposes
+ FAIL  tests/property/permission-decision-traceability-property-10.test.ts > Property 10: Permission Decision Traceability > 10.6: Actor information is fully captured in events > events capture complete actor information including roles
+ReferenceError: capturedEvents is not defined
+ ❯ tests/property/permission-decision-traceability-property-10.test.ts:39:5
+     37|     // Create in-memory event logger for testing
+     38|     eventLogger = EventLogger.createInMemoryLogger(testProjectId);
+     39|     capturedEvents = [];
+       |     ^
+     40| 
+     41|     // Override to capture events synchronously from mock
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/28]⎯
+
+ FAIL  tests/property/permission-decision-traceability-property-10.test.ts > Property 10: Permission Decision Traceability > 10.1: All permission decisions produce events with six required fields > for random (actor, action, resource) tuples, events contain all six required fields
+ FAIL  tests/property/permission-decision-traceability-property-10.test.ts > Property 10: Permission Decision Traceability > 10.2: Each decision produces unique traceable events > each permission decision has unique eventId and timestamp
+ FAIL  tests/property/permission-decision-traceability-property-10.test.ts > Property 10: Permission Decision Traceability > 10.3: Deny decisions are traceable to matched_rule and rule_layer > deny decisions contain correct matched_rule and rule_layer for traceability
+ FAIL  tests/property/permission-decision-traceability-property-10.test.ts > Property 10: Permission Decision Traceability > 10.4: Event logging includes projectId for multi-project traceability > events contain correct projectId for the decision context
+ FAIL  tests/property/permission-decision-traceability-property-10.test.ts > Property 10: Permission Decision Traceability > 10.5: Events contain complete context for debugging > events include decision (allow/deny) for audit purposes
+ FAIL  tests/property/permission-decision-traceability-property-10.test.ts > Property 10: Permission Decision Traceability > 10.6: Actor information is fully captured in events > events capture complete actor information including roles
+ReferenceError: capturedEvents is not defined
+ ❯ tests/property/permission-decision-traceability-property-10.test.ts:63:5
+     61|   afterEach(() => {
+     62|     eventLogger.clearEvents();
+     63|     capturedEvents = [];
+       |     ^
+     64|   });
+     65| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/28]⎯
+
+ FAIL  tests/unit/daemon-integration.test.ts > Integration flow > should initialize with daemon-core components
+ReferenceError: mockEventBus is not defined
+ ❯ tests/unit/daemon-integration.test.ts:197:5
+    195|   beforeEach(() => {
+    196|     // Create mock EventBus
+    197|     mockEventBus = {
+       |     ^
+    198|       subscribe: vi.fn().mockReturnValue({ id: 'test-sub', topic: 'ses…
+    199|       unsubscribe: vi.fn(),
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/28]⎯
+
+error: script "test" exited with code 1

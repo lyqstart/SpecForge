@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/verify-final-platform-gates.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "verify-final-all-platform-raw-receipts",
+  "expected_writes": "All phases exact-source, source unchanged and internal raw receipt seals; no skipped phase relabelled",
+  "started_utc": "2026-11-08T12:41:30.154Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\verify-final-platform-gates.cjs",
+      "sha256": "534df6a88551b82ee230bb0b30c8883d39e396cd849ef49525f5fa2d6389b8de",
+      "size": 4133,
+      "extension": ".cjs"
+    }
+  ]
+}

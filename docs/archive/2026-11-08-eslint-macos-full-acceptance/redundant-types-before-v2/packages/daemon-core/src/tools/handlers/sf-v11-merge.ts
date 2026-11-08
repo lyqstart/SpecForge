@@ -1,0 +1,317 @@
+import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
+/**
+ * sf-v11-merge — v1.1 Merge Runner handler
+ *
+ * V6 state authority alignment:
+ * - Merge business action remains executeMerge().
+ * - Successful non-code-only merge must advance authoritative events:
+ *   approved → merge_ready → merging → merged.
+ * - No runtime/state.json or work_item.json.status direct state writes here.
+ */
+
+import { registerHandler } from '../ToolDispatcher';
+import { executeMerge } from '../lib/merge-runner-v11';
+import { readAuthoritativeState, transitionWithEvidence } from '../lib/state-coordinator-v11';
+import * as path from 'node:path';
+import * as fs from 'node:fs/promises';
+import { readWorkItemMetadata } from '../lib/work-item-metadata.js';
+import {
+  precheckUserDecisionSchema,
+  userDecisionSchemaBlockCode,
+} from '../lib/user-decision-recorder-v11.js';
+
+function workflowTypeFromPath(workflowPath: string | undefined): string {
+  switch (workflowPath) {
+    case 'requirement_change_path':
+      return 'feature_spec';
+    case 'design_change_path':
+    case 'architecture_change_path':
+    case 'task_change_path':
+    case 'code_only_fast_path':
+    case 'contract_change_path':
+      return 'feature_spec';
+    case 'spec_migration_path':
+      return 'spec_migration';
+    case 'rollback_path':
+      return 'rollback';
+    default:
+      return 'feature_spec';
+  }
+}
+
+async function readJsonIfExists(filePath: string): Promise<any | null> {
+  try {
+    return JSON.parse(await fs.readFile(filePath, 'utf-8'));
+  } catch {
+    return null;
+  }
+}
+
+export async function readWorkflowFacts(workItemDir: string): Promise<{
+  workflowPath?: string;
+  workflowType?: string;
+  evidenceOnly: boolean;
+}> {
+  const candidateManifest = await readJsonIfExists(
+    path.join(workItemDir, 'candidate_manifest.json')
+  );
+  const workItem = await readJsonIfExists(path.join(workItemDir, 'work_item.json'));
+  const trigger = await readJsonIfExists(path.join(workItemDir, 'trigger_result.json'));
+  const workflowType =
+    candidateManifest?.workflow_type ?? workItem?.workflow_type ?? trigger?.workflow_type;
+  return {
+    workflowPath:
+      candidateManifest?.workflow_path ?? workItem?.workflow_path ?? trigger?.workflow_path,
+    workflowType,
+    evidenceOnly:
+      workflowType === 'investigation' &&
+      candidateManifest?.no_project_spec_change === true &&
+      String(candidateManifest?.project_integration_effect ?? '')
+        .trim()
+        .toLowerCase() === 'evidence_only' &&
+      candidateManifest?.merge_required === false &&
+      candidateManifest?.merge_applicable === false &&
+      Array.isArray(candidateManifest?.entries) &&
+      candidateManifest.entries.length === 0,
+  };
+}
+
+async function advanceMergeState(input: {
+  deps: any;
+  context: any;
+  projectRoot: string;
+  workItemId: string;
+  workItemDir: string;
+  workflowPath?: string;
+  workflowType?: string;
+  status: string;
+  mergedCount: number;
+  evidenceOnly: boolean;
+}): Promise<any> {
+  if (input.status === 'not_applicable') {
+    const validNoMergePath =
+      input.workflowPath === 'code_only_fast_path' ||
+      (input.workflowType === 'investigation' && input.evidenceOnly);
+    if (!validNoMergePath) {
+      return {
+        attempted: false,
+        reason: 'merge_not_applicable',
+      };
+    }
+
+    const state = await readAuthoritativeState({
+      deps: input.deps,
+      projectRoot: input.projectRoot,
+      workItemId: input.workItemId,
+    });
+    const current = state.current_state;
+    const workflowTypeForNotApplicable =
+      input.workflowType || workflowTypeFromPath(input.workflowPath);
+    const sequence = ['approved', 'merge_ready', 'merging', 'merged'];
+    const currentIndex = current ? sequence.indexOf(current) : -1;
+
+    if (current === 'merged') {
+      return {
+        attempted: true,
+        advanced: false,
+        reason: 'already_merged',
+        current_state: current,
+      };
+    }
+
+    if (currentIndex < 0) {
+      return {
+        attempted: false,
+        reason: 'current_state_not_not_applicable_merge_recoverable',
+        current_state: current,
+      };
+    }
+
+    const transitionSteps: any[] = [];
+    for (let i = currentIndex; i < sequence.length - 1; i += 1) {
+      const fromState = sequence[i];
+      const toState = sequence[i + 1];
+      transitionSteps.push(
+        await transitionWithEvidence({
+          deps: input.deps,
+          context: input.context,
+          projectRoot: input.projectRoot,
+          workItemId: input.workItemId,
+          workItemDir: input.workItemDir,
+          fromState,
+          toState,
+          workflowType: workflowTypeForNotApplicable,
+          actorRole: 'merge_runner',
+          evidence:
+            input.workflowType === 'investigation'
+              ? 'merge_runner authoritative transition for Investigation evidence_only merge_report not_applicable'
+              : 'merge_runner authoritative transition for code_only_fast_path merge_report not_applicable',
+          transitionContext: {
+            source: 'sf_v11_merge',
+            merge_status: input.status,
+            merged_count: input.mergedCount,
+            merge_not_applicable: true,
+            evidence_only: input.evidenceOnly,
+          },
+        })
+      );
+    }
+
+    return {
+      attempted: true,
+      advanced: true,
+      from_state: current,
+      to_state: 'merged',
+      workflow_type: workflowTypeForNotApplicable,
+      transition_steps: transitionSteps,
+    };
+  }
+
+  if (input.status !== 'success' || input.mergedCount <= 0) {
+    return {
+      attempted: false,
+      reason: 'merge_not_successful',
+      status: input.status,
+      merged_count: input.mergedCount,
+    };
+  }
+
+  const state = await readAuthoritativeState({
+    deps: input.deps,
+    projectRoot: input.projectRoot,
+    workItemId: input.workItemId,
+  });
+
+  const current = state.current_state;
+  const workflowType = input.workflowType || workflowTypeFromPath(input.workflowPath);
+  const sequence = ['approved', 'merge_ready', 'merging', 'merged'];
+  const currentIndex = current ? sequence.indexOf(current) : -1;
+
+  if (current === 'merged') {
+    return {
+      attempted: true,
+      advanced: false,
+      reason: 'already_merged',
+      current_state: current,
+    };
+  }
+
+  if (currentIndex < 0) {
+    return {
+      attempted: false,
+      reason: 'current_state_not_merge_recoverable',
+      current_state: current,
+    };
+  }
+
+  const transitionSteps: any[] = [];
+  for (let i = currentIndex; i < sequence.length - 1; i += 1) {
+    const fromState = sequence[i];
+    const toState = sequence[i + 1];
+
+    transitionSteps.push(
+      await transitionWithEvidence({
+        deps: input.deps,
+        context: input.context,
+        projectRoot: input.projectRoot,
+        workItemId: input.workItemId,
+        workItemDir: input.workItemDir,
+        fromState,
+        toState,
+        workflowType,
+        actorRole: 'merge_runner',
+        evidence: 'merge_runner authoritative post-approval transition after merge_report success',
+        transitionContext: {
+          source: 'sf_v11_merge',
+          merge_status: input.status,
+          merged_count: input.mergedCount,
+        },
+      })
+    );
+  }
+
+  return {
+    attempted: true,
+    advanced: true,
+    from_state: current,
+    to_state: 'merged',
+    workflow_type: workflowType,
+    transition_steps: transitionSteps,
+  };
+}
+
+registerHandler('sf_v11_merge', async (args, context, deps) => {
+  const projectRoot =
+    (context?.directory as string) || (context?.worktree as string) || process.cwd();
+  const workItemId = args['work_item_id'] as string;
+
+  if (!workItemId) return { success: false, error: 'work_item_id is required' };
+
+  const workItemDir = path.join(projectRoot, SPEC_DIR_NAME, 'work-items', workItemId);
+
+  try {
+    await readWorkItemMetadata(workItemDir, workItemId);
+  } catch (error) {
+    return {
+      success: false,
+      status: 'failed',
+      error: error instanceof Error ? error.message : String(error),
+      work_item_id: workItemId,
+    };
+  }
+
+  const decisionSchemaPrecheck = await precheckUserDecisionSchema(workItemDir, workItemId);
+  const decisionSchemaBlockCode = userDecisionSchemaBlockCode(decisionSchemaPrecheck);
+  if (decisionSchemaBlockCode) {
+    return {
+      success: false,
+      status: 'failed',
+      error: `USER_DECISION_SCHEMA_BLOCKED: ${decisionSchemaBlockCode}: user_decision.json`,
+      work_item_id: workItemId,
+    };
+  }
+
+  try {
+    const result = await executeMerge({
+      projectRoot,
+      workItemId,
+      workItemDir,
+      candidateManifestPath: path.join(workItemDir, 'candidate_manifest.json'),
+      userDecisionPath: path.join(workItemDir, 'user_decision.json'),
+    });
+
+    const status = result.status ?? (result.success ? 'success' : 'failed');
+    const mergedCount = result.merged_files.filter(f => f.status === 'success').length;
+    const workflowFacts = await readWorkflowFacts(workItemDir);
+
+    const stateAutoAdvance = result.success
+      ? await advanceMergeState({
+          deps,
+          context,
+          projectRoot,
+          workItemId,
+          workItemDir,
+          workflowPath: workflowFacts.workflowPath,
+          workflowType: workflowFacts.workflowType,
+          status,
+          mergedCount,
+          evidenceOnly: workflowFacts.evidenceOnly,
+        })
+      : { attempted: false, reason: 'merge_failed' };
+
+    return {
+      success: result.success,
+      status,
+      reason: result.reason,
+      work_item_id: workItemId,
+      merged_count: mergedCount,
+      failed_count: result.merged_files.filter(f => f.status === 'failed').length,
+      spec_manifest_updated: result.spec_manifest_updated,
+      project_spec_version: result.project_spec_version,
+      errors: result.errors,
+      state_auto_advance: stateAutoAdvance,
+    };
+  } catch (err: any) {
+    return { success: false, status: 'failed', error: err.message };
+  }
+});

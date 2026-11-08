@@ -1,0 +1,231 @@
+{
+  "utc": "2026-11-08T09:25:21.440Z",
+  "policy": "No ESLint suppression. Only actual newly exposed compiler errors at explicitly malformed runtime fixtures receive a line-local expected error; real compiler canaries prove unexpected valid directives fail TS2578. Unrelated 419 preexisting semantic diagnostics are not certified as passed or hidden. Type-erased JS tree preserved except adding real schema_version to the empty-id validator fixture to isolate its stated defect.",
+  "members": [
+    {
+      "file": "packages/workflow-runtime/tests/event-filter.test.ts",
+      "before": "4ec6f914d6bfa913922c9cdaaab509c2bf8d98ef65a48cbadb8082f878bc67ef",
+      "after": "2b2405283653b598d6ecca5ae3d4d46c94c48e246e1758d5eab708a05ee32c53",
+      "proved_negative_errors": [
+        {
+          "file": "packages/workflow-runtime/tests/event-filter.test.ts",
+          "line": 86,
+          "column": 28,
+          "code": 2345,
+          "owner": "EventFilter / filter() - basic filtering / should throw error for invalid events input",
+          "message": "Argument of type 'null' is not assignable to parameter of type 'Event[]'."
+        },
+        {
+          "file": "packages/workflow-runtime/tests/event-filter.test.ts",
+          "line": 92,
+          "column": 40,
+          "code": 2345,
+          "owner": "EventFilter / filter() - basic filtering / should throw error for invalid criteria input",
+          "message": "Argument of type 'null' is not assignable to parameter of type 'FilterCriteria'."
+        },
+        {
+          "file": "packages/workflow-runtime/tests/event-filter.test.ts",
+          "line": 154,
+          "column": 55,
+          "code": 2322,
+          "owner": "EventFilter / filter() - source filtering / should return empty array for non-matching source",
+          "message": "Type '\"unknown\"' is not assignable to type '\"daemon\" | \"client\" | \"adapter\"'."
+        },
+        {
+          "file": "packages/workflow-runtime/tests/event-filter.test.ts",
+          "line": 362,
+          "column": 9,
+          "code": 2322,
+          "owner": "EventFilter / edge cases / should handle events with missing metadata",
+          "message": "Type 'undefined' is not assignable to type '{ schemaVersion: string; source: \"daemon\" | \"client\" | \"adapter\"; }'."
+        }
+      ]
+    },
+    {
+      "file": "packages/workflow-runtime/tests/event-subscription.test.ts",
+      "before": "6ba06843f6af0fd69c0ffa09ed00e96531b2dcbeaac8db614fd73ee1ca6bd054",
+      "after": "b42b7758213fbd116b4cc7e8d3c3ab716e0c886721c86c8c22dd584f55d10953",
+      "proved_negative_errors": [
+        {
+          "file": "packages/workflow-runtime/tests/event-subscription.test.ts",
+          "line": 156,
+          "column": 27,
+          "code": 2345,
+          "owner": "EventSubscriptionManager / subscribe / should throw error for invalid event type",
+          "message": "Argument of type 'null' is not assignable to parameter of type 'string'."
+        },
+        {
+          "file": "packages/workflow-runtime/tests/event-subscription.test.ts",
+          "line": 162,
+          "column": 47,
+          "code": 2345,
+          "owner": "EventSubscriptionManager / subscribe / should throw error for invalid handler",
+          "message": "Argument of type 'null' is not assignable to parameter of type 'EventHandler'."
+        },
+        {
+          "file": "packages/workflow-runtime/tests/event-subscription.test.ts",
+          "line": 166,
+          "column": 47,
+          "code": 2345,
+          "owner": "EventSubscriptionManager / subscribe / should throw error for invalid handler",
+          "message": "Argument of type 'undefined' is not assignable to parameter of type 'EventHandler'."
+        }
+      ]
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/GateRunner.test.ts",
+      "before": "ea94dde95a99f0d62e73383544268e4ce10b39f0b9a5113eb24fab1fea02e4fa",
+      "after": "103a86eaad1d9f3d2544bfab6bf397976e64d903e4801137380c78b490ec3160",
+      "proved_negative_errors": [
+        {
+          "file": "packages/workflow-runtime/tests/unit/GateRunner.test.ts",
+          "line": 382,
+          "column": 37,
+          "code": 2345,
+          "owner": "GateRunner / createGateRunner factory / should throw error for unknown gate types",
+          "message": "Argument of type '{ type: \"unknown\"; id: string; name: string; }' is not assignable to parameter of type 'GateDefinition'.   Type '{ type: \"unknown\"; id: string; name: string; }' is missing the following properties from type 'CompositeGateDefinition': schema_version, mode, failPolicy, children"
+        },
+        {
+          "file": "packages/workflow-runtime/tests/unit/GateRunner.test.ts",
+          "line": 455,
+          "column": 30,
+          "code": 2345,
+          "owner": "GateRunner / validate(context) / should return false for null context",
+          "message": "Argument of type 'null' is not assignable to parameter of type 'WorkflowContext'."
+        },
+        {
+          "file": "packages/workflow-runtime/tests/unit/GateRunner.test.ts",
+          "line": 466,
+          "column": 30,
+          "code": 2345,
+          "owner": "GateRunner / validate(context) / should return false for undefined context",
+          "message": "Argument of type 'undefined' is not assignable to parameter of type 'WorkflowContext'."
+        },
+        {
+          "file": "packages/workflow-runtime/tests/unit/GateRunner.test.ts",
+          "line": 477,
+          "column": 32,
+          "code": 2322,
+          "owner": "GateRunner / validate(context) / should return false for context missing instance",
+          "message": "Type 'null' is not assignable to type 'WorkflowInstance'."
+        },
+        {
+          "file": "packages/workflow-runtime/tests/unit/GateRunner.test.ts",
+          "line": 477,
+          "column": 48,
+          "code": 2322,
+          "owner": "GateRunner / validate(context) / should return false for context missing instance",
+          "message": "Type 'null' is not assignable to type 'WorkflowDefinition'."
+        },
+        {
+          "file": "packages/workflow-runtime/tests/unit/GateRunner.test.ts",
+          "line": 501,
+          "column": 30,
+          "code": 2345,
+          "owner": "GateRunner / validate(context) / should return false for context missing definition",
+          "message": "Argument of type '{ instance: { schema_version: string; id: string; workflowId: string; currentState: string; status: string; history: never[]; createdAt: Date; updatedAt: Date; }; definition: null; }' is not assignable to parameter of type 'WorkflowContext'.   The types of 'instance.schema_version' are incompatible between these types.     Type 'string' is not assignable to type '\"1.0\"'."
+        },
+        {
+          "file": "packages/workflow-runtime/tests/unit/GateRunner.test.ts",
+          "line": 536,
+          "column": 30,
+          "code": 2345,
+          "owner": "GateRunner / validate(context) / should return false for context with missing instance.id",
+          "message": "Argument of type '{ instance: { schema_version: string; id: string; workflowId: string; currentState: string; status: string; history: never[]; createdAt: Date; updatedAt: Date; }; definition: { schema_version: string; ... 4 more ...; artifacts: never[]; }; }' is not assignable to parameter of type 'WorkflowContext'.   The types of 'instance.schema_version' are incompatible between these types.     Type 'string' is not assignable to type '\"1.0\"'."
+        }
+      ]
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/CompositeGateSerializer.test.ts",
+      "before": "76bf1221a57f4f88298e8e0914fd7cd958223d7a66cbf8db48b6d6edb27aa9de",
+      "after": "817ba42607a61ba220a6f5932b890d5f029dccea35c5a1644257aa6e02fb26ec",
+      "proved_negative_errors": [
+        {
+          "file": "packages/workflow-runtime/tests/unit/CompositeGateSerializer.test.ts",
+          "line": 110,
+          "column": 54,
+          "code": 2345,
+          "owner": "CompositeGateSerializer / serialize / should throw error for non-composite gate",
+          "message": "Argument of type 'SimpleGateDefinition' is not assignable to parameter of type 'CompositeGateDefinition'.   Type 'SimpleGateDefinition' is missing the following properties from type 'CompositeGateDefinition': mode, failPolicy, children"
+        },
+        {
+          "file": "packages/workflow-runtime/tests/unit/CompositeGateSerializer.test.ts",
+          "line": 243,
+          "column": 56,
+          "code": 2345,
+          "owner": "CompositeGateSerializer / deserialize / should throw error for invalid serialized data",
+          "message": "Argument of type '{ schema_version: string; type: string; name: string; mode: string; failPolicy: string; children: never[]; }' is not assignable to parameter of type 'SerializedCompositeGate'.   Property 'id' is missing in type '{ schema_version: string; type: string; name: string; mode: string; failPolicy: string; children: never[]; }' but required in type 'SerializedCompositeGate'."
+        },
+        {
+          "file": "packages/workflow-runtime/tests/unit/CompositeGateSerializer.test.ts",
+          "line": 521,
+          "column": 42,
+          "code": 2345,
+          "owner": "validateCompositeGate / should report error for missing schema_version",
+          "message": "Argument of type 'Record<string, unknown>' is not assignable to parameter of type 'CompositeGateDefinition'.   Type 'Record<string, unknown>' is missing the following properties from type 'CompositeGateDefinition': schema_version, type, id, name, and 3 more."
+        },
+        {
+          "file": "packages/workflow-runtime/tests/unit/CompositeGateSerializer.test.ts",
+          "line": 550,
+          "column": 7,
+          "code": 2322,
+          "owner": "validateCompositeGate / should report error for invalid mode",
+          "message": "Type '\"invalid-mode\"' is not assignable to type 'CompositeGateMode'."
+        },
+        {
+          "file": "packages/workflow-runtime/tests/unit/CompositeGateSerializer.test.ts",
+          "line": 575,
+          "column": 7,
+          "code": 2322,
+          "owner": "validateCompositeGate / should report error for invalid failPolicy",
+          "message": "Type '\"invalid-policy\"' is not assignable to type 'FailPolicy'."
+        },
+        {
+          "file": "packages/workflow-runtime/tests/unit/CompositeGateSerializer.test.ts",
+          "line": 601,
+          "column": 9,
+          "code": 2322,
+          "owner": "validateCompositeGate / should report error for child gate without id",
+          "message": "Type '{ schema_version: \"1.0\"; type: \"simple\"; name: string; }' is not assignable to type 'GateDefinition'.   Property 'id' is missing in type '{ schema_version: \"1.0\"; type: \"simple\"; name: string; }' but required in type 'SimpleGateDefinition'."
+        }
+      ]
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/BasicGates.test.ts",
+      "before": "707bcbb6831b618a767cb3d92cfc64c6c7db96194e0affe29cf5f7964bb01b43",
+      "after": "e0740ccc5dc85ee0ddce2c4894c31744c21bf7bc3a3ed079419d39dd598287af",
+      "proved_negative_errors": [
+        {
+          "file": "packages/workflow-runtime/tests/unit/BasicGates.test.ts",
+          "line": 302,
+          "column": 34,
+          "code": 2345,
+          "owner": "createBasicGate / should throw for unknown gate type",
+          "message": "Argument of type '\"unknown\"' is not assignable to parameter of type '\"requirements\" | \"design\" | \"verification\" | \"tasks\"'."
+        }
+      ]
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/WorkflowDefinitionLoader.test.ts",
+      "before": "31608718d183e9b062a295c2b553893856da88d2f21365b8e01e26870acdca90",
+      "after": "570125e7c395c06ad2950515cb47962791ce793cd5b27aa0c12c13fd65293541",
+      "proved_negative_errors": [
+        {
+          "file": "packages/workflow-runtime/tests/unit/WorkflowDefinitionLoader.test.ts",
+          "line": 327,
+          "column": 38,
+          "code": 2345,
+          "owner": "WorkflowDefinitionLoader / validate / should detect missing stateMachine",
+          "message": "Argument of type '{ stateMachine: undefined; schema_version: WorkflowDefinitionSchemaVersion; id: string; displayName: string; intent: string; artifacts: ArtifactDefinition[]; }' is not assignable to parameter of type 'WorkflowDefinition'.   Types of property 'stateMachine' are incompatible.     Type 'undefined' is not assignable to type 'StateMachine'."
+        }
+      ]
+    },
+    {
+      "file": "packages/workflow-runtime/tests/property/framework-verification.test.ts",
+      "before": "a23e73c2e6100fb9734f3edaffefe81efcd2aa2225641ba0506b18614ae1af50",
+      "after": "6fad85af5a39f541a610d851b99316bb353b6e726c810f72f647c1378d2035ca",
+      "proved_negative_errors": []
+    }
+  ],
+  "required": "All affected runtime negative suites; full lint; concrete positive fixtures and production compiler; no new semantic diagnostics."
+}

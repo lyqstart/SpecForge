@@ -1,0 +1,20 @@
+{
+  "owner": "observability",
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "test",
+    "--",
+    "--maxWorkers=1",
+    "--minWorkers=1",
+    "--reporter=json",
+    "--outputFile=D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\structured-qualification-original\\observability.vitest.json"
+  ],
+  "cwd": "D:\\code\\SpecForge\\.lint-original-a01\\packages\\observability",
+  "context_sha256": "c4bb09e6a79f94db49b9d8697e68049fbc348d707397b848627f5525193b8acd",
+  "started_utc": "2026-11-08T12:09:37.418Z",
+  "finished_utc": "2026-11-08T12:09:40.020Z",
+  "exit": 0,
+  "stdout_sha256": "0d6b553ae61513aa0655c3ac9edbef4aaed3a9adfcbd5af0d7518e2763b2c056",
+  "stderr_sha256": "0c5eb52bf28a4a5bb212794233f85234af22697d71c6e2a60f79542b3eefc8cd"
+}

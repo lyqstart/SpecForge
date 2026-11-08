@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/review-consumer-delta-final.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "final057-document-and-message-delta",
+  "expected_writes": "Final actual candidate byte/source identities,95 owner-reviewed expressions and576 document applicability bound",
+  "started_utc": "2026-11-08T12:36:06.664Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\review-consumer-delta-final.cjs",
+      "sha256": "817d2458fb5174ec36b6df23b35f726507a72acd05ce12f60750f1ce5d00ac64",
+      "size": 3840,
+      "extension": ".cjs"
+    }
+  ]
+}

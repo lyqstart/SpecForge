@@ -1,0 +1,133 @@
+{
+  "utc": "2026-11-08T07:18:22.924Z",
+  "fixture": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\local-assets\\review",
+  "members": [
+    {
+      "file": "package.json",
+      "before": "e527c80ccb699e4dc5952895205c8b3f12e0817714c278ff10e1ff629e8ab38b",
+      "after": "66cbc78661b4564206a821c56853bdbb0935e9540f7dda2e5852d45d7267dce0"
+    },
+    {
+      "file": "packages/types/package.json",
+      "before": "8febc0d021f0cd3a6c49ba0fbdb51eb4f213e3281ce1da55bb6fce21f4b005ca",
+      "after": "2ccb38494beff5585ae743eede4b6c3d996663fcc346165c215cb1f4df6f3928"
+    },
+    {
+      "file": "packages/version-unification/package.json",
+      "before": "6704aa9349193174f8879347b43e511ac97e3ed6313114155559ad1e51136c68",
+      "after": "b688deedfe4d773a6f6ae1ccf4fdb0b3398524f5b1a274e10f7570e40a0214da"
+    },
+    {
+      "file": "packages/configuration/package.json",
+      "before": "d151eee57274fa61944e06b6dd267f32bcbb4824f6dc6604f12d89f223869e10",
+      "after": "ad521fe1bf065a5e7738fa0559f57f660a6e4bf7ea1a9f8535208d463aa217df"
+    },
+    {
+      "file": "packages/service-management/package.json",
+      "before": "65bcefbfd3c71cc1402122abe4a3899a9ec4039a40f01f2eede34de2d8d6f519",
+      "after": "43de2eef9eab0f512e83e10b30112ba531d05fb46aa0ef8f5882d34ace3d0c96"
+    },
+    {
+      "file": "packages/host-profile/package.json",
+      "before": "76e0a93750bde9fdb89bb946960686490905b5abd82427272903fb8e12f3d1a0",
+      "after": "ec75456adbbdb81a379cc347e0f797e049ffc05230d91f9147a2f03e6ff0d33b"
+    },
+    {
+      "file": "packages/observability/package.json",
+      "before": "4e95323e0c50eeea37b4505b4034f8a413dc4457700be04007e0e46cf855eba9",
+      "after": "e1fa67eb8ae5b95ab9b27245e2051cfc3924189a0d56eb9c8a797c8023f6496b"
+    },
+    {
+      "file": "packages/permission-engine/package.json",
+      "before": "828be804e88daf5b8b89bad7aed76ab92c53692f33604b93cbca8572611518eb",
+      "after": "25fe899255d6900bcb573c53dd71d5cb7ecb89958f335ff850c8d284df1e39d5"
+    },
+    {
+      "file": "packages/opencode-adapter/package.json",
+      "before": "353b66791aad0a72e0ece55961e08c754b630412f3efdcd799219b7efb75b696",
+      "after": "9248554b66933a5577841f0d9e5a8c6c9b563390aa281e846058e49cb77a9aa4"
+    },
+    {
+      "file": "packages/scope-gate/package.json",
+      "before": "47299cac75429123a8adde4d3e16bb01c1d66921d2dd3a8a2e01921a4d61a4c7",
+      "after": "5a8044eaeb2365578f9799ad9af034e94a083e50976e9d94be32a8a45fa28f51"
+    },
+    {
+      "file": "packages/workflow-runtime/package.json",
+      "before": "bbd0911129fc2f73da64158d8c1be6f72f44093aebd52514c5e7690f9075196d",
+      "after": "1be99b2ff78b3737d0a8465598f8c31d888e6e54674acc95b2cda2881c4ca5cf"
+    },
+    {
+      "file": "packages/cli/package.json",
+      "before": "94b8d755b648dc7ef0678560f71fb534d345095f5a2e6bc5a3716cc8ca16a28f",
+      "after": "42969bfbb10766f1211124aefb81ae48bc8716c113280d0e149feb5e764c4e80"
+    },
+    {
+      "file": "packages/daemon-core/package.json",
+      "before": "b51b0e8a2f9f446abe35788a327e326fa8fa9cc48c6203e9d83085c2a4777542",
+      "after": "18af912e8045178a2dcb1175fc557ff2ee9770ef05dfd730df45174f6d78e176"
+    },
+    {
+      "file": "eslint.config.mjs",
+      "before": "ABSENT",
+      "after": "22467b4a7359b0e353432da22a946ce9c89e289f52d36c96820a1043a9fb8780"
+    },
+    {
+      "file": "scripts/lint-package.mjs",
+      "before": "ABSENT",
+      "after": "10cedbdbeeb50510f2f1ca00ac1167d69a5a81c63f932f3c83096548cd05887c"
+    },
+    {
+      "file": "scripts/lib/lint-workspace-policy.mjs",
+      "before": "ABSENT",
+      "after": "a34983cc959aa3eae3276b2b7f49e28a0dd4cd8924b2b0e4d6fd4ac3842ed025"
+    },
+    {
+      "file": "packages/observability/tsconfig.eslint.json",
+      "before": "ABSENT",
+      "after": "234ce27ca2bf46e0cbf5837b623b35cffe5bdc850c06a7083882063a6aa7e80b"
+    },
+    {
+      "file": "packages/permission-engine/tsconfig.eslint.json",
+      "before": "ABSENT",
+      "after": "234ce27ca2bf46e0cbf5837b623b35cffe5bdc850c06a7083882063a6aa7e80b"
+    },
+    {
+      "file": "packages/scope-gate/tsconfig.eslint.json",
+      "before": "ABSENT",
+      "after": "234ce27ca2bf46e0cbf5837b623b35cffe5bdc850c06a7083882063a6aa7e80b"
+    },
+    {
+      "file": "packages/workflow-runtime/tsconfig.eslint.json",
+      "before": "ABSENT",
+      "after": "234ce27ca2bf46e0cbf5837b623b35cffe5bdc850c06a7083882063a6aa7e80b"
+    },
+    {
+      "file": "packages/opencode-adapter/tsconfig.eslint.json",
+      "before": "ABSENT",
+      "after": "234ce27ca2bf46e0cbf5837b623b35cffe5bdc850c06a7083882063a6aa7e80b"
+    },
+    {
+      "file": "packages/daemon-core/tsconfig.eslint.json",
+      "before": "ABSENT",
+      "after": "234ce27ca2bf46e0cbf5837b623b35cffe5bdc850c06a7083882063a6aa7e80b"
+    },
+    {
+      "file": "scripts/lint-workspace.ts",
+      "before": "7f50df5a3b5d56e87e187d771e03c4c10c12dd60fd10bb5b1b0e27fae84066d1",
+      "after": "52060c40a85a2465ff885ea987b980c3c0595116b10787f69ecd1a779c0fbb64"
+    }
+  ],
+  "pins": {
+    "eslint": "9.39.4",
+    "@typescript-eslint/eslint-plugin": "8.59.3",
+    "@typescript-eslint/parser": "8.59.3",
+    "eslint-config-prettier": "10.1.8",
+    "eslint-plugin-import": "2.32.0",
+    "prettier": "3.8.3",
+    "eslint-plugin-prettier": "5.5.5"
+  },
+  "rule_composition": "Original per-package profiles remain exact rule sources; FlatCompat loaded by rootESLint9. JS-only no-undef replaced by formal TS build, core unused replaced TSunused. No semantic package rule is downgraded.",
+  "new_current_profiles": "Missing CLI/service/version/types/host use shared TS recommended with explicit-any policy matching current core; original packages retain original exceptions.",
+  "scope": "Exact old src/test directory membership and declaration exceptions retained, types/host gain src. warnings now fail too."
+}

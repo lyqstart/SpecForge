@@ -1,0 +1,84 @@
+
+ RUN  v3.2.4 D:/code/SpecForge/.lint-review-a01/packages/daemon-core
+
+ ✓ tests/design-governance-orchestrator-closure.test.ts (17 tests) 747ms
+ ✓ tests/unit/knowledge-store-schema.test.ts (20 tests) 148ms
+ ✓ tests/unit/current-project-layout-boundary.test.ts (8 tests) 142ms
+ ✓ tests/unit/err155-159-contract-governance-recovery.test.ts (10 tests) 90ms
+ ✓ tests/unit/candidate-gate-historical-attempt-reconcile.test.ts (6 tests) 72ms
+ ❯ tests/v6-authority-consumer-alignment.test.ts (3 tests | 1 failed) 69ms
+   ✓ authority recovery consumer alignment > binds current consumers to the established product authority and project status 2ms
+   × authority recovery consumer alignment > projects the current Observability principle into both active Doc Lint implementations 53ms
+     → expected false to be true // Object.is equality
+   ✓ authority recovery consumer alignment > accepts the bounded design fixture through the Daemon Doc Lint entry 12ms
+ ✓ src/tools/lib/architecture-governance-v7-regression.test.ts (8 tests) 88ms
+ ✓ tests/v11-final-governance-regression.test.ts (14 tests) 107ms
+ ✓ tests/unit/candidate-runtime-truth-contract.test.ts (4 tests) 56ms
+stdout | tests/unit/optional-file-lock-owner.test.ts > optional native file lock ownership > uses exclusive nonblocking acquisition, matching unlock and the filesystem receiver
+Cleaning up handshake file and releasing lock...
+Handshake cleanup skipped (not owned by this instance): C:\Users\lyq\AppData\Local\Temp\sf-optional-lock-zh7whd\handshake.json
+
+stdout | tests/unit/optional-file-lock-owner.test.ts > optional native file lock ownership > uses exclusive nonblocking acquisition, matching unlock and the filesystem receiver
+Cleanup completed
+
+stdout | tests/unit/optional-file-lock-owner.test.ts > optional native file lock ownership > uses exclusive nonblocking acquisition, matching unlock and the filesystem receiver
+Cleaning up handshake file and releasing lock...
+Handshake cleanup skipped (not owned by this instance): C:\Users\lyq\.config\opencode\sf-user\runtime\handshake.json
+
+stdout | tests/unit/optional-file-lock-owner.test.ts > optional native file lock ownership > uses exclusive nonblocking acquisition, matching unlock and the filesystem receiver
+Cleanup completed
+
+stdout | tests/unit/optional-file-lock-owner.test.ts > optional native file lock ownership > preserves PID fallback and rejects an already live PID when flock is absent
+Cleaning up handshake file and releasing lock...
+Handshake cleanup skipped (not owned by this instance): C:\Users\lyq\.config\opencode\sf-user\runtime\handshake.json
+
+stdout | tests/unit/optional-file-lock-owner.test.ts > optional native file lock ownership > preserves PID fallback and rejects an already live PID when flock is absent
+Cleanup completed
+
+stdout | tests/unit/optional-file-lock-owner.test.ts > optional native file lock ownership > fails closed on incomplete native flags and closes the owned descriptor
+Cleaning up handshake file and releasing lock...
+Handshake cleanup skipped (not owned by this instance): C:\Users\lyq\.config\opencode\sf-user\runtime\handshake.json
+
+stdout | tests/unit/optional-file-lock-owner.test.ts > optional native file lock ownership > fails closed on incomplete native flags and closes the owned descriptor
+Cleanup completed
+
+stdout | tests/unit/optional-file-lock-owner.test.ts > optional native file lock ownership > closes the descriptor after an actual lock operation rejects
+Cleaning up handshake file and releasing lock...
+Handshake cleanup skipped (not owned by this instance): C:\Users\lyq\.config\opencode\sf-user\runtime\handshake.json
+
+stdout | tests/unit/optional-file-lock-owner.test.ts > optional native file lock ownership > closes the descriptor after an actual lock operation rejects
+Cleanup completed
+
+stdout | tests/unit/optional-file-lock-owner.test.ts > optional native file lock ownership > closes the descriptor even if native unlock throws
+Cleaning up handshake file and releasing lock...
+Handshake cleanup skipped (not owned by this instance): C:\Users\lyq\AppData\Local\Temp\sf-optional-lock-aznkvI\handshake.json
+
+stdout | tests/unit/optional-file-lock-owner.test.ts > optional native file lock ownership > closes the descriptor even if native unlock throws
+Cleanup completed
+
+stdout | tests/unit/optional-file-lock-owner.test.ts > optional native file lock ownership > closes the descriptor even if native unlock throws
+Cleaning up handshake file and releasing lock...
+Handshake cleanup skipped (not owned by this instance): C:\Users\lyq\.config\opencode\sf-user\runtime\handshake.json
+
+stdout | tests/unit/optional-file-lock-owner.test.ts > optional native file lock ownership > closes the descriptor even if native unlock throws
+Cleanup completed
+
+stdout | tests/unit/optional-file-lock-owner.test.ts > optional native file lock ownership > releases the lock even if owned handshake deletion fails
+Cleaning up handshake file and releasing lock...
+
+stdout | tests/unit/optional-file-lock-owner.test.ts > optional native file lock ownership > releases the lock even if owned handshake deletion fails
+Cleaning up handshake file and releasing lock...
+Handshake cleanup skipped (not owned by this instance): C:\Users\lyq\.config\opencode\sf-user\runtime\handshake.json
+
+stdout | tests/unit/optional-file-lock-owner.test.ts > optional native file lock ownership > releases the lock even if owned handshake deletion fails
+Cleanup completed
+
+ ✓ tests/unit/optional-file-lock-owner.test.ts (6 tests) 44ms
+ ✓ tests/unit/input-boundary-contracts.test.ts (14 tests) 9ms
+ ✓ tests/unit/source-structure-contract.test.ts (3 tests) 11ms
+
+ Test Files  1 failed | 11 passed (12)
+      Tests  1 failed | 112 passed (113)
+   Start at  18:57:25
+   Duration  12.90s (transform 1.99s, setup 0ms, collect 7.15s, tests 1.58s, environment 2ms, prepare 1.61s)
+

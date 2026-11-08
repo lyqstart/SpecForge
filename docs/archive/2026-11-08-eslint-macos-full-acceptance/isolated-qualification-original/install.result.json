@@ -1,0 +1,19 @@
+{
+  "leg": "original",
+  "phase": "install",
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "install",
+    "--frozen-lockfile"
+  ],
+  "cwd": "D:\\code\\SpecForge\\.lint-original-a01",
+  "started_utc": "2026-11-08T11:06:03.123Z",
+  "context_sha256": "9e075f7f0f0805ce7454a2f4b095607fbcd93f48b17fb244b7a5033ed70023b0",
+  "expected_writes": "Owned isolated dependencies/build/test/install roots and sealed reports; no real business project or user configuration writes",
+  "finished_utc": "2026-11-08T11:06:21.732Z",
+  "inner_exit_code": 0,
+  "signal": null,
+  "spawn_error": null,
+  "stdout_sha256": "835603c723586dd1e3d8969451e8f39896d7a7137f5e57dfcbde6e2adf16ab5d",
+  "stderr_sha256": "12ac0ed3ce86418b230218850c49b143bcef77b4898581e26d26c4912af8d33f"
+}

@@ -1,0 +1,80 @@
+{
+  "utc": "2026-11-08T09:50:47.266Z",
+  "members": [
+    {
+      "file": "packages/workflow-runtime/tests/performance/workflow-performance.test.ts",
+      "before": "aa678608beb1c5b535c31be31b4937e48892f85b31e8cd3d4b7138e2289aaf1c",
+      "after": "2f4640efee15455b3ca03d2e9ea2385a31a747a8a79a2a97211203270fa9b4aa"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/property/workflow-property-6.event-ordering.test.ts",
+      "before": "4c1a100e0cbf256424505fc14451521ddd0b2a4bfe3e056e487852ca6a4bde9d",
+      "after": "ef62e4187f89e16a14d099da5c3bcdc4510f3088d9e6bad65a23c8bb100f61a0"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/GateRunner.test.ts",
+      "before": "103a86eaad1d9f3d2544bfab6bf397976e64d903e4801137380c78b490ec3160",
+      "after": "e0410f2feef862e0b0a83456a60f6aa8a2264917f5d3cad4ed35ee2aebed6ec0"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/GateRunnerErrorHandling.test.ts",
+      "before": "ddbcb779548b76ba1611e2c6f610de772995dbffbcc64ff7b4105183161c2e77",
+      "after": "b680ac3bd7374318db7caf9cf8fdcc5d504f9df9261d56f8e5bdeebe25b8397f"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/WorkflowEngine.test.ts",
+      "before": "ff71b753a48be06111b17b00441db4d680f2407261ce17c90287f612e1cb3e46",
+      "after": "7d88e53e87d5894251389443b54e20e376b83099666c3c7c03a341ccc036e110"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/property/error-handling-property.test.ts",
+      "before": "67146380c3fccad941fa71729ef3ae79a902c096d5bd05f3fc69b5f974f2ab64",
+      "after": "844ccf9fef9b469dd4b82785afa48267c8436d8005150c0f04e7c6992254161b"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/CompositeGateSerializer.test.ts",
+      "before": "59a52e69339cfaba7df397d2874331a6e67434b5a06f5267123ccf15d17247f4",
+      "after": "a569fb269f72caba3c4929a67a27c66cb3c5d98565dcb01af13d97604b7b083f"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/WorkflowInstance.test.ts",
+      "before": "f74e871d195ad50878e4df5b722aa0c8e6fc946cecff129853949321a5d02434",
+      "after": "077532d4c43e26fca59fc52c3970843b73f7b22c3a47a125bed3dea89184cd04"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/persistence-owner-boundary.test.ts",
+      "before": "47160b96e12eda3ccb7edaf8e0083ea392e501b73ddadda04d889f811c4b0224",
+      "after": "8dd4d89a3e6b305dfc2e920af406e42b56cf5b58619ee30d7dc5c24693da3cbd"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/retry.test.ts",
+      "before": "e867dcaf76a7214b1a9004885b6e556e98e0ce8192f87cc1fc53ea769d5bd093",
+      "after": "119649abef460f881201f7a26cca9c0d7f2382a043079a5ccdca95063a065e14"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/property/composite-gate-property-4.parallel-execution.test.ts",
+      "before": "52f3b5b7b6a5ff52d14f4b231049c56a6b2a3df63c9adb129b7c42c1ac6ae11c",
+      "after": "e1c753984194b8e712f77eb3c91e7430ba55266f78e5a89b1d6cee685e41f558"
+    }
+  ],
+  "policy": "Actual onEvent returns void and offEvent consumes the handler; fix two no-op cleanup tests and assert no notifications after removal. Await real rejection assertion. JSON remains unknown until real object parsing/structural matchers. Retry mock signature reflects its actual Promise<string>. External non-Error failure fixtures remain unknown; existing promiseFromSync owner preserves actual primitive rejection and a stronger assertion checks its reason. Installed throw/reject policies unchanged; no ESLint suppression or lost negative case.",
+  "installed_rules": {
+    "only_throw_error": [
+      {
+        "allow": [],
+        "allowRethrowing": true,
+        "allowThrowingAny": true,
+        "allowThrowingUnknown": true
+      }
+    ],
+    "prefer_promise_reject_errors": [
+      {
+        "allow": [],
+        "allowEmptyReject": false,
+        "allowThrowingAny": false,
+        "allowThrowingUnknown": false
+      }
+    ]
+  },
+  "required": "All affected actual tests including performance, error property, rejection and package export cases; compiler and full lint. Existing unrelated test semantic diagnostics remain explicitly unqualified."
+}

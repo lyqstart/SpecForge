@@ -1,0 +1,1 @@
+warn: Slow filesystem detected. If C:\Users\lyq\.bun\install\cache is a network drive, consider setting $BUN_INSTALL_CACHE_DIR to a local folder.

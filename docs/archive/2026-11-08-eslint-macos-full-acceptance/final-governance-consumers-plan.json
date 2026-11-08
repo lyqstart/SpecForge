@@ -1,0 +1,33 @@
+{
+  "utc": "2026-11-08T10:28:21.039Z",
+  "collector_sha256": "2982bb1b55cb368df0961671246a58e4a7b07083f7070cce7ff7d9d13dc8ed87",
+  "members": [
+    {
+      "file": "packages/daemon-core/src/tools/lib/governance-invariants-v11.ts",
+      "before": "4ea989a7a204287ef78bd7161f41537cdb21615d30873824ce886e0b174c1935",
+      "after": "654e2de58b1a3ba528d36eee0e5ba3cf2f60ecad4cfc793abc1b47aec52fa5aa"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/git-governance-stage2.ts",
+      "before": "2d8dfb9d327e123400a377b469845cd5a86cfee70f4b7c5d0054bc1a0b76f938",
+      "after": "770e4f117ccaa5079c8eadfc1c913a66f10c6c03115026a076c121bb9978b4d0"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/git-governance-stage3.ts",
+      "before": "0a326334e72d5b9fe4ac0df02710f4e94012397cf95d41b665a8575dd5857fb1",
+      "after": "bac9c77d11f095aa222c36f7b78f02a35d2141ff4dd693131dafcf9109c5c89d"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/gate-runner-v11.ts",
+      "before": "ce57fde082d792f33bd8d95ba41fd875d3e08b60616e37aec0b23bbaf7005247",
+      "after": "4b44a3288fc76b78f7c7cbdd5d1b72aa2487e254dc5abdd78a2409913fb8414e"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/filesystem-diff.ts",
+      "before": "df8d70f92e0519831f8ba96921cc54f97aa76bb28bd3d3c86824d87efe27db8d",
+      "after": "c2a299fb2275b5d1b24ab76776e7d428e5f34c71b313786bfd0d5048d7b647ee"
+    }
+  ],
+  "policy": "Typed actual audit producer; validate persisted ignore decisions and content-hash-bound reconciliation/preflight paths. Reject malformed candidate paths and invalid expiry rather than grant acceptance. Honest comparable entry type only covers checked consumed fields.",
+  "required": "Full build/lint and actual governance/fail-closed regressions"
+}

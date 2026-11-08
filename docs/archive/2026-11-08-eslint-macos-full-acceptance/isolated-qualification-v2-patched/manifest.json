@@ -1,0 +1,121 @@
+{
+  "utc": "2026-11-08T11:43:10.704Z",
+  "members": [
+    {
+      "name": "build.command.json",
+      "sha256": "159534cb9a371e3f8baba120064f128c07779893ad858d75d61e75c163f4a3db"
+    },
+    {
+      "name": "build.result.json",
+      "sha256": "822972d1977f3074584c05486896011cd74f2d36437aae1df3797fd655f085a1"
+    },
+    {
+      "name": "build.stderr.raw",
+      "sha256": "42580806f72966c011a56229da3d32784afbef0b7cde7cfe7d94dfef7da3aee9"
+    },
+    {
+      "name": "build.stdout.raw",
+      "sha256": "cc2257e85f5141157537d0ab0f40b2dabb731fe1f2e053956123a8d87309f3c0"
+    },
+    {
+      "name": "clean.command.json",
+      "sha256": "6994dd6a83be0e176cc8abcfbc7612d59839fce7a386fef2324fe99d730cf487"
+    },
+    {
+      "name": "clean.result.json",
+      "sha256": "f71022461ea00ae4c4d428d9128109c7ff3628232b1495aaa882590d1e4ea196"
+    },
+    {
+      "name": "clean.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "clean.stdout.raw",
+      "sha256": "a4b824504677cd6ecc2e136e37541dd4c69a779c55f255511133f1eb4c9722e0"
+    },
+    {
+      "name": "context.json",
+      "sha256": "b0b240ac313596a8448663e4ec7fc04cdc4522a8e049691b05b1007bdd7dfc0f"
+    },
+    {
+      "name": "driver-source.cjs",
+      "sha256": "d4981800b706e27ba392be0e7e3855f9254ca673cc476c7a8a99298c85827955"
+    },
+    {
+      "name": "install.command.json",
+      "sha256": "df504e7a5d310eefb7c0ca152fa6848292ca931acc47e52af78404dbdafe24e5"
+    },
+    {
+      "name": "install.result.json",
+      "sha256": "f69b3ad56fbb1a4cfa99cf579ff69bfc3a2b7448742712e4041e3891e352df9a"
+    },
+    {
+      "name": "install.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "install.stdout.raw",
+      "sha256": "604ab7572e03caed1164ba291ffde4e5df42064f8c8bd1118f599c47543d49b0"
+    },
+    {
+      "name": "installer.command.json",
+      "sha256": "e545acf9ecb38ada85afa4b059d1b15cc43e95757ee5ead7067d11b999537334"
+    },
+    {
+      "name": "installer.result.json",
+      "sha256": "d64980da8d5fb2cb718efe3d20be7926216b36b06f08026ca7e2d3ce55568766"
+    },
+    {
+      "name": "installer.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "installer.stdout.raw",
+      "sha256": "01e818135925c7092e4ab644949ec84a5fb0cb573a24559ea5bd416d0e7fbb68"
+    },
+    {
+      "name": "result.json",
+      "sha256": "0bc88de9548569ac2a539467e94b307a6c2755ff6865ff3e44d245e042c27567"
+    },
+    {
+      "name": "root.command.json",
+      "sha256": "b997f3830016e59136b1b182437bd1ac476bb7d867c1e140786b18195347f0a7"
+    },
+    {
+      "name": "root.result.json",
+      "sha256": "6a32a092f09fec2462b6632067b911e1baad379c52856cd257747f0631afe521"
+    },
+    {
+      "name": "root.stderr.raw",
+      "sha256": "54f34b9fbaab56a061650ce928db59448135ee8b295e9e4e467e0770c8a63dd7"
+    },
+    {
+      "name": "root.stdout.raw",
+      "sha256": "b3879383ba526df6919ee06369e3e4e8a25cdf9426ad470def771578ba69b953"
+    },
+    {
+      "name": "status-after.nul",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "status-before.nul",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "workspace.command.json",
+      "sha256": "819a5bd59e5282f47481c6a03d8201def945e927b7fcd79d3ff141cecac2f31e"
+    },
+    {
+      "name": "workspace.result.json",
+      "sha256": "2c6554bd9a4b7d3377046cfecc1908db731e2e39e68fab0012fc8d650310e3ea"
+    },
+    {
+      "name": "workspace.stderr.raw",
+      "sha256": "d714a00bef2450e58889c4c277a4ef36214821ff25c8d6a3971386cada3bcc7f"
+    },
+    {
+      "name": "workspace.stdout.raw",
+      "sha256": "0d8d2e2c7a25e5cecc6c3cddde3c9752c424806a2c5c1cc2b55f5f2953da6c32"
+    }
+  ]
+}

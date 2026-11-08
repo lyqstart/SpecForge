@@ -1,0 +1,6 @@
+{"leg":"original","phase":"install","status":"STARTED","utc":"2026-11-08T11:06:03.123Z"}
+{"leg":"original","phase":"install","status":"FINISHED","exit":0,"utc":"2026-11-08T11:06:21.732Z"}
+{"leg":"original","phase":"build","status":"STARTED","utc":"2026-11-08T11:06:21.739Z"}
+{"leg":"original","phase":"build","status":"FINISHED","exit":0,"utc":"2026-11-08T11:07:49.785Z"}
+{"leg":"original","phase":"workspace","status":"STARTED","utc":"2026-11-08T11:07:49.790Z"}
+{"leg":"original","phase":"workspace","status":"FINISHED","exit":1,"utc":"2026-11-08T11:20:40.912Z"}

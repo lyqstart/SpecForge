@@ -1,0 +1,18 @@
+{
+  "utc": "2026-11-08T08:50:06.170Z",
+  "input_sha256": "02ada39fb3d8f002462014b2d578ffde63c517bd7a35eaa0e44e4736da9c0c08",
+  "reason": "Actual whole-build 0069: exactOptionalPropertyTypes rejects explicitly undefined option keys, noImplicitReturns requires explicit no-publisher result. Supported options and publisher behavior stay intact.",
+  "required_verification": "Whole12 compile; actual async publisher and retry/diagnostic regressions; whole Workflow suite",
+  "members": [
+    {
+      "file": "packages/workflow-runtime/src/GateRunner.ts",
+      "before": "07a54444e6c2095b407fc93d5bcae48d8cde9c0c99accfc02d849ffc21de86d6",
+      "after": "4631024df237325c2b3fcfa3812ae0da53f03266255f693bb548a3b73a640335"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/production-lint-boundaries.test.ts",
+      "before": "ABSENT",
+      "after": "d0e48b6e6a015fb94d173d86b931e1fc72bc79d8972e5302a89b5099e53ce4e1"
+    }
+  ]
+}

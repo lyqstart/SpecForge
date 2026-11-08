@@ -1,0 +1,15 @@
+{
+  "command": "daemon",
+  "subcommand": "status",
+  "description": "Check daemon status",
+  "examples": [
+    {
+      "description": "Check daemon health",
+      "command": "specforge daemon status"
+    },
+    {
+      "description": "Check daemon health in JSON format",
+      "command": "specforge daemon status --json"
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/align-signal-lock-eol.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "align-signal-exact-frozen-lock-eol",
+  "expected_writes": "Private explicit lock LF and current archive delivery attrs; identical logical dependency content and raw3f lock",
+  "started_utc": "2026-11-08T12:51:29.919Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\align-signal-lock-eol.cjs",
+      "sha256": "46ccd5c591ff6dd740c256587d717ae53127ee6e4a62052def121eac8beee53b",
+      "size": 2002,
+      "extension": ".cjs"
+    }
+  ]
+}

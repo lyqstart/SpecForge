@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/prepare-platform-fixture-repair.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "repair-confirmed-platform-test-environment-and-bundler",
+  "expected_writes": "independent platform worktree developer-test owners and fixture only",
+  "started_utc": "2026-11-08T11:47:10.178Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\prepare-platform-fixture-repair.cjs",
+      "sha256": "1ad3fb7262029fb537e54c6baa719d6432d29ac5d97845e9adf37a4e65fa2423",
+      "size": 7487,
+      "extension": ".cjs"
+    }
+  ]
+}

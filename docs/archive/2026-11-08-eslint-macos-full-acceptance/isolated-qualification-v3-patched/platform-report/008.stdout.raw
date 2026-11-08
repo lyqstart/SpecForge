@@ -1,0 +1,11 @@
+{
+  "command": "daemon",
+  "subcommand": "stop",
+  "description": "Stop the daemon",
+  "examples": [
+    {
+      "description": "Stop the daemon",
+      "command": "specforge daemon stop"
+    }
+  ]
+}

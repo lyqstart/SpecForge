@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/normalize-changed-source-trivia.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "normalize-reviewed-source-trivia",
+  "expected_writes": "private LF and trailing trivia only with syntax/value equality proofs",
+  "started_utc": "2026-11-08T10:49:52.858Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\normalize-changed-source-trivia.cjs",
+      "sha256": "97aabc88db24ca0445fcad51478b8198a5f2b822206d7a82db3b31cdcf596981",
+      "size": 4129,
+      "extension": ".cjs"
+    }
+  ]
+}

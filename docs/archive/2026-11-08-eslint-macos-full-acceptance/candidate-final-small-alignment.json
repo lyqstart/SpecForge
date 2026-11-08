@@ -1,0 +1,9 @@
+{
+  "id": "candidate-final-small-alignment",
+  "reason": "Keep new scope test helper in the existing parent import group; record the actual Node executable identity in every CI context.",
+  "required_verification": "Complete lint, build and actual platform CI",
+  "files": [
+    {"file":"packages/scope-gate/tests/current-permission-write-guard-boundary.test.ts","changes":[{"from":"import { codeContains } from '../../../tests/helpers/source-structure';\n","to":""},{"from":"import { describe, expect, it } from 'vitest';\n","to":"import { describe, expect, it } from 'vitest';\n\nimport { codeContains } from '../../../tests/helpers/source-structure';\n"}]},
+    {"file":"scripts/run-ci-regression.mjs","changes":[{"from":"node: process.version, bun:","to":"node: process.version, node_path: process.execPath, node_sha256: hash(fs.readFileSync(process.execPath)), bun:"}]}
+  ]
+}

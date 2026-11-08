@@ -1,0 +1,1 @@
+$ vitest run tests/current-permission-write-guard-boundary.test.ts tests/current-crossplatform-ci-contract.test.ts tests/eslint-runtime-binding-contract.test.ts "--maxWorkers=1" "--minWorkers=1"

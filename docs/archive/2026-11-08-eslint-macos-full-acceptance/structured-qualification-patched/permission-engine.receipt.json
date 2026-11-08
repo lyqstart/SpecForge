@@ -1,0 +1,20 @@
+{
+  "owner": "permission-engine",
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "test",
+    "--",
+    "--maxWorkers=1",
+    "--minWorkers=1",
+    "--reporter=json",
+    "--outputFile=D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\structured-qualification-patched\\permission-engine.vitest.json"
+  ],
+  "cwd": "D:\\code\\SpecForge\\.lint-shortpath-a01\\packages\\permission-engine",
+  "context_sha256": "6718af96ad6d72872663e3feadf61af12de0cdc94afdd0ba7e1b02a71ab1908b",
+  "started_utc": "2026-11-08T12:36:51.144Z",
+  "finished_utc": "2026-11-08T12:37:11.101Z",
+  "exit": 0,
+  "stdout_sha256": "e847cb1a8c3b11d6b057ed94a9ff6fe2042b6e4aea46c9917f76afa5a5fcf1cc",
+  "stderr_sha256": "52577cc2444452b932156b329d055c79239d3640a1184e0c2bc7decaaac2cd7c"
+}

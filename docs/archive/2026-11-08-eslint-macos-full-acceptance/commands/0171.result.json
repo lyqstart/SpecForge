@@ -1,0 +1,33 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "git",
+  "args": [
+    "-c",
+    "core.longpaths=true",
+    "-c",
+    "core.safecrlf=false",
+    "add",
+    "--",
+    ".github/workflows/code-quality.yml"
+  ],
+  "cwd": "D:\\code\\SpecForge\\.lint-review-a01",
+  "purpose": "stage-only-supported-ci-context-fix",
+  "expected_writes": "private candidate index for one workflow",
+  "started_utc": "2026-11-08T11:22:09.488Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [],
+  "finished_utc": "2026-11-08T11:22:09.927Z",
+  "carrier_exit_code": 0,
+  "inner_exit_code": 0,
+  "numeric_inner_exit_code_available": true,
+  "process_started": true,
+  "child_pid": 41100,
+  "spawn_error": null,
+  "signal": null,
+  "observed_writes": {
+    "repository_status_before": " M .github/workflows/code-quality.yml\n D docs/archive/2026-11-07-verification-production/consumer-source-review/current/docs/archive/2026-11-07-verification-production/evidence-guidance-baseline/setup/userlevel-opencode/skills/superpowers-verification-before-completion/SKILL.md\n",
+    "repository_status_after": "M  .github/workflows/code-quality.yml\n D docs/archive/2026-11-07-verification-production/consumer-source-review/current/docs/archive/2026-11-07-verification-production/evidence-guidance-baseline/setup/userlevel-opencode/skills/superpowers-verification-before-completion/SKILL.md\n",
+    "other": "See expected writes and owner-specific receipt; status does not enumerate external runtime writes."
+  }
+}

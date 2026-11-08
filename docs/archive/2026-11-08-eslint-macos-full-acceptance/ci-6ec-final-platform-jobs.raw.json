@@ -1,0 +1,453 @@
+{
+  "total_count": 4,
+  "jobs": [
+    {
+      "id": 128737862651,
+      "run_id": 42482685665,
+      "workflow_name": "Distribution Smoke Tests",
+      "head_branch": "codex/eslint-macos-signal-validation",
+      "run_url": "https://api.github.com/repos/lyqstart/SpecForge/actions/runs/42482685665",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOSTAXgs8AAAAd-V_j-w",
+      "head_sha": "6ec81b1f61b285877da3745efc42be1fa0d86e9e",
+      "url": "https://api.github.com/repos/lyqstart/SpecForge/actions/jobs/128737862651",
+      "html_url": "https://github.com/lyqstart/SpecForge/actions/runs/42482685665/job/128737862651",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-11-08T12:58:09Z",
+      "started_at": "2026-11-08T12:58:10Z",
+      "completed_at": "2026-11-08T12:59:02Z",
+      "name": "Official release acceptance (ubuntu-latest)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-11-08T12:58:11Z",
+          "completed_at": "2026-11-08T12:58:12Z"
+        },
+        {
+          "name": "Checkout repository",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-11-08T12:58:12Z",
+          "completed_at": "2026-11-08T12:58:23Z"
+        },
+        {
+          "name": "Setup Node",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-11-08T12:58:23Z",
+          "completed_at": "2026-11-08T12:58:31Z"
+        },
+        {
+          "name": "Setup Bun",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-11-08T12:58:31Z",
+          "completed_at": "2026-11-08T12:58:32Z"
+        },
+        {
+          "name": "Bind pinned Windows verification Node",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 5,
+          "started_at": "2026-11-08T12:58:32Z",
+          "completed_at": "2026-11-08T12:58:32Z"
+        },
+        {
+          "name": "Install locked dependencies",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-11-08T12:58:32Z",
+          "completed_at": "2026-11-08T12:58:35Z"
+        },
+        {
+          "name": "Build current workspace in dependency order",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-11-08T12:58:35Z",
+          "completed_at": "2026-11-08T12:58:51Z"
+        },
+        {
+          "name": "Run actual official platform release acceptance",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-11-08T12:58:51Z",
+          "completed_at": "2026-11-08T12:58:58Z"
+        },
+        {
+          "name": "Upload raw platform evidence",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-11-08T12:58:58Z",
+          "completed_at": "2026-11-08T12:58:59Z"
+        },
+        {
+          "name": "Post Setup Bun",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 16,
+          "started_at": "2026-11-08T12:58:59Z",
+          "completed_at": "2026-11-08T12:58:59Z"
+        },
+        {
+          "name": "Post Setup Node",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17,
+          "started_at": "2026-11-08T12:58:59Z",
+          "completed_at": "2026-11-08T12:58:59Z"
+        },
+        {
+          "name": "Post Checkout repository",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 18,
+          "started_at": "2026-11-08T12:58:59Z",
+          "completed_at": "2026-11-08T12:58:59Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 19,
+          "started_at": "2026-11-08T12:58:59Z",
+          "completed_at": "2026-11-08T12:58:59Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/lyqstart/SpecForge/check-runs/128737862651",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000004432,
+      "runner_name": "GitHub Actions 1000004432",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 128737862719,
+      "run_id": 42482685665,
+      "workflow_name": "Distribution Smoke Tests",
+      "head_branch": "codex/eslint-macos-signal-validation",
+      "run_url": "https://api.github.com/repos/lyqstart/SpecForge/actions/runs/42482685665",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOSTAXgs8AAAAd-V_kPw",
+      "head_sha": "6ec81b1f61b285877da3745efc42be1fa0d86e9e",
+      "url": "https://api.github.com/repos/lyqstart/SpecForge/actions/jobs/128737862719",
+      "html_url": "https://github.com/lyqstart/SpecForge/actions/runs/42482685665/job/128737862719",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-11-08T12:58:09Z",
+      "started_at": "2026-11-08T12:58:10Z",
+      "completed_at": "2026-11-08T12:58:57Z",
+      "name": "Official release acceptance (macos-latest)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-11-08T12:58:11Z",
+          "completed_at": "2026-11-08T12:58:12Z"
+        },
+        {
+          "name": "Checkout repository",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-11-08T12:58:12Z",
+          "completed_at": "2026-11-08T12:58:26Z"
+        },
+        {
+          "name": "Setup Node",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-11-08T12:58:26Z",
+          "completed_at": "2026-11-08T12:58:30Z"
+        },
+        {
+          "name": "Setup Bun",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-11-08T12:58:30Z",
+          "completed_at": "2026-11-08T12:58:32Z"
+        },
+        {
+          "name": "Bind pinned Windows verification Node",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 5,
+          "started_at": "2026-11-08T12:58:32Z",
+          "completed_at": "2026-11-08T12:58:32Z"
+        },
+        {
+          "name": "Install locked dependencies",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-11-08T12:58:32Z",
+          "completed_at": "2026-11-08T12:58:34Z"
+        },
+        {
+          "name": "Build current workspace in dependency order",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-11-08T12:58:34Z",
+          "completed_at": "2026-11-08T12:58:47Z"
+        },
+        {
+          "name": "Run actual official platform release acceptance",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-11-08T12:58:47Z",
+          "completed_at": "2026-11-08T12:58:52Z"
+        },
+        {
+          "name": "Upload raw platform evidence",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-11-08T12:58:52Z",
+          "completed_at": "2026-11-08T12:58:53Z"
+        },
+        {
+          "name": "Post Setup Bun",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 16,
+          "started_at": "2026-11-08T12:58:53Z",
+          "completed_at": "2026-11-08T12:58:54Z"
+        },
+        {
+          "name": "Post Setup Node",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17,
+          "started_at": "2026-11-08T12:58:54Z",
+          "completed_at": "2026-11-08T12:58:54Z"
+        },
+        {
+          "name": "Post Checkout repository",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 18,
+          "started_at": "2026-11-08T12:58:54Z",
+          "completed_at": "2026-11-08T12:58:54Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 19,
+          "started_at": "2026-11-08T12:58:54Z",
+          "completed_at": "2026-11-08T12:58:54Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/lyqstart/SpecForge/check-runs/128737862719",
+      "labels": [
+        "macos-latest"
+      ],
+      "runner_id": 1000004431,
+      "runner_name": "GitHub Actions 1000004431",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 128737862798,
+      "run_id": 42482685665,
+      "workflow_name": "Distribution Smoke Tests",
+      "head_branch": "codex/eslint-macos-signal-validation",
+      "run_url": "https://api.github.com/repos/lyqstart/SpecForge/actions/runs/42482685665",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOSTAXgs8AAAAd-V_kjg",
+      "head_sha": "6ec81b1f61b285877da3745efc42be1fa0d86e9e",
+      "url": "https://api.github.com/repos/lyqstart/SpecForge/actions/jobs/128737862798",
+      "html_url": "https://github.com/lyqstart/SpecForge/actions/runs/42482685665/job/128737862798",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-11-08T12:58:09Z",
+      "started_at": "2026-11-08T12:58:10Z",
+      "completed_at": "2026-11-08T13:00:43Z",
+      "name": "Official release acceptance (windows-latest)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-11-08T12:58:11Z",
+          "completed_at": "2026-11-08T12:58:13Z"
+        },
+        {
+          "name": "Checkout repository",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-11-08T12:58:13Z",
+          "completed_at": "2026-11-08T12:58:40Z"
+        },
+        {
+          "name": "Setup Node",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-11-08T12:58:40Z",
+          "completed_at": "2026-11-08T12:58:49Z"
+        },
+        {
+          "name": "Setup Bun",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-11-08T12:58:49Z",
+          "completed_at": "2026-11-08T12:58:51Z"
+        },
+        {
+          "name": "Bind pinned Windows verification Node",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-11-08T12:58:51Z",
+          "completed_at": "2026-11-08T12:58:52Z"
+        },
+        {
+          "name": "Install locked dependencies",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-11-08T12:58:52Z",
+          "completed_at": "2026-11-08T12:59:50Z"
+        },
+        {
+          "name": "Build current workspace in dependency order",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-11-08T12:59:50Z",
+          "completed_at": "2026-11-08T13:00:19Z"
+        },
+        {
+          "name": "Run actual official platform release acceptance",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-11-08T13:00:19Z",
+          "completed_at": "2026-11-08T13:00:38Z"
+        },
+        {
+          "name": "Upload raw platform evidence",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-11-08T13:00:38Z",
+          "completed_at": "2026-11-08T13:00:39Z"
+        },
+        {
+          "name": "Post Setup Bun",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 16,
+          "started_at": "2026-11-08T13:00:39Z",
+          "completed_at": "2026-11-08T13:00:39Z"
+        },
+        {
+          "name": "Post Setup Node",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17,
+          "started_at": "2026-11-08T13:00:39Z",
+          "completed_at": "2026-11-08T13:00:39Z"
+        },
+        {
+          "name": "Post Checkout repository",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 18,
+          "started_at": "2026-11-08T13:00:39Z",
+          "completed_at": "2026-11-08T13:00:42Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 19,
+          "started_at": "2026-11-08T13:00:42Z",
+          "completed_at": "2026-11-08T13:00:42Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/lyqstart/SpecForge/check-runs/128737862798",
+      "labels": [
+        "windows-latest"
+      ],
+      "runner_id": 1000004433,
+      "runner_name": "GitHub Actions 1000004433",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 128738459825,
+      "run_id": 42482685665,
+      "workflow_name": "Distribution Smoke Tests",
+      "head_branch": "codex/eslint-macos-signal-validation",
+      "run_url": "https://api.github.com/repos/lyqstart/SpecForge/actions/runs/42482685665",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOSTAXgs8AAAAd-WkAsQ",
+      "head_sha": "6ec81b1f61b285877da3745efc42be1fa0d86e9e",
+      "url": "https://api.github.com/repos/lyqstart/SpecForge/actions/jobs/128738459825",
+      "html_url": "https://github.com/lyqstart/SpecForge/actions/runs/42482685665/job/128738459825",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-11-08T13:00:43Z",
+      "started_at": "2026-11-08T13:00:46Z",
+      "completed_at": "2026-11-08T13:00:49Z",
+      "name": "Aggregate Results",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-11-08T13:00:46Z",
+          "completed_at": "2026-11-08T13:00:47Z"
+        },
+        {
+          "name": "Require every platform result",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-11-08T13:00:47Z",
+          "completed_at": "2026-11-08T13:00:47Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-11-08T13:00:47Z",
+          "completed_at": "2026-11-08T13:00:47Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/lyqstart/SpecForge/check-runs/128738459825",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000004434,
+      "runner_name": "GitHub Actions 1000004434",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    }
+  ]
+}

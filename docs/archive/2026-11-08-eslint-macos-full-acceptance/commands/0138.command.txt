@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/repair-source-contract-regressions.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "repair-format-independent-contracts-and-template-validator",
+  "expected_writes": "private contract tests, canonical token helper and exact knowledge projection",
+  "started_utc": "2026-11-08T10:49:37.139Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\repair-source-contract-regressions.cjs",
+      "sha256": "010cbbc6b353a1590ca34a3b27ef409a432d87c66632eeb182f296384d0c4839",
+      "size": 10016,
+      "extension": ".cjs"
+    }
+  ]
+}

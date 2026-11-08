@@ -1,0 +1,13 @@
+{"name":"types","started_utc":"2026-11-08T09:30:18.415Z","finished_utc":"2026-11-08T09:30:23.660Z","files":31,"errors":0,"warnings":0,"rules":{}}
+{"name":"version-unification","started_utc":"2026-11-08T09:30:23.670Z","finished_utc":"2026-11-08T09:30:23.702Z","files":2,"errors":0,"warnings":0,"rules":{}}
+{"name":"configuration","started_utc":"2026-11-08T09:30:23.715Z","finished_utc":"2026-11-08T09:30:24.782Z","files":13,"errors":0,"warnings":0,"rules":{}}
+{"name":"service-management","started_utc":"2026-11-08T09:30:24.816Z","finished_utc":"2026-11-08T09:30:25.225Z","files":32,"errors":0,"warnings":0,"rules":{}}
+{"name":"host-profile","started_utc":"2026-11-08T09:30:25.238Z","finished_utc":"2026-11-08T09:30:25.345Z","files":9,"errors":0,"warnings":0,"rules":{}}
+{"name":"observability","started_utc":"2026-11-08T09:30:25.357Z","finished_utc":"2026-11-08T09:30:36.376Z","files":10,"errors":0,"warnings":0,"rules":{}}
+{"name":"permission-engine","started_utc":"2026-11-08T09:30:36.436Z","finished_utc":"2026-11-08T09:30:40.164Z","files":48,"errors":3,"warnings":0,"rules":{"import/order":3}}
+{"name":"opencode-adapter","started_utc":"2026-11-08T09:30:40.188Z","finished_utc":"2026-11-08T09:30:44.212Z","files":21,"errors":0,"warnings":0,"rules":{}}
+{"name":"scope-gate","started_utc":"2026-11-08T09:30:44.251Z","finished_utc":"2026-11-08T09:31:43.895Z","files":45,"errors":0,"warnings":0,"rules":{}}
+{"name":"workflow-runtime","started_utc":"2026-11-08T09:31:43.971Z","finished_utc":"2026-11-08T09:32:22.100Z","files":124,"errors":76,"warnings":2,"rules":{"import/order":24,"@typescript-eslint/consistent-type-imports":3,"import/no-duplicates":2,"@typescript-eslint/explicit-function-return-type":20,"@typescript-eslint/no-unnecessary-type-assertion":3,"@typescript-eslint/no-unsafe-return":1,"@typescript-eslint/no-unused-vars":1,"@typescript-eslint/only-throw-error":1,"@typescript-eslint/prefer-promise-reject-errors":1,"@typescript-eslint/no-unsafe-assignment":9,"@typescript-eslint/no-unsafe-call":1,"@typescript-eslint/no-unsafe-member-access":9,"@typescript-eslint/no-floating-promises":1,"@typescript-eslint/no-unsafe-argument":2}}
+{"name":"cli","started_utc":"2026-11-08T09:32:22.161Z","finished_utc":"2026-11-08T09:32:22.843Z","files":63,"errors":0,"warnings":0,"rules":{}}
+{"name":"daemon-core","started_utc":"2026-11-08T09:32:22.999Z","finished_utc":"2026-11-08T09:32:49.171Z","files":231,"errors":120,"warnings":0,"rules":{"@typescript-eslint/no-unnecessary-type-assertion":3,"@typescript-eslint/no-unsafe-argument":82,"@typescript-eslint/no-redundant-type-constituents":21,"@typescript-eslint/no-unused-vars":2,"no-useless-escape":12}}
+{"autofixed_files":33,"plan_complete_before_write":true,"remaining_errors":199,"remaining_warnings":2}

@@ -1,0 +1,9 @@
+Resolving dependencies
+Resolved, downloaded and extracted [118]
+ENOENT: No such file or directory: failed to link package: @typescript-eslint/eslint-plugin@8.59.3 (copyfile)
+ENOENT: No such file or directory: failed to link package: @typescript-eslint/type-utils@8.59.3 (copyfile)
+ENOENT: No such file or directory: failed to link package: @typescript-eslint/typescript-estree@8.59.3 (copyfile)
+ENOENT: No such file or directory: failed to link package: @typescript-eslint/typescript-estree@8.59.3 (copyfile)
+ENOENT: No such file or directory: failed to link package: @typescript-eslint/type-utils@8.59.3 (copyfile)
+ENOENT: No such file or directory: failed to link package: @typescript-eslint/eslint-plugin@8.59.3 (copyfile)
+Saved lockfile

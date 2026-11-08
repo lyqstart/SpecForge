@@ -1,0 +1,14 @@
+{
+  "number": "033",
+  "name": "installed-version",
+  "executable": "/tmp/sf-platform-acceptance-X2HyPK/opencode/sf-user/bin/specforge",
+  "args": [
+    "--version",
+    "--json"
+  ],
+  "started_utc": "2026-11-08T12:58:56.526Z",
+  "finished_utc": "2026-11-08T12:58:56.587Z",
+  "inner_exit_code": 0,
+  "signal": null,
+  "spawn_error": null
+}

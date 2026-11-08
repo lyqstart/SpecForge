@@ -1,0 +1,13 @@
+{
+  "utc": "2026-11-08T08:56:40.731Z",
+  "input_sha256": "1a1eefaf018c74eddc2617aafca1d0d049ac0df163a70b8378b83f44d5015782",
+  "reason": "Full compiler observes const union retained inside class constructor despite preceding guard. Capture the proven string with an explicit annotation, without assertion or rule suppression.",
+  "required_verification": "Whole12 compiler and error propagation regressions",
+  "members": [
+    {
+      "file": "packages/workflow-runtime/src/error-propagation.ts",
+      "before": "7cb73654bedb95f3a6ebf5049ac90d5e976b84742883cf689c9f463c91d02234",
+      "after": "7d85e0fe920b49003f8588d0c7f7ae7fdd25975e1a28e4ddc5314b21f081a059"
+    }
+  ]
+}

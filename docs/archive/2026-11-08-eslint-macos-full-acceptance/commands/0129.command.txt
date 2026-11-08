@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/apply-style-only-fixes.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "style-only-final-lint-fixes",
+  "expected_writes": "private import/order and Prettier fixes only; immutable before plan",
+  "started_utc": "2026-11-08T10:30:53.569Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\apply-style-only-fixes.cjs",
+      "sha256": "8630e38c6dafe12f5e5db1245031aeee1d76cca88127c739f25049caa35e4d5a",
+      "size": 1811,
+      "extension": ".cjs"
+    }
+  ]
+}

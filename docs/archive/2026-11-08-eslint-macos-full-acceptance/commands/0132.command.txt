@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/apply-ci-and-discovery-v2.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "apply-three-os-ci-through-declared-yaml-owner",
+  "expected_writes": "private CI discovery files and immutable plan",
+  "started_utc": "2026-11-08T10:33:33.919Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\apply-ci-and-discovery-v2.cjs",
+      "sha256": "53e6d77bd2d5d746d7819449e2bb4ae0e5be738b8acabd9de81137fd832288f4",
+      "size": 4528,
+      "extension": ".cjs"
+    }
+  ]
+}

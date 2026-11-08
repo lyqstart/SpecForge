@@ -1,0 +1,15 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "build"
+  ],
+  "cwd": "D:\\code\\SpecForge\\.lint-review-a01\\packages\\permission-engine",
+  "purpose": "compile-permission-after-unknown-hardening",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES:private permission dist;EXTERNAL_EVIDENCE_WRITES:complete type diagnostics",
+  "started_utc": "2026-11-08T07:55:54.804Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": []
+}

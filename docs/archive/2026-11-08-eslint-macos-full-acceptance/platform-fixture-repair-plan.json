@@ -1,0 +1,121 @@
+{
+  "id": "platform-fixture-repair",
+  "reason": "0183 real original guard and actual pinned Bun reproduce aliased temporary-root rejection and outfile/multi-asset failure; Mac raw artifact shows those failures. Resolve trusted developer-test root physically in actual workspace/Root/CI owners and record requested/canonical ancestors in actual CI. Change only fixture bundler to support multiple real outputs; add live alias and actual asset-output regressions. No product src, path guard, role, permission, native/backend scope or schema changes.",
+  "required_verification": "Fresh platform-worktree build/lint/targeted regressions; actual full macOS Windows Linux workspace+Root and official install; final same-lock isolated patched leg against unchanged qualified baselines",
+  "files": [
+    {
+      "file": "scripts/lib/qualification-environment.mjs",
+      "content": "import fs from 'node:fs';\nimport os from 'node:os';\nimport path from 'node:path';\n\n/** Developer-test environment only; product link/path guards remain unchanged. */\nexport function qualifyTemporaryEnvironment(requested = os.tmpdir()) {\n  if (!path.isAbsolute(requested)) throw new Error('QUALIFICATION_TEMP_NOT_ABSOLUTE');\n  const absolute = path.resolve(requested);\n  const ancestors = [];\n  for (let current = absolute; ; current = path.dirname(current)) {\n    const stat = fs.lstatSync(current);\n    const kind = stat.isSymbolicLink() ? 'symlink' : stat.isDirectory() ? 'directory' : 'other';\n    ancestors.unshift({ path: current, kind, ...(kind === 'symlink' ? { target: fs.readlinkSync(current) } : {}) });\n    if (path.dirname(current) === current) break;\n  }\n  const canonical = fs.realpathSync(absolute);\n  if (!fs.lstatSync(canonical).isDirectory()) throw new Error('QUALIFICATION_TEMP_NOT_DIRECTORY');\n  return { requested: absolute, canonical, ancestors, environment: { TMPDIR: canonical, TEMP: canonical, TMP: canonical } };\n}\n"
+    },
+    {
+      "file": "scripts/lib/qualification-environment.d.mts",
+      "content": "export interface QualificationTemporaryDirectory {\n  requested: string;\n  canonical: string;\n  ancestors: Array<{ path: string; kind: 'symlink' | 'directory' | 'other'; target?: string }>;\n  environment: { TMPDIR: string; TEMP: string; TMP: string };\n}\n/** Resolve the developer-test temporary root without changing application guards. */\nexport function qualifyTemporaryEnvironment(requested?: string): QualificationTemporaryDirectory;\n"
+    },
+    {
+      "file": "scripts/test-workspace.ts",
+      "changes": [
+        {
+          "from": "import { CURRENT_WORKSPACE_PACKAGES } from './lib/workspace-packages';",
+          "to": "import { CURRENT_WORKSPACE_PACKAGES } from './lib/workspace-packages';\nimport { qualifyTemporaryEnvironment } from './lib/qualification-environment.mjs';"
+        },
+        {
+          "from": "const bunExecutable = process.execPath;",
+          "to": "const bunExecutable = process.execPath;\nconst temporary = qualifyTemporaryEnvironment();"
+        },
+        {
+          "from": "env: process.env,",
+          "to": "env: { ...process.env, ...temporary.environment },"
+        }
+      ]
+    },
+    {
+      "file": "scripts/run-root-tests.mjs",
+      "changes": [
+        {
+          "from": "import { spawnSync } from 'node:child_process';",
+          "to": "import { spawnSync } from 'node:child_process';\nimport { qualifyTemporaryEnvironment } from './lib/qualification-environment.mjs';"
+        },
+        {
+          "from": "function runVitest(testPaths, passthroughArguments) {",
+          "to": "function runVitest(testPaths, passthroughArguments) {\n  const temporary = qualifyTemporaryEnvironment();"
+        },
+        {
+          "from": "env: process.env,",
+          "to": "env: { ...process.env, ...temporary.environment },"
+        }
+      ]
+    },
+    {
+      "file": "scripts/run-ci-regression.mjs",
+      "changes": [
+        {
+          "from": "import fs from 'node:fs';",
+          "to": "import fs from 'node:fs';\nimport { qualifyTemporaryEnvironment } from './lib/qualification-environment.mjs';"
+        },
+        {
+          "from": "function run(executable, args) {",
+          "to": "function run(executable, args, environment = process.env) {"
+        },
+        {
+          "from": "{ cwd: root, windowsHide: true, maxBuffer:",
+          "to": "{ cwd: root, env: environment, windowsHide: true, maxBuffer:"
+        },
+        {
+          "from": "  const phase = process.argv[2];",
+          "to": "  const phase = process.argv[2];\n  const temporary = qualifyTemporaryEnvironment();"
+        },
+        {
+          "from": "const context = { source_commit:",
+          "to": "const context = { temporary_directory: { requested: temporary.requested, canonical: temporary.canonical, ancestors: temporary.ancestors }, source_commit:"
+        },
+        {
+          "from": "  const result = run(bun, phases[phase]);",
+          "to": "  const result = run(bun, phases[phase], { ...process.env, ...temporary.environment });"
+        }
+      ]
+    },
+    {
+      "file": "packages/daemon-core/tests/fixtures/build-process-fixture.ts",
+      "changes": [
+        {
+          "from": "import { spawnSync } from 'node:child_process';",
+          "to": "import { spawnSync } from 'node:child_process';\nimport { existsSync } from 'node:fs';"
+        },
+        {
+          "from": "['build', source, '--target=bun', `--outfile=${target}`]",
+          "to": "['build', source, '--target=bun', `--outdir=${root}`, '--entry-naming=process-fixture.js']"
+        },
+        {
+          "from": "  return target;",
+          "to": "  if (!existsSync(target)) throw new Error('PROCESS_FIXTURE_ENTRY_MISSING');\n  return target;"
+        }
+      ]
+    },
+    {
+      "file": "packages/scope-gate/tests/current-crossplatform-ci-contract.test.ts",
+      "changes": [
+        {
+          "from": "import {readFileSync,existsSync} from 'node:fs';import path from 'node:path';",
+          "to": "import { existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, symlinkSync } from 'node:fs';\nimport { tmpdir } from 'node:os';\nimport path from 'node:path';"
+        },
+        {
+          "from": "import {describe,it,expect} from 'vitest';",
+          "to": "import {describe,it,expect} from 'vitest';\n\nimport { qualifyTemporaryEnvironment } from '../../../scripts/lib/qualification-environment.mjs';"
+        },
+        {
+          "from": "describe('current cross-platform CI deployment contract',()=>{",
+          "to": "describe('current cross-platform CI deployment contract',()=>{\n  it('uses the same physical temporary target through an owned alias without changing product guards',()=>{\n    const parent=realpathSync(tmpdir()),owned=mkdtempSync(path.join(parent,'sf-qualification-temp-')),physical=path.join(owned,'physical'),alias=path.join(owned,'alias');\n    try {\n      mkdirSync(physical);symlinkSync(physical,alias,process.platform==='win32'?'junction':'dir');\n      const result=qualifyTemporaryEnvironment(alias);\n      expect(result.canonical).toBe(realpathSync(physical));\n      expect(result.environment).toEqual({TMPDIR:result.canonical,TEMP:result.canonical,TMP:result.canonical});\n      expect(result.ancestors.some(item=>item.path===alias&&item.kind==='symlink')).toBe(true);\n      expect(()=>qualifyTemporaryEnvironment(path.join(owned,'missing'))).toThrow();\n      for(const file of ['scripts/test-workspace.ts','scripts/run-root-tests.mjs','scripts/run-ci-regression.mjs'])expect(read(file),file).toContain('...temporary.environment');\n    } finally {\n      if(realpathSync(owned)!==owned||path.dirname(owned)!==parent||!path.basename(owned).startsWith('sf-qualification-temp-'))throw new Error('UNOWNED_TEMP_CLEANUP');\n      rmSync(owned,{recursive:true,force:true});\n    }\n  });"
+        }
+      ]
+    },
+    {
+      "file": "packages/daemon-core/tests/unit/runtime-history-integrity.test.ts",
+      "changes": [
+        {
+          "from": "describe('authoritative history integrity at configuration consumer',()=>{",
+          "to": "describe('authoritative history integrity at configuration consumer',()=>{\n  it('bundles native/file assets beside the actual fresh-process entry instead of requiring a single output',()=>{\n    const root=fs.mkdtempSync(path.join(fs.realpathSync(os.tmpdir()),'sf-process-assets-'));roots.push(root);\n    const source=path.join(root,'asset-entry.ts');fs.writeFileSync(path.join(root,'image.png'),Buffer.from([137,80,78,71,13,10,26,10]));\n    fs.writeFileSync(source,\"import asset from './image.png'; console.log(asset);\\n\");\n    const entry=buildProcessFixture(source,root);expect(fs.existsSync(entry)).toBe(true);expect(fs.readdirSync(root).some(name=>/^image-.+\\.png$/.test(name))).toBe(true);\n  });"
+        }
+      ]
+    }
+  ]
+}

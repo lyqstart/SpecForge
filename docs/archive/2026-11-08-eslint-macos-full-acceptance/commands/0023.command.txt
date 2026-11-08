@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/repair-promise-producers-v2.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "apply-validated-promise-producer-plan",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES:private typed Promise producers and tests;EXTERNAL_EVIDENCE_WRITES:exact complete plan and before snapshots",
+  "started_utc": "2026-11-08T07:39:46.980Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\repair-promise-producers-v2.cjs",
+      "sha256": "5250fc637027afbb4c7b5ad554b0231c7458920b7311129b64bb1372865053ef",
+      "size": 5076,
+      "extension": ".cjs"
+    }
+  ]
+}

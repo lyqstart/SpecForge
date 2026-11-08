@@ -1,0 +1,15 @@
+{
+  "number": "036",
+  "name": "official-daemon-stop",
+  "executable": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-eslint-macos-A01-v2-original\\temp\\sf-platform-acceptance-6s4ejp\\opencode\\sf-user\\bin\\specforge.exe",
+  "args": [
+    "daemon",
+    "stop",
+    "--json"
+  ],
+  "started_utc": "2026-11-08T11:42:43.932Z",
+  "finished_utc": "2026-11-08T11:42:44.271Z",
+  "inner_exit_code": 0,
+  "signal": null,
+  "spawn_error": null
+}

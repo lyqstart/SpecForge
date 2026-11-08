@@ -1,0 +1,121 @@
+{
+  "utc": "2026-11-08T08:08:17.277Z",
+  "audited_files": 98,
+  "unbound_references": [
+    {
+      "file": "packages/permission-engine/tests/integration/remote-access-integration.test.ts",
+      "name": "validApiKey",
+      "line": 62,
+      "parent_kind": "BinaryExpression",
+      "matching_before_nodes": 1,
+      "all_matching_before_nodes_bound": true
+    },
+    {
+      "file": "packages/permission-engine/tests/property/permission-decision-traceability-property-10.test.ts",
+      "name": "capturedEvents",
+      "line": 39,
+      "parent_kind": "BinaryExpression",
+      "matching_before_nodes": 3,
+      "all_matching_before_nodes_bound": true
+    },
+    {
+      "file": "packages/permission-engine/tests/property/permission-decision-traceability-property-10.test.ts",
+      "name": "capturedEvents",
+      "line": 63,
+      "parent_kind": "BinaryExpression",
+      "matching_before_nodes": 3,
+      "all_matching_before_nodes_bound": true
+    },
+    {
+      "file": "packages/permission-engine/tests/property/permission-decision-traceability-property-10.test.ts",
+      "name": "capturedEvents",
+      "line": 152,
+      "parent_kind": "BinaryExpression",
+      "matching_before_nodes": 3,
+      "all_matching_before_nodes_bound": true
+    },
+    {
+      "file": "packages/permission-engine/tests/unit/daemon-integration.test.ts",
+      "name": "mockEventBus",
+      "line": 197,
+      "parent_kind": "BinaryExpression",
+      "matching_before_nodes": 1,
+      "all_matching_before_nodes_bound": true
+    },
+    {
+      "file": "packages/permission-engine/tests/unit/daemon-integration.test.ts",
+      "name": "mockSessionRegistry",
+      "line": 204,
+      "parent_kind": "BinaryExpression",
+      "matching_before_nodes": 1,
+      "all_matching_before_nodes_bound": true
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/CompositeGateCancellation.test.ts",
+      "name": "gate1Executed",
+      "line": 90,
+      "parent_kind": "BinaryExpression",
+      "matching_before_nodes": 2,
+      "all_matching_before_nodes_bound": true
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/CompositeGateCancellation.test.ts",
+      "name": "gate2Executed",
+      "line": 102,
+      "parent_kind": "BinaryExpression",
+      "matching_before_nodes": 2,
+      "all_matching_before_nodes_bound": true
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/CompositeGateCancellation.test.ts",
+      "name": "gate3Started",
+      "line": 113,
+      "parent_kind": "BinaryExpression",
+      "matching_before_nodes": 1,
+      "all_matching_before_nodes_bound": true
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/WorkflowErrorHandling.test.ts",
+      "name": "callCount",
+      "line": 297,
+      "parent_kind": "PostfixUnaryExpression",
+      "matching_before_nodes": 8,
+      "all_matching_before_nodes_bound": true,
+      "unsupported_source": "callCount++",
+      "before_type": "number"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/retry.test.ts",
+      "name": "callCount",
+      "line": 652,
+      "parent_kind": "PostfixUnaryExpression",
+      "matching_before_nodes": 2,
+      "all_matching_before_nodes_bound": true,
+      "unsupported_source": "callCount++",
+      "before_type": "number"
+    }
+  ],
+  "source_writes": 0,
+  "unsupported": [
+    {
+      "file": "packages/workflow-runtime/tests/unit/WorkflowErrorHandling.test.ts",
+      "name": "callCount",
+      "line": 297,
+      "parent_kind": "PostfixUnaryExpression",
+      "matching_before_nodes": 8,
+      "all_matching_before_nodes_bound": true,
+      "unsupported_source": "callCount++",
+      "before_type": "number"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/retry.test.ts",
+      "name": "callCount",
+      "line": 652,
+      "parent_kind": "PostfixUnaryExpression",
+      "matching_before_nodes": 2,
+      "all_matching_before_nodes_bound": true,
+      "unsupported_source": "callCount++",
+      "before_type": "number"
+    }
+  ]
+}

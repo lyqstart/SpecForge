@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/adopt-signal-qualified-source-v2.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "adopt-final-qualified527-source-in-real-worktree",
+  "expected_writes": "After all gates: preserve existing four execution metadata plus owned archive-attribute recovery, exact527 byte proof and literal3f lock; current branch only, main unchanged",
+  "started_utc": "2026-11-08T13:22:45.608Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\adopt-signal-qualified-source-v2.cjs",
+      "sha256": "964df6b88c6bf1158a99c2a324e6d3b0601d31743629c42cda9546203bb2d294",
+      "size": 4753,
+      "extension": ".cjs"
+    }
+  ]
+}

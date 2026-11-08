@@ -1,0 +1,8 @@
+{
+  "utc": "2026-11-08T12:57:57.307Z",
+  "commit": "6ec81b1f61b285877da3745efc42be1fa0d86e9e",
+  "parent": "05713b7337b3dc55f1f3ed563cf342439643657f",
+  "branch": "codex/eslint-macos-signal-validation",
+  "frozen_manifest_sha256": "dfcd0d21c12863e003e80f8ea3a5b5f2450587701ec79bdc23ea231083e48201",
+  "recovery": "Commit completed before0269 postcondition failed; no duplicate commit. Physical/index/HEAD lock identities equal;0271 renormalize cleared attr metadata with empty content delta. Full526-member physical proof now matches, clean tree."
+}

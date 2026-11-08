@@ -1,0 +1,23 @@
+bun install v1.3.14 (0d9b296a)
+
++ @eslint/eslintrc@3.3.5 (v3.3.7 available)
++ @eslint/js@9.39.4 (v10.0.1 available)
++ @types/node@25.7.0 (v26.6.6 available)
++ @types/proper-lockfile@4.1.4
++ @typescript-eslint/parser@8.59.3
++ @vitest/coverage-v8@4.1.5 (v5.1.0 available)
++ eslint@9.39.4
++ eslint-config-prettier@10.1.8
++ eslint-import-resolver-typescript@3.10.1 (v4.4.5 available)
++ eslint-plugin-import@2.32.0
++ eslint-plugin-prettier@5.5.5
++ fast-check@4.8.0 (v4.10.2 available)
++ globals@17.6.0
++ prettier@3.8.3
++ proper-lockfile@4.1.2
++ typescript@6.0.3 (v7.0.2 available)
++ vitest@4.1.5 (v5.1.0 available)
++ zod@4.4.3 (v4.6.7 available)
+
+956 packages installed [22.55s]
+Failed to install 6 packages

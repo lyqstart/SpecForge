@@ -1,0 +1,20 @@
+{
+  "owner": "workflow-runtime",
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "test",
+    "--",
+    "--maxWorkers=1",
+    "--minWorkers=1",
+    "--reporter=json",
+    "--outputFile=D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\structured-qualification-toolchain\\workflow-runtime.vitest.json"
+  ],
+  "cwd": "D:\\code\\SpecForge\\.lint-toolchain-a01\\packages\\workflow-runtime",
+  "context_sha256": "db0c81c8db1019131e34fee988b1769a4d1422100598b62a57d14b9c1184f6d4",
+  "started_utc": "2026-11-08T12:11:32.799Z",
+  "finished_utc": "2026-11-08T12:12:19.887Z",
+  "exit": 0,
+  "stdout_sha256": "4ee2d1cc8fee4f19c359dc3b367951b529afe779ff56de08025184cb5f874c8f",
+  "stderr_sha256": "3f5b73ed808c9c463d2ca0227908224abd7d2d7f153b5a91f186aa4e13859c97"
+}

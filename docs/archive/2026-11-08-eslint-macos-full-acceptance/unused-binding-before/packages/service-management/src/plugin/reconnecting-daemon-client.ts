@@ -1,0 +1,727 @@
+/**
+ * Reconnecting Daemon Client
+ *
+ * A plugin-side HTTP client that automatically reconnects to the SpecForge daemon
+ * using exponential backoff when the daemon is temporarily unreachable (e.g., during upgrades).
+ *
+ * Key features:
+ * - postEvent() never throws - all errors returned in PostResult
+ * - Exponential backoff with configurable initial delay, factor, and cumulative max
+ * - Re-reads handshake.json on each retry to get fresh port/token
+ * - Degraded mode after 60s cumulative backoff
+ * - Disposable pattern with getActiveBackoffTimerCount() for test verification
+ * - Single owned backoff timer with cancellation settlement
+ * - Token field never logged (Req 11.4)
+ */
+
+import { readFile } from "node:fs/promises";
+import { join } from "node:path";
+import { parseHandshakeFile, type HandshakeFile } from "../types/handshake.js";
+import { resolveSpecForgeHandshakePath } from "@specforge/types/user-level-paths";
+
+/**
+ * Result of a postEvent call
+ */
+export interface PostResult {
+  ok: boolean;
+  dropped: boolean;
+  reason: "success" | "degraded" | "disposed" | "rejected";
+}
+
+/**
+ * postEventToDaemon 的结构化返回值。
+ * 区分网络错误（status undefined）和 HTTP 错误（status 有值）。
+ */
+export interface PostAttemptResult {
+  ok: boolean;
+  /** HTTP status code。网络错误/超时时为 undefined */
+  status?: number;
+}
+
+/**
+ * Response from the daemon register endpoint
+ */
+export interface RegisterResponse {
+  sessionId: string;
+  projectId: string;
+  mode: 'personal' | 'enterprise';
+}
+
+/**
+ * Configuration options for ReconnectingDaemonClient
+ */
+export interface ReconnectingDaemonClientOptions {
+  /** Initial backoff delay in milliseconds (default: 1000) */
+  initialDelayMs?: number;
+  /** Backoff multiplier (default: 2.0) */
+  backoffFactor?: number;
+  /** Maximum cumulative backoff time in milliseconds (default: 60000) */
+  maxCumulativeBackoffMs?: number;
+  /** Path to handshake.json (defaults to <OpenCode config>/sf-user/runtime/handshake.json) */
+  handshakePath?: string;
+  /** Base URL for daemon health check endpoint */
+  healthzUrl?: string;
+}
+
+/**
+ * Default configuration values
+ */
+const DEFAULT_OPTIONS: Required<ReconnectingDaemonClientOptions> = {
+  initialDelayMs: 1000,
+  backoffFactor: 2.0,
+  maxCumulativeBackoffMs: 60000,
+  handshakePath: resolveSpecForgeHandshakePath(),
+  healthzUrl: "http://127.0.0.1",
+};
+
+/**
+ * Reads and parses the handshake.json file
+ */
+async function readHandshake(path: string): Promise<HandshakeFile | null> {
+  try {
+    const content = await readFile(path, "utf-8");
+    return parseHandshakeFile(JSON.parse(content));
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * 判断 HTTP 状态码是否为客户端错误（4xx，不含 429）。
+ * 429 表示服务端限流，应触发退避而非丢弃。
+ */
+function isClientError(status: number | undefined): boolean {
+  return (
+    status !== undefined &&
+    status >= 400 &&
+    status < 500 &&
+    status !== 429
+  );
+}
+
+/**
+ * Makes an HTTP POST request to the daemon
+ */
+async function postEventToDaemon(
+  url: string,
+  token: string,
+  sessionId: string,
+  type: string,
+  data: unknown,
+  ts?: number
+): Promise<PostAttemptResult> {
+  try {
+    const response = await fetch(`${url}/api/v1/ingest/event`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ sessionId, type, data, ts: ts ?? Date.now() }),
+      signal: AbortSignal.timeout(5000), // 5s timeout per request
+    });
+    return { ok: response.ok, status: response.status };
+  } catch {
+    return { ok: false };  // status undefined = 网络错误
+  }
+}
+
+/**
+ * Makes an HTTP GET request to check daemon health
+ */
+async function checkDaemonHealth(url: string): Promise<boolean> {
+  try {
+    const response = await fetch(`${url}/api/v1/healthz`, {
+      method: "GET",
+      signal: AbortSignal.timeout(5000),
+    });
+    return response.ok;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * ReconnectingDaemonClient - HTTP client with automatic reconnection
+ *
+ * Implements Disposable + Symbol.asyncDispose for proper resource cleanup.
+ * Constructor has NO side effects - all async operations happen in postEvent.
+ */
+export class ReconnectingDaemonClient implements Disposable {
+  private readonly options: Required<ReconnectingDaemonClientOptions>;
+  private disposed = false;
+  private degraded = false;
+  private degradedWarningPrinted = false;
+  private backoffTimer: ReturnType<typeof setTimeout> | null = null;
+  private backoffResolve: ((result: PostResult) => void) | null = null;
+  private currentBackoffMs: number;
+  private cumulativeBackoffMs = 0;
+  private retryCount = 0;
+  private pendingEvent: { sessionId: string; type: string; data: unknown } | null = null;
+  /**
+   * Cached handshake (port + token).
+   * Invalidated when:
+   * - postEvent fails (daemon may have restarted with new port/token)
+   * - cache is null (first call or after invalidation)
+   *
+   * Successful POSTs reuse the cached handshake to avoid disk reads.
+   */
+  private cachedHandshake: HandshakeFile | null = null;
+  private degradedProbeTimer: ReturnType<typeof setInterval> | null = null;
+  private static readonly DEGRADED_PROBE_INTERVAL_MS = 30_000; // 30s
+
+  constructor(options: ReconnectingDaemonClientOptions = {}) {
+    // Constructor has NO side effects (JS1)
+    this.options = {
+      initialDelayMs: options.initialDelayMs ?? DEFAULT_OPTIONS.initialDelayMs,
+      backoffFactor: options.backoffFactor ?? DEFAULT_OPTIONS.backoffFactor,
+      maxCumulativeBackoffMs:
+        options.maxCumulativeBackoffMs ?? DEFAULT_OPTIONS.maxCumulativeBackoffMs,
+      handshakePath: options.handshakePath ?? DEFAULT_OPTIONS.handshakePath,
+      healthzUrl: options.healthzUrl ?? DEFAULT_OPTIONS.healthzUrl,
+    };
+    this.currentBackoffMs = this.options.initialDelayMs;
+  }
+
+  /**
+   * Posts an event to the daemon.
+   * NEVER throws - all errors are returned in PostResult.
+   *
+   * Handshake caching strategy:
+   * - First call reads handshake.json from disk and caches it
+   * - Subsequent successful calls reuse the cache (no disk read)
+   * - On POST failure, cache is invalidated and refreshed on next attempt
+   *   (this catches daemon restart with new port/token)
+   */
+  async postEvent(sessionId: string, type: string, data: unknown): Promise<PostResult> {
+    // Check disposed state first
+    if (this.disposed) {
+      return { ok: false, dropped: true, reason: "disposed" };
+    }
+
+    // Check degraded state
+    if (this.degraded) {
+      this.triggerDegradedProbeOnce();
+      this.printDegradedWarningOnce();
+      return { ok: false, dropped: true, reason: "degraded" };
+    }
+
+    // Use cached handshake if available, otherwise read from disk
+    let handshake = this.cachedHandshake;
+    if (!handshake) {
+      handshake = await readHandshake(this.options.handshakePath);
+      if (handshake) {
+        this.cachedHandshake = handshake;
+      }
+    }
+
+    if (!handshake) {
+      // No handshake on disk - start backoff
+      return this.startBackoff(sessionId, type, data);
+    }
+
+    const url = `${this.options.healthzUrl}:${handshake.port}`;
+
+    // Post the event - do NOT log the token (Req 11.4)
+    const result = await postEventToDaemon(url, handshake.token, sessionId, type, data);
+
+    if (result.ok) {
+      // Reset backoff state on success, keep cache valid
+      this.resetBackoff();
+      return { ok: true, dropped: false, reason: "success" };
+    }
+
+    // 4xx client errors (except 429) are permanent — drop without retry
+    if (isClientError(result.status)) {
+      console.warn(
+        `[specforge] Event rejected by daemon (HTTP ${result.status}): ` +
+        `sessionId=${sessionId}, type=${type}. Dropping event without retry.`
+      );
+      return { ok: false, dropped: true, reason: "rejected" };
+    }
+
+    // Failed - invalidate cache (daemon may have restarted with new port/token)
+    // and start backoff loop. Next retry will re-read handshake from disk.
+    this.cachedHandshake = null;
+    return this.startBackoff(sessionId, type, data);
+  }
+
+  /**
+   * Starts the exponential backoff retry loop
+   */
+  private async startBackoff(sessionId: string, type: string, data: unknown): Promise<PostResult> {
+    if (this.disposed) return { ok: false, dropped: true, reason: "disposed" };
+    this.pendingEvent = { sessionId, type, data };
+    if (this.cumulativeBackoffMs >= this.options.maxCumulativeBackoffMs) {
+      this.enterDegradedMode();
+      return { ok: false, dropped: true, reason: "degraded" };
+    }
+    // One owner, one timer. Replacing or disposing a wait also settles its caller.
+    this.clearBackoffTimer();
+    return new Promise<PostResult>((resolve) => {
+      this.backoffResolve = resolve;
+      this.backoffTimer = setTimeout(() => {
+        this.backoffTimer = null;
+        this.backoffResolve = null;
+        if (this.disposed) { resolve({ ok: false, dropped: true, reason: "disposed" }); return; }
+        this.cumulativeBackoffMs += this.currentBackoffMs;
+        this.retryCount++;
+        this.currentBackoffMs = Math.floor(this.currentBackoffMs * this.options.backoffFactor);
+        if (this.cumulativeBackoffMs >= this.options.maxCumulativeBackoffMs) {
+          this.enterDegradedMode();
+          resolve({ ok: false, dropped: true, reason: "degraded" });
+          return;
+        }
+        this.retryPendingEvent().then(resolve, () => resolve({
+          ok: false, dropped: true, reason: this.disposed ? "disposed" : "rejected",
+        }));
+      }, this.currentBackoffMs);
+    });
+  }
+
+  /**
+   * Retries the pending event with fresh handshake data.
+   * Always re-reads handshake from disk (cache was invalidated on the failure
+   * that triggered backoff), updates cache on success.
+   */
+  private async retryPendingEvent(): Promise<PostResult> {
+    if (!this.pendingEvent || this.disposed || this.degraded) {
+      if (this.degraded) {
+        return { ok: false, dropped: true, reason: "degraded" };
+      }
+      return { ok: false, dropped: true, reason: "disposed" };
+    }
+
+    const { sessionId, type, data } = this.pendingEvent;
+
+    // Re-read handshake for fresh port/token (cache was invalidated)
+    const handshake = await readHandshake(this.options.handshakePath);
+
+    if (!handshake) {
+      // Still no handshake - continue backoff
+      return this.startBackoff(sessionId, type, data);
+    }
+
+    const url = `${this.options.healthzUrl}:${handshake.port}`;
+
+    // Check health first
+    const healthy = await checkDaemonHealth(url);
+
+    if (!healthy) {
+      // Continue backoff
+      return this.startBackoff(sessionId, type, data);
+    }
+
+    // Post the event - token NOT logged (Req 11.4)
+    const result = await postEventToDaemon(url, handshake.token, sessionId, type, data);
+
+    if (result.ok) {
+      // Update cache with fresh handshake on successful reconnect
+      this.cachedHandshake = handshake;
+      this.resetBackoff();
+      this.pendingEvent = null;
+      return { ok: true, dropped: false, reason: "success" };
+    }
+
+    // 4xx client errors (except 429) are permanent — drop without retry
+    if (isClientError(result.status)) {
+      console.warn(
+        `[specforge] Pending event rejected by daemon on retry (HTTP ${result.status}): ` +
+        `sessionId=${sessionId}, type=${type}. Dropping.`
+      );
+      this.pendingEvent = null;  // ← 关键：清理待重试事件
+      return { ok: false, dropped: true, reason: "rejected" };
+    }
+
+    // Still failing - continue backoff
+    return this.startBackoff(sessionId, type, data);
+  }
+
+  /**
+   * Starts periodic health probe while in degraded mode (DD-3).
+   * Timer is unref'd to allow Node process exit.
+   */
+  private startDegradedProbe(): void {
+    if (this.degradedProbeTimer) return;
+    this.degradedProbeTimer = setInterval(async () => {
+      if (!this.degraded || this.disposed) {
+        this.stopDegradedProbe();
+        return;
+      }
+      try {
+        const handshake = await readHandshake(this.options.handshakePath);
+        if (!handshake) return;
+        const url = `${this.options.healthzUrl}:${handshake.port}`;
+        const healthy = await checkDaemonHealth(url);
+        if (healthy) {
+          console.log('[specforge] Daemon recovered, exiting degraded mode');
+          this.degraded = false;
+          this.degradedWarningPrinted = false;
+          this.cachedHandshake = handshake;
+          this.stopDegradedProbe();
+        }
+      } catch {
+        // 探测失败 — 静默，下个周期再试
+      }
+    }, ReconnectingDaemonClient.DEGRADED_PROBE_INTERVAL_MS);
+    if (this.degradedProbeTimer && typeof this.degradedProbeTimer === 'object') {
+      this.degradedProbeTimer.unref();
+    }
+  }
+
+  /**
+   * Enters degraded mode after max cumulative backoff exceeded
+   */
+  private enterDegradedMode(): void {
+    this.degraded = true;
+    this.pendingEvent = null;
+    this.clearBackoffTimer();
+    this.printDegradedWarningOnce();
+    // DD-3: 启动 degraded 恢复探测
+    this.startDegradedProbe();
+  }
+
+  /**
+   * Stops the degraded health probe timer (DD-3).
+   */
+  private stopDegradedProbe(): void {
+    if (this.degradedProbeTimer) {
+      clearInterval(this.degradedProbeTimer);
+      this.degradedProbeTimer = null;
+    }
+  }
+
+  /**
+   * Fire-and-forget health probe triggered on each postEvent() while degraded (DD-3).
+   * Uses cachedHandshake to avoid unnecessary disk reads.
+   */
+  private triggerDegradedProbeOnce(): void {
+    const handshake = this.cachedHandshake;
+    if (!handshake) return;
+    const url = `${this.options.healthzUrl}:${handshake.port}`;
+    checkDaemonHealth(url).then((healthy) => {
+      if (healthy && this.degraded && !this.disposed) {
+        console.log('[specforge] Daemon recovered (on-demand probe), exiting degraded mode');
+        this.degraded = false;
+        this.degradedWarningPrinted = false;
+        this.stopDegradedProbe();
+      }
+    }).catch(() => { /* ignore */ });
+  }
+
+  /**
+   * Prints degraded warning to stderr only once
+   */
+  private printDegradedWarningOnce(): void {
+    if (!this.degradedWarningPrinted) {
+      console.error(`[specforge] Daemon reconnect budget exhausted (${this.options.maxCumulativeBackoffMs}ms), entering degraded mode. See 'specforge daemon status' for details.`);
+      this.degradedWarningPrinted = true;
+    }
+  }
+
+  /**
+   * Resets backoff state after successful connection
+   */
+  private resetBackoff(): void {
+    this.cumulativeBackoffMs = 0;
+    this.retryCount = 0;
+    this.currentBackoffMs = this.options.initialDelayMs;
+  }
+
+  /**
+   * Clears the backoff timer
+   */
+  private clearBackoffTimer(): void {
+    if (this.backoffTimer !== null) clearTimeout(this.backoffTimer);
+    this.backoffTimer = null;
+    const complete = this.backoffResolve;
+    this.backoffResolve = null;
+    complete?.({ ok: false, dropped: true, reason: this.disposed ? "disposed" : "rejected" });
+  }
+
+  /**
+   * Returns whether the client is in degraded mode
+   */
+  isDegraded(): boolean {
+    return this.degraded;
+  }
+
+  /**
+   * Returns the count of active backoff timers
+   * Used for testing to verify proper cleanup (X2)
+   */
+  getActiveBackoffTimerCount(): number {
+    return this.backoffTimer !== null ? 1 : 0;
+  }
+
+  /**
+   * Register a project with the daemon.
+   *
+   * Reads handshake.json, POSTs to /api/v1/ingest/register,
+   * and returns the session identity assigned by the daemon.
+   *
+   * @param projectPath Path to the project directory
+   * @returns RegisterResponse with sessionId, projectId, and mode
+   * @throws Error if daemon is unreachable or registration fails
+   */
+  async register(projectPath: string): Promise<RegisterResponse> {
+    const handshake = await readHandshake(this.options.handshakePath);
+    if (!handshake) {
+      throw new Error('Daemon handshake not found');
+    }
+
+    const url = `${this.options.healthzUrl}:${handshake.port}`;
+    const response = await fetch(`${url}/api/v1/ingest/register`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${handshake.token}`,
+      },
+      body: JSON.stringify({ projectPath }),
+      signal: AbortSignal.timeout(5000),
+    });
+
+    if (!response.ok) {
+      const errorBody = await response.text().catch(() => '');
+      throw new Error(
+        `Register failed: ${response.status} ${response.statusText}${errorBody ? ' - ' + errorBody : ''}`,
+      );
+    }
+
+    const body = await response.json();
+    if (!body.success || !body.data) {
+      throw new Error(`Register returned unexpected response: ${JSON.stringify(body)}`);
+    }
+
+    // Store project path for write guard requests
+    this.registeredProjectPath = projectPath;
+
+    return body.data as RegisterResponse;
+  }
+
+  /**
+   * Get shell environment variables from the daemon.
+   *
+   * Sends a shell.env event to the daemon and returns the environment
+   * key-value pairs to be injected into the user's shell.
+   *
+   * @param sessionId Session ID obtained from register()
+   * @returns Environment variables key-value pairs, or {} if daemon unreachable
+   */
+  async getShellEnv(sessionId: string): Promise<Record<string, string>> {
+    try {
+      const handshake = await readHandshake(this.options.handshakePath);
+      if (!handshake) {
+        return {};
+      }
+
+      const url = `${this.options.healthzUrl}:${handshake.port}`;
+      const response = await fetch(`${url}/api/v1/ingest/event`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${handshake.token}`,
+        },
+        body: JSON.stringify({ sessionId, type: 'shell.env', data: {} }),
+        signal: AbortSignal.timeout(5000),
+      });
+
+      if (!response.ok) {
+        return {};
+      }
+
+      const body = await response.json();
+      return body.data?.env ?? {};
+    } catch {
+      return {};
+    }
+  }
+
+  // ── Write Guard API (v1.1) ──────────────────────────────────────────────────
+
+  /** Project path stored after successful register() */
+  private registeredProjectPath: string | null = null;
+
+  async checkNativeTool(projectPath: string, tool: string, args: Record<string, unknown>): Promise<void> {
+    if (this.disposed) throw new Error('WRITE_GUARD_UNAVAILABLE');
+    const handshake = await readHandshake(this.options.handshakePath);
+    if (!handshake) throw new Error('WRITE_GUARD_UNAVAILABLE: daemon handshake missing');
+    const response = await fetch(`${this.options.healthzUrl}:${handshake.port}/api/v1/v11/write-guard/native`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${handshake.token}` },
+      body: JSON.stringify({ projectPath, tool, args }),
+      signal: AbortSignal.timeout(5000),
+    });
+    if (!response.ok) throw new Error(`WRITE_GUARD_UNAVAILABLE: HTTP ${response.status}`);
+    const result = await response.json();
+    if (result?.success !== true || result?.data?.allowed !== true) {
+      throw new Error(`WRITE_GUARD_DENIED: ${result?.data?.reason ?? 'authorization unavailable'}`);
+    }
+  }
+
+  /**
+   * Check if a write operation is allowed.
+   * Fails closed: if daemon is unreachable, throws (write is blocked).
+   */
+  async checkWrite(targetPath: string, callerRole: string, context?: Record<string, unknown>): Promise<{ allowed: boolean; reason?: string; violations?: string[] }> {
+    const handshake = await readHandshake(this.options.handshakePath);
+    if (!handshake) {
+      throw new Error('[SF WriteGuard] Daemon handshake not found — fail closed, write blocked');
+    }
+
+    const url = `${this.options.healthzUrl}:${handshake.port}`;
+    let response: Response;
+    try {
+      response = await fetch(`${url}/api/v1/v11/write-guard/check`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${handshake.token}`,
+        },
+        body: JSON.stringify({ targetPath, callerRole, projectPath: this.registeredProjectPath, context }),
+        signal: AbortSignal.timeout(5000),
+      });
+    } catch (e) {
+      throw new Error(`[SF WriteGuard] Daemon unreachable — fail closed. Error: ${(e as Error).message}`);
+    }
+
+    if (!response.ok) {
+      throw new Error(`[SF WriteGuard] Daemon returned HTTP ${response.status} — fail closed`);
+    }
+
+    const body = await response.json() as { success: boolean; data?: { allowed: boolean; reason?: string; violations?: string[] }; error?: { message: string } };
+    if (!body.success || !body.data) {
+      throw new Error(`[SF WriteGuard] Daemon error: ${body.error?.message ?? 'unknown'}`);
+    }
+
+    return {
+      allowed: body.data.allowed,
+      reason: body.data.reason ?? body.data.violations?.[0],
+      violations: body.data.violations,
+    };
+  }
+
+  /**
+   * Check if a bash/shell command is allowed.
+   * Fails closed: if daemon is unreachable, throws (command is blocked).
+   */
+  async bashGuard(command: string, expectedFiles: string[], context?: Record<string, unknown>): Promise<{ allowed: boolean; reason?: string }> {
+    const handshake = await readHandshake(this.options.handshakePath);
+    if (!handshake) {
+      throw new Error('[SF WriteGuard] Daemon handshake not found — fail closed, bash blocked');
+    }
+
+    const url = `${this.options.healthzUrl}:${handshake.port}`;
+    let response: Response;
+    try {
+      response = await fetch(`${url}/api/v1/v11/write-guard/bash`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${handshake.token}`,
+        },
+        body: JSON.stringify({ command, expectedFiles, projectPath: this.registeredProjectPath, context }),
+        signal: AbortSignal.timeout(5000),
+      });
+    } catch (e) {
+      throw new Error(`[SF WriteGuard] Daemon unreachable for bash guard — fail closed. Error: ${(e as Error).message}`);
+    }
+
+    if (!response.ok) {
+      throw new Error(`[SF WriteGuard] Daemon returned HTTP ${response.status} for bash guard — fail closed`);
+    }
+
+    const body = await response.json() as { success: boolean; data?: { allowed: boolean; reason?: string } };
+    if (!body.success || !body.data) {
+      return { allowed: false, reason: 'daemon_error' };
+    }
+
+    return body.data;
+  }
+
+  /**
+   * Perform changed files audit after tool execution.
+   * Non-critical: errors are logged but don't block.
+   */
+  async changedFilesAudit(params: { command: string; expectedFiles: string[]; callID?: string; tool?: string; toolCategory?: string }): Promise<{ passed?: boolean; escapedWrites?: string[]; violations?: string[] } | null> {
+    try {
+      const handshake = await readHandshake(this.options.handshakePath);
+      if (!handshake) return null;
+
+      const url = `${this.options.healthzUrl}:${handshake.port}`;
+      const response = await fetch(`${url}/api/v1/v11/write-guard/changed-files-audit`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${handshake.token}`,
+        },
+        body: JSON.stringify({ ...params, projectPath: this.registeredProjectPath }),
+        signal: AbortSignal.timeout(5000),
+      });
+
+      if (!response.ok) return null;
+      const body = await response.json() as { success: boolean; data?: any };
+      return body.data ?? null;
+    } catch {
+      return null;
+    }
+  }
+
+  /**
+   * Record an escaped write incident.
+   * Non-critical: errors are logged but don't block.
+   */
+  async recordEscapedWrite(params: { command: string; expectedFiles: string[]; escapedWrites: string[]; callID?: string; timestamp?: string }): Promise<void> {
+    try {
+      const handshake = await readHandshake(this.options.handshakePath);
+      if (!handshake) return;
+
+      const url = `${this.options.healthzUrl}:${handshake.port}`;
+      await fetch(`${url}/api/v1/v11/write-guard/escaped-write`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${handshake.token}`,
+        },
+        body: JSON.stringify({ ...params, projectPath: this.registeredProjectPath }),
+        signal: AbortSignal.timeout(5000),
+      });
+    } catch {
+      // Best-effort — never block on failure
+    }
+  }
+
+  /**
+   * Synchronous dispose - clears all timers
+   */
+  dispose(): void {
+    this.disposed = true;
+    this.clearBackoffTimer();
+    this.stopDegradedProbe();
+    this.pendingEvent = null;
+    this.cachedHandshake = null;
+  }
+
+  /**
+   * Sync dispose for use with using syntax (TS 5.2+)
+   */
+  [Symbol.dispose](): void {
+    this.dispose();
+  }
+
+  /**
+   * Async dispose for use with await using syntax
+   */
+  async [Symbol.asyncDispose](): Promise<void> {
+    this.dispose();
+  }
+}
+
+/**
+ * Creates a new ReconnectingDaemonClient instance
+ */
+export function createReconnectingDaemonClient(
+  options?: ReconnectingDaemonClientOptions
+): ReconnectingDaemonClient {
+  return new ReconnectingDaemonClient(options);
+}

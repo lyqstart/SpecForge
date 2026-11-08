@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/build-signal-final-assessment.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "build-final1-0-25-full-specification-authority-assessment",
+  "expected_writes": "Current20 SPS clauses22 actual owner hashes, all3 full/deployment/consumer scope evidence with explicit historical/native/type debt limits",
+  "started_utc": "2026-11-08T13:37:58.167Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\build-signal-final-assessment.cjs",
+      "sha256": "fa757f24cc2a079482b056a2a25a10cb476865c0017567b848619a041bfdad26",
+      "size": 7529,
+      "extension": ".cjs"
+    }
+  ]
+}

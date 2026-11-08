@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/prepare-toolchain-only-baseline.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "prepare-permitted-toolchain-only-baseline",
+  "expected_writes": "owned middle-leg package dev fields lock and release identity only",
+  "started_utc": "2026-11-08T11:08:15.328Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\prepare-toolchain-only-baseline.cjs",
+      "sha256": "7e2d8cd1f9281a2cf43edba7c16849123444ab7edc981c269a105fb9b5a9a8ba",
+      "size": 4049,
+      "extension": ".cjs"
+    }
+  ]
+}

@@ -1,0 +1,73 @@
+{
+  "utc": "2026-11-08T11:25:13.040Z",
+  "members": [
+    {
+      "name": "build.command.json",
+      "sha256": "596aa68b86d0d18631c8d3e1bfb68d0ce192b4b3bc43ec0e69b8e8f02dd5e3b9"
+    },
+    {
+      "name": "build.result.json",
+      "sha256": "bbf38a1ecf03e73dd805db344eb6d2b8cc9f767d7bbf0776af6f6a2ef4c1f802"
+    },
+    {
+      "name": "build.stderr.raw",
+      "sha256": "42580806f72966c011a56229da3d32784afbef0b7cde7cfe7d94dfef7da3aee9"
+    },
+    {
+      "name": "build.stdout.raw",
+      "sha256": "ef45560a55f7facc385acd1deb8d7e0514efe3d1184fbed21145a08325d00d1d"
+    },
+    {
+      "name": "context.json",
+      "sha256": "f5b759a1e00491fe6bd8a7b5fd64f15c6a4eb30cc530e9f8be3efb2b6fd33ccd"
+    },
+    {
+      "name": "driver-source.cjs",
+      "sha256": "75428734ba673661c54d5a3b29f4c24ce488ea0364db147a2957c958418461c7"
+    },
+    {
+      "name": "install.command.json",
+      "sha256": "dde4524d9623e53563ed57716d94c0740f5538c8f9fc142a318830e0d454e140"
+    },
+    {
+      "name": "install.result.json",
+      "sha256": "3adb63b570c7f2cf76a33bfa8db93b1242f490db7b614b9f2cd0ac1e38ca8160"
+    },
+    {
+      "name": "install.stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "install.stdout.raw",
+      "sha256": "d42a4f60f31cefcb254e64416cf87d766e9f444b69fd8a9d9626a80c63e49358"
+    },
+    {
+      "name": "result.json",
+      "sha256": "4d1f10b024ddb1dd903e818f0afa854a6c5a586895db7e1541103fc2e0ee0a11"
+    },
+    {
+      "name": "status-after.nul",
+      "sha256": "1fba2c78a610ae74e4cc5e835ade36460cfc7f89ae9fe39af09c5c8c38bb62fe"
+    },
+    {
+      "name": "status-before.nul",
+      "sha256": "1fba2c78a610ae74e4cc5e835ade36460cfc7f89ae9fe39af09c5c8c38bb62fe"
+    },
+    {
+      "name": "workspace.command.json",
+      "sha256": "c01f19a128ed5b4cb2b3c8649741b9ea115872e1cf91fa51281b107650bf0d6f"
+    },
+    {
+      "name": "workspace.result.json",
+      "sha256": "c20b310973077af21a9fd03a8808918d0917f04365e5dd619806be0a865165e9"
+    },
+    {
+      "name": "workspace.stderr.raw",
+      "sha256": "59407c666282a3f8577540fd1630b6e68efd88fa9a49d9c824bd20ab97cc1fbe"
+    },
+    {
+      "name": "workspace.stdout.raw",
+      "sha256": "86760ea40c48316970411f535cba4c352327fb90af764c06a29c126bb6073e27"
+    }
+  ]
+}

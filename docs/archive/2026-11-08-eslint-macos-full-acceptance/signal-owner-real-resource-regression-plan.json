@@ -1,0 +1,24 @@
+{
+  "id": "signal-owner-real-resource-regression",
+  "reason": "0253 real unchanged-baseline trace attributes accumulated SIGTERM callbacks to actual GracefulShutdownHandler.attachToProcess. Registration uses anonymous closures but disposal stores/removes handleSignal, a different function. Daemon stop triggers owner disposal, so fix belongs existing service-management shutdown owner; first prove red actual process listener-count regression without raising limits or masking warnings.",
+  "required_verification": "Red resource test on old owner, exact callback fix, full service/daemon lifecycle, all12 lint/build/typecheck and final symmetric cold/structured qualification/3OS/install/deployment.",
+  "files": [
+    {
+      "file": "packages/service-management/tests/unit/graceful-shutdown-handler.test.ts",
+      "changes": [
+        {
+          "from": "it('should not attach twice if already attached', () =>",
+          "to": "it('should not attach twice if already attached', async () =>"
+        },
+        {
+          "from": "      handler.attachToProcess();\n      // Should not throw or cause issues when called again\n      handler.attachToProcess();\n\n      // Multiple attaches should be idempotent\n      expect(true).toBe(true);\n\n      // Note: We can't easily test cleanup here since we can't remove listeners\n      // but the code has the _attached guard",
+          "to": "      const before=process.listenerCount('SIGTERM');\n      handler.attachToProcess();\n      expect(process.listenerCount('SIGTERM')).toBe(before+1);\n      handler.attachToProcess();\n      expect(process.listenerCount('SIGTERM')).toBe(before+1);\n      await handler.dispose();\n      expect(process.listenerCount('SIGTERM')).toBe(before);"
+        },
+        {
+          "from": "    it('should log shutdown reason on SIGTERM'",
+          "to": "    it('releases exact signal callbacks and preserves foreign listeners across repeated lifecycles', async () => {\n      const signals=process.platform==='win32'?['SIGTERM'] as const:['SIGTERM','SIGINT'] as const;\n      const foreign=()=>undefined;\n      for(const signal of signals)process.on(signal,foreign);\n      const before=new Map(signals.map(signal=>[signal,process.listeners(signal)]));\n      try {\n        for(let index=0;index<12;index++){\n          const handler=new GracefulShutdownHandler();handlers.push(handler);\n          handler.attachToProcess();handler.attachToProcess();\n          for(const signal of signals)expect(process.listenerCount(signal)).toBe(before.get(signal)!.length+1);\n          if(index%2===0)await handler.trigger('owned lifecycle regression');else await handler.dispose();\n          for(const signal of signals)expect(process.listeners(signal)).toEqual(before.get(signal));\n          expect(handler.getActiveTaskCount()).toBe(0);expect(handler.getActiveTimerCount()).toBe(0);\n        }\n      } finally {for(const signal of signals)process.removeListener(signal,foreign);}\n    });\n    it('should log shutdown reason on SIGTERM'"
+        }
+      ]
+    }
+  ]
+}

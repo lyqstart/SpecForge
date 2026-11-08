@@ -1,0 +1,47 @@
+{
+  "utc": "2026-11-08T13:31:35.874Z",
+  "seq": "0309",
+  "raw_members": {
+    "0309.command.txt": {
+      "sha256": "acaa4a4394805f02a68c1cfcda57ce647dce4cb5ff5e69635f9548f1b339ddea",
+      "first_line_sha256": "021fb596db81e6d02bf3d2586ee3981fe519f275c0ac9ca76bbcf2ebb4097d96",
+      "last_line_sha256": "d10b36aa74a59bcf4a88185837f658afaf3646eff2bb16c3928d0e9335e945d2"
+    },
+    "0309.stdout.txt": {
+      "sha256": "aad330602c814336d0422501e073e6bb8819fdb696faca51fef32f298708ddf0",
+      "first_line_sha256": "33d54db939e68bd6cfba5a803462fd3637bd0f6d971b3bb78a5795d3621c2304",
+      "last_line_sha256": "33d54db939e68bd6cfba5a803462fd3637bd0f6d971b3bb78a5795d3621c2304"
+    },
+    "0309.stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "first_line_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "last_line_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "0309.result.json": {
+      "sha256": "560fbbeb4a35ef95631a2fbb1cf136e015f480857ca4c81dc973deec9fd03463",
+      "first_line_sha256": "021fb596db81e6d02bf3d2586ee3981fe519f275c0ac9ca76bbcf2ebb4097d96",
+      "last_line_sha256": "d10b36aa74a59bcf4a88185837f658afaf3646eff2bb16c3928d0e9335e945d2"
+    },
+    "0309.stdout.raw.bin": {
+      "sha256": "aad330602c814336d0422501e073e6bb8819fdb696faca51fef32f298708ddf0",
+      "first_line_sha256": "33d54db939e68bd6cfba5a803462fd3637bd0f6d971b3bb78a5795d3621c2304",
+      "last_line_sha256": "33d54db939e68bd6cfba5a803462fd3637bd0f6d971b3bb78a5795d3621c2304"
+    },
+    "0309.stderr.raw.bin": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "first_line_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "last_line_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "0309.carrier-source.cjs": {
+      "sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+      "first_line_sha256": "a597d28ffe50853d5d6fb2b70b065f6ac77eff23bbbd0a71b7658f130d85ae9d",
+      "last_line_sha256": "c78d573942fcd678cd3e5e48ddb0df62cf957f7a9e0030098605ac53cc9ca464"
+    },
+    "0309.entry-source-0.cjs": {
+      "sha256": "b798db943e05720edfdc71eb58fe0acdc6c8215dc68e958c10c57f21ad72493e",
+      "first_line_sha256": "138e324b404178c70df96b1148ef8f790dcca5cb2b5bb680c3c3266916ff8231",
+      "last_line_sha256": "9ced4c4c3ab9a19bf0c8b264fd271ec49de03f7b2284b638b080ad8fd9d378f3"
+    }
+  },
+  "redactions": []
+}

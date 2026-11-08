@@ -1,0 +1,35 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "D:/code/SpecForge/docs/archive/2026-11-08-eslint-macos-full-acceptance/export-linux-source.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge\\.lint-shortpath-a01",
+  "purpose": "export-final-linux-systemd-source",
+  "expected_writes": "Read-only exact candidate tracked current source; exclude archives backups self truth-source; explicit source hashes before isolated copy",
+  "started_utc": "2026-11-08T12:29:17.329Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\export-linux-source.cjs",
+      "sha256": "1e6349b13e994c61ff10a8d4280ec62f65f02950bf3e867db7676c803d074020",
+      "size": 1790,
+      "extension": ".cjs"
+    }
+  ],
+  "finished_utc": "2026-11-08T12:29:20.542Z",
+  "carrier_exit_code": 0,
+  "inner_exit_code": 0,
+  "numeric_inner_exit_code_available": true,
+  "process_started": true,
+  "child_pid": 38372,
+  "spawn_error": null,
+  "signal": null,
+  "observed_writes": {
+    "repository_status_before": " D docs/archive/2026-11-07-verification-production/consumer-source-review/current/docs/archive/2026-11-07-verification-production/evidence-guidance-baseline/setup/userlevel-opencode/skills/superpowers-verification-before-completion/SKILL.md\n",
+    "repository_status_after": " D docs/archive/2026-11-07-verification-production/consumer-source-review/current/docs/archive/2026-11-07-verification-production/evidence-guidance-baseline/setup/userlevel-opencode/skills/superpowers-verification-before-completion/SKILL.md\n",
+    "other": "See expected writes and owner-specific receipt; status does not enumerate external runtime writes."
+  }
+}

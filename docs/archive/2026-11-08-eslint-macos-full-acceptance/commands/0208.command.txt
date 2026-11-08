@@ -1,0 +1,23 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/download-ci-artifact.cjs",
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/local-assets/849-platform-linux-transport.json"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "download-849-platform-linux",
+  "expected_writes": "Digest-verified official final-candidate platform evidence",
+  "started_utc": "2026-11-08T12:12:54.340Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\download-ci-artifact.cjs",
+      "sha256": "aa52bd82acb2198965e8a6eb1d770d81328dde42c61b71d7ab714cd475d5ffee",
+      "size": 1277,
+      "extension": ".cjs"
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "utc": "2026-11-08T10:51:38.351Z",
+  "input_sha256": "e0fd9d2285a226e2716b53782baf7251d07c88108782ac938c1e31068a4f834b",
+  "reason": "Keep new scope test helper in the existing parent import group; record the actual Node executable identity in every CI context.",
+  "required_verification": "Complete lint, build and actual platform CI",
+  "members": [
+    {
+      "file": "packages/scope-gate/tests/current-permission-write-guard-boundary.test.ts",
+      "before": "485491739e2eea053db8b08b6ded01c69d09969806789c0f90702001460fd944",
+      "after": "c4f244b92f27de55ffe3e1e37179df863aa687c32c0053922a890c8bf610d5d4"
+    },
+    {
+      "file": "scripts/run-ci-regression.mjs",
+      "before": "c67252cc6451311dbd4931ff6b5752d27fb69eb9ee64468fac3aac3edeb1ca4f",
+      "after": "7354e6a0e4b662cfb4591f93bb518acb7c092661fbaa1b28d18cbc8896a5735f"
+    }
+  ]
+}

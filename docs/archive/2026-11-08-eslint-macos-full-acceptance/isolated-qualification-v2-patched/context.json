@@ -1,0 +1,32 @@
+{
+  "utc": "2026-11-08T11:29:11.428Z",
+  "leg": "patched",
+  "repository": "D:\\code\\SpecForge\\.lint-review-a01",
+  "source_commit": "df9f572cf4150fb1f03fbac9f2ba028e9c4cfa8a",
+  "base_head": "3549c23c64c53ad29761104a125b87ff50a53cc5",
+  "temp_parent_outside_git": {
+    "path": "C:\\Users\\lyq\\AppData\\Local\\Temp",
+    "exit": 128,
+    "stderr": "fatal: not a git repository (or any of the parent directories): .git\n"
+  },
+  "bun_path": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "bun_sha256": "0187f68d843f825a72ada4a7eca60db896ed753759a7f8252edcd31ac1bf1b9c",
+  "node_path": "C:\\Program Files\\nodejs\\node.exe",
+  "node_sha256": "3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237",
+  "node": "v24.19.0",
+  "lock_sha256": "3f60323fd1c3303673a8d79d4253257198725d247d3e6551e7648d0826db4438",
+  "environment": {
+    "HOME": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-eslint-macos-A01-v2-patched\\home",
+    "USERPROFILE": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-eslint-macos-A01-v2-patched\\home",
+    "TEMP": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-eslint-macos-A01-v2-patched\\temp",
+    "TMP": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-eslint-macos-A01-v2-patched\\temp",
+    "TMPDIR": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-eslint-macos-A01-v2-patched\\temp",
+    "APPDATA": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-eslint-macos-A01-v2-patched\\roaming",
+    "LOCALAPPDATA": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-eslint-macos-A01-v2-patched\\local",
+    "OPENCODE_CONFIG_DIR": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-eslint-macos-A01-v2-patched\\opencode",
+    "BUN_INSTALL_CACHE_DIR": "C:/Users/lyq/.bun/install/cache",
+    "SPECFORGE_VERIFICATION_NODE_SOURCE": "C:\\Program Files\\nodejs\\node.exe"
+  },
+  "cache_policy": "Only integrity-bound package download cache is shared; workspaces, dependencies, builds, user profiles and test fixtures remain independent. No source or compiled workspace cache shared.",
+  "frozen_manifest_sha256": "7dd0db872afb4d76c1aa5cfec0964915aa8fc95b31651bf0b09f25b537dfbfff"
+}

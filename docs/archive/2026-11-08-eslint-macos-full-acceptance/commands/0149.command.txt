@@ -1,0 +1,115 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "test",
+    "--",
+    "tests/design-governance-orchestrator-closure.test.ts",
+    "tests/v11-final-governance-regression.test.ts",
+    "tests/v6-authority-consumer-alignment.test.ts",
+    "tests/unit/candidate-gate-historical-attempt-reconcile.test.ts",
+    "tests/unit/candidate-runtime-truth-contract.test.ts",
+    "tests/unit/current-project-layout-boundary.test.ts",
+    "tests/unit/err155-159-contract-governance-recovery.test.ts",
+    "tests/unit/knowledge-store-schema.test.ts",
+    "tests/unit/source-structure-contract.test.ts",
+    "tests/unit/optional-file-lock-owner.test.ts",
+    "tests/unit/input-boundary-contracts.test.ts",
+    "src/tools/lib/architecture-governance-v7-regression.test.ts",
+    "--maxWorkers=1",
+    "--minWorkers=1"
+  ],
+  "cwd": "D:\\code\\SpecForge\\.lint-review-a01\\packages\\daemon-core",
+  "purpose": "daemon-whole-affected-contract-files",
+  "expected_writes": "owned hermetic test fixtures; immutable failure/success receipts",
+  "started_utc": "2026-11-08T10:57:25.116Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 3,
+      "path": "D:\\code\\SpecForge\\.lint-review-a01\\packages\\daemon-core\\tests\\design-governance-orchestrator-closure.test.ts",
+      "sha256": "ee398a688598c0e7bdd07db4db5bca706e1a6a2519c8e44d529361c15a41c411",
+      "size": 47647,
+      "extension": ".ts"
+    },
+    {
+      "argument_index": 4,
+      "path": "D:\\code\\SpecForge\\.lint-review-a01\\packages\\daemon-core\\tests\\v11-final-governance-regression.test.ts",
+      "sha256": "f4dd1f82a0cfcb9890644de51edfb4b07ad52682dde47606ed25a65341d2cf41",
+      "size": 10954,
+      "extension": ".ts"
+    },
+    {
+      "argument_index": 5,
+      "path": "D:\\code\\SpecForge\\.lint-review-a01\\packages\\daemon-core\\tests\\v6-authority-consumer-alignment.test.ts",
+      "sha256": "6fa89fcc20d6999436b2c002b346b385050ab0a89e61e810236fde0a634289b8",
+      "size": 3684,
+      "extension": ".ts"
+    },
+    {
+      "argument_index": 6,
+      "path": "D:\\code\\SpecForge\\.lint-review-a01\\packages\\daemon-core\\tests\\unit\\candidate-gate-historical-attempt-reconcile.test.ts",
+      "sha256": "50e14ec15fce6525e435bb99500b2123afd848bab2ecbd3ea571be80cdc00c0b",
+      "size": 5280,
+      "extension": ".ts"
+    },
+    {
+      "argument_index": 7,
+      "path": "D:\\code\\SpecForge\\.lint-review-a01\\packages\\daemon-core\\tests\\unit\\candidate-runtime-truth-contract.test.ts",
+      "sha256": "e1f88529289777299951fcd3b9a3abbb0404e3e19b8aaaffa6901ab70a9a502a",
+      "size": 2758,
+      "extension": ".ts"
+    },
+    {
+      "argument_index": 8,
+      "path": "D:\\code\\SpecForge\\.lint-review-a01\\packages\\daemon-core\\tests\\unit\\current-project-layout-boundary.test.ts",
+      "sha256": "a2930706d37f6e7e7895973855d55ab808fcb01b35d9d1a21f44cf2f13dc22ce",
+      "size": 9892,
+      "extension": ".ts"
+    },
+    {
+      "argument_index": 9,
+      "path": "D:\\code\\SpecForge\\.lint-review-a01\\packages\\daemon-core\\tests\\unit\\err155-159-contract-governance-recovery.test.ts",
+      "sha256": "822e35d088a8bc916a6f12ce500861fa234d7490d03367a36126321de0208079",
+      "size": 8400,
+      "extension": ".ts"
+    },
+    {
+      "argument_index": 10,
+      "path": "D:\\code\\SpecForge\\.lint-review-a01\\packages\\daemon-core\\tests\\unit\\knowledge-store-schema.test.ts",
+      "sha256": "f749df49e6952ac1b9508d7dc1a4ee9447af3ef4604c8ce78a58b880d9ccf1cf",
+      "size": 3410,
+      "extension": ".ts"
+    },
+    {
+      "argument_index": 11,
+      "path": "D:\\code\\SpecForge\\.lint-review-a01\\packages\\daemon-core\\tests\\unit\\source-structure-contract.test.ts",
+      "sha256": "3750c36eaf9d2adfa2436f4d06546115255bbfd8a7120e9151b962c4e3f3c12d",
+      "size": 1285,
+      "extension": ".ts"
+    },
+    {
+      "argument_index": 12,
+      "path": "D:\\code\\SpecForge\\.lint-review-a01\\packages\\daemon-core\\tests\\unit\\optional-file-lock-owner.test.ts",
+      "sha256": "5876bf931e42fdeef3afd3f1806c2c70e548b84ce4737312fcdecb58242787c6",
+      "size": 5285,
+      "extension": ".ts"
+    },
+    {
+      "argument_index": 13,
+      "path": "D:\\code\\SpecForge\\.lint-review-a01\\packages\\daemon-core\\tests\\unit\\input-boundary-contracts.test.ts",
+      "sha256": "ae3638d6d62cde7c881584fff2b09b9979b2e9470e4d43f1bc1bcd7f1c512b19",
+      "size": 2827,
+      "extension": ".ts"
+    },
+    {
+      "argument_index": 14,
+      "path": "D:\\code\\SpecForge\\.lint-review-a01\\packages\\daemon-core\\src\\tools\\lib\\architecture-governance-v7-regression.test.ts",
+      "sha256": "dd8e117a10a18c7426decff70eb5edd637fdf6793074e1071b0a2a062b2660e2",
+      "size": 7558,
+      "extension": ".ts"
+    }
+  ]
+}

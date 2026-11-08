@@ -1,0 +1,13 @@
+{
+  "utc": "2026-11-08T09:34:58.840Z",
+  "input_sha256": "81b3ceb6376f0b007bf91ce84c33dc5fbfeed55d575609339096a26147dff0bd",
+  "reason": "Existing closed plan predicate accepts unknown and checks every consumed field before use. Root key set independently identical. Reject non-string digest/time fields and non-number PID instead of coercion; no branch/approval/lease flow expanded.",
+  "required_verification": "Existing actual detached-bootstrap/filter-exclusion suites; malformed plan metadata cases; all12 compile and lint.",
+  "members": [
+    {
+      "file": "packages/daemon-core/src/tools/lib/git-detached-bootstrap.ts",
+      "before": "4274e9df9ebde6eb3b5d86e0e3c9e7f1133a23b5bb3b82fbb2d048f17265b5a9",
+      "after": "e3f094c50579b49854a853012d110dc81641736e687577c68c88dfbcd449b771"
+    }
+  ]
+}

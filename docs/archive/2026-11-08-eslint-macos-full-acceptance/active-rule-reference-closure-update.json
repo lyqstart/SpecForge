@@ -1,0 +1,9 @@
+{
+  "utc": "2026-11-08T08:13:22.136Z",
+  "rule": "EXP-091",
+  "before_sha256": "678d838160f2ab80146d60d5921f2604bf456ae93e1cd63a3e7706f730a82272",
+  "after_sha256": "0a1e6666f5a5073f93a57e520090b7efeb7ecd2f0e73be9f45fdcac5c89428b8",
+  "new_text_read": "删除局部绑定前必须核对它的完整词法引用集合：只写不读的赋值和更新仍是引用，不能仅删声明留下未绑定写入。可能有副作用的初始化与右值必须保留；不能证明无外部可观察读取的更新不得自动删除。测试未进入生产tsc时，须用相同源码的符号绑定或TypeScript-aware运行值引用门禁补验，并重跑原失败所属完整测试包；构建通过不能替代测试局部绑定验证。\n<!-- source: ERR-2066/ERR-2067; binding-reference closure supplement -->\n\n",
+  "complete_read_reconstruction": "All old chunks were read to EOF in gate.json; subtracting the verbatim read supplement reconstructs those exact old bytes. No old rule removed or silently changed.",
+  "class_guard": "Actual ESLint runtime-reference rule, six positive/negative canaries accepted; original missing binding and type-only runtime import both rejected."
+}

@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/repair-workflow-test-boundaries.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "repair-actual-workflow-test-api-and-unknown-boundaries",
+  "expected_writes": "private-fixture-tests-and-plan-only",
+  "started_utc": "2026-11-08T09:50:44.947Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\repair-workflow-test-boundaries.cjs",
+      "sha256": "3b848c0fb8d945d7bff83967c9cbb908049e5165953192429dff10aaf66b0aab",
+      "size": 8785,
+      "extension": ".cjs"
+    }
+  ]
+}

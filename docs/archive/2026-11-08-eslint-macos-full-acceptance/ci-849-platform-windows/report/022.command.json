@@ -1,0 +1,16 @@
+{
+  "number": "022",
+  "name": "current-help",
+  "executable": "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\sf-platform-acceptance-F428LN\\opencode\\sf-user\\bin\\specforge.exe",
+  "args": [
+    "opencode-server",
+    "start",
+    "--help",
+    "--json"
+  ],
+  "started_utc": "2026-11-08T12:09:55.798Z",
+  "finished_utc": "2026-11-08T12:09:55.908Z",
+  "inner_exit_code": 0,
+  "signal": null,
+  "spawn_error": null
+}

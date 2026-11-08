@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/prepare-signal-root-deployment-v2.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "prepare-real527-official-user-upgrade",
+  "expected_writes": "Read-only exact final source/release/117 current managed identities, literal lock and native lineage; no stop/install until all verified",
+  "started_utc": "2026-11-08T13:28:40.740Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\prepare-signal-root-deployment-v2.cjs",
+      "sha256": "cf83702c46dbb9d6a98fe0313794ba48bd49642555dd2749de14a3140b030b7b",
+      "size": 2655,
+      "extension": ".cjs"
+    }
+  ]
+}

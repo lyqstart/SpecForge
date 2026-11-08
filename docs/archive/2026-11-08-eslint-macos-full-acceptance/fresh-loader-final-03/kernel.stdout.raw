@@ -1,0 +1,3 @@
+Warning: OPENCODE_SERVER_PASSWORD is not set; server is unsecured.
+opencode server listening on http://127.0.0.1:44096
+[sf:specforge] Daemon unavailable; lifecycle is externally managed: Register failed: 409 Conflict - {"error":"PROJECT_NOT_INITIALIZED","message":"项目未初始化。请由 sf-orchestrator 使用受控 sf_project_init 完成初始化，再注册；不要手工创建或修复 Project Spec、Manifest 或 Runtime 状态。","projectPath":"C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-current-metadata-iDg3VG"}

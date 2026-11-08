@@ -1,0 +1,20 @@
+{
+  "utc": "2026-11-08T13:19:04.847Z",
+  "members": [
+    {
+      "original_storage_path": "signal-lock-eol-before/.gitattributes",
+      "storage_path": "signal-lock-eol-before/.gitattributes.raw",
+      "sha256": "a87914a8b4de39dbe830a5ea43e965c901ecb814c75589c53f75a3b084c57e81",
+      "bytes": 3291,
+      "raw_bytes_unchanged": true
+    },
+    {
+      "original_storage_path": "signal-final-ci-lock-byte-binding-before/.gitattributes",
+      "storage_path": "signal-final-ci-lock-byte-binding-before/.gitattributes.raw",
+      "sha256": "6e2fc521146e94c6bcc8784b62c7212abb7bda0b2de0c7147d7a6e0aff86a10a",
+      "bytes": 3384,
+      "raw_bytes_unchanged": true
+    }
+  ],
+  "reason": "Evidence snapshots of Git attributes must be stored as inert data. An active nested .gitattributes would override archive -text rules and transform other sealed evidence at staging/checkout. Logical original source paths remain in original plans; this mapping locates exact before-bytes. No source/history bytes deleted or rewritten."
+}

@@ -1,0 +1,8 @@
+{
+  "utc": "2026-11-08T13:05:58.498Z",
+  "inner_exit_code": 0,
+  "failure": null,
+  "unit_absent": true,
+  "original_business_touched": false,
+  "scope": "Real official installed current Daemon under actual systemd owner: install/enable/start/health identity/restart/stop/disable/uninstall; no sleep process substituted."
+}

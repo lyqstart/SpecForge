@@ -1,0 +1,12 @@
+
+ RUN  v3.2.4 D:/code/SpecForge/.lint-review-a01/packages/daemon-core
+
+ ✓ tests/v6-authority-consumer-alignment.test.ts (3 tests) 299ms
+ ✓ tests/unit/current-doc-lint-authority.test.ts (2 tests) 80ms
+ ✓ tests/unit/source-structure-contract.test.ts (3 tests) 29ms
+
+ Test Files  3 passed (3)
+      Tests  8 passed (8)
+   Start at  19:11:48
+   Duration  4.52s (transform 591ms, setup 0ms, collect 2.38s, tests 408ms, environment 2ms, prepare 701ms)
+

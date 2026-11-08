@@ -1,0 +1,8 @@
+bun install v1.3.14 (0d9b296a)
+
++ @typescript-eslint/eslint-plugin@8.59.3
++ @typescript-eslint/parser@8.59.3
++ eslint-import-resolver-typescript@3.10.1
++ eslint-plugin-prettier@5.5.5
+
+28 packages installed [613.00ms]

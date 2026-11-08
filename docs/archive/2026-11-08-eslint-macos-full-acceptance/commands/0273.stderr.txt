@@ -1,0 +1,6 @@
+remote: 
+remote: Create a pull request for 'codex/eslint-macos-signal-validation' on GitHub by visiting:        
+remote:      https://github.com/lyqstart/SpecForge/pull/new/codex/eslint-macos-signal-validation        
+remote: 
+To https://github.com/lyqstart/SpecForge.git
+ * [new branch]        codex/eslint-macos-signal-validation -> codex/eslint-macos-signal-validation

@@ -1,0 +1,11 @@
+
+ RUN  v1.6.1 D:/code/SpecForge/.lint-review-a01/packages/workflow-runtime
+
+ ✓ tests/event-subscription.test.ts  (20 tests) 556ms
+ ✓ tests/integration/agent-runner.test.ts  (21 tests) 1089ms
+
+ Test Files  2 passed (2)
+      Tests  41 passed (41)
+   Start at  16:31:40
+   Duration  3.11s (transform 283ms, setup 56ms, collect 603ms, tests 1.65s, environment 0ms, prepare 389ms)
+

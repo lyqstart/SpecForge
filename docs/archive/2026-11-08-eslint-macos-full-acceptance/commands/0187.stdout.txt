@@ -1,0 +1,96 @@
+
+ RUN  v3.2.4 D:/code/SpecForge/.lint-platform-a01/packages/daemon-core
+
+ ✓ tests/unit/project-archive-restore.test.ts (26 tests) 32048ms
+   ✓ Recovery owner sealed project import > restores exact bytes, detached Git identity and real WAL authority; repeats without changes  5269ms
+   ✓ Recovery owner sealed project import > rejects hash before publication  792ms
+   ✓ Recovery owner sealed project import > rejects traversal before publication  799ms
+   ✓ Recovery owner sealed project import > rejects case before publication  760ms
+   ✓ Recovery owner sealed project import > rejects directory-case before publication  876ms
+   ✓ Recovery owner sealed project import > rejects prefix before publication  664ms
+   ✓ Recovery owner sealed project import > rejects git-path before publication  750ms
+   ✓ Recovery owner sealed project import > rejects reserved before publication  659ms
+   ✓ Recovery owner sealed project import > rejects ads before publication  668ms
+   ✓ Recovery owner sealed project import > rejects identity before publication  671ms
+   ✓ Recovery owner sealed project import > rejects archive raw-byte drift, conflicting live content and an invalid Git binding  658ms
+   ✓ Recovery owner sealed project import > rejects invalid-sequence through StateManager before publication  722ms
+   ✓ Recovery owner sealed project import > rejects missing-history through StateManager before publication  699ms
+   ✓ Recovery owner sealed project import > rejects projection-pointer through StateManager before publication  712ms
+   ✓ Recovery owner sealed project import > rejects projection-state through StateManager before publication  757ms
+   ✓ Recovery owner sealed project import > rejects hard links without altering their external alias  583ms
+   ✓ Recovery owner sealed project import > resumes a crash between residue and publication renames using the same immutable plan  1844ms
+   ✓ Recovery owner sealed project import > rejects a changed prepared stage, preserving original residue  1779ms
+   ✓ Recovery owner sealed project import > excludes loaded and pending projects, and rejects consumption during recovery  525ms
+   ✓ Recovery owner sealed project import > uses real authenticated HTTP → ProjectManager → Recovery owner and rejects unavailable dependencies  1754ms
+   ✓ Recovery owner sealed project import > preserves exact existing matches while rejecting loose-object corruption and old metadata  1782ms
+   ✓ Recovery owner sealed project import > rejects a junction in target ancestry and does not modify its destination  629ms
+   ✓ Recovery owner sealed project import > retains empty Git and project directories in residue without interpreting them as metadata  1637ms
+   ✓ Recovery owner sealed project import > excludes pending writers before a context is created  1607ms
+   ✓ Recovery owner sealed project import > rejects a live recovery lock and retains a dead process lock while resuming the same plan  1736ms
+   ✓ Recovery owner sealed project import > recovers from a prepared stage before the original rename and rebuilds uncommitted staging safely  2711ms
+ ✓ tests/unit/git-detached-bootstrap.test.ts (30 tests) 134984ms
+   ✓ controlled detached Git bootstrap > plans without creating refs, atomically binds two new branches and standard context, then retries idempotently  17936ms
+   ✓ controlled detached Git bootstrap > recovers an interrupted owner at refs_created without rewriting business/index or duplicating refs  14540ms
+   ✓ controlled detached Git bootstrap > recovers an interrupted owner at refs_and_head_bound without rewriting business/index or duplicating refs  15674ms
+   ✓ controlled detached Git bootstrap > recovers an interrupted owner at context_bound without rewriting business/index or duplicating refs  17680ms
+   ✓ controlled detached Git bootstrap > rejects unbound confirmation 批准 before refs  2956ms
+   ✓ controlled detached Git bootstrap > rejects unbound confirmation 不同意 main + codex/greet-library-wi-0001 before refs  2544ms
+   ✓ controlled detached Git bootstrap > rejects unbound confirmation 采用 main + codex/other-wi-0001 before refs  2626ms
+   ✓ controlled detached Git bootstrap > rejects a tampered immutable plan before refs  2904ms
+   ✓ controlled detached Git bootstrap > rejects unknown_schema with a correct raw hash before refs  2625ms
+   ✓ controlled detached Git bootstrap > rejects unknown_field with a correct raw hash before refs  2487ms
+   ✓ controlled detached Git bootstrap > rejects branch identity collision main while planning  865ms
+   ✓ controlled detached Git bootstrap > rejects branch identity collision main/topic while planning  967ms
+   ✓ controlled detached Git bootstrap > does not match the base name as a substring inside the work branch confirmation  1914ms
+   ✓ controlled detached Git bootstrap > atomically rejects a concurrent HEAD commit before changing either requested ref  2715ms
+   ✓ controlled detached Git bootstrap > rejects concurrent attachment to a different branch without overwriting that HEAD  3047ms
+   ✓ controlled detached Git bootstrap > holds Git HEAD.lock against an actual concurrent commit, then completes safely  7445ms
+   ✓ controlled detached Git bootstrap > preserves an unknown Git HEAD lock and rejects before creating refs  2281ms
+   ✓ controlled detached Git bootstrap > rejects tracked drift without creating target refs or context  2168ms
+   ✓ controlled detached Git bootstrap > rejects untracked drift without creating target refs or context  2178ms
+   ✓ controlled detached Git bootstrap > rejects staged drift without creating target refs or context  2426ms
+   ✓ controlled detached Git bootstrap > rejects head drift without creating target refs or context  1795ms
+   ✓ controlled detached Git bootstrap > rejects refs drift without creating target refs or context  2321ms
+   ✓ controlled detached Git bootstrap > rejects config drift without creating target refs or context  2128ms
+   ✓ controlled detached Git bootstrap > rejects context drift without creating target refs or context  2232ms
+   ✓ controlled detached Git bootstrap > rejects active permission and an existing local branch at plan time  1464ms
+   ✓ controlled detached Git bootstrap > rejects a tracked hard-link alias and retains bytes at both names  2028ms
+   ✓ controlled detached Git bootstrap > does not execute repository hooks or change the index  6929ms
+   ✓ controlled detached Git bootstrap > shares mutation exclusion with the normal existing-branch owner and preserves its behavior afterward  1164ms
+   ✓ controlled detached Git bootstrap > rejects wrong Runtime state and missing real confirmation through the actual dispatcher  576ms
+   ✓ controlled detached Git bootstrap > consumes actual StateManager events through the real public dispatcher while preserving state and recording normal context  6366ms
+stdout | tests/unit/runtime-history-integrity.test.ts > authoritative history integrity at configuration consumer > validates missing in a real fresh child process and preserves original evidence
+HISTORY_RESULT={"pid":41488,"utc":"2026-11-08T11:54:02.806Z","error":"Error: WAL_HISTORY_TRUNCATED"}
+
+stdout | tests/unit/runtime-history-integrity.test.ts > authoritative history integrity at configuration consumer > validates invalid-schema in a real fresh child process and preserves original evidence
+HISTORY_RESULT={"pid":42600,"utc":"2026-11-08T11:54:03.256Z","error":"Error: RUNTIME_SCHEMA_PRECHECK_BLOCKED:runtime-wal:SCHEMA_ID_MISSING"}
+
+stdout | tests/unit/runtime-history-integrity.test.ts > authoritative history integrity at configuration consumer > validates rotation in a real fresh child process and preserves original evidence
+HISTORY_RESULT={"pid":6192,"utc":"2026-11-08T11:54:03.729Z","error":"Error: CONFIGURATION_CHANGE_BLOCKED_ACTIVE_WORK: restore the accepted configuration before continuing"}
+
+ ✓ tests/unit/runtime-history-integrity.test.ts (21 tests) 2932ms
+   ✓ authoritative history integrity at configuration consumer > validates missing in a real fresh child process and preserves original evidence  490ms
+   ✓ authoritative history integrity at configuration consumer > validates invalid-schema in a real fresh child process and preserves original evidence  419ms
+   ✓ authoritative history integrity at configuration consumer > validates rotation in a real fresh child process and preserves original evidence  541ms
+   ✓ authoritative history integrity at configuration consumer > retains all segments after more than three rotations  513ms
+ ✓ tests/unit/shell-readonly-boundary.test.ts (136 tests) 1009ms
+stdout | tests/unit/configuration-activation-loss.test.ts > missing configuration activation at the actual consumer > rejects missing activation after actual process exit and fresh process startup
+ACTIVATION_RESULT={"pid":47400,"action":"initialize-active","utc":"2026-11-08T11:54:09.033Z","timeoutMs":2000,"states":["created"],"activationExists":true}
+ACTIVATION_RESULT={"pid":21120,"action":"read","utc":"2026-11-08T11:54:09.215Z","error":"Error: CONFIGURATION_CHANGE_BLOCKED_ACTIVE_WORK: restore the accepted configuration before continuing","states":["created"],"activationExists":false}
+
+ ✓ tests/unit/configuration-activation-loss.test.ts (16 tests) 1261ms
+   ✓ missing configuration activation at the actual consumer > rejects missing activation after actual process exit and fresh process startup  626ms
+ ✓ tests/unit/verification-source-snapshot.test.ts (5 tests) 6154ms
+   ✓ verification raw source and Git identity > records a bounded stage for a failed Git read without logging the project path  488ms
+   ✓ verification raw source and Git identity > captures current raw input and rejects a changed source without invoking clean filters  1139ms
+   ✓ verification raw source and Git identity > rejects undeclared untracked code and hardlinked tracked input  812ms
+   ✓ verification raw source and Git identity > binds branch, index and repository configuration  2153ms
+   ✓ verification raw source and Git identity > freezes only reachable code and package metadata, without reading unrelated tracked files  1562ms
+ ✓ tests/unit/verification-evidence-integrity.test.ts (4 tests) 112ms
+ ✓ tests/unit/verification-owner-store.test.ts (14 tests) 217ms
+
+ Test Files  8 passed (8)
+      Tests  252 passed (252)
+   Start at  19:51:05
+   Duration  190.97s (transform 3.64s, setup 0ms, collect 8.90s, tests 178.72s, environment 2ms, prepare 1.60s)
+

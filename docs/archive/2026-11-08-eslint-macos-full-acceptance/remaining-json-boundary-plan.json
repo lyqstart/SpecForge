@@ -1,0 +1,78 @@
+{
+  "utc": "2026-11-08T10:25:53.184Z",
+  "collector_sha256": "2982bb1b55cb368df0961671246a58e4a7b07083f7070cce7ff7d9d13dc8ed87",
+  "members": [
+    {
+      "file": "packages/daemon-core/src/http/HTTPServer.ts",
+      "before": "3fcc8a05f8b9fc4d6de78d0bef761f521750b36678d564575f79385dfd7e6c32",
+      "after": "4ededcd2014aa5b8de4cf6926d43b1c7adc496b826663d7ffe23e4508333acb4"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/contract-authoring.ts",
+      "before": "7481013c97756ed7288654b5be53d642ec23edf738766c5ba56d756cd4edaa30",
+      "after": "c8e7a0466fbbd51b4c3b11524627d9944851632fc08c43f618295c477b52c75c"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/merge-runner-v11.ts",
+      "before": "9a24bd0421b56c82502b2bcd9e936957cec4e58fbc06c01cabb40fb2517c19f0",
+      "after": "c5c04f1166cc4cf3b303c0c6213b405ad5469e05cf8b849f3fea405b345d6932"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/project-governance-v2.ts",
+      "before": "73fca1e9b4efb7bd878b3fffc8808dfab5d954fd558f492e9bf2a52b9384f845",
+      "after": "d6956595216abd40e85251e298a66daefc139299f254ddd04c227dc8085014cf"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_artifact_write_core.ts",
+      "before": "66f06bc592aa25704997d46d53c6bcf6688aef41d037c9d8a9fefef22eaf5adc",
+      "after": "71dbc284b9dffbc175de18c7374485e6d40c01324bbc9df21016f5df7f4578ac"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-artifact-write.ts",
+      "before": "e484f8a968ed051223d0c0748086396be4804fc09b78e7b3ccd9dcf8e3964634",
+      "after": "c29096b20521431101680d3b9f15063a6c2fb772965aa776ad3514ef006f4742"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/artifact-schema-validation.ts",
+      "before": "7708b72beb273df422572f9e44bc99826fe31a6707a70bbb95a00947ae3e1902",
+      "after": "8a336eae9ed77dc80513ac1beddf8fcaa30bc52cd0c09a1c23f7489bb0fc09ff"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-knowledge-base.ts",
+      "before": "c970da8b84496bf07e57b872371f7a97eb54c9040b06718410c9c476a33b732b",
+      "after": "7184069bb365c785b28fc1903886820aa7976859b6e0b8bf60fb130a662437e7"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-v11-verification.ts",
+      "before": "cb38a4b14dea498c2be59b9d74c451e5eb2875e806bcb2db86fbcb2b7ba01c5c",
+      "after": "61efbb748533bf2f4dcbc26320899dba2fc42ac4122d21753c9eab703ff4f819"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/verification-evidence-v11.ts",
+      "before": "d8f77bb6272584f7c6a1ab863f52828216fd6a8da11bc430cec0801067e68c05",
+      "after": "91ba61b0acd62f090d325063ca4e54619643ccb80f6d7fde0cc44093cae280eb"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/governance-invariants-v11.ts",
+      "before": "41a6abece8924c8db7eba7e01cf5670d1098139251e34de54d7b416b45b81d9e",
+      "after": "4ea989a7a204287ef78bd7161f41537cdb21615d30873824ce886e0b174c1935"
+    },
+    {
+      "file": "packages/daemon-core/src/recovery/ProjectArchiveRestore.ts",
+      "before": "ba118ca2732948726c5fb3e55c10811e425f56d9625ff7ec797b4a3720cb9eee",
+      "after": "10c4dd2d4fdd77ef554730b03eb22b7ab8436cbceebcdf2cc40c2a13b05cfde7"
+    },
+    {
+      "file": "packages/daemon-core/src/project/ProjectManager.test.ts",
+      "before": "48afcb94d1f40611c79d225a6cb79d048e85348623fc318f491ec46744d2ccb4",
+      "after": "890885e448185d9d9612f0226cdfc4315e8971c2aa097a96cf6ccd873d0c6255"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/new-project-governance-bootstrap.test.ts",
+      "before": "d0ced95e15f834dd691f85b3e91cb1af02e1ddd5213b368eeabad9acd2ea5b3c",
+      "after": "06b785176c6dd2a27395d3d0908653b2b57eafe77e40af796bbc2fcac9f23fad"
+    }
+  ],
+  "policy": "Unknown JSON remains unknown until structural checks; valid ordered field operations retained. Invalid trace/list/manifest/archive/commit values reject. No rule weakening or scope changes.",
+  "required": "Full compile and affected positive/negative regressions before qualification"
+}

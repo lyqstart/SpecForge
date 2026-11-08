@@ -1,0 +1,13 @@
+{
+  "identity": {
+    "ProcessId": 47420,
+    "ExecutablePath": "C:\\Users\\lyq\\AppData\\Roaming\\npm\\node_modules\\opencode-ai\\bin\\opencode.exe",
+    "CreationDate": "2026-11-08T21:31:11.946736+08:00"
+  },
+  "sha256": "83567c13cc5e361ded7e48351cb024cd4503285960d82c30fc585194da46d757",
+  "health": {
+    "healthy": true,
+    "version": "1.18.35"
+  },
+  "directory": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-current-metadata-iDg3VG"
+}

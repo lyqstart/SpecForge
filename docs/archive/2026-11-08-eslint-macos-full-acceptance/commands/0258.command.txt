@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/prepare-signal-owner-regression.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "prepare-signal-real-resource-regressions",
+  "expected_writes": "Private regression tests first, no product repair before red evidence",
+  "started_utc": "2026-11-08T12:51:27.494Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\prepare-signal-owner-regression.cjs",
+      "sha256": "ec4ee073a939e243e0c5446efd6056f5341a3ef2d12ae770ae71fad2472432f5",
+      "size": 3686,
+      "extension": ".cjs"
+    }
+  ]
+}

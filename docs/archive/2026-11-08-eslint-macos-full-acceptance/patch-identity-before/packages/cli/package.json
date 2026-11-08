@@ -1,0 +1,54 @@
+{
+  "name": "@specforge/cli",
+  "version": "1.0.24",
+  "description": "Command Line Interface for SpecForge",
+  "main": "dist/cli.js",
+  "types": "dist/cli.d.ts",
+  "bin": {
+    "specforge": "dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "clean": "bun ../../scripts/clean-workspace.ts --package cli",
+    "lint": "node ../../scripts/lint-package.mjs cli",
+    "lint:fix": "node ../../scripts/lint-package.mjs cli --fix",
+    "format": "prettier --write src tests",
+    "format:check": "prettier --check src tests",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
+  },
+  "keywords": [
+    "specforge",
+    "cli"
+  ],
+  "author": "SpecForge Team",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@types/proper-lockfile": "^4.1.4",
+    "@types/yargs": "^17.0.32",
+    "@typescript-eslint/eslint-plugin": "8.59.3",
+    "@typescript-eslint/parser": "8.59.3",
+    "@vitest/coverage-v8": "^1.2.0",
+    "eslint": "9.39.4",
+    "eslint-config-prettier": "10.1.8",
+    "eslint-plugin-prettier": "5.5.5",
+    "fast-check": "^3.15.0",
+    "prettier": "3.8.3",
+    "typescript": "^5.3.3",
+    "vitest": "^1.2.0"
+  },
+  "dependencies": {
+    "@specforge/configuration": "workspace:*",
+    "@specforge/service-management": "workspace:*",
+    "@specforge/types": "workspace:*",
+    "@specforge/version-unification": "workspace:*",
+    "axios": "^1.6.0",
+    "chalk": "^4.1.2",
+    "proper-lockfile": "^4.1.2",
+    "yargs": "^17.7.2"
+  },
+  "schema_version": "1.0"
+}

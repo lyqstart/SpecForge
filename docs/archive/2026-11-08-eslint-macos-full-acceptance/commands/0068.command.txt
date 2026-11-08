@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/repair-workflow-production-types.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "repair-workflow-production-owner-types",
+  "expected_writes": "private-fixture-source-and-plan-only",
+  "started_utc": "2026-11-08T08:48:11.189Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\repair-workflow-production-types.cjs",
+      "sha256": "c2960bfcbe370049135cc97c4ce090b8024ab47f877f209852f5dcd0e74b71b4",
+      "size": 8209,
+      "extension": ".cjs"
+    }
+  ]
+}

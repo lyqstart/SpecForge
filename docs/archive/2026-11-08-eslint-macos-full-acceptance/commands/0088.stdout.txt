@@ -1,0 +1,15 @@
+
+ RUN  v1.6.1 D:/code/SpecForge/.lint-review-a01/packages/workflow-runtime
+
+ ✓ tests/integration/workflow-e2e-property-29.test.ts  (15 tests) 83ms
+ ✓ tests/property/composite-gate-parallel.property.test.ts  (14 tests) 179ms
+ ✓ tests/property/composite-gate-property-4.parallel-execution.test.ts  (11 tests) 147ms
+ ✓ tests/property/composite-gate-property-5.fail-fast-parallel.test.ts  (14 tests) 2688ms
+ ✓ tests/property/fail-fast-parallel.property.test.ts  (14 tests) 51ms
+ ✓ tests/unit/composite-observation.test.ts  (2 tests) 3ms
+
+ Test Files  6 passed (6)
+      Tests  70 passed (70)
+   Start at  17:04:15
+   Duration  7.22s (transform 357ms, setup 103ms, collect 2.03s, tests 3.15s, environment 1ms, prepare 900ms)
+

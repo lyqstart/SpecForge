@@ -1,0 +1,137 @@
+$ vitest run tests/performance.test.ts tests/integration/daemon-integration.test.ts tests/integration/api-endpoints.test.ts "--maxWorkers=1"
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+stderr | tests/integration/daemon-integration.test.ts > Daemon Integration > Lifecycle > should start and stop daemon cleanly
+[SessionRegistry] WAL not injected — running in memory-only mode
+
+stderr | tests/integration/daemon-integration.test.ts > Daemon Integration > Lifecycle > should start daemon and verify all components initialized
+[SessionRegistry] WAL not injected — running in memory-only mode
+
+stderr | tests/integration/daemon-integration.test.ts > Session Registry Integration > should register and activate session
+[SessionRegistry] WAL not injected — running in memory-only mode
+
+stderr | tests/integration/daemon-integration.test.ts > Session Registry Integration > should terminate session and move to history
+[SessionRegistry] WAL not injected — running in memory-only mode
+
+stderr | tests/integration/daemon-integration.test.ts > Session Registry Integration > should lookup session by sessionId across all states
+[SessionRegistry] WAL not injected — running in memory-only mode
+
+stderr | tests/integration/daemon-integration.test.ts > Session Registry Integration > should handle parent-child session relationships
+[SessionRegistry] WAL not injected — running in memory-only mode
+
+stderr | tests/integration/daemon-integration.test.ts > Multi-Client Scenarios > should handle multiple session registrations
+[SessionRegistry] WAL not injected — running in memory-only mode
+
+stderr | tests/integration/daemon-integration.test.ts > Multi-Client Scenarios > should handle multiple session registrations
+[SessionRegistry] WAL not injected — running in memory-only mode
+
+stderr | tests/integration/daemon-integration.test.ts > Multi-Client Scenarios > should handle rapid session lifecycle transitions
+[SessionRegistry] WAL not injected — running in memory-only mode
+
+stderr | tests/integration/daemon-integration.test.ts > Multi-Client Scenarios > should handle rapid session lifecycle transitions
+[SessionRegistry] WAL not injected — running in memory-only mode
+
+stderr | tests/performance.test.ts > Daemon Performance Tests > Startup Time > should start daemon within 3 seconds
+[SessionRegistry] WAL not injected — running in memory-only mode
+
+stderr | tests/performance.test.ts > Daemon Performance Tests > Startup Time > should have consistent startup times across multiple starts
+[SessionRegistry] WAL not injected — running in memory-only mode
+
+stderr | tests/performance.test.ts > Daemon Performance Tests > Startup Time > should have consistent startup times across multiple starts
+[SessionRegistry] WAL not injected — running in memory-only mode
+
+stderr | tests/performance.test.ts > Daemon Performance Tests > Startup Time > should have consistent startup times across multiple starts
+[SessionRegistry] WAL not injected — running in memory-only mode
+
+stderr | tests/performance.test.ts > Daemon Performance Tests > Startup Time > should have consistent startup times across multiple starts
+[SessionRegistry] WAL not injected — running in memory-only mode
+
+stderr | tests/performance.test.ts > Daemon Performance Tests > Startup Time > should have consistent startup times across multiple starts
+[SessionRegistry] WAL not injected — running in memory-only mode
+
+stderr | tests/performance.test.ts > Daemon Performance Tests > Startup Time > should have consistent startup times across multiple starts
+[SessionRegistry] WAL not injected — running in memory-only mode
+
+stderr | tests/performance.test.ts > Concurrent Session Support Tests > should support 100+ concurrent sessions
+[SessionRegistry] WAL not injected — running in memory-only mode
+
+stderr | tests/performance.test.ts > Concurrent Session Support Tests > should handle rapid session creation and termination
+[SessionRegistry] WAL not injected — running in memory-only mode
+
+stderr | tests/performance.test.ts > Concurrent Session Support Tests > should maintain session lookup performance with many sessions
+[SessionRegistry] WAL not injected — running in memory-only mode
+
+stderr | tests/performance.test.ts > Memory Usage Tests > should maintain stable memory usage under load
+[SessionRegistry] WAL not injected — running in memory-only mode
+
+stderr | tests/performance.test.ts > Memory Usage Tests > should maintain stable memory usage under load
+[SessionRegistry] WAL not injected — running in memory-only mode
+
+stderr | tests/performance.test.ts > Memory Usage Tests > should not leak memory on repeated start/stop cycles
+[SessionRegistry] WAL not injected — running in memory-only mode
+
+stderr | tests/performance.test.ts > Memory Usage Tests > should not leak memory on repeated start/stop cycles
+[SessionRegistry] WAL not injected — running in memory-only mode
+
+stderr | tests/performance.test.ts > Memory Usage Tests > should not leak memory on repeated start/stop cycles
+[SessionRegistry] WAL not injected — running in memory-only mode
+
+stderr | tests/performance.test.ts > Memory Usage Tests > should not leak memory on repeated start/stop cycles
+[SessionRegistry] WAL not injected — running in memory-only mode
+
+stderr | tests/performance.test.ts > Memory Usage Tests > should not leak memory on repeated start/stop cycles
+[SessionRegistry] WAL not injected — running in memory-only mode
+
+stderr | tests/performance.test.ts > Memory Usage Tests > should not leak memory on repeated start/stop cycles
+[SessionRegistry] WAL not injected — running in memory-only mode
+
+stderr | tests/performance.test.ts > End-to-End Performance Tests > should handle realistic workload
+[SessionRegistry] WAL not injected — running in memory-only mode
+
+stderr | tests/performance.test.ts > End-to-End Performance Tests > should handle realistic workload
+[SessionRegistry] WAL not injected — running in memory-only mode
+
+stderr | tests/integration/api-endpoints.test.ts > E1 API Endpoints > Authentication > should reject requests without auth token
+[SessionRegistry] WAL not injected — running in memory-only mode
+
+stderr | tests/integration/api-endpoints.test.ts > E1 API Endpoints > Authentication > should reject requests without auth token
+[AUTH] Permission denied: Missing or invalid Authorization header - POST /api/v1/state/read
+
+stderr | tests/integration/api-endpoints.test.ts > E1 API Endpoints > Authentication > should reject requests with invalid token
+[SessionRegistry] WAL not injected — running in memory-only mode
+
+stderr | tests/integration/api-endpoints.test.ts > E1 API Endpoints > Authentication > should reject requests with invalid token
+[AUTH] Permission denied: Invalid token - POST /api/v1/state/read
+
+stderr | tests/integration/api-endpoints.test.ts > E1 API Endpoints > Authentication > should accept requests with valid token
+[SessionRegistry] WAL not injected — running in memory-only mode
+
+stderr | tests/integration/api-endpoints.test.ts > E1 API Endpoints > State Endpoints > should handle state/read
+[SessionRegistry] WAL not injected — running in memory-only mode
+
+stderr | tests/integration/api-endpoints.test.ts > E1 API Endpoints > State Endpoints > should handle state/transition
+[SessionRegistry] WAL not injected — running in memory-only mode
+
+stderr | tests/integration/api-endpoints.test.ts > E1 API Endpoints > Event Endpoints > should handle event/log
+[SessionRegistry] WAL not injected — running in memory-only mode
+
+stderr | tests/integration/api-endpoints.test.ts > E1 API Endpoints > Event Endpoints > should handle event/query
+[SessionRegistry] WAL not injected — running in memory-only mode
+
+stderr | tests/integration/api-endpoints.test.ts > E1 API Endpoints > CAS Endpoints > should handle cas/store
+[SessionRegistry] WAL not injected — running in memory-only mode
+
+stderr | tests/integration/api-endpoints.test.ts > E1 API Endpoints > CAS Endpoints > should handle cas/retrieve
+[SessionRegistry] WAL not injected — running in memory-only mode
+
+stderr | tests/integration/api-endpoints.test.ts > E1 API Endpoints > Session Endpoint > should handle session/list
+[SessionRegistry] WAL not injected — running in memory-only mode
+
+stderr | tests/integration/api-endpoints.test.ts > E1 API Endpoints > SSE > should establish SSE connection and receive connected event
+[SessionRegistry] WAL not injected — running in memory-only mode
+
+stderr | tests/integration/api-endpoints.test.ts > E1 API Endpoints > Error Handling > should return 404 for unknown routes
+[SessionRegistry] WAL not injected — running in memory-only mode
+
+stderr | tests/integration/api-endpoints.test.ts > E1 API Endpoints > Error Handling > should return 400 for invalid JSON body
+[SessionRegistry] WAL not injected — running in memory-only mode
+

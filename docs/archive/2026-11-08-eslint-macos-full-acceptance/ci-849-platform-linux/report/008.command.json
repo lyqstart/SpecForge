@@ -1,0 +1,16 @@
+{
+  "number": "008",
+  "name": "current-help",
+  "executable": "/tmp/sf-platform-acceptance-1F0QH1/opencode/sf-user/bin/specforge",
+  "args": [
+    "daemon",
+    "stop",
+    "--help",
+    "--json"
+  ],
+  "started_utc": "2026-11-08T12:08:19.761Z",
+  "finished_utc": "2026-11-08T12:08:19.836Z",
+  "inner_exit_code": 0,
+  "signal": null,
+  "spawn_error": null
+}

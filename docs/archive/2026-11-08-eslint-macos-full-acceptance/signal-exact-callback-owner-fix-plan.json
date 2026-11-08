@@ -1,0 +1,16 @@
+{
+  "id": "signal-exact-callback-owner-fix",
+  "reason": "0260 red actual listener identity/count tests prove existing registered closure is not removed. Store the exact same closure passed to process.on, preserve platform signal set/idempotent attach, reuse existing trigger finally/asyncDispose owner; no listener limit or global listener removal.",
+  "required_verification": "Full actual service unit22, daemon performance/lifecycle/API endpoints; no MaxListeners warnings afterstop; all12 lint/build, symmetric final same-lock full suites, actual3OS full/install, controlled upgrade.",
+  "files": [
+    {
+      "file": "packages/service-management/src/shutdown/graceful-shutdown-handler.ts",
+      "changes": [
+        {
+          "from": "    if (process.platform !== 'win32') {\n      process.on('SIGTERM', () => handleSignal('SIGTERM'));\n      process.on('SIGINT', () => handleSignal('SIGINT'));\n      this._signalHandlers.set('SIGTERM', handleSignal);\n      this._signalHandlers.set('SIGINT', handleSignal);\n    } else {\n      // Handle SIGTERM consistently when the host process forwards it.\n      process.on('SIGTERM', () => handleSignal('SIGTERM'));\n      this._signalHandlers.set('SIGTERM', handleSignal);\n    }",
+          "to": "    const sigtermHandler = () => handleSignal('SIGTERM');\n    process.on('SIGTERM', sigtermHandler);\n    this._signalHandlers.set('SIGTERM', sigtermHandler);\n    if (process.platform !== 'win32') {\n      const sigintHandler = () => handleSignal('SIGINT');\n      process.on('SIGINT', sigintHandler);\n      this._signalHandlers.set('SIGINT', sigintHandler);\n    }"
+        }
+      ]
+    }
+  ]
+}

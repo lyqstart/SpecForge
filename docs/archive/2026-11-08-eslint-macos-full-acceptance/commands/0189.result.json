@@ -1,0 +1,28 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "lint"
+  ],
+  "cwd": "D:\\code\\SpecForge\\.lint-platform-a01",
+  "purpose": "platform-complete-eslint",
+  "expected_writes": "read-only actual all12 complete lint and workflow docs check",
+  "started_utc": "2026-11-08T11:51:03.734Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [],
+  "finished_utc": "2026-11-08T11:53:55.206Z",
+  "carrier_exit_code": 1,
+  "inner_exit_code": 1,
+  "numeric_inner_exit_code_available": true,
+  "process_started": true,
+  "child_pid": 46536,
+  "spawn_error": null,
+  "signal": null,
+  "observed_writes": {
+    "repository_status_before": " D docs/archive/2026-11-07-verification-production/consumer-source-review/current/docs/archive/2026-11-07-verification-production/evidence-guidance-baseline/setup/userlevel-opencode/skills/superpowers-verification-before-completion/SKILL.md\n M packages/daemon-core/tests/fixtures/build-process-fixture.ts\n M packages/daemon-core/tests/unit/runtime-history-integrity.test.ts\n M packages/scope-gate/tests/current-crossplatform-ci-contract.test.ts\n M scripts/run-ci-regression.mjs\n M scripts/run-root-tests.mjs\n M scripts/test-workspace.ts\n?? scripts/lib/qualification-environment.d.mts\n?? scripts/lib/qualification-environment.mjs\n",
+    "repository_status_after": " D docs/archive/2026-11-07-verification-production/consumer-source-review/current/docs/archive/2026-11-07-verification-production/evidence-guidance-baseline/setup/userlevel-opencode/skills/superpowers-verification-before-completion/SKILL.md\n M packages/daemon-core/tests/fixtures/build-process-fixture.ts\n M packages/daemon-core/tests/unit/runtime-history-integrity.test.ts\n M packages/scope-gate/tests/current-crossplatform-ci-contract.test.ts\n M scripts/run-ci-regression.mjs\n M scripts/run-root-tests.mjs\n M scripts/test-workspace.ts\n?? scripts/lib/qualification-environment.d.mts\n?? scripts/lib/qualification-environment.mjs\n",
+    "other": "See expected writes and owner-specific receipt; status does not enumerate external runtime writes."
+  }
+}

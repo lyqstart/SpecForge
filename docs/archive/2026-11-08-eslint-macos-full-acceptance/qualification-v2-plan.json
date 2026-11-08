@@ -1,0 +1,17 @@
+{
+  "utc": "2026-11-08T11:27:56.988Z",
+  "runner_sha256": "d4981800b706e27ba392be0e7e3855f9254ca673cc476c7a8a99298c85827955",
+  "fixed_observer_defect": "Real baseline collector counterfactual0174 proves TEMP under real Git root invalidates the no-Git fixture. V2 uses distinct run-owned OS temp profiles outside all repositories and records actual Git discovery rejection before any leg; original/product/test source unchanged.",
+  "phases": [
+    "install",
+    "clean",
+    "build",
+    "workspace",
+    "root",
+    "installer"
+  ],
+  "old_attempts": "Retain all original V1 outcomes and environment contexts as nonqualifying observation-defect evidence",
+  "patched_commit": "df9f572cf4150fb1f03fbac9f2ba028e9c4cfa8a",
+  "same_common_lock": "toolchain/patched byte-identical",
+  "complete_packet_files": 516
+}

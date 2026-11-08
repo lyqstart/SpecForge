@@ -1,0 +1,51 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "test",
+    "--",
+    "tests/unit/BasicGates.test.ts",
+    "tests/unit/AgentWorkflowEngine.test.ts",
+    "tests/unit/GateRunnerErrorHandling.test.ts",
+    "tests/v11/unit/json-parser.test.ts",
+    "--maxWorkers=1",
+    "--minWorkers=1"
+  ],
+  "cwd": "D:\\code\\SpecForge\\.lint-review-a01\\packages\\workflow-runtime",
+  "purpose": "concrete-workflow-fixture-behavior-regressions",
+  "expected_writes": "private-fixture-tests-only",
+  "started_utc": "2026-11-08T09:17:36.266Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 3,
+      "path": "D:\\code\\SpecForge\\.lint-review-a01\\packages\\workflow-runtime\\tests\\unit\\BasicGates.test.ts",
+      "sha256": "707bcbb6831b618a767cb3d92cfc64c6c7db96194e0affe29cf5f7964bb01b43",
+      "size": 8442,
+      "extension": ".ts"
+    },
+    {
+      "argument_index": 4,
+      "path": "D:\\code\\SpecForge\\.lint-review-a01\\packages\\workflow-runtime\\tests\\unit\\AgentWorkflowEngine.test.ts",
+      "sha256": "8c9d15c4efd12bd845ec199ed8c35c88dcdab3e267e95042675ae044f704c899",
+      "size": 12392,
+      "extension": ".ts"
+    },
+    {
+      "argument_index": 5,
+      "path": "D:\\code\\SpecForge\\.lint-review-a01\\packages\\workflow-runtime\\tests\\unit\\GateRunnerErrorHandling.test.ts",
+      "sha256": "ddbcb779548b76ba1611e2c6f610de772995dbffbcc64ff7b4105183161c2e77",
+      "size": 21687,
+      "extension": ".ts"
+    },
+    {
+      "argument_index": 6,
+      "path": "D:\\code\\SpecForge\\.lint-review-a01\\packages\\workflow-runtime\\tests\\v11\\unit\\json-parser.test.ts",
+      "sha256": "8b689ea239615a277e29d6443ac27a0d71733a2ae030e9d90ccc445b31b4f171",
+      "size": 3700,
+      "extension": ".ts"
+    }
+  ]
+}

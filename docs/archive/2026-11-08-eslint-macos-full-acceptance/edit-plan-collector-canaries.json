@@ -1,0 +1,10 @@
+{
+  "utc": "2026-11-08T09:57:42.806Z",
+  "platform": "win32",
+  "helper_sha256": "2982bb1b55cb368df0961671246a58e4a7b07083f7070cce7ff7d9d13dc8ed87",
+  "alias_composition": "PASS: native/portable separators and Windows case variants form one before and one final after",
+  "source_write_before_explicit_apply": "NONE",
+  "forbidden_escape_and_truth_source": "PASS",
+  "concurrent_source_drift": "REJECTED_WITHOUT_OVERWRITE",
+  "product_source_writes": 0
+}

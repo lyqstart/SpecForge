@@ -1,0 +1,18 @@
+{
+  "leg": "original",
+  "phase": "workspace",
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "scripts/test-workspace.ts"
+  ],
+  "cwd": "D:\\code\\SpecForge\\.lint-original-a01",
+  "started_utc": "2026-11-08T11:07:49.790Z",
+  "context_sha256": "9e075f7f0f0805ce7454a2f4b095607fbcd93f48b17fb244b7a5033ed70023b0",
+  "expected_writes": "Owned isolated dependencies/build/test/install roots and sealed reports; no real business project or user configuration writes",
+  "finished_utc": "2026-11-08T11:20:40.912Z",
+  "inner_exit_code": 1,
+  "signal": null,
+  "spawn_error": null,
+  "stdout_sha256": "ba6a2d081aceb0808b75e5535ef0fa92c9269d6b9af0a3844d8dd7ab28e576ea",
+  "stderr_sha256": "84fd89b04d140eb32119e3e0ed6c4a279fc7d2ecda2eaa7ed0921370a137b569"
+}

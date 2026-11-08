@@ -1,0 +1,1 @@
+{"source":"05713b7337b3dc55f1f3ed563cf342439643657f","actual_platforms":3,"phases_each":4,"official_installations":3,"check":"PASS"}

@@ -1,0 +1,20 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "wsl.exe",
+  "args": [
+    "--distribution",
+    "Ubuntu-24.04",
+    "--cd",
+    "/mnt/d/code/SpecForge/.lint-signal-a01",
+    "--exec",
+    "/usr/bin/node",
+    "/mnt/d/code/SpecForge/docs/archive/2026-11-08-eslint-macos-full-acceptance/prepare-signal-linux-fixture.mjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "prepare-signal-linux-ext4-fixture",
+  "expected_writes": "Fresh owned a02 ext4 source and fixedBun, no mutation of previous fixture/global app",
+  "started_utc": "2026-11-08T13:04:20.203Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": []
+}

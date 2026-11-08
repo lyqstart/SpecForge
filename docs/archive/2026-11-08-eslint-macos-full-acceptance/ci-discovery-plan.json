@@ -1,0 +1,33 @@
+{
+  "utc": "2026-11-08T10:33:35.215Z",
+  "yaml_parser": "D:\\code\\SpecForge\\.lint-review-a01\\node_modules\\.bun\\yaml@2.9.0\\node_modules\\yaml\\dist\\index.js",
+  "members": [
+    {
+      "file": ".github/workflows/code-quality.yml",
+      "before": "aa5d96d133986af7d0d08ef68850e6118c8fec663d801b310336b6de1c412813",
+      "after": "bc6d48bb16ea2029aa9e8a7bc6d631560a5922468a8d1728995f364652e9f178"
+    },
+    {
+      "file": ".github/workflows/distribution-smoke.yml",
+      "before": "bf807449578596e500a499a14a2be89763a74472a63e84c3ae0d0019cd43e1de",
+      "after": "d5e692fef35062e170f99b1c98e8f5e84670ac110e8f7c4880c2b912eb7b674e"
+    },
+    {
+      "file": "scripts/run-ci-regression.mjs",
+      "before": "ABSENT",
+      "after": "c67252cc6451311dbd4931ff6b5752d27fb69eb9ee64468fac3aac3edeb1ca4f"
+    },
+    {
+      "file": "packages/scope-gate/tests/current-crossplatform-ci-contract.test.ts",
+      "before": "e0b9c7fa06ee6872327fc27d612cad67f8921be63142c9baa8b279da48a4408c",
+      "after": "a601824b567d2cb99f63cae9f80e4b967b9d129f39125ee7ed5ea659a513f2b7"
+    },
+    {
+      "file": "packages/observability/vitest.config.ts",
+      "before": "a1f2f07f984322ec3a8c903e8d5ca50caacbf9521c202db2e365769e975d28db",
+      "after": "2d6dbf9e8959ad90491516fa9f93129a68e801b2bc028e3cf044c53866a18e41"
+    }
+  ],
+  "policy": "Preserve all prior CI jobs; add actual three-OS build/lint/workspace/Root with pinned tools and sealed raw receipts. Register already tracked repaired .pbt.ts in Observability default test discovery; no package/test removal.",
+  "required": "Actual three-OS full CI, all existing platform lifecycle acceptance and updated scope-gate contract tests"
+}

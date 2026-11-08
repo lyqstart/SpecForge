@@ -1,0 +1,20 @@
+[
+  {
+    "method": "POST",
+    "route": "/api/v1/event/query",
+    "status": 501,
+    "code": "EVENT_QUERY_UNSUPPORTED"
+  },
+  {
+    "method": "POST",
+    "route": "/api/v1/cas/store",
+    "status": 501,
+    "code": "CAS_API_UNSUPPORTED"
+  },
+  {
+    "method": "GET",
+    "route": "/api/v1/cas/retrieve",
+    "status": 501,
+    "code": "CAS_API_UNSUPPORTED"
+  }
+]

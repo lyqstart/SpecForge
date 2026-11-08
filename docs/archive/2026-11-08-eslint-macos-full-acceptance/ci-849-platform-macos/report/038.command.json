@@ -1,0 +1,14 @@
+{
+  "number": "038",
+  "name": "official-post-upgrade-verify",
+  "executable": "/Users/runner/.bun/bin/bun",
+  "args": [
+    "scripts/sf-installer.ts",
+    "verify"
+  ],
+  "started_utc": "2026-11-08T12:08:27.673Z",
+  "finished_utc": "2026-11-08T12:08:27.839Z",
+  "inner_exit_code": 0,
+  "signal": null,
+  "spawn_error": null
+}

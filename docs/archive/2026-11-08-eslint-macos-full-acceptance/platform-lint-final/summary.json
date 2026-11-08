@@ -1,0 +1,101 @@
+{
+  "utc": "2026-11-08T12:14:12.633Z",
+  "members": [
+    {
+      "name": "types",
+      "exit": 0,
+      "files": 31,
+      "errors": 0,
+      "warnings": 0,
+      "rules": {}
+    },
+    {
+      "name": "version-unification",
+      "exit": 0,
+      "files": 2,
+      "errors": 0,
+      "warnings": 0,
+      "rules": {}
+    },
+    {
+      "name": "configuration",
+      "exit": 0,
+      "files": 13,
+      "errors": 0,
+      "warnings": 0,
+      "rules": {}
+    },
+    {
+      "name": "service-management",
+      "exit": 0,
+      "files": 32,
+      "errors": 0,
+      "warnings": 0,
+      "rules": {}
+    },
+    {
+      "name": "host-profile",
+      "exit": 0,
+      "files": 9,
+      "errors": 0,
+      "warnings": 0,
+      "rules": {}
+    },
+    {
+      "name": "observability",
+      "exit": 0,
+      "files": 10,
+      "errors": 0,
+      "warnings": 0,
+      "rules": {}
+    },
+    {
+      "name": "permission-engine",
+      "exit": 0,
+      "files": 48,
+      "errors": 0,
+      "warnings": 0,
+      "rules": {}
+    },
+    {
+      "name": "opencode-adapter",
+      "exit": 0,
+      "files": 21,
+      "errors": 0,
+      "warnings": 0,
+      "rules": {}
+    },
+    {
+      "name": "scope-gate",
+      "exit": 0,
+      "files": 46,
+      "errors": 0,
+      "warnings": 0,
+      "rules": {}
+    },
+    {
+      "name": "workflow-runtime",
+      "exit": 0,
+      "files": 124,
+      "errors": 0,
+      "warnings": 0,
+      "rules": {}
+    },
+    {
+      "name": "cli",
+      "exit": 0,
+      "files": 63,
+      "errors": 0,
+      "warnings": 0,
+      "rules": {}
+    },
+    {
+      "name": "daemon-core",
+      "exit": 0,
+      "files": 231,
+      "errors": 0,
+      "warnings": 0,
+      "rules": {}
+    }
+  ]
+}

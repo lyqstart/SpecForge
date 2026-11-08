@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/prepare-export-repair-v2.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "correct-commonjs-export-planner-preflight",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES:corrected planner and exact tool-error classification;REPOSITORY_TRACKED_WRITES:ledger",
+  "started_utc": "2026-11-08T08:18:53.176Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\prepare-export-repair-v2.cjs",
+      "sha256": "e65c0e59944d56ca350ab278078307a7bdb933917ea7d522f5b1f0b1f3145bdb",
+      "size": 2009,
+      "extension": ".cjs"
+    }
+  ]
+}

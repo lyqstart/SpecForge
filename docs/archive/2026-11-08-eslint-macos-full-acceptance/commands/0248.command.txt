@@ -1,0 +1,23 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/collect-structured-qualification-v2.cjs",
+    "patched"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "final-shortpath-all-owner-case-collection",
+  "expected_writes": "Reporter-only equal-argument structured final full collection; official Node Root package entry retained",
+  "started_utc": "2026-11-08T12:36:31.629Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\collect-structured-qualification-v2.cjs",
+      "sha256": "4ecdb303b10ae97d5633a60c767f6dc9125223d85cf47332e062b67ec6940be5",
+      "size": 2713,
+      "extension": ".cjs"
+    }
+  ]
+}

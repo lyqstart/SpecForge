@@ -1,0 +1,14 @@
+{
+  "number": "033",
+  "name": "installed-version",
+  "executable": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-eslint-macos-A01-v2-toolchain\\temp\\sf-platform-acceptance-b8zWMM\\opencode\\sf-user\\bin\\specforge.exe",
+  "args": [
+    "--version",
+    "--json"
+  ],
+  "started_utc": "2026-11-08T11:42:37.106Z",
+  "finished_utc": "2026-11-08T11:42:37.761Z",
+  "inner_exit_code": 0,
+  "signal": null,
+  "spawn_error": null
+}

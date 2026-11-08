@@ -1,0 +1,1 @@
+{"artifact_id":13616938892,"sha256":"2a9e4064dc07d63761366ace6e4537e57ad83f98c87d20523815aa132f3ce90a","bytes":41153,"dir":"D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\ci-057-platform-macos"}

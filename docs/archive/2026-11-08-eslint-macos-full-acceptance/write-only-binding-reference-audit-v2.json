@@ -1,0 +1,129 @@
+{
+  "utc": "2026-11-08T08:11:57.036Z",
+  "audited_files": 98,
+  "newly_unbound_references": [
+    {
+      "file": "packages/permission-engine/tests/integration/remote-access-integration.test.ts",
+      "name": "validApiKey",
+      "line": 62,
+      "parent_kind": "BinaryExpression",
+      "matching_before_nodes": 1,
+      "all_matching_before_nodes_bound": true
+    },
+    {
+      "file": "packages/permission-engine/tests/property/permission-decision-traceability-property-10.test.ts",
+      "name": "capturedEvents",
+      "line": 39,
+      "parent_kind": "BinaryExpression",
+      "matching_before_nodes": 2,
+      "all_matching_before_nodes_bound": true
+    },
+    {
+      "file": "packages/permission-engine/tests/property/permission-decision-traceability-property-10.test.ts",
+      "name": "capturedEvents",
+      "line": 63,
+      "parent_kind": "BinaryExpression",
+      "matching_before_nodes": 2,
+      "all_matching_before_nodes_bound": true
+    },
+    {
+      "file": "packages/permission-engine/tests/property/permission-decision-traceability-property-10.test.ts",
+      "name": "capturedEvents",
+      "line": 152,
+      "parent_kind": "BinaryExpression",
+      "matching_before_nodes": 1,
+      "all_matching_before_nodes_bound": true
+    },
+    {
+      "file": "packages/permission-engine/tests/unit/daemon-integration.test.ts",
+      "name": "mockEventBus",
+      "line": 197,
+      "parent_kind": "BinaryExpression",
+      "matching_before_nodes": 1,
+      "all_matching_before_nodes_bound": true
+    },
+    {
+      "file": "packages/permission-engine/tests/unit/daemon-integration.test.ts",
+      "name": "mockSessionRegistry",
+      "line": 204,
+      "parent_kind": "BinaryExpression",
+      "matching_before_nodes": 1,
+      "all_matching_before_nodes_bound": true
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/CompositeGateCancellation.test.ts",
+      "name": "gate1Executed",
+      "line": 90,
+      "parent_kind": "BinaryExpression",
+      "matching_before_nodes": 1,
+      "all_matching_before_nodes_bound": true
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/CompositeGateCancellation.test.ts",
+      "name": "gate2Executed",
+      "line": 102,
+      "parent_kind": "BinaryExpression",
+      "matching_before_nodes": 1,
+      "all_matching_before_nodes_bound": true
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/CompositeGateCancellation.test.ts",
+      "name": "gate3Started",
+      "line": 113,
+      "parent_kind": "BinaryExpression",
+      "matching_before_nodes": 1,
+      "all_matching_before_nodes_bound": true
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/WorkflowErrorHandling.test.ts",
+      "name": "callCount",
+      "line": 297,
+      "parent_kind": "PostfixUnaryExpression",
+      "matching_before_nodes": 1,
+      "all_matching_before_nodes_bound": true,
+      "repair": "remove unobserved numeric local counter update"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/retry.test.ts",
+      "name": "callCount",
+      "line": 652,
+      "parent_kind": "PostfixUnaryExpression",
+      "matching_before_nodes": 1,
+      "all_matching_before_nodes_bound": true,
+      "repair": "remove unobserved numeric local counter update"
+    }
+  ],
+  "members": [
+    {
+      "file": "packages/permission-engine/tests/integration/remote-access-integration.test.ts",
+      "before": "5d9fb216ae3c222b2eb01d6956995f5998545834b352e36a31728645274916c6",
+      "after": "b64622de0382616a8efcd9f88709301e2710dc930e71df355bf0a30844f01916"
+    },
+    {
+      "file": "packages/permission-engine/tests/property/permission-decision-traceability-property-10.test.ts",
+      "before": "891bd5ccefbec810a8dcca6fbab2afe60a7dbff3019aa2fadbd932c10475cbfd",
+      "after": "cad4ce9514a50fa4b18a52afce10cc804a1ad18edf54bef6f9e1db6e987fd293"
+    },
+    {
+      "file": "packages/permission-engine/tests/unit/daemon-integration.test.ts",
+      "before": "2825e7b0e4d4cd2f7cbbd1454efd10a3d2696758e7d873e15998d8aa4cd23861",
+      "after": "66eef4ed03987fab057ee85d95018078f39f4e377164e0060cd916763dce8ef8"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/CompositeGateCancellation.test.ts",
+      "before": "01f4659f6ab17aaed7718df65e0c662fa837acac9514c321b4271beeb047a7fd",
+      "after": "1c12a4597f9875020fddef77f71dd5a7dd536195bac37b6d8487d5a6610ae83b"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/WorkflowErrorHandling.test.ts",
+      "before": "015ef1a581191a3d60ee8991cb0672f300f5e373657d46a1c92ff7d249eb116a",
+      "after": "42cd0bb6175281ae5513da6ef241a3334ab26c6488ab2d64af90333ab2d608d0"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/retry.test.ts",
+      "before": "d7bef7624cfb6126775f0c6b0ae3c02221ebfb547af3010cae3d78e4822a345e",
+      "after": "e867dcaf76a7214b1a9004885b6e556e98e0ce8192f87cc1fc53ea769d5bd093"
+    }
+  ],
+  "contract": "Independent before/after TypeScript symbol binding: every repaired reference was bound in the exact before snapshot, unbound now and a standalone write-only assignment. All possibly effectful RHS remain evaluated; ambiguous/non-assignment cases refuse before writes."
+}

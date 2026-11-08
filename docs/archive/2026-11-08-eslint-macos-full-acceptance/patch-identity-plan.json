@@ -1,0 +1,88 @@
+{
+  "utc": "2026-11-08T10:49:59.710Z",
+  "beforeVersion": "1.0.24",
+  "afterVersion": "1.0.25",
+  "root_and_packages": 13,
+  "lock_workspace_versions": 12,
+  "resolved_dependency_changes": 0,
+  "specification_behavior_changes": 0,
+  "schema_versions_changed": 0,
+  "members": [
+    {
+      "file": "package.json",
+      "before": "66cbc78661b4564206a821c56853bdbb0935e9540f7dda2e5852d45d7267dce0",
+      "after": "ba7bd86ab7189e737e37dab6512e0123dae32d898e5290ea1c1ecd627a45461b"
+    },
+    {
+      "file": "packages/cli/package.json",
+      "before": "42969bfbb10766f1211124aefb81ae48bc8716c113280d0e149feb5e764c4e80",
+      "after": "96a74949ceed27d9c797c9090b20b83ba654d1897c5cd74a661b8b617f6f41db"
+    },
+    {
+      "file": "packages/configuration/package.json",
+      "before": "ad521fe1bf065a5e7738fa0559f57f660a6e4bf7ea1a9f8535208d463aa217df",
+      "after": "77eae13e161e2d797d4e3b26e1832bf70f4816a6bd3812c823cd6632a48f7184"
+    },
+    {
+      "file": "packages/daemon-core/package.json",
+      "before": "18af912e8045178a2dcb1175fc557ff2ee9770ef05dfd730df45174f6d78e176",
+      "after": "e2ba02140d1171dec00b1f1cdb88308976a765105094622b8c91bb28cdd7d864"
+    },
+    {
+      "file": "packages/host-profile/package.json",
+      "before": "ec75456adbbdb81a379cc347e0f797e049ffc05230d91f9147a2f03e6ff0d33b",
+      "after": "f787ece6b3338914bc17d36a84998413aa773c61d7953b9f1444d1d0a8746265"
+    },
+    {
+      "file": "packages/observability/package.json",
+      "before": "e1fa67eb8ae5b95ab9b27245e2051cfc3924189a0d56eb9c8a797c8023f6496b",
+      "after": "136ac0b816e6dd9f013e92fc09f86af6f61ffc4c5c1b1e63456a3b0467b00e5a"
+    },
+    {
+      "file": "packages/opencode-adapter/package.json",
+      "before": "9248554b66933a5577841f0d9e5a8c6c9b563390aa281e846058e49cb77a9aa4",
+      "after": "b57ff521477ff0c045e63958cc1c6385f60236c70f4fecb8f9317de21e72c85c"
+    },
+    {
+      "file": "packages/permission-engine/package.json",
+      "before": "25fe899255d6900bcb573c53dd71d5cb7ecb89958f335ff850c8d284df1e39d5",
+      "after": "7c0ec6b1269b2442de9b435b62b48c9582eced2d887cc8de49a5b276b3e85292"
+    },
+    {
+      "file": "packages/scope-gate/package.json",
+      "before": "5a8044eaeb2365578f9799ad9af034e94a083e50976e9d94be32a8a45fa28f51",
+      "after": "faf6f0abf175f6c3a09be17fce2942393fcf2f2dc043964a7dc55ff1d3e8a990"
+    },
+    {
+      "file": "packages/service-management/package.json",
+      "before": "43de2eef9eab0f512e83e10b30112ba531d05fb46aa0ef8f5882d34ace3d0c96",
+      "after": "189579c4705e5e037b176235d7a6e6038b8d38ce838314ffac2d40f846a868e9"
+    },
+    {
+      "file": "packages/types/package.json",
+      "before": "2ccb38494beff5585ae743eede4b6c3d996663fcc346165c215cb1f4df6f3928",
+      "after": "e426adf0a11e0436059b092892d7568f89270fa3d43797b449c5870a17ab036d"
+    },
+    {
+      "file": "packages/version-unification/package.json",
+      "before": "b688deedfe4d773a6f6ae1ccf4fdb0b3398524f5b1a274e10f7570e40a0214da",
+      "after": "82d38f1f5c123140bf937d9f970909bd0e8000d5db66bb6654d9bd0fb25845e9"
+    },
+    {
+      "file": "packages/workflow-runtime/package.json",
+      "before": "1be99b2ff78b3737d0a8465598f8c31d888e6e54674acc95b2cda2881c4ca5cf",
+      "after": "7aae4ff861c6ffb0d09e01ce5cbb25e0300db446dd84c5aec4b91ef82c043ae2"
+    },
+    {
+      "file": "bun.lock",
+      "before": "7c749f00d075a0dd997be0b062b8090c56c19573ca0fd493dbc7f6d330f04764",
+      "after": "3f60323fd1c3303673a8d79d4253257198725d247d3e6551e7648d0826db4438"
+    },
+    {
+      "file": "docs/product-specification/specforge-product-specification.md",
+      "before": "8fe594be130fd751e60eef1a9a916867ef5dd8b401dbe6881a1f5295a43333ed",
+      "after": "b03174778f6bd1efb72227708152c422b7b0102e4cf8129a5a4d9d5e752afff0"
+    }
+  ],
+  "required": "Frozen install, complete build/lint/regression, three-platform official installation and matching source/deployment identity"
+}

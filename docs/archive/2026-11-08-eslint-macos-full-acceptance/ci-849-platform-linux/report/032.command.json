@@ -1,0 +1,13 @@
+{
+  "number": "032",
+  "name": "unsupported-command-rejected",
+  "executable": "/tmp/sf-platform-acceptance-1F0QH1/opencode/sf-user/bin/specforge",
+  "args": [
+    "heal"
+  ],
+  "started_utc": "2026-11-08T12:08:21.603Z",
+  "finished_utc": "2026-11-08T12:08:21.684Z",
+  "inner_exit_code": 1,
+  "signal": null,
+  "spawn_error": null
+}

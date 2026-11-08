@@ -1,0 +1,18 @@
+{
+  "utc": "2026-11-08T11:59:19.442Z",
+  "input_sha256": "c95e7441ecda7915d27e65860270b55b4c2939ae609c2609b3f8c423cb8b439e",
+  "reason": "0189 actual full lint rejects throw in finally. Move guarded cleanup to Vitest afterEach so framework preserves test/hook errors separately; keep actual deletion-time ownership checks. Actual Windows CI df9 also fails strict external-Git identity checks; do not change comparison or guards without evidence. Add bounded read-only Git metadata diagnostics only for self-owned test repositories, comparing actual ordinary/sanitized environments. No secrets/global config contents, business path or product behavior changes.",
+  "required_verification": "Complete lint plus affected actual tests and new full three-OS CI. Windows cause remains INSUFFICIENT_EVIDENCE until actual diagnostic data arrives.",
+  "members": [
+    {
+      "file": "packages/scope-gate/tests/current-crossplatform-ci-contract.test.ts",
+      "before": "2774d9ba6d3b8f3f6723578dee614f9a98ad97a1abe9e0fc3417e0266181fe2b",
+      "after": "5cac3d3ad3de890863d39922fafe282e0567844611af790b0ac0724e257f318a"
+    },
+    {
+      "file": "packages/daemon-core/tests/unit/verification-source-snapshot.test.ts",
+      "before": "61b84db0a65ea4241599916964ac91336c8c6a015802db69d734699e168ebffe",
+      "after": "af4997d6de3a0cca99f73293b04b93c621fdaab8404438526f504e5e8330ab2f"
+    }
+  ]
+}

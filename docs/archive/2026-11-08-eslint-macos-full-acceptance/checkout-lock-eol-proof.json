@@ -1,0 +1,14 @@
+{
+  "utc": "2026-11-08T12:49:51.765Z",
+  "toolchain": {
+    "bytes": 268290,
+    "sha256": "3f60323fd1c3303673a8d79d4253257198725d247d3e6551e7648d0826db4438"
+  },
+  "checkout": {
+    "bytes": 270610,
+    "sha256": "9a4050e45608d2746a446455a256270b5116e179e695a281b2be51dd5fc144f0",
+    "crlf": 2320
+  },
+  "git_blob_sha256": "3f60323fd1c3303673a8d79d4253257198725d247d3e6551e7648d0826db4438",
+  "evidence": "Byte inequality is actual CRLF checkout transformation. Semantic text identity does not satisfy EXP122 byte-identical lock requirement; final leg must be rerun with physical same LF bytes."
+}

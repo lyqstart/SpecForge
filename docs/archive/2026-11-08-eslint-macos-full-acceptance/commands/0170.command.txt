@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/repair-github-runner-context.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "fix-confirmed-github-step-context-contract",
+  "expected_writes": "private workflow report environment placement only",
+  "started_utc": "2026-11-08T11:22:00.461Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\repair-github-runner-context.cjs",
+      "sha256": "ec534a1e40f7ab5432873cfa25d441f41232f8627fd317fbb2a4a1d177f48ba3",
+      "size": 2199,
+      "extension": ".cjs"
+    }
+  ]
+}

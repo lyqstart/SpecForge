@@ -1,0 +1,157 @@
+{
+  "utc": "2026-11-08T09:52:05.361Z",
+  "policy": "Move stranded module JSDoc above the initial import block; never move ts/eslint/prettier directives or reorder dependency requests. Merge an already duplicated directory-layout module. Permission helper moved into the existing import group only after AST proves its module contains solely function/type declarations; logger type merges into its existing value import. Inline type-import expressions become explicit type bindings to the identical owner; no runtime capability changes.",
+  "required": "Full lint; all12 build and full suites; current loader/export identity and installation verification.",
+  "members": [
+    {
+      "file": "packages/workflow-runtime/src/WorkflowEngine.ts",
+      "before": "7dcfa30d25f02f6a0b0573186c077cceb470815ff03429b9c868d3fdb863ec2a",
+      "after": "abe162995f751e56cec23e98f2829841210a87427631cded9f506861cd762107"
+    },
+    {
+      "file": "packages/workflow-runtime/src/types/gate-definition.ts",
+      "before": "77ed0743423abdcd65179de554cd36382505a02646d0246a7c56f20d78adc2a4",
+      "after": "590c6a8a0088cf215706331df9827478580f6f8211cdad6aa415c408b70a4850"
+    },
+    {
+      "file": "packages/workflow-runtime/src/types/workflow-instance.ts",
+      "before": "a696e9b84f8674d413af4a1efcbf7475f695e6609c647818d10a3a0465e75340",
+      "after": "f2612419a88cc3e0241535d1f33c969a376148acf93194d9c19adb184461990e"
+    },
+    {
+      "file": "packages/workflow-runtime/src/v11/runtime/CloseGate.ts",
+      "before": "aa0d757386b3fa1aaae3c0c37549eaa0c68bf0aeafc828ac06aa85a08afd74ef",
+      "after": "38201de1cdedfffc6ff8013b411702f7d8f6158884eb021dcf33594e91927577"
+    },
+    {
+      "file": "packages/permission-engine/src/index.ts",
+      "before": "db8f163a3d4e3d5705f02ab19b5002352102a68bd64390821ec9dec3c47540e2",
+      "after": "20ca14d47f9aaa7f6b769ee9457c65fe7c3d435c50ba40c1feda7a480a64ea4b"
+    },
+    {
+      "file": "packages/workflow-runtime/src/AgentRunner.ts",
+      "before": "2b4e7cb568d33b2af96f2b9cf1a38a172dfd55fdb48b0a6fabda0a7130bdd37d",
+      "after": "8f60924e6dbd4d2b44874a6e2bea524dcfa7fbff381584f1ebdbfcb2413e7a71"
+    },
+    {
+      "file": "packages/workflow-runtime/src/agent/LLMKernelIntegration.ts",
+      "before": "4d883fe2526db550492d594bcf3d56f4c8663829dd391b09e1eb9bad550f18d9",
+      "after": "ca05c5ce8e7129d64927c2ad37779b427ac49e0c262f1a15ee12bb8d478e8a90"
+    },
+    {
+      "file": "packages/workflow-runtime/src/event-subscription.ts",
+      "before": "bfeee8f45dba315847df701afbcca85806959ec9720ef662c1da6ad96fdf0468",
+      "after": "7a29675b4ef5ad4de3392160f76162b969dbc8b26d91265a2d2956e188d0fe79"
+    },
+    {
+      "file": "packages/workflow-runtime/src/rbac/ProtectedFileMatcher.ts",
+      "before": "7c1621b19fea9a4decb28142b25c129b8cde43bc2dcabd70c87898a6aa5a5b0e",
+      "after": "4667ab545f7ae7eb6640786f1d866e004d317dbb97a309f399634875fc766076"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/event-subscription.test.ts",
+      "before": "e955843464ec89193717e7ae2ec9f50b0602c843491bc47641ed74186fe43427",
+      "after": "68657ef451b88a882d259e90ff0fa68d1711725ede1ffa9f986cf41e24e91bde"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/integration/agent-runner.test.ts",
+      "before": "d6563fec2ed8b5ddabd40dbe286ef5429dceafab97bd472da57737c968d1047c",
+      "after": "6e24ee818043e9b7d1b482c911a182b0176a7978ecfc5cf97cdfda20eaca4540"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/integration/event-integration.test.ts",
+      "before": "0c31366963b163efa89230a4b50f574a9d34c6c4eb32b0a9d0a3555ef8f947ae",
+      "after": "810673fbbcbab3066e69659c540e28b8c36043681ac7b372025472917e5b1a51"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/integration/workflow-e2e-property-29.test.ts",
+      "before": "91e1de41aab6538ad2645bc0026fc25001c693b0a0f1c908d72ff5d6fbd265a1",
+      "after": "0ffb0fc4e18c797f7a5bd66200afe25bd31365ecbb1ab8598c9b7bd8a8bee8f3"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/performance/workflow-performance.test.ts",
+      "before": "2f4640efee15455b3ca03d2e9ea2385a31a747a8a79a2a97211203270fa9b4aa",
+      "after": "b9e06172aeea50900e310578b4c0092fe827557cf511420177adb9e30a0fd7e2"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/property/composite-gate-parallel.property.test.ts",
+      "before": "ced3f8efeae322f95ea38cf188331b42775cc6b161ae99ea7ee6d765fb3dba0a",
+      "after": "6fbf706b34135ca97cba16f30faf02532b46d56757e69df824c1764922579acb"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/property/composite-gate-property-4.parallel-execution.test.ts",
+      "before": "e1c753984194b8e712f77eb3c91e7430ba55266f78e5a89b1d6cee685e41f558",
+      "after": "dcc5c010379f0426198645f3c1dc722fbc4407765c8a5cc5c7934c7224aee913"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/property/error-handling-property.test.ts",
+      "before": "844ccf9fef9b469dd4b82785afa48267c8436d8005150c0f04e7c6992254161b",
+      "after": "fa59b2bfec2fb986365550d918478adee4ae93c6133b06c539ed3a9128046973"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/property/fail-fast-parallel.property.test.ts",
+      "before": "b5436c6819ebae0804ce9374f17f278e76977ee74a830148c7037a4060ae05c0",
+      "after": "d560ecf452dc8bf3f47c673f6be94cdde8876c0abe5f75adf93cc99390aa9cc0"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/property/gate-property-2.determinism.test.ts",
+      "before": "39053f9f43e6409fb92860d38257029e5ea08e4e45c9d5cba1c73ffd391ac3df",
+      "after": "cc95cf35f7a4b0eb75ff4d051ed698131f9b42f3f902b4114ddebca6fcf9948c"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/AgentWorkflowEngine.test.ts",
+      "before": "8c9d15c4efd12bd845ec199ed8c35c88dcdab3e267e95042675ae044f704c899",
+      "after": "c3ae51d37ebb36fbc9f99cfdd5c2377a79ef4b75eee07c8f802126bdcbdfcecd"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/CompositeGateCancellation.test.ts",
+      "before": "1c12a4597f9875020fddef77f71dd5a7dd536195bac37b6d8487d5a6610ae83b",
+      "after": "442de09a140189d8c95501b37f145f404f6ff7f8ba94d417c1b0d06d02ca59a3"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/CompositeGateResultAggregation.test.ts",
+      "before": "4ea1c6f9cdf6e1ccee9151e145a6874936c6051098e37046b27094dc2a1cba05",
+      "after": "4bae2bc77923ad039e1cfc96cd457e8f24831bf0ac595f746441ee0df3c079a8"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/GateDefinition.test.ts",
+      "before": "8c46dbc1b9c7b7f2f8e016cd676c04730014b275f05bb5df3fd895e1b95837f4",
+      "after": "7115237f432c43a8560f4e83571e404ede73fc56e38489d0f691a47711e83014"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/GateRunner.test.ts",
+      "before": "e0410f2feef862e0b0a83456a60f6aa8a2264917f5d3cad4ed35ee2aebed6ec0",
+      "after": "cb5ff87313f42a195f2a6a600158d58c407cacc8ca9ebcde5d432ed56194130a"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/GateRunnerErrorHandling.test.ts",
+      "before": "b680ac3bd7374318db7caf9cf8fdcc5d504f9df9261d56f8e5bdeebe25b8397f",
+      "after": "599a981fb59388204b985db47923aab63489cadd6e1a2e2e96278c243614efab"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/WorkflowEngine.test.ts",
+      "before": "7d88e53e87d5894251389443b54e20e376b83099666c3c7c03a341ccc036e110",
+      "after": "38800fd6664451f10663ebde8ef209eb27cdfb0e483639ce38f582af4c8c5b0c"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/WorkflowErrorHandling.test.ts",
+      "before": "5e33d5b6f3c73face94432e8e6835f92a45807bcc20757b0dbee52916ae15ddc",
+      "after": "74edd29fe2036c126ee9be1fde946fbad2a9f101896e9145edcb268354ab0158"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/engine.test.ts",
+      "before": "afbd5b40ee5e4db74bec589c1a1cfc3706e09e92fcc1ef3cadc51a2c845de036",
+      "after": "34e56e0cc61130f24915f5fce9c83d37aa5eff52cf849f4f3f14d9a52f8f7d8f"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/retry.test.ts",
+      "before": "119649abef460f881201f7a26cca9c0d7f2382a043079a5ccdca95063a065e14",
+      "after": "d61fc9c722b8bdce55c94f18fb0a04b73c8fef3148480d7117bb0fbc23d32e61"
+    },
+    {
+      "file": "packages/permission-engine/tests/unit/daemon-integration.test.ts",
+      "before": "19353190556f15f8ece02c88c873a564d0d62f09eb5f36b47cf1daa3e45d0a63",
+      "after": "d4c7707d2ad6071ea9e1ad286fe18d10ad8c301d7dcec1c9d541fd9414c0b082"
+    }
+  ]
+}

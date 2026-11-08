@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/repair-declaration-programs.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "repair-explicit-declaration-lint-program-ownership",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES:private config only;REPOSITORY_TRACKED_WRITES:ledger;EXTERNAL_EVIDENCE_WRITES:before config",
+  "started_utc": "2026-11-08T07:29:24.214Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\repair-declaration-programs.cjs",
+      "sha256": "34c2691dea7faad2448697122e3d5a2029d74b805aee5c62a7d41b9b392b78fe",
+      "size": 1779,
+      "extension": ".cjs"
+    }
+  ]
+}

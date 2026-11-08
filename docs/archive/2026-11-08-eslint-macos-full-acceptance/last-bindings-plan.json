@@ -1,0 +1,42 @@
+{
+  "utc": "2026-11-08T10:29:14.427Z",
+  "collector_sha256": "2982bb1b55cb368df0961671246a58e4a7b07083f7070cce7ff7d9d13dc8ed87",
+  "members": [
+    {
+      "file": "packages/daemon-core/src/http/HTTPServer.ts",
+      "before": "4ededcd2014aa5b8de4cf6926d43b1c7adc496b826663d7ffe23e4508333acb4",
+      "after": "3553ce4bc8cfbca1e6cbac5e8f617355c9512ff0a32f02113df4439b72a12d06"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/project-governance-v2.ts",
+      "before": "d6956595216abd40e85251e298a66daefc139299f254ddd04c227dc8085014cf",
+      "after": "8ee2c2be805086d449989f6a7a436635b726bef016639c7619fc2dcdcd965067"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_project_init_core.test.ts",
+      "before": "7a97006f5f0bc40674b38fa3a97bb8f8bee1fae9b89ddbd90e6d8898e057f9cc",
+      "after": "f222f98a901b45da33db3240a7e5dee92139ade141f83ca479bbc2414dd54c04"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/performance/workflow-performance.test.ts",
+      "before": "bba46d520dafa30146fe88a1cfefcc5a08dbdf5a5e63641d69272045a0fcda2b",
+      "after": "fae61586be26ec5fe1d514877617601c58d82e8431db69a665febd9ed0a6403e"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/AgentGateRunner.test.ts",
+      "before": "2e4194904476e34f59d3a2336fb0640adcae81c533f0a0d498c52d0cfe5a24da",
+      "after": "6e4ed2657f1eee9a27346fba9a82049299304373fa6bd46e058c88984fe7792b"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/CompositeGateSerializer.test.ts",
+      "before": "a569fb269f72caba3c4929a67a27c66cb3c5d98565dcb01af13d97604b7b083f",
+      "after": "8787b00742e4c06923ceaefcb3ca839f8b3b31df6a897d6f8d125e2bf6bd063d"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/WorkflowInstance.test.ts",
+      "before": "077532d4c43e26fca59fc52c3970843b73f7b22c3a47a125bed3dea89184cd04",
+      "after": "f1f99ea1eb7784f665a3422e35fd1491fb9f54020544109f808d702d12980aee"
+    }
+  ],
+  "policy": "Bind unknown decoded snapshot/event type before narrowing; remove proven unused type imports; hoist only leading module JSDoc without import evaluation reordering."
+}

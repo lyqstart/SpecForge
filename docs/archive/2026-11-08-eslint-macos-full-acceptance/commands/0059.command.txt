@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/repair-import-runtime-ownership.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "repair-all-real-runtime-import-owners-and-align-fix-style",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES:private actual import owners,style interoperability,regression;REPOSITORY_TRACKED_WRITES:ledger;EXTERNAL_EVIDENCE_WRITES:baseline objects and complete plan",
+  "started_utc": "2026-11-08T08:31:09.648Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\repair-import-runtime-ownership.cjs",
+      "sha256": "43f47d423ca5fbd05310bdf676a255cbbd76e166e06cc1e180d9884e83f87762",
+      "size": 7826,
+      "extension": ".cjs"
+    }
+  ]
+}

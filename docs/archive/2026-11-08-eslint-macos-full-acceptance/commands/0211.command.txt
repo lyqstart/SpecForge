@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/review-consumer-delta.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "final-consumer-document-and-message-delta",
+  "expected_writes": "Read-only hash-bound prior document applicability plus candidate expression comparison and SPS normative identity",
+  "started_utc": "2026-11-08T12:14:19.736Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\review-consumer-delta.cjs",
+      "sha256": "5328226642a8a1ebb352dbaa8abe50ad725b93041c4f6bc54806ccfda49b95ef",
+      "size": 3317,
+      "extension": ".cjs"
+    }
+  ]
+}

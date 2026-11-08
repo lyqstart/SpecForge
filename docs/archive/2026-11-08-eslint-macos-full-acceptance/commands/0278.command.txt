@@ -1,0 +1,30 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/run-signal-final-linux.cjs",
+    "scripts/prepare-current-release.ts"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "signal-linux-build-precheck",
+  "expected_writes": "ActualLinux final6ec hash-bound source cold all12 build and114-file official release precheck",
+  "started_utc": "2026-11-08T13:05:25.500Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\run-signal-final-linux.cjs",
+      "sha256": "baf90fcc2028e45db7460fb49988460b3fc6fbc4c038096610cd76c165a9d668",
+      "size": 1209,
+      "extension": ".cjs"
+    },
+    {
+      "argument_index": 1,
+      "path": "D:\\code\\SpecForge\\scripts\\prepare-current-release.ts",
+      "sha256": "03cf4843c9f79a82ca515258106fe584612efed4bbbcf2bf45ae2c0e579296f1",
+      "size": 474,
+      "extension": ".ts"
+    }
+  ]
+}

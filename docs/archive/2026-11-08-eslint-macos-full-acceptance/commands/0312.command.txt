@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/refresh-final-document-identities.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "final-document-and-current-owner-identity-supplement",
+  "expected_writes": "Fresh576 document identities and all22 final chapter owner hashes after accepted status/ledger; normativeSPS unchanged",
+  "started_utc": "2026-11-08T13:39:12.230Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\refresh-final-document-identities.cjs",
+      "sha256": "d5419d81574a7a6162200c8c77e95489ebf5ec7e6d042ead65c700031158e0a1",
+      "size": 2494,
+      "extension": ".cjs"
+    }
+  ]
+}

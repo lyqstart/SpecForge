@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/complete-signal-source-bindings.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "complete-tested6ec-source-binding-manifest",
+  "expected_writes": "Correct archive omission using actual527 Git delta and exact prior test source SHA; no source mutation or retest substitution",
+  "started_utc": "2026-11-08T13:22:02.730Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\complete-signal-source-bindings.cjs",
+      "sha256": "ad8eac4f1c1a0a693cbdf39a0648f3f9149ae478dd919e7dbe498ab5d90c0854",
+      "size": 2752,
+      "extension": ".cjs"
+    }
+  ]
+}

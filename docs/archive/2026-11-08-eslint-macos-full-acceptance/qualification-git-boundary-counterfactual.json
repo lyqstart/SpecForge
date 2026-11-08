@@ -1,0 +1,46 @@
+{
+  "utc": "2026-11-08T11:25:53.033Z",
+  "source": "D:\\code\\SpecForge\\.lint-original-a01\\scripts\\project-session-bootstrap.mjs",
+  "source_sha256": "51ddf3830add187bd281f04f1452838247c5407a1d67e9d35cb7baa910abd34e",
+  "results": [
+    {
+      "id": "inside-repository",
+      "directory": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\local-assets\\qualification-env-original\\temp\\sf-git-boundary-ZrK083",
+      "git": {
+        "exit": 0,
+        "stdout": "D:/code/SpecForge\n",
+        "stderr": ""
+      },
+      "bootstrapStatus": "BLOCKED",
+      "issues": [
+        "REQUIRED_FILE_MISSING:docs/project-status.md",
+        "REQUIRED_FILE_MISSING:docs/product-specification/authority-registry.md",
+        "REQUIRED_FILE_MISSING:docs/product-specification/specforge-product-specification.md",
+        "REQUIRED_FILE_MISSING:docs/rule/specforge-execution-mode-and-evidence-protocol.md",
+        "REQUIRED_FILE_MISSING:docs/rule/specforge-active-development-rules.md"
+      ]
+    },
+    {
+      "id": "outside-repository",
+      "directory": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-git-boundary-gjbYXg",
+      "git": {
+        "exit": 128,
+        "stdout": "",
+        "stderr": "fatal: not a git repository (or any of the parent directories): .git\n"
+      },
+      "bootstrapStatus": "BLOCKED",
+      "issues": [
+        "LOCAL_HEAD_UNAVAILABLE",
+        "LOCAL_BRANCH_UNAVAILABLE",
+        "WORKTREE_STATUS_UNAVAILABLE",
+        "TRACKED_FILE_LIST_UNAVAILABLE",
+        "REQUIRED_FILE_MISSING:docs/project-status.md",
+        "REQUIRED_FILE_MISSING:docs/product-specification/authority-registry.md",
+        "REQUIRED_FILE_MISSING:docs/product-specification/specforge-product-specification.md",
+        "REQUIRED_FILE_MISSING:docs/rule/specforge-execution-mode-and-evidence-protocol.md",
+        "REQUIRED_FILE_MISSING:docs/rule/specforge-active-development-rules.md"
+      ]
+    }
+  ],
+  "conclusion": "CONFIRMED: putting TEMP inside parent real Git worktree invalidated the no-Git negative fixture. Same real baseline collector returns intended inventory error outside any repository. Product and test source unchanged."
+}

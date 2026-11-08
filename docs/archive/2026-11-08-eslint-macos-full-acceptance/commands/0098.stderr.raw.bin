@@ -1,0 +1,27 @@
+$ vitest run tests/unit/optional-file-lock-owner.test.ts tests/unit/ascii-control-boundary.test.ts tests/unit/handshake-ownership.test.ts src/event-bus/EventBus.test.ts src/http/HTTPServer.test.ts "--maxWorkers=1" "--minWorkers=1"
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+stderr | src/http/HTTPServer.test.ts > CAS compression for oversized payloads > should return 413 when CAS store fails
+[PAYLOAD] CAS compression failed: CAS disk full
+
+stderr | src/http/HTTPServer.test.ts > CAS compression for oversized payloads > should return 413 for oversized non-JSON body
+[PAYLOAD] CAS compression failed: Oversized payload is not valid JSON — cannot apply CAS compression
+
+stderr | src/http/HTTPServer.test.ts > CAS compression for oversized payloads > should return 413 for oversized JSON without data field
+[PAYLOAD] CAS compression failed: Oversized payload has no "data" field — cannot apply CAS compression
+
+stderr | src/event-bus/EventBus.test.ts > EventBus > should not publish when stopped
+[EventBus] Cannot publish: bus is stopped
+
+stderr | src/event-bus/EventBus.test.ts > EventBus > should handle errors in handlers gracefully
+[EventBus] Error in handler for test.event: Error: Test error
+    at D:\code\SpecForge\.lint-review-a01\packages\daemon-core\src\event-bus\EventBus.test.ts:256:13
+    at EventBus.publish (D:\code\SpecForge\.lint-review-a01\packages\daemon-core\src\event-bus\EventBus.ts:184:9)
+    at D:\code\SpecForge\.lint-review-a01\packages\daemon-core\src\event-bus\EventBus.test.ts:263:27
+    at file:///D:/code/SpecForge/.lint-review-a01/node_modules/.bun/@vitest+runner@3.2.4/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///D:/code/SpecForge/.lint-review-a01/node_modules/.bun/@vitest+runner@3.2.4/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+    at file:///D:/code/SpecForge/.lint-review-a01/node_modules/.bun/@vitest+runner@3.2.4/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20
+    at new Promise (<anonymous>)
+    at runWithTimeout (file:///D:/code/SpecForge/.lint-review-a01/node_modules/.bun/@vitest+runner@3.2.4/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)
+    at runTest (file:///D:/code/SpecForge/.lint-review-a01/node_modules/.bun/@vitest+runner@3.2.4/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+

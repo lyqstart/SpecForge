@@ -1,0 +1,132 @@
+{
+  "utc": "2026-11-08T09:05:26.627Z",
+  "required": "Current path/bootstrap/D18/D23 source-owner suites plus full compiler/lint; no command metacharacter, control or DEL rejection may be weakened.",
+  "proofs": [
+    {
+      "file": "packages/daemon-core/src/recovery/ProjectArchiveRestore.ts",
+      "old_regex": "/[<>:\"|?*\\x00-\\x1f]/",
+      "new_punctuation_regex": "/[<>:\"|?*]/",
+      "options": {
+        "includeSpace": false,
+        "includeDelete": false
+      },
+      "checked_inputs": 131083,
+      "helper_sha256": "4c25ae76ea343dce91fc65fa8d1e3d6b3bd3bb665c7002abeab42c2a38b9f995",
+      "equivalence": "PASS: actual transpiled helper plus retained punctuation class vs original regex; exhaustive single UTF16 units, exhaustive two-byte combinations, Unicode and realistic command/path cases"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/git-detached-bootstrap.ts",
+      "old_regex": "/[<>:\"|?*\\x00-\\x1f]/",
+      "new_punctuation_regex": "/[<>:\"|?*]/",
+      "options": {
+        "includeSpace": false,
+        "includeDelete": false
+      },
+      "checked_inputs": 131083,
+      "helper_sha256": "4c25ae76ea343dce91fc65fa8d1e3d6b3bd3bb665c7002abeab42c2a38b9f995",
+      "equivalence": "PASS: actual transpiled helper plus retained punctuation class vs original regex; exhaustive single UTF16 units, exhaustive two-byte combinations, Unicode and realistic command/path cases"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/git-detached-bootstrap.ts",
+      "old_regex": "/[\\x00-\\x20\\x7f\"\\\\]/",
+      "new_punctuation_regex": "/[\"\\\\]/",
+      "options": {
+        "includeSpace": true,
+        "includeDelete": true
+      },
+      "checked_inputs": 131083,
+      "helper_sha256": "4c25ae76ea343dce91fc65fa8d1e3d6b3bd3bb665c7002abeab42c2a38b9f995",
+      "equivalence": "PASS: actual transpiled helper plus retained punctuation class vs original regex; exhaustive single UTF16 units, exhaustive two-byte combinations, Unicode and realistic command/path cases"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_executor.ts",
+      "old_regex": "/[\\x00-\\x1f\\x7f$`%;&|<>(){}]/",
+      "new_punctuation_regex": "/[$`%;&|<>(){}]/",
+      "options": {
+        "includeSpace": false,
+        "includeDelete": true
+      },
+      "checked_inputs": 131083,
+      "helper_sha256": "4c25ae76ea343dce91fc65fa8d1e3d6b3bd3bb665c7002abeab42c2a38b9f995",
+      "equivalence": "PASS: actual transpiled helper plus retained punctuation class vs original regex; exhaustive single UTF16 units, exhaustive two-byte combinations, Unicode and realistic command/path cases"
+    },
+    {
+      "file": "packages/daemon-core/src/verification/node-command-contract.ts",
+      "old_regex": "/[\\x00-\\x1f\\x7f$`]/",
+      "new_punctuation_regex": "/[$`]/",
+      "options": {
+        "includeSpace": false,
+        "includeDelete": true
+      },
+      "checked_inputs": 131083,
+      "helper_sha256": "4c25ae76ea343dce91fc65fa8d1e3d6b3bd3bb665c7002abeab42c2a38b9f995",
+      "equivalence": "PASS: actual transpiled helper plus retained punctuation class vs original regex; exhaustive single UTF16 units, exhaustive two-byte combinations, Unicode and realistic command/path cases"
+    },
+    {
+      "file": "packages/daemon-core/src/verification/source-snapshot.ts",
+      "old_regex": "/[<>:\"|?*\\x00-\\x1f]/",
+      "new_punctuation_regex": "/[<>:\"|?*]/",
+      "options": {
+        "includeSpace": false,
+        "includeDelete": false
+      },
+      "checked_inputs": 131083,
+      "helper_sha256": "4c25ae76ea343dce91fc65fa8d1e3d6b3bd3bb665c7002abeab42c2a38b9f995",
+      "equivalence": "PASS: actual transpiled helper plus retained punctuation class vs original regex; exhaustive single UTF16 units, exhaustive two-byte combinations, Unicode and realistic command/path cases"
+    },
+    {
+      "file": "packages/daemon-core/src/verification/static-task-command.ts",
+      "old_regex": "/[\\x00-\\x1f\\x7f`]/",
+      "new_punctuation_regex": "/[`]/",
+      "options": {
+        "includeSpace": false,
+        "includeDelete": true
+      },
+      "checked_inputs": 131083,
+      "helper_sha256": "4c25ae76ea343dce91fc65fa8d1e3d6b3bd3bb665c7002abeab42c2a38b9f995",
+      "equivalence": "PASS: actual transpiled helper plus retained punctuation class vs original regex; exhaustive single UTF16 units, exhaustive two-byte combinations, Unicode and realistic command/path cases"
+    }
+  ],
+  "members": [
+    {
+      "file": "packages/daemon-core/src/recovery/ProjectArchiveRestore.ts",
+      "before": "5c57369b0a91e6b654cede161e02dddde34d56b758aa3815f8184ec56f949175",
+      "after": "4dd8d5e4d1a4c7a669e83b61f9c734f7df3e40662ef54208c09f1f2eaa419777"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/git-detached-bootstrap.ts",
+      "before": "8ae741abc2b34f9368545c16c2bb6e68f2229e0660b4cbc882fd33db35ba98be",
+      "after": "b55b19138cdd32962632e04495b913dfb76e4184c9393c3f424a0e045a5875f8"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_executor.ts",
+      "before": "0e0e17df49ec7d05a5da55918ff541186936b4ec7fd5e0a89a7c31d9dee77ad3",
+      "after": "ec8434a8861d22117c758536e3d5b96ee25abb5caf14ec1d91f0fb362656bc8e"
+    },
+    {
+      "file": "packages/daemon-core/src/verification/node-command-contract.ts",
+      "before": "7e560a28cce0b48d02ce121e1a677b5fc0c7507253f7707df36de799d040c0da",
+      "after": "0e9619023d07b2e1fec2681d1e7b1484bbc6d98e5ba966883cb07a7546faa092"
+    },
+    {
+      "file": "packages/daemon-core/src/verification/source-snapshot.ts",
+      "before": "aa66b8a09f6e221166b134e20fcad07572c1be08f5e60498a620f6c86a295548",
+      "after": "d4f096b4e53f11293e3d0b7ac39ec23e02296ebcb38c5d2882f03a75b9e5319a"
+    },
+    {
+      "file": "packages/daemon-core/src/verification/static-task-command.ts",
+      "before": "e4ab6809d29b4f90b3fafa1c5092ed6db6f1011abc1ef6944b60ae3590af4719",
+      "after": "21fafb57d6d19b871938e4f849b7eb9f9ae8bf8f90b2a1be16a7f2dc3d4eff17"
+    },
+    {
+      "file": "packages/types/src/character-boundaries.ts",
+      "before": "ABSENT",
+      "after": "4c25ae76ea343dce91fc65fa8d1e3d6b3bd3bb665c7002abeab42c2a38b9f995"
+    },
+    {
+      "file": "packages/types/src/index.ts",
+      "before": "1474bd1056d69ae19271a5393c76c02c9ddac35d038a16f9e0ba6c30d73bc229",
+      "after": "890e534cdd9384dc2386b1f892c971bc47e5ace3dd0d51fe314fcd7e5c6dfcf9"
+    }
+  ]
+}

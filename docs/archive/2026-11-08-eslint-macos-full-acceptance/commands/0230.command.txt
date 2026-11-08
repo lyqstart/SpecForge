@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/commit-shortpath-candidate.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "commit-final-shortpath-candidate",
+  "expected_writes": "Private codex branch exact reviewed three-file delta; original frozen candidates preserved",
+  "started_utc": "2026-11-08T12:25:18.882Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\commit-shortpath-candidate.cjs",
+      "sha256": "46f1257cb4a6dcb911413aaced49d57fadd5e1a5bd86b968b3ccec0f08fcdaa5",
+      "size": 1615,
+      "extension": ".cjs"
+    }
+  ]
+}

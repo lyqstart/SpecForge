@@ -33009,3 +33009,239 @@ Candidate 字节完整性不能替代内容事实完整性。进入候选编制�
 ### ERR-2054：最终载体与报告范围必须显式核对
 
 - loader03准备曾用内联node -e穿过PowerShell引号并在解析期失败；改用独立CJS构造器后执行成功，未产生产品修改。首份机器评估字段 root_each_platform_tests 命名可能误含macOS，原文平台表仅声称Windows/Linux全量；保留原稿，以v2显式 root_tests_windows_and_linux 和 macOS未全量声明纠正。不能把解析失败算作执行或把简写字段扩大成平台覆盖。完整ESLint失败和旧现场原因INSUFFICIENT_EVIDENCE继续明确保留。适用EXP-007/008/025/026/283。
+
+### ERR-2055：最终只读验收载体遗漏Git路径编码与平台条件
+
+- 上轮publication-live/0014用非-z的Git路径列表做前缀判断，中文路径的C式引用造成假失败；0015真实比较原始/NUL两种输出，确认4994条实际路径全部在允许集合，0016完整4991封存/117部署/权威/标签核验通过。0017又错误地要求非Windows执行Bind pinned Windows verification Node；真实distribution-smoke.yml:39–40仅Windows执行，0018绑定该条件，0019只接受Ubuntu/macOS这两项精确跳过、其他步骤及全部10作业均成功。两类失败均为观察器错误，没有产品修改。新阶段复制并重验原失败和修正回执；后续Git路径一律NUL，CI验收绑定实际条件，不允许泛化忽略skip。适用EXP-002/007/008/039/044/195/251。
+
+### ERR-2056：完整lint正式入口的工具链与当前包覆盖缺口
+
+- 新阶段0002逐包实际解析确认ESLint8.57.1/9.39.4、TypeScript ESLint6.21/7.18/8.59并存，types/host-profile没有lint脚本；0003正式bun run lint完整退出1，10个有入口包均失败，包含缺配置、flat/legacy分裂、插件/解析及实际格式/代码诊断。责任层为开发工具、workspace编排与CI消费者，能力PARTIALLY_SUPPORTED。此次用户明确要求修完整lint，建立独立审计批次；禁止以旧任务范围限制阻止当前授权，也禁止关闭既有规则或缩小源集合。先统一真实工具/配置/项目解析owner并保留有效规则，隔离工作树逐项修复；原失败全部保留，最终必须完整退出0。适用EXP-004/007/008/011/016/074/137/179/195/251。
+
+### ERR-2057：深路径隔离工作树的Bun依赖复制失败
+
+- 0007在自有深路径review工作树解析并写出锁文件后，6个TypeScript ESLint依赖链接copyfile ENOENT，安装退出1；不能把956包已安装摘要当成功。未修改产品源。待验证假设为Windows物理路径边界，下一步用更短的独立物理工作树、相同已生成锁文件和相同Bun执行冻结安装；短路径成功只支持环境差异，不能单独宣称Bun内部根因。旧目录和失败原样保留，不以别名、联接或清缓存假造对照。适用EXP-002/007/008/009/174/195。
+
+### ERR-2058：新lint观察器在序列化前丢弃致命诊断
+
+- unified-lint-before的observability/workflow-runtime返回LINT_INPUT_NOT_VALIDATED，真实runner源码在遇fatal时先throw，只留下包装栈而无解析器原始消息。不是已证明的产品源码根因。保留原始失败与runner源；改为先逐项核对实际文件集合等于输入，再完整序列化原始ESLint结果，由error/warning计数保持失败，不能用抛通用错误隐藏根因。接着仅重取这两包完整原始诊断，所有规则与lint范围不变。适用EXP-007/008/039/141/195。
+
+### ERR-2059：同名.ts与.d.ts不能仅靠同一glob程序完成类型lint
+
+- 完整原始诊断证明observability/project-structure.test.d.ts及workflow/WorkflowEngine.test.d.ts均为export{}旧声明，TypeScript在同名.ts存在时不会把.d.ts加入普通glob程序；lint输入仍包含它们。不能为通过而删掉既有输入或整体关typed规则。增加专门只含.d.ts的独立TS项目，并与原全量src/tests程序共同由parser消费；不改变构建tsconfig，不新增产品Schema或转换。既有错误及两个声明原字节保留，随后实测覆盖。适用EXP-004/007/008/022/052/137/195。
+
+### ERR-2060：格式化AST比较器把等价静态属性拼写误判为语义变化
+
+- 0017在内存预演Adapter errors/index.ts时AST摘要不同，尚未写任何源码。原始源码含引号属性名，Prettier按既有配置移除可选引号，TS AST从StringLiteral变Identifier，运行键相同。将比较器仅对明确静态属性/成员名规范化；计算键不参与。真实纯函数正反例证明等价键通过，键名/值/调用目标或计算键变化均拒绝。保留旧失败与比较器，不能直接放宽全部ASTkind；v2仍先完整计划与逐字前置校验后一次落盘。适用EXP-007/008/025/044/114/195。
+
+### ERR-2061：ESLint函数头诊断可指向属性键而不是async节点
+
+- 0021内存生成时checkFn断言失败，未写源码；真实诊断从对象属性checkFn列开始，async arrow节点位于其后。原选择器只在节点自身包含point时遍历，漏掉合法属性头。v2使用AST PropertyAssignment/VariableDeclaration initializer的明确头范围，遍历全部函数后选择最深受诊断约束的async节点；对象属性、嵌套和类方法正例与同步属性反例均实际通过。仍核对源字节、禁止generator并在完整计划语法校验后写入，不把名称文字或邻接空白当接口。适用EXP-007/008/025/044/065/192/195。
+
+### ERR-2062：CI载荷生成器把GitHub表达式嵌进JS模板
+
+- 0027在解析期把GitHub的${{ matrix.os }}当JS模板表达式，SyntaxError，未生成任何CI载荷。改成独立YAML数据文件加小型结构拼接器，先node --check再执行，不在多语言模板里继续增加转义层。原失败保留，不计作macOS或CI执行。适用EXP-002/014/063/156/198/247/249。
+
+### ERR-2063：官方多规则自动修复也必须经过正式编译
+
+- 0026在12包构建到workflow时失败：AgentGateRunner的自动修复把WorkflowAgentRunner移入import type并保留嵌套type AgentRole，既非法TS2206又把静态determineAgentRole值调用变为类型TS1361。修复前/后精确字节直接证明改写效应，不能因它来自ESLint就声称语义等价；尚不推断具体单规则内部根因。恢复明确的运行值导入和独立类型导入，其余规则不关闭；随后独立检查该文件诊断与构建，防止再次盲目全量autofix。Promise合同4项行为测试已实际通过，但不替代完整构建。适用EXP-004/007/008/011/023/052/091/195。
+
+### ERR-2064：删除看似冗余断言后丢失调用端必要的类型宽化
+
+- 0031真实Daemon tsc证明3处官方autofix影响：HTTP超时泛型从具体env键推导后不再接受{} fallback；模块目标any进入Set后成为unknown；Error扩展诊断成员丢失。不能把lint分析上下文的“unnecessary”当正式编译证据，也不推断插件内部根因。改由各生产者显式变量类型拥有合同：env的Record<string,string>、targets的unknown[]与字符串type predicate、Error可选扩展成员的声明类型；不加any或重复强制断言，不关闭规则，保持字段运行值与安全诊断过滤。随后独立tsc和对应owner回归。适用EXP-004/007/008/011/023/052/091/195。
+
+### ERR-2065：收紧unknown后必须由真实生产者完成边界校验
+
+- 0039 Permission tsc固定16处失败：actor/resource字段、配置rules及effect/action/resource、EventLogger配置类型、冲突事件配置载荷。67处Any→unknown的逐文件擦除输出相同，但不证明消费者已适配。为真实owner增加对象/数组/可选字符串校验，非法字段明确拒绝，不能以空值或any恢复弱边界；EventLogger配置使用自身声明类型。增加合法硬规则保留、非法actor/rule/resource/config回归，再正式编译并运行全部受影响消费者。适用EXP-004/007/008/011/022/052/091/195。
+
+### ERR-2067：绑定闭环规划器必须先枚举全部引用种类
+
+- 0043在98文件前后符号对照中发现WorkflowErrorHandling.test.ts的callCount++，其后缀更新不属于规划器已支持的独立赋值，按合同在任何写入前拒绝。原失败和所有现场保留。改为完整只读枚举全部新未绑定引用/原类型/原绑定，先分类整个引用集合，再冻结修复计划；不能一次增加一个分支或泛化跳过未知引用。适用EXP-007/008/019/039/091/195/237。
+
+### ERR-2066：未使用绑定删除必须闭合全部写引用
+
+- 0042 Permission整包真实回归为3文件22失败、356通过：capturedEvents、validApiKey、mockEventBus等写入引用在删除未读取绑定后仍存在，ReferenceError。新增unknown边界3项和API key19项已通过，不能用它们覆盖全包失败。根因是unused规划器仅按诊断删除声明，没有审计完整绑定引用；测试文件未进入生产tsc，完整源码编译不证明测试局部绑定正确。对全部98个before快照构造独立TypeScript前/后符号表，只处理原来已绑定、现在未绑定的独立写语句，保留有副作用RHS，歧义或读取引用则零写入拒绝。重新整包回归并把新未绑定引用审计列为后续自动清理门禁，禁止继续仅按变量名删除。适用EXP-004/007/008/010/011/091/195。
+
+### ERR-2068：CommonJS规划器不能重声明宿主module绑定
+
+- 导出去重规划器在执行前node --check发现const module与CommonJS包装绑定冲突，退出1，没有执行或写源。保留原规划器和工具原始转录，不补造原命令UTC；改为任务专属rootModuleSymbol并继续先语法检查。导出身份缺declarations时也明确拒绝，不把未解析导出当同一目标。适用EXP-002/007/008/177/198/249。
+
+### ERR-2069：混合类型导入修复风格不一致会吞掉运行值
+
+- 0056 Workflow整包2文件41失败、1338通过；实际createAgentScheduler/createEventSubscriptionManager等被官方多规则修复合入import type。0058相同输入/工具的真实A/B直接复现：旧mixed+separate配置产生type-only运行值并被新门禁拒绝，aligned-inline保留运行值且第二次修复幂等。共同配置只改变fixStyle/prefer-inline，保留各原有效规则级别和其他选项；按新门禁实际引用恢复值导入，不关闭规则。全12包扫描另发现baseline3549已有静态许可helper把Observability接口当EventLogger构造器；改用同模块已有真实日志owner并加构造/拒绝事件/cleanup回归，不注册或启用第三方Plugin Loader。原整包失败和A/B保留，后续完整复验。适用EXP-004/007/008/009/011/022/023/031/195/282。
+
+### ERR-2070：修复计划必须按真实字节校验换行和紧凑语法
+
+- leaf-owner 首次计划在应用前断言失败，原文件存在重复 CR 的换行，未生成计划、未写产品文件。保留该数字退出码和原始输出；仅在内存规划阶段统一 CR+LF 并让签名匹配空白，仍先核对全部 before SHA，再统一应用。不得把显示文本当原始字节。适用 EXP-004/007/008/009/011/091。
+
+
+- ERR-2070 更正：上条重复 CR 判断仅来自工具显示，不能作事实。直接 Node 原始字符串检查证实相关文件是 LF；第二次仍未把 LF 转为计划预期的 CRLF，因此应用前再次拒绝、零产品写入。v3 对全部 CR*LF 做一致的内存规范化；原始 before 字节快照不变。
+
+
+### ERR-2071：Unknown 配置边界还须遵守模块自己的索引访问约束
+
+- 叶包 lint 三包 0/0、CLI 剩两个未使用私有帮助函数；全量编译在 Adapter 遇到 14 个 TS4111。配置从 any 收紧为 unknown/record 后，当前模块开启 noPropertyAccessFromIndexSignature，必须使用声明的 bracket 字段读取。保持全部已有 typeof/值域检查并按编译器约束修复，不关闭规则；原输出和失败码保留。适用 EXP-004/007/008/009/011/091。
+
+
+### ERR-2072：去除 any 后必须满足精确可选属性和完整返回路径
+
+- 全12编译0069在 Workflow 报2项：错误选项显式 undefined 与 exactOptionalPropertyTypes 冲突，取消发布新分支未显式返回。省略未提供键并声明无 publisher 的 undefined 返回，不放宽编译规则；保留失败，补异步发布 await/失败/receiver 和同步/异步重试返回 Promise 回归。适用 EXP-004/007/008/009/011/091。
+
+
+### ERR-2073：生成器嵌套模板必须先通过真实语法预检
+
+- Permission/Workflow 修复生成器在 node --check 报嵌套模板引号错误，尚未启动 carrier 或写产品文件；保留检查输出。改用普通字符串组合避免二次插值，继续完整预检和 before SHA 校验。适用 EXP-004/007/008/009/011/091。
+
+
+### ERR-2074：嵌套类构造器需捕获已证明的具体类型
+
+- scalar/json 修复后的全12编译在 error-propagation 嵌套类构造器仍见 string|undefined，尽管外层有 const 判空。改为先对来源判空，再用明确 string 注解捕获窄类型，不使用断言；保持原返回路径和错误类型。保留全量失败记录。适用 EXP-004/007/008/009/011/091。
+
+
+### ERR-2075：新增 TS 测试也必须在写入前解析完整 after 字节
+
+- 0082 新边界测试一文件未 collect：Symbol 预期字符串有多余括号；另外两文件6测试已通过。失败输入/真实输出保留。为通用计划应用器增加全部 after TS 的真实 TypeScript parseDiagnostics 预检，再修正唯一语法字节；不改验收期望或跳过测试。适用 EXP-004/007/008/009/011/091。
+
+
+### ERR-2076：异步测试必须检查真实 Promise 而非同步不抛错
+
+- Daemon async/lock 计划在写入前遇到 EventBus 的嵌套 expect 回调，原先只支持直接 it owner，断言失败、零产品写入。核验实际原测试用 not.toThrow 检查返回 Promise 的 publish，不能证明拒绝被处理；v2 保留同一调用与所有 handler 断言，改为 await resolves.toBeUndefined，并按真实 AST 找外层 it。全部 after parse 后才应用。适用 EXP-004/007/008/009/011/091/249。
+
+
+### ERR-2077：共享 Daemon 依赖类型不得强制不存在的全局业务状态
+
+- compile-daemon-async-lock-and-character-owners 到 Daemon 最后一包报 HTTPServerDeps 缺少 stateManager/wal。源码实际共享 Daemon 不创建全局业务状态，HTTPServer 内部使用 Partial，项目状态由 ProjectManager 按项目提供。将该依赖 Contract 标为可选并验证类型擦除 JS 完全一致，不恢复伪造 undefined as any 或增加全局状态。适用 EXP-004/007/008/009/011/091。
+
+
+### ERR-2078：一个文件的多项修复必须合为唯一最终 after
+
+- concrete-workflow 计划对同一文件两项类型修复分别建条目，在封存 before 时 EEXIST 拒绝，未写产品文件；部分 before 封存保留。v2 以唯一文件聚合逐项内存编辑、保留首个 before、最后 after，并逐步比较类型擦除 JS；独立 v2 快照目录防止覆盖原失败现场。适用 EXP-004/007/008/009/011/091/249。
+
+
+### ERR-2079：虚拟编译器 canary 必须证明入口实际加载
+
+- 负例边界只读调查的三项虚拟编译结果全部空，预期代码2345/2578断言拒绝，未修改测试。原 host 直接比较 Windows 原生路径与 TypeScript 请求路径，不能把空诊断当通过；v2 使用规范化路径并强制每个 canary 实际加载恰好一个来源文件，保存请求路径和已加载入口。实际源调查不是全测试类型检查通过。适用 EXP-004/007/008/009/011/091/249。
+
+
+### ERR-2080：同一观测器的全部来源筛选都必须采用规范化路径
+
+- v2 canary 真正加载并得到2345/2578，但紧接独立检查发现来源清单 inputs=0；其字符串 startsWith 仍混用原生/TypeScript路径。419项语义诊断是真实错误输出，零 inputs 不能作为绑定来源的可采用证据；v2不用于修复证明。v3以 path.relative 分段归属，断言至少100个工作区来源、每个配置根确实载入，再保存清单。未据此修改产品/测试。适用 EXP-004/007/008/009/011/074/091/249。
+
+
+### ERR-2081：语义树比较不能把 SourceFile 全文当语义叶值
+
+- 负例修复 A/B 编译阶段已完成，但独立的括号等价 canary 拒绝：canonical 把 SourceFile.text 全文也纳入，导致仅冗余括号差异仍不相等，未写产品/测试。保留 v1 编译审阅和失败命令；v2 只对实际语义叶读取 text、SourceFile 仅比较子树，再要求等价/不等价两个真实 canary 和全部逐文件比较通过。适用 EXP-004/007/008/009/011/091/249。
+
+
+### ERR-2082：编辑收集器必须按物理路径身份聚合同一文件
+
+- 冗余类型计划再次在封存 before 时 EEXIST 拒绝、未写产品源码：同一文件一条由 path.relative 产生反斜杠，另一条为正斜杠，纯字符串去重失效；初始部分 before 保留。新增共享 collector v1，按真实根/目标路径和 Windows 大小写身份聚合，拒绝越界、真相源与来源漂移；真实 canary 验证正反斜杠/大小写顺序组合成一个 after，且漂移不覆盖。v2 只使用已验证共享收集器，并在所有快照前核验唯一目标。后续批量修复使用该收集器，不再复制旧字符串聚合器。可选 CIM 进程调查因宿主权限拒绝，未据此推断根因或改变产品状态。适用 EXP-004/007/008/009/011/074/091/249。
+
+
+### ERR-2083：删除 HTTP 字段断言时应覆盖读写两个请求合同
+
+- typed-core 的全包编译真实退出1：StateReadRequest 原先以 any 读取 projectPath，去除断言后暴露 wire 字段未声明。原失败0120完整保留；修复与 transition 相同的 HTTP 层 unknown 可选字段，不向共享状态模型扩展业务属性。JSON owner 修复后0122全12包编译退出0；后续治理类型仍需新一轮编译与全量回归。适用 EXP-004/007/008/009/011/091。
+
+
+### ERR-2084：typed consumer 必须保留真实生产者可空值及来源字段检查
+
+- 0126全包编译发现新 GitAuditReport 将 getHeadCommit 的 string|null 错写为 string；预检记录 Record unknown 的 trace_id/timestamp 也未在输出处收窄。保留原始错误，按真实方法合同保留 null，增加预检来源字段检查并以已验证字符串输出可选字段，不以断言解决。适用 EXP-004/007/008/009/011/091。
+
+
+### ERR-2085：取证解析器应从真实声明依赖的 package owner 解析
+
+- CI staged driver 0130 在任何产品写入前 MODULE_NOT_FOUND：错误选 Workflow 为 YAML 依赖 owner。bun.lock 与 Permission manifest 证明 yaml 由 Permission 声明；v2 从该 owner 的 createRequire 解析并先解析/断言全部三平台 phase 配置，再封存写入。原失败不覆盖。适用 EXP-004/007/008/009/011/091。
+
+
+### ERR-2086：格式治理后仍须运行完整消费者合同回归
+
+- 全包 lint0135与Root0137退出0，完整workspace0136退出1：Scope1例及Daemon11例失败。9项Daemon和1项Scope是字面引号/换行/尾随逗号的源码断言；另2项为知识库source/setup校验器函数身份不同，不能用lint成功替代这些消费者事实。保留全部原始输出。改用保留字面值/操作符/数组空位的语法token检查并加正反例，snapshot参数改为实际AST调用参数检查；按现有精确身份合同同步知识库模板函数，不降低其断言。继续受影响完整文件、全12构建/lint、冻结三平台回归。只读diff检查还发现新CRLF/尾随trivia；0140在字面值保护、声明种类/操作符反例及完整语义树相等证明下清理111文件，未改写字面值内容。适用 EXP-004/007/008/009/011/074/091/121/122。
+
+
+### ERR-2087：src 内嵌测试的辅助模块仍须遵守生产 rootDir
+
+- 0145全包构建真实TS6059：architecture-governance src内嵌测试直接引用根tests下TShelper，超出Daemon生产rootDir。未放宽rootDir/include。改为在该原有测试内直接检查真实ArrayLiteral五项文件名，保留顺序与完整性并补评论/缺项反例；其余非生产test消费者继续使用根helper。原失败保留，必须重新全构建。适用 EXP-004/007/008/009/011/091/121/122。
+
+
+### ERR-2088：删除不活动历史算法后，不应为满足旧源码存在断言重新启用历史产品规则
+
+- 0149受影响完整12文件113例中112通过；唯一失败揭示 ERR-2086 中格式归因过宽：Daemon 的历史私有 V6 原则算法已因无调用而删除，其字面常量也不存在，不能仅改引号来满足旧断言。SPS明确不以V6/Kiro定义当前产品，现有current-doc-lint-authority运行测试证明V6命名业务Candidate不激活历史产品清单。将旧test改为核验正式SPS Observability状态边界、两个实现无checkV6Arch实际调用，保留历史模板/fixture文本证据；不恢复死导出、不把旧政策接回Runtime。同时清理删除函数留下的孤立注释。原0136/0149失败均保留，需全量再验。适用 EXP-004/007/008/009/011/091/121/122。
+
+
+### ERR-2089：生成源码中的反引号再次暴露双层模板转义风险
+
+- 0152 staged修复脚本自身SyntaxError，任何产品写入前失败。原脚本与失败回执保留；v2使用普通字符串数组与JSON.stringify构造目标片段，不再在生成器模板内嵌反引号，且命令强制语法检查失败即退出，禁止把失败预检后续调用当作成功。ERR-2088所述修复在v2通过并执行前均只是计划，不代表0152已应用。适用 EXP-004/007/008/009/011/091。
+
+
+### EXP-122 补充：开发工具锁升级须用三腿隔离归因，不能冒称不同锁为同锁 A/B
+
+- 本轮原始锁 b98974779d4bb84652c76d59feef4579106d2f83cdf6adc00039188831c3a78b 与候选锁 3f60323fd1c3303673a8d79d4253257198725d247d3e6551e7648d0826db4438 一手SHA不同；原规则同锁要求无法单组表达明确授权的ESLint依赖升级。Standard owner 增加更强的三腿取证：精确原始HEAD原锁、仅开发工具/身份叠加的基线新锁、完整候选新锁。禁止任何产品源码/测试/API/权限/状态叠加到中腿，运行时依赖改变不适用；逐字段和源码哈希核验，原/中腿报告工具链影响，中/候选腿按同锁与同粒度比较，仍保留构建/收集失败和AB_INCOMPARABLE，不降低产品/安装/封包门禁。活动EXP-122同步更新；本条是取证能力最小扩展，不修改SPS或原WI。
+
+
+### ERR-2090：最终封包白名单不能遗漏已验证的模板同步文件
+
+- 0162只读freeze在写manifest前因setup知识库模板不在允许列表失败关闭；该文件是0138已封存、与source函数精确同步且0149两组20例通过的受控模板变更。v2仅增加这一精确路径，保留全其余范围、语法、权威和源码检查，不使用泛化忽略/扩大目录掩盖未知文件。原失败保留。适用 EXP-004/007/008/009/011/091/121。
+
+
+### ERR-2091：YAML语法有效不能证明GitHub表达式上下文合法
+
+- 私有候选5dcc9f2的真实CodeQuality运行42475137148在创建作业前失败。公开运行页一手注释为(Line102Col32) Unrecognized named-value runner in runner.temp；job-level env不支持该上下文。连接器Checks端点不提供详情，公开APIcheck_runs为空，公开页面原始HTML私有保留并以哈希绑定错误摘录。修复仅把报告目录绑定移到4个实际phase的step env，逐字段YAML比较证明其余矩阵/顺序/工具版本不变。必须由新实际CI确认，不能以本地YAMLparse替代。原失败、源码提交与所有取证均保留；main未动。适用 EXP-004/007/008/009/011/039/091。
+
+
+### ERR-2092：隔离TEMP必须位于Git仓库之外，不能污染无仓库负例
+
+- Original V1 fullworkspace中Bootstrap负例唯一失败；Toolchain V1相同。自有TEMP位于真实Root的archive/local-assets内，使Git向上发现真实仓库，不能代表该测试要求的非Git目录。0174用同一真实原始collectBootstrap和相同offline参数在仓库内外自有空目录对照：内侧Git退出0且无inventory错误，外侧Git退出128并真实出现TRACKED_FILE_LIST_UNAVAILABLE，直接证明观察者环境归因。V2用彼此独立的OS临时HOME/APPDATA/TEMP/配置根，执行前证明父目录无Git，并三腿同入口冷clean再全构建/全测试/安装；不改产品或测试断言，保留V1失败和上下文。原始工作树锁是Git内容ce3a0f...而初始真实Root工作字节b989747...；两者须按JSONC/行尾核对，不将原始工作字节与新检出字节冒称相同。中/候选锁仍逐字一致。适用 EXP-004/007/008/009/011/074/091/121/122。
+
+
+### ERR-2093：实际三平台全回归暴露临时路径与多产物夹具合同缺口
+
+- df9真实macOS全workspace退出1，16文件94失败2358通过1Windows专属跳过；Root未运行，不计通过。严格owner路径检查报VERIFICATION_LINK_FORBIDDEN，进程夹具Bun报multiple output files without an output directory。0183以原始真实guard、owned Windows junction及实际固定Bun复现：别名拒绝/物理同目标接受；原outfile夹具真实失败；相同输入outdir+固定入口命名实际生成JS与PNG两产物。修复归属developer test环境与夹具bundler，不改产品guard、D23平台范围或运行时依赖；新CI将记录实际tmp祖先/物理路径。Windows同df9全回归54失败，含EXTERNAL_GIT_UNSUPPORTED；根因仍待实际owned fixture双环境Git探针，不放松拒绝条件。本机V2原始/工具链/df9候选三腿全安装/冷构建/workspace/Root/官方安装均通过，保留全部V1观察者失败。
+
+### ERR-2094：测试清理不能用finally中的throw覆盖原断言
+
+- 平台修复副本0189完整lint仅一条no-unsafe-finally失败。改为Vitest afterEach清理，保留删除前真实路径/父目录/prefix核验，让框架分别保留测试与hook错误；不将throw简单藏入辅助函数。其余11包lint0，Scope/Root753与252项真实路径/进程测试已通过，修复后仍需完整lint与实际三平台。适用 EXP-004/007/008/009/011/074/091/121/122。
+
+### ERR-2095：私有候选冻结必须区分检出行尾与未审核内容漂移
+
+- 0196在生成manifest前失败关闭：平台副本code-quality.yml原始字节与旧副本冻结SHA不同。0197逐文件对照其精确父提交df9的Git对象，证明九项已审核delta外仅检出行尾差异；不删除SHA核验，而是保留新物理SHA并显式记录parent_eol_equivalent。九项delta单独白名单，权威Registry规范内容不变。新工作树一项长路径归档漏检出由0195从HEAD精确恢复，未修改历史归档内容；首次carrier相对路径错误在任何操作前MODULE_NOT_FOUND，改用既有绝对路径。0198受限网络下载失败，0199获准网络后实际核验官方digest并归档Windows原始失败产物。适用 EXP-004/007/008/009/011/074/091/121/122。
+
+### ERR-2096：消息语法清单包含非完整表达式，不能以AST失败补造等价
+
+- 0212证据比较器对历史清单中的数据行/模板片段一律按完整表达式解析，因3项parse diagnostics在生成报告前失败。0213对合法表达式比较完整AST子节点结构，对不能作为独立表达式解析的片段保留原始文本并明确标记UNPARSED_FRAGMENT_RETAINED_EXACTLY；不跳过片段、不把解析失败当成语义相同。原209项词法差分与失败保留，最终95项结构变化均逐项review并按owner/边界解释。该修复仅涉及只读审计载体，未修改产品输入或削弱回归。适用 EXP-004/007/008/009/011/091/121/122。
+
+### ERR-2097：realpathSync并不保证Windows短路径被扩展
+
+- 849实际Windows探针直接证明root含RUNNER~1、Git top含runneradmin，common仍为.git、两种环境Git退出0。0217/0218在现有PROGRA~1路径的真实Node/Bun对照证明realpathSync保留短名、native/promises返回完整路径。开发验证owner改用native，Scope自有root/cleanup同步原生身份，实际8.3例通过；产品external-Git/link/hardlink检查未改。849实际Mac仅1失败：测试硬断言Windows去重，SPS§529明确POSIX身份区分大小写。测试依据真实lower路径是否存在，对POSIX两个身份保留重复定义阻断及非规范引用错误；不是跳过Mac或修改产品去重。057候选3文件已全build/lint630和20定向例通过，仍须新全量实际CI。适用 EXP-004/007/008/009/011/074/091/121/122。
+
+### ERR-2098：结构化补充不能改变官方Root的Node执行入口
+
+- 0203/0204的11包逐用例报告全0；补充载体却直接用Bun执行Root runner，使其process.execPath也变成Bun，出现734例、3文件加载失败和1具体失败，与官方Node Root753不是同一运行条件。原始JSON保留并分类非对称Runtime、不得计算新增失败。0227/0228改走同一bun run test:root正式脚本，仅增加reporter/outputFile，两侧实际753全0；未修改产品或测试。最终候选同样保留官方Node入口。另0215审计AST增加真实prefix/postfix运算符、模板文字、数组空洞与格式等价canaries，95条复核集合不变。适用 EXP-004/007/008/009/011/091/121/122。
+
+### ERR-2099：PowerShell与Node双层引号不能用反斜杠代替宿主Shell转义
+
+- 一次准备final-root lineage载体的node -e嵌套双引号在Node解析阶段失败，未创建输出、未运行原生程序或改变产品。改用独立prepare-final-lineage-and-original-read.cjs，并先node --check全部派生文件；固定marker唯一性与前代seal SHA后才生成。该准备只改证据输出目录/期望产品版本，保留实际官方停止/升级、owner key不读、原项目5代码/9封存证据及独立原生程序身份验证边界。后续含嵌套引号/模板的源生成一律使用独立文件。适用 EXP-004/007/008/009/011/091/121/122。
+
+### ERR-2100：进程信号清理必须保存并移除实际注册的同一回调
+
+- Original/Toolchain/057均有两组SIGTERM MaxListeners警告，不能只以旧问题归因结案。0253真实基线trace定位GracefulShutdownHandler.attachToProcess；源码注册匿名闭包、map却保存handleSignal，既有trigger finally确实调用AsyncDispose但removeListener目标不同。0260在未修owner上两项真实listener引用/数量断言失败；修复只保存同一sigterm/sigint闭包，保留平台信号集合、已有幂等attach与trigger/dispose责任。0264完整22例通过，真实Daemon性能/生命周期/API回归无原警告。没有提高listener上限或移除其他owner回调。现有Service Contract支持完整闭环，判定RUNTIME_DEFECT，非新执行能力。新6ec须重跑全部最终验收。适用 EXP-004/007/008/009/011/091/121/122。
+
+### ERR-2101：语义相同的锁文件不能冒称逐字相同的A/B输入
+
+- 0255严格比较实际发现Toolchain3f6032与V4checkout9a4050不同；0256证明仅2320个CRLF造成，Git blob为3f，不能据此把V4改称同锁通过。新私有6ec明确bun.lock及.gitattributes自身eol=lf，实际工作锁恢复到同一3f，保持逻辑依赖不变；CI每阶段记录真实lock_sha256。V5重新冷构建/正式全量/结构化逐例/安装，Original与Toolchain已合格未变输入继续复用。根当前任务archive的-text/-diff属性进入同一候选并保留，不覆盖未知用户变更。适用 EXP-004/007/008/009/011/074/091/121/122。
+
+### ERR-2102：提交后置检查失败不能误判为提交没有发生
+
+- 0269已实际生成6ec81b1f后，Git因LF属性转换仍报owned bun.lock需刷新，载体在写成功回执前失败。只读核验HEAD/index/hash-object均e9d65f、物理锁3f，内容diff为空；0270really-refresh仍needs update，0271仅对该锁add --renormalize，要求cached内容差分为空，状态随后清洁。0272重新核验父提交057、4项Git差分、526物理SHA后补回执，没有重复commit、amend、reset或回滚已成功步骤。原失败保留；根main未改。适用 EXP-004/007/008/009/011/091/121/122。
+
+### ERR-2103：完整封包成员必须取自实际Git差分，不能只继承旧清单
+
+- 0295在写封包前拒绝526清单：短路径阶段新增修改的candidate-generation-integrity测试原本不在旧lint清单，继承map漏列它；实际6ec提交和全部CI/V5/结构化回归都包含该文件。0296以实际3549..6ec完整Git差分得527项，唯一漏项逐字匹配原shortpath applied SHA和已测试6ec Git对象，其余526字节不变、工作树清洁；没有新增源码或用旧报告替代测试。0297完整527封包通过，再0298才集成真实Root。未来封包输入一律用实际diff/未跟踪成员并验证集合等价，旧manifest只作身份对照。适用 EXP-004/007/008/009/011/091/121/122。
+
+### ERR-2104：归档中的Git属性快照必须作为惰性数据存储
+
+- 归档封装预检发现两个本轮before-image名为.gitattributes，若保留活跃名称会覆盖父级archive -text规则，改变其他封存文件的Git字节。0293仅将两份自有快照无损移动为.gitattributes.raw，SHA/尺寸不变并写original-storage到safe-storage映射；完整源码包也区分逻辑file与storage_file，实际产品路径仍为.gitattributes，归档存储为.raw。没有丢失或改写原始字节，不靠本机info/attributes隐藏问题；最终index逐blob核验。该能力属于证据封装owner，不修改产品行为。适用 EXP-004/007/008/009/011/074/091/121/122。
+
+### ERR-2105：归档原始字节规则必须优先于后续通用basename行尾规则
+
+- publication-live/0003在commit前逐blob核验失败：归档CRLF锁的原始对象应为9e6e86b，却因后续bun.lock text eol=lf basename规则被规范化为e9d65f；Git check-attr直接显示archive锁text=set。没有提交或推送不一致证据。独立0004只把原有当前archive -text/-diff规则在末尾重复，逐字证明33723个非当前archive路径的text/eol/diff属性不变、其余526源码不变、根锁仍3f；归档raw hash-object随后匹配封存值。封存manifest及8715公开成员完全未改，恢复发布只允许原已分组的完整索引白名单加这一归档交付元数据，并再次逐blob验证。运行源码/部署/权限无变化；不以改写原始快照或临时info/attributes回避。适用 EXP-004/007/008/009/011/074/091/121/122。
+

@@ -1,0 +1,10 @@
+
+ RUN  v1.6.1 D:/code/SpecForge/.lint-platform-a01/packages/scope-gate
+
+ ✓ tests/current-crossplatform-ci-contract.test.ts  (4 tests) 27ms
+
+ Test Files  1 passed (1)
+      Tests  4 passed (4)
+   Start at  19:51:06
+   Duration  1.54s (transform 65ms, setup 0ms, collect 96ms, tests 27ms, environment 0ms, prepare 1.08s)
+

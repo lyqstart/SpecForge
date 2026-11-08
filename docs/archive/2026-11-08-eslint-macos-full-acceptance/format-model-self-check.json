@@ -1,0 +1,13 @@
+{
+  "utc": "2026-11-08T07:31:13.584Z",
+  "first_failure": "0017: Prettier changes quoted static property names to equivalent Identifier keys; raw ASTkind differs.",
+  "zero_source_writes_before_failure": true,
+  "canaries": {
+    "equivalent_property_quoting": "PASS",
+    "changed_literal_value": "REJECTED",
+    "changed_property_key": "REJECTED",
+    "computed_key": "REJECTED",
+    "changed_call_target": "REJECTED"
+  },
+  "next": "format-with-ast-proof-v2.cjs"
+}

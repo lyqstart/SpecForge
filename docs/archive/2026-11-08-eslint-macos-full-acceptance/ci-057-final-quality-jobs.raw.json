@@ -1,0 +1,893 @@
+{
+  "total_count": 8,
+  "jobs": [
+    {
+      "id": 128730222061,
+      "run_id": 42480186536,
+      "workflow_name": "Code Quality",
+      "head_branch": "codex/eslint-macos-shortpath-validation",
+      "run_url": "https://api.github.com/repos/lyqstart/SpecForge/actions/runs/42480186536",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOSTAXgs8AAAAd-OtN7Q",
+      "head_sha": "05713b7337b3dc55f1f3ed563cf342439643657f",
+      "url": "https://api.github.com/repos/lyqstart/SpecForge/actions/jobs/128730222061",
+      "html_url": "https://github.com/lyqstart/SpecForge/actions/runs/42480186536/job/128730222061",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-11-08T12:25:31Z",
+      "started_at": "2026-11-08T12:25:33Z",
+      "completed_at": "2026-11-08T12:25:58Z",
+      "name": "硬编码路径 Lint",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-11-08T12:25:34Z",
+          "completed_at": "2026-11-08T12:25:36Z"
+        },
+        {
+          "name": "检出代码",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-11-08T12:25:36Z",
+          "completed_at": "2026-11-08T12:25:50Z"
+        },
+        {
+          "name": "安装 Bun",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-11-08T12:25:50Z",
+          "completed_at": "2026-11-08T12:25:52Z"
+        },
+        {
+          "name": "安装依赖",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-11-08T12:25:52Z",
+          "completed_at": "2026-11-08T12:25:54Z"
+        },
+        {
+          "name": "运行硬编码路径 Lint",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-11-08T12:25:54Z",
+          "completed_at": "2026-11-08T12:25:55Z"
+        },
+        {
+          "name": "Post 安装 Bun",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-11-08T12:25:55Z",
+          "completed_at": "2026-11-08T12:25:56Z"
+        },
+        {
+          "name": "Post 检出代码",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10,
+          "started_at": "2026-11-08T12:25:56Z",
+          "completed_at": "2026-11-08T12:25:56Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-11-08T12:25:56Z",
+          "completed_at": "2026-11-08T12:25:56Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/lyqstart/SpecForge/check-runs/128730222061",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000004412,
+      "runner_name": "GitHub Actions 1000004412",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 128730222197,
+      "run_id": 42480186536,
+      "workflow_name": "Code Quality",
+      "head_branch": "codex/eslint-macos-shortpath-validation",
+      "run_url": "https://api.github.com/repos/lyqstart/SpecForge/actions/runs/42480186536",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOSTAXgs8AAAAd-OtOdQ",
+      "head_sha": "05713b7337b3dc55f1f3ed563cf342439643657f",
+      "url": "https://api.github.com/repos/lyqstart/SpecForge/actions/jobs/128730222197",
+      "html_url": "https://github.com/lyqstart/SpecForge/actions/runs/42480186536/job/128730222197",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-11-08T12:25:31Z",
+      "started_at": "2026-11-08T12:25:33Z",
+      "completed_at": "2026-11-08T12:25:56Z",
+      "name": "异步资源规范审查",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-11-08T12:25:34Z",
+          "completed_at": "2026-11-08T12:25:35Z"
+        },
+        {
+          "name": "检出代码",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-11-08T12:25:35Z",
+          "completed_at": "2026-11-08T12:25:48Z"
+        },
+        {
+          "name": "安装 Bun",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-11-08T12:25:48Z",
+          "completed_at": "2026-11-08T12:25:50Z"
+        },
+        {
+          "name": "安装依赖",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-11-08T12:25:50Z",
+          "completed_at": "2026-11-08T12:25:52Z"
+        },
+        {
+          "name": "运行异步资源规范审查",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-11-08T12:25:52Z",
+          "completed_at": "2026-11-08T12:25:54Z"
+        },
+        {
+          "name": "Post 安装 Bun",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-11-08T12:25:54Z",
+          "completed_at": "2026-11-08T12:25:54Z"
+        },
+        {
+          "name": "Post 检出代码",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10,
+          "started_at": "2026-11-08T12:25:54Z",
+          "completed_at": "2026-11-08T12:25:54Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-11-08T12:25:54Z",
+          "completed_at": "2026-11-08T12:25:54Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/lyqstart/SpecForge/check-runs/128730222197",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000004415,
+      "runner_name": "GitHub Actions 1000004415",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 128730222237,
+      "run_id": 42480186536,
+      "workflow_name": "Code Quality",
+      "head_branch": "codex/eslint-macos-shortpath-validation",
+      "run_url": "https://api.github.com/repos/lyqstart/SpecForge/actions/runs/42480186536",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOSTAXgs8AAAAd-OtOnQ",
+      "head_sha": "05713b7337b3dc55f1f3ed563cf342439643657f",
+      "url": "https://api.github.com/repos/lyqstart/SpecForge/actions/jobs/128730222237",
+      "html_url": "https://github.com/lyqstart/SpecForge/actions/runs/42480186536/job/128730222237",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-11-08T12:25:31Z",
+      "started_at": "2026-11-08T12:25:33Z",
+      "completed_at": "2026-11-08T12:25:56Z",
+      "name": "工作流文档同步检查",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-11-08T12:25:34Z",
+          "completed_at": "2026-11-08T12:25:35Z"
+        },
+        {
+          "name": "检出代码",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-11-08T12:25:35Z",
+          "completed_at": "2026-11-08T12:25:49Z"
+        },
+        {
+          "name": "安装 Bun",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-11-08T12:25:49Z",
+          "completed_at": "2026-11-08T12:25:51Z"
+        },
+        {
+          "name": "安装依赖",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-11-08T12:25:51Z",
+          "completed_at": "2026-11-08T12:25:54Z"
+        },
+        {
+          "name": "Verify workflow docs in sync with JSON",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-11-08T12:25:54Z",
+          "completed_at": "2026-11-08T12:25:54Z"
+        },
+        {
+          "name": "Post 安装 Bun",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-11-08T12:25:54Z",
+          "completed_at": "2026-11-08T12:25:54Z"
+        },
+        {
+          "name": "Post 检出代码",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10,
+          "started_at": "2026-11-08T12:25:54Z",
+          "completed_at": "2026-11-08T12:25:55Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-11-08T12:25:55Z",
+          "completed_at": "2026-11-08T12:25:55Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/lyqstart/SpecForge/check-runs/128730222237",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000004416,
+      "runner_name": "GitHub Actions 1000004416",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 128730222272,
+      "run_id": 42480186536,
+      "workflow_name": "Code Quality",
+      "head_branch": "codex/eslint-macos-shortpath-validation",
+      "run_url": "https://api.github.com/repos/lyqstart/SpecForge/actions/runs/42480186536",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOSTAXgs8AAAAd-OtOwA",
+      "head_sha": "05713b7337b3dc55f1f3ed563cf342439643657f",
+      "url": "https://api.github.com/repos/lyqstart/SpecForge/actions/jobs/128730222272",
+      "html_url": "https://github.com/lyqstart/SpecForge/actions/runs/42480186536/job/128730222272",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-11-08T12:25:31Z",
+      "started_at": "2026-11-08T12:25:34Z",
+      "completed_at": "2026-11-08T12:32:57Z",
+      "name": "Full lint/build/regression (macos-latest)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-11-08T12:25:33Z",
+          "completed_at": "2026-11-08T12:25:35Z"
+        },
+        {
+          "name": "检出代码",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-11-08T12:25:35Z",
+          "completed_at": "2026-11-08T12:25:50Z"
+        },
+        {
+          "name": "安装 Node",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-11-08T12:25:50Z",
+          "completed_at": "2026-11-08T12:25:55Z"
+        },
+        {
+          "name": "安装 Bun",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-11-08T12:25:55Z",
+          "completed_at": "2026-11-08T12:25:56Z"
+        },
+        {
+          "name": "Bind pinned Windows verification Node",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 5,
+          "started_at": "2026-11-08T12:25:56Z",
+          "completed_at": "2026-11-08T12:25:56Z"
+        },
+        {
+          "name": "安装依赖",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-11-08T12:25:56Z",
+          "completed_at": "2026-11-08T12:26:01Z"
+        },
+        {
+          "name": "构建当前发布 workspace",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-11-08T12:26:01Z",
+          "completed_at": "2026-11-08T12:26:18Z"
+        },
+        {
+          "name": "完整 ESLint",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-11-08T12:26:18Z",
+          "completed_at": "2026-11-08T12:27:22Z"
+        },
+        {
+          "name": "运行当前发布 workspace 测试",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-11-08T12:27:22Z",
+          "completed_at": "2026-11-08T12:32:38Z"
+        },
+        {
+          "name": "运行当前 Root 测试",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10,
+          "started_at": "2026-11-08T12:32:38Z",
+          "completed_at": "2026-11-08T12:32:49Z"
+        },
+        {
+          "name": "Upload complete raw regression evidence",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-11-08T12:32:49Z",
+          "completed_at": "2026-11-08T12:32:51Z"
+        },
+        {
+          "name": "Post 安装 Bun",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 20,
+          "started_at": "2026-11-08T12:32:51Z",
+          "completed_at": "2026-11-08T12:32:51Z"
+        },
+        {
+          "name": "Post 安装 Node",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 21,
+          "started_at": "2026-11-08T12:32:51Z",
+          "completed_at": "2026-11-08T12:32:51Z"
+        },
+        {
+          "name": "Post 检出代码",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 22,
+          "started_at": "2026-11-08T12:32:51Z",
+          "completed_at": "2026-11-08T12:32:52Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 23,
+          "started_at": "2026-11-08T12:32:52Z",
+          "completed_at": "2026-11-08T12:32:54Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/lyqstart/SpecForge/check-runs/128730222272",
+      "labels": [
+        "macos-latest"
+      ],
+      "runner_id": 1000004419,
+      "runner_name": "GitHub Actions 1000004419",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 128730222293,
+      "run_id": 42480186536,
+      "workflow_name": "Code Quality",
+      "head_branch": "codex/eslint-macos-shortpath-validation",
+      "run_url": "https://api.github.com/repos/lyqstart/SpecForge/actions/runs/42480186536",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOSTAXgs8AAAAd-OtO1Q",
+      "head_sha": "05713b7337b3dc55f1f3ed563cf342439643657f",
+      "url": "https://api.github.com/repos/lyqstart/SpecForge/actions/jobs/128730222293",
+      "html_url": "https://github.com/lyqstart/SpecForge/actions/runs/42480186536/job/128730222293",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-11-08T12:25:31Z",
+      "started_at": "2026-11-08T12:25:34Z",
+      "completed_at": "2026-11-08T12:33:05Z",
+      "name": "Full lint/build/regression (ubuntu-latest)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-11-08T12:25:35Z",
+          "completed_at": "2026-11-08T12:25:36Z"
+        },
+        {
+          "name": "检出代码",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-11-08T12:25:36Z",
+          "completed_at": "2026-11-08T12:25:50Z"
+        },
+        {
+          "name": "安装 Node",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-11-08T12:25:50Z",
+          "completed_at": "2026-11-08T12:25:54Z"
+        },
+        {
+          "name": "安装 Bun",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-11-08T12:25:54Z",
+          "completed_at": "2026-11-08T12:25:56Z"
+        },
+        {
+          "name": "Bind pinned Windows verification Node",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 5,
+          "started_at": "2026-11-08T12:25:56Z",
+          "completed_at": "2026-11-08T12:25:56Z"
+        },
+        {
+          "name": "安装依赖",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-11-08T12:25:56Z",
+          "completed_at": "2026-11-08T12:26:00Z"
+        },
+        {
+          "name": "构建当前发布 workspace",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-11-08T12:26:00Z",
+          "completed_at": "2026-11-08T12:26:28Z"
+        },
+        {
+          "name": "完整 ESLint",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-11-08T12:26:28Z",
+          "completed_at": "2026-11-08T12:27:59Z"
+        },
+        {
+          "name": "运行当前发布 workspace 测试",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-11-08T12:27:59Z",
+          "completed_at": "2026-11-08T12:32:51Z"
+        },
+        {
+          "name": "运行当前 Root 测试",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10,
+          "started_at": "2026-11-08T12:32:51Z",
+          "completed_at": "2026-11-08T12:33:00Z"
+        },
+        {
+          "name": "Upload complete raw regression evidence",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-11-08T12:33:00Z",
+          "completed_at": "2026-11-08T12:33:02Z"
+        },
+        {
+          "name": "Post 安装 Bun",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 20,
+          "started_at": "2026-11-08T12:33:02Z",
+          "completed_at": "2026-11-08T12:33:02Z"
+        },
+        {
+          "name": "Post 安装 Node",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 21,
+          "started_at": "2026-11-08T12:33:02Z",
+          "completed_at": "2026-11-08T12:33:02Z"
+        },
+        {
+          "name": "Post 检出代码",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 22,
+          "started_at": "2026-11-08T12:33:02Z",
+          "completed_at": "2026-11-08T12:33:02Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 23,
+          "started_at": "2026-11-08T12:33:02Z",
+          "completed_at": "2026-11-08T12:33:02Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/lyqstart/SpecForge/check-runs/128730222293",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000004417,
+      "runner_name": "GitHub Actions 1000004417",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 128730222297,
+      "run_id": 42480186536,
+      "workflow_name": "Code Quality",
+      "head_branch": "codex/eslint-macos-shortpath-validation",
+      "run_url": "https://api.github.com/repos/lyqstart/SpecForge/actions/runs/42480186536",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOSTAXgs8AAAAd-OtO2Q",
+      "head_sha": "05713b7337b3dc55f1f3ed563cf342439643657f",
+      "url": "https://api.github.com/repos/lyqstart/SpecForge/actions/jobs/128730222297",
+      "html_url": "https://github.com/lyqstart/SpecForge/actions/runs/42480186536/job/128730222297",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-11-08T12:25:31Z",
+      "started_at": "2026-11-08T12:25:33Z",
+      "completed_at": "2026-11-08T12:26:09Z",
+      "name": "Windows 源码 LF 检出治理",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-11-08T12:25:34Z",
+          "completed_at": "2026-11-08T12:25:35Z"
+        },
+        {
+          "name": "检出代码",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-11-08T12:25:35Z",
+          "completed_at": "2026-11-08T12:26:04Z"
+        },
+        {
+          "name": "验证源码在索引和 Windows 工作树中均为 LF",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-11-08T12:26:04Z",
+          "completed_at": "2026-11-08T12:26:05Z"
+        },
+        {
+          "name": "Post 检出代码",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-11-08T12:26:05Z",
+          "completed_at": "2026-11-08T12:26:07Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-11-08T12:26:07Z",
+          "completed_at": "2026-11-08T12:26:07Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/lyqstart/SpecForge/check-runs/128730222297",
+      "labels": [
+        "windows-latest"
+      ],
+      "runner_id": 1000004421,
+      "runner_name": "GitHub Actions 1000004421",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 128730222308,
+      "run_id": 42480186536,
+      "workflow_name": "Code Quality",
+      "head_branch": "codex/eslint-macos-shortpath-validation",
+      "run_url": "https://api.github.com/repos/lyqstart/SpecForge/actions/runs/42480186536",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOSTAXgs8AAAAd-OtO5A",
+      "head_sha": "05713b7337b3dc55f1f3ed563cf342439643657f",
+      "url": "https://api.github.com/repos/lyqstart/SpecForge/actions/jobs/128730222308",
+      "html_url": "https://github.com/lyqstart/SpecForge/actions/runs/42480186536/job/128730222308",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-11-08T12:25:31Z",
+      "started_at": "2026-11-08T12:25:33Z",
+      "completed_at": "2026-11-08T12:25:58Z",
+      "name": "目录布局一致性检查",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-11-08T12:25:34Z",
+          "completed_at": "2026-11-08T12:25:35Z"
+        },
+        {
+          "name": "检出代码",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-11-08T12:25:35Z",
+          "completed_at": "2026-11-08T12:25:50Z"
+        },
+        {
+          "name": "安装 Bun",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-11-08T12:25:50Z",
+          "completed_at": "2026-11-08T12:25:51Z"
+        },
+        {
+          "name": "安装依赖",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-11-08T12:25:51Z",
+          "completed_at": "2026-11-08T12:25:55Z"
+        },
+        {
+          "name": "生成目录布局",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-11-08T12:25:55Z",
+          "completed_at": "2026-11-08T12:25:55Z"
+        },
+        {
+          "name": "检查生成物与提交一致",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-11-08T12:25:55Z",
+          "completed_at": "2026-11-08T12:25:55Z"
+        },
+        {
+          "name": "Post 安装 Bun",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-11-08T12:25:55Z",
+          "completed_at": "2026-11-08T12:25:56Z"
+        },
+        {
+          "name": "Post 检出代码",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12,
+          "started_at": "2026-11-08T12:25:56Z",
+          "completed_at": "2026-11-08T12:25:56Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13,
+          "started_at": "2026-11-08T12:25:56Z",
+          "completed_at": "2026-11-08T12:25:56Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/lyqstart/SpecForge/check-runs/128730222308",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000004418,
+      "runner_name": "GitHub Actions 1000004418",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 128730222328,
+      "run_id": 42480186536,
+      "workflow_name": "Code Quality",
+      "head_branch": "codex/eslint-macos-shortpath-validation",
+      "run_url": "https://api.github.com/repos/lyqstart/SpecForge/actions/runs/42480186536",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOSTAXgs8AAAAd-OtO-A",
+      "head_sha": "05713b7337b3dc55f1f3ed563cf342439643657f",
+      "url": "https://api.github.com/repos/lyqstart/SpecForge/actions/jobs/128730222328",
+      "html_url": "https://github.com/lyqstart/SpecForge/actions/runs/42480186536/job/128730222328",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-11-08T12:25:31Z",
+      "started_at": "2026-11-08T12:25:34Z",
+      "completed_at": "2026-11-08T12:39:18Z",
+      "name": "Full lint/build/regression (windows-latest)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-11-08T12:25:35Z",
+          "completed_at": "2026-11-08T12:25:36Z"
+        },
+        {
+          "name": "检出代码",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-11-08T12:25:36Z",
+          "completed_at": "2026-11-08T12:26:04Z"
+        },
+        {
+          "name": "安装 Node",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-11-08T12:26:04Z",
+          "completed_at": "2026-11-08T12:26:12Z"
+        },
+        {
+          "name": "安装 Bun",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-11-08T12:26:12Z",
+          "completed_at": "2026-11-08T12:26:16Z"
+        },
+        {
+          "name": "Bind pinned Windows verification Node",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-11-08T12:26:16Z",
+          "completed_at": "2026-11-08T12:26:16Z"
+        },
+        {
+          "name": "安装依赖",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-11-08T12:26:16Z",
+          "completed_at": "2026-11-08T12:27:11Z"
+        },
+        {
+          "name": "构建当前发布 workspace",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-11-08T12:27:11Z",
+          "completed_at": "2026-11-08T12:27:46Z"
+        },
+        {
+          "name": "完整 ESLint",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-11-08T12:27:46Z",
+          "completed_at": "2026-11-08T12:29:32Z"
+        },
+        {
+          "name": "运行当前发布 workspace 测试",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-11-08T12:29:32Z",
+          "completed_at": "2026-11-08T12:38:57Z"
+        },
+        {
+          "name": "运行当前 Root 测试",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10,
+          "started_at": "2026-11-08T12:38:57Z",
+          "completed_at": "2026-11-08T12:39:12Z"
+        },
+        {
+          "name": "Upload complete raw regression evidence",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-11-08T12:39:12Z",
+          "completed_at": "2026-11-08T12:39:13Z"
+        },
+        {
+          "name": "Post 安装 Bun",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 20,
+          "started_at": "2026-11-08T12:39:13Z",
+          "completed_at": "2026-11-08T12:39:14Z"
+        },
+        {
+          "name": "Post 安装 Node",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 21,
+          "started_at": "2026-11-08T12:39:14Z",
+          "completed_at": "2026-11-08T12:39:14Z"
+        },
+        {
+          "name": "Post 检出代码",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 22,
+          "started_at": "2026-11-08T12:39:14Z",
+          "completed_at": "2026-11-08T12:39:16Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 23,
+          "started_at": "2026-11-08T12:39:16Z",
+          "completed_at": "2026-11-08T12:39:16Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/lyqstart/SpecForge/check-runs/128730222328",
+      "labels": [
+        "windows-latest"
+      ],
+      "runner_id": 1000004420,
+      "runner_name": "GitHub Actions 1000004420",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    }
+  ]
+}

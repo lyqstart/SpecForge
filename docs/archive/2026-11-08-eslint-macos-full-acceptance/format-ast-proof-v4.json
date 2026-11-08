@@ -1,0 +1,20 @@
+{
+  "utc": "2026-11-08T10:51:47.390Z",
+  "algorithm": "TypeScript forEachChild tree; canonical identifiers/literal cooked values and tagged-template raw values, operator/modifier kinds; unwrap redundant ParenthesizedExpression/Type; ignore trivia/positions only. Both parse diagnostics empty.",
+  "scope": "Exact original three Prettier-enabled package source scopes; no import sorting, type or behavior edits.",
+  "files": [
+    {
+      "file": "packages/daemon-core/src/daemon/HandshakeManager.ts",
+      "before_sha256": "3fd014acc4cb471da6f3b4d6ba69565b647c0f95486545b3c8c9b09fa5d3abf9",
+      "after_sha256": "53174d9268fd430ce0a099cdc390da575d8a95714d6d2b9be7ee02feaa831ae4",
+      "semantic_sha256": "0be5c53cc95cfdecfe60f2ccfdfceff21490964a6ce0cd3f17f1de2bd7b6d471"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/architecture-governance-v7-regression.test.ts",
+      "before_sha256": "93f86ccfefeb1125997018ff8ed8648652cd9cbd2cd96dc4e9b4c2dafe75ed94",
+      "after_sha256": "adbf8b0f066d77b346883a642f1f471637ec25f125bddc73ace7d6cdd6887087",
+      "semantic_sha256": "b8dbca1dba4d301cad1c1c49a74b1e34c77296b3ceed30a4f8db428adecbe148"
+    }
+  ],
+  "result": "PASS_ALL_SEMANTIC_TREES_EQUAL"
+}

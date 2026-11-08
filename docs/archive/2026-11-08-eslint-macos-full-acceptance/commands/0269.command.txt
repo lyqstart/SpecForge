@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/commit-signal-candidate.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "commit-signal-final-candidate",
+  "expected_writes": "Private reviewed4-file owner/EOL/evidence delta; no real-root product adoption",
+  "started_utc": "2026-11-08T12:55:59.955Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\commit-signal-candidate.cjs",
+      "sha256": "84fc252798aba263d3d7965c2f03a43d8ee865030a08de53f4ebdb202e83b966",
+      "size": 1591,
+      "extension": ".cjs"
+    }
+  ]
+}

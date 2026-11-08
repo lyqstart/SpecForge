@@ -1,0 +1,33 @@
+{
+  "utc": "2026-11-08T11:41:39.345Z",
+  "platform": "win32",
+  "root": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-platform-fixture-contract-O4PA7K",
+  "link_test": {
+    "actual_guard_owner": "D:\\code\\SpecForge\\.lint-review-a01\\packages\\daemon-core\\src\\verification\\owner-store.ts",
+    "alias": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-platform-fixture-contract-O4PA7K\\alias",
+    "canonical": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-platform-fixture-contract-O4PA7K\\physical",
+    "linkError": "Error: VERIFICATION_LINK_FORBIDDEN",
+    "canonical_succeeded": true,
+    "product_guard_unchanged": true
+  },
+  "bundler_test": {
+    "actual_fixture_owner": "D:\\code\\SpecForge\\.lint-review-a01\\packages\\daemon-core\\tests\\fixtures\\build-process-fixture.ts",
+    "bun": "C:\\Users\\lyq\\AppData\\Roaming\\npm\\node_modules\\bun\\bin\\bun.exe",
+    "singleOutputError": "Error: PROCESS_FIXTURE_BUILD_FAILED:1:error: cannot write multiple output files without an output directory\n",
+    "multi_output_command": [
+      "build",
+      "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-platform-fixture-contract-O4PA7K\\assets\\entry.ts",
+      "--target=bun",
+      "--outdir=C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-platform-fixture-contract-O4PA7K\\multi-output",
+      "--entry-naming=process-fixture.js"
+    ],
+    "status": 0,
+    "outputs": [
+      "image-6kt9k1q8.png",
+      "process-fixture.js"
+    ],
+    "stdout": "Bundled 2 modules in 23ms\n\n  process-fixture.js  274 bytes  (entry point)\n  image-6kt9k1q8.png  8 bytes    (asset)\n\n",
+    "stderr": ""
+  },
+  "interpretation": "CONFIRMED cross-platform fixture defects: raw aliased temporary roots violate existing no-link owner contract; outfile cannot represent actual bundled asset outputs. Fix belongs to qualification environment and test fixture bundler, not product path guards. macOS-specific ancestor facts still require new actual CI context."
+}

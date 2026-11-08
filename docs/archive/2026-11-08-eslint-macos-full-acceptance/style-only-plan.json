@@ -1,0 +1,119 @@
+{
+  "utc": "2026-11-08T10:32:08.061Z",
+  "fix_filter": [
+    "import/order",
+    "prettier/prettier"
+  ],
+  "members": [
+    {
+      "file": "packages/workflow-runtime/src/types/gate-definition.ts",
+      "before": "590c6a8a0088cf215706331df9827478580f6f8211cdad6aa415c408b70a4850",
+      "after": "d433aa1f01605b3342ae011c577afba32d4cb52425c3b440557e06b17c773d7c"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/GateRunnerErrorHandling.test.ts",
+      "before": "599a981fb59388204b985db47923aab63489cadd6e1a2e2e96278c243614efab",
+      "after": "694918c62f3323fe4e227bedb8d42dff23665ac20d2046d0bf11bce28828da6d"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/persistence-owner-boundary.test.ts",
+      "before": "8dd4d89a3e6b305dfc2e920af406e42b56cf5b58619ee30d7dc5c24693da3cbd",
+      "after": "84b9b6437a8fecdcb1e2c39c260268d876d27588d7360b403148bfeb7189bc87"
+    },
+    {
+      "file": "packages/daemon-core/src/http/HTTPServer.ts",
+      "before": "3553ce4bc8cfbca1e6cbac5e8f617355c9512ff0a32f02113df4439b72a12d06",
+      "after": "0d259cb6759b59496f47453695b9e09fb8bb6dbd03c639602ecb529bedf1ffa3"
+    },
+    {
+      "file": "packages/daemon-core/src/recovery/ProjectArchiveRestore.ts",
+      "before": "10c4dd2d4fdd77ef554730b03eb22b7ab8436cbceebcdf2cc40c2a13b05cfde7",
+      "after": "15f273cdce365fe97e276bff62fbab42482ad9b48dee84a6fa377d217effe0f0"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-artifact-write.ts",
+      "before": "c29096b20521431101680d3b9f15063a6c2fb772965aa776ad3514ef006f4742",
+      "after": "2e6d83e5f35c72c73bec4733bf5cf4f179e6c2e0eb60d1d4ac5b7c4c7fb82f2b"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-knowledge-base.ts",
+      "before": "7184069bb365c785b28fc1903886820aa7976859b6e0b8bf60fb130a662437e7",
+      "after": "351eb376969b685c8b537869aed503e3e6f67a80531058a40ccf79ff7e51e43c"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-v11-verification.ts",
+      "before": "61efbb748533bf2f4dcbc26320899dba2fc42ac4122d21753c9eab703ff4f819",
+      "after": "fd5237ae97f1594c6c9b31c2c266019f6b6151564e7bef4896c9907a9eb39620"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/contract-authoring.ts",
+      "before": "c8e7a0466fbbd51b4c3b11524627d9944851632fc08c43f618295c477b52c75c",
+      "after": "df23f6d6c386d55b0a9094cad6a65934fda8b2de1854756163eb77ecaa3d97ba"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/filesystem-diff.ts",
+      "before": "8a4f4508ae57d71cfef3049a1a6e510f30eca4e320b7f25236e25ba5ea2a234d",
+      "after": "03bc2a29e1159f4b8c2010705cb51fb777a03a35c7b53d361e60a7609e713512"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/gate-runner-v11.ts",
+      "before": "4b44a3288fc76b78f7c7cbdd5d1b72aa2487e254dc5abdd78a2409913fb8414e",
+      "after": "3061b275b948fa5b95adeee9236f54a5c3effbfed4b394fdea1c2d0e956aad30"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/git-detached-bootstrap.ts",
+      "before": "e3f094c50579b49854a853012d110dc81641736e687577c68c88dfbcd449b771",
+      "after": "8672a9baf0041c317dad54840ff0dbccc39aa63fa0172a41dcef90d8173ec879"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/git-governance-stage2.ts",
+      "before": "773e79ce09bac75f4cad5a1003b1b434ec5a04dfb4f692c6fcd6357afce01137",
+      "after": "78049a7064665eb4c0ff55c43f235fd83fb447a89727a332e360d181bbf6488a"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/git-governance-stage3.ts",
+      "before": "bac9c77d11f095aa222c36f7b78f02a35d2141ff4dd693131dafcf9109c5c89d",
+      "after": "86967e74b6a05963c8308a041587fafb14c55fff2105c402b6330aa0be4cac2b"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/governance-invariants-v11.ts",
+      "before": "654e2de58b1a3ba528d36eee0e5ba3cf2f60ecad4cfc793abc1b47aec52fa5aa",
+      "after": "85aa7ed61b7292a915ebe42dfd0832a16d72c9181c77c1bed91a5cd4950fdd15"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/new-project-governance-bootstrap.test.ts",
+      "before": "06b785176c6dd2a27395d3d0908653b2b57eafe77e40af796bbc2fcac9f23fad",
+      "after": "1e0ae8aa3be832c33ef0c907771443860fb8704dea8c74145b75524570af8d72"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/project-governance-v2.ts",
+      "before": "8ee2c2be805086d449989f6a7a436635b726bef016639c7619fc2dcdcd965067",
+      "after": "3b75a03e3cab06585ec99fc2cb0bae43f42d0a9f2a6efc6c58d9844446e5e7dd"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/semantic-closure-builder.ts",
+      "before": "8cb239bc4079b2368a3a1fd09bb82f3c135d99646cc923a7c1995129629ce953",
+      "after": "381c96177e12d6521c23e62799c65ffde1781b3634a04ceb44eee7482550ce79"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_knowledge_base_core.ts",
+      "before": "03a46acb3dc9f4b7585d62c85382297f846ceeabfd17055be53109e76f7bdaf8",
+      "after": "235b61cf8eafa364912989b281b79a1c4d4b6f408ae9216745acf98bc8535942"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_project_init_core.test.ts",
+      "before": "f222f98a901b45da33db3240a7e5dee92139ade141f83ca479bbc2414dd54c04",
+      "after": "9b0f18ed0f511f3a749d606e964a05aeea67f94276b2c0f9e1a8ccbe8dfbf7be"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/verification-evidence-v11.ts",
+      "before": "91ba61b0acd62f090d325063ca4e54619643ccb80f6d7fde0cc44093cae280eb",
+      "after": "b4bb7e390c545c98eefc5c0e04213a773c9ce9386920bea48bee871b4c153aad"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/write-guard-audit-binding.ts",
+      "before": "e77445043f80774427cd8e5b1ecdf887969fa3b6025d10d165513140f33f5e96",
+      "after": "a459eaf44d74bd3b7fbf057790e61bbb3aeca440b1f6e069d0d3bb66e34b6a80"
+    }
+  ]
+}

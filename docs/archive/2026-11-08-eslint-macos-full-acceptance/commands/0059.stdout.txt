@@ -1,0 +1,1 @@
+{"files":5,"effective_rule_severities_preserved":true,"import_style_ab":"PASS","baseline_logger_owner_defect":"fixed by existing local producer;no feature promotion"}

@@ -1,0 +1,3749 @@
+import { scalarText } from '@specforge/types';
+import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
+import * as fs from 'node:fs/promises';
+import * as path from 'node:path';
+import { createHash } from 'node:crypto';
+import { execFile } from 'node:child_process';
+import { promisify } from 'node:util';
+import {
+  ContractRegistrySchema,
+  extractModuleFromDdId,
+  evaluateMergeReport,
+  isValidArchitectureId,
+  isValidDataModelId,
+  isValidDesignDecisionId,
+  resolveSpecModuleIdentity,
+} from '@specforge/types';
+import { evaluateChangedFilesAuditVerdict } from './changed-files-audit-verdict.js';
+import { readGovernedRegenerableArtifacts } from './regenerable-artifact-governance.js';
+import { readTrustedGitGovernanceProjectWrites } from './git-governance-write-provenance.js';
+import {
+  applyGovernanceTraceDelta,
+  compareGovernanceTraceEdges,
+  getGovernanceContractConsumers,
+  moduleTraceProjection,
+  normalizeGovernanceTraceEdges,
+  parseGovernanceTrace,
+  parseGovernanceTraceDelta,
+  validateGovernanceTraceSemantics,
+  type GovernanceContractConsumer,
+  type GovernanceTraceDeltaOperation,
+  type GovernanceTraceEdge,
+  type GovernanceTraceIssue,
+} from './governance-trace-model.js';
+import { getFactualChangedFiles } from './write-guard-log.js';
+import { computeFilesystemDiff, loadBaseline } from './filesystem-diff.js';
+import { readWorkItemMetadata, writeWorkItemMetadata } from './work-item-metadata.js';
+import {
+  workItemCandidateTasks,
+  workItemCandidateTraceDelta,
+  workItemTasks,
+  workItemTraceDelta,
+} from '@specforge/types/directory-layout';
+import { validateTaskArtifactContract } from './sf_markdown_verification_parser.js';
+import { sameResolvedPath } from './path-identity.js';
+import { inspectVerificationEvidenceIntegrity } from './verification-evidence-integrity.js';
+
+const execFileAsync = promisify(execFile);
+const SPEC_DIR = SPEC_DIR_NAME;
+
+export interface ImpactScope {
+  affected_modules: string[];
+  architecture_refs: string[];
+  data_model_refs: string[];
+  design_refs: string[];
+  project_contract_refs: string[];
+  module_contract_refs: string[];
+  planned_code_paths: string[];
+}
+
+export interface GovernanceCheck {
+  check_id: string;
+  description: string;
+  passed: boolean;
+  severity?: 'error' | 'warning' | 'info';
+  details?: string;
+}
+
+export interface GovernanceCheckResult {
+  active: boolean;
+  passed: boolean;
+  checks: GovernanceCheck[];
+  inputFiles: string[];
+}
+
+export interface GovernanceScopeSnapshot {
+  schema_version: '1.0';
+  work_item_id: string;
+  active: boolean;
+  affected_modules: string[];
+  allowed_write_files: string[];
+  architecture_refs: string[];
+  data_model_refs: string[];
+  design_refs: string[];
+  project_contract_refs: string[];
+  module_contract_refs: string[];
+  project_spec_version: string;
+  impact_scope_hash: string;
+  frozen_at: string;
+  version_control_mode?: 'git' | 'filesystem';
+  git_head_at_freeze?: string;
+  git_branch_at_freeze?: string;
+}
+
+export interface VersionControlModeEvidence {
+  valid: boolean;
+  mode: 'git' | 'filesystem' | '';
+  source: 'governance_scope' | 'legacy_filesystem_recovery' | 'missing';
+  legacy_filesystem_recovery_applied: boolean;
+  error?: string;
+  input_files: string[];
+}
+
+export interface LegacyFilesystemModeRecoveryResult {
+  success: boolean;
+  error?: string;
+  recovery_path?: string;
+  record?: Record<string, unknown>;
+  idempotent?: boolean;
+}
+
+export interface ProjectSpecMergeHistoryEvidence {
+  work_item_id: string;
+  base_spec_version: string;
+  project_spec_version: string;
+  merge_report_path: string;
+}
+
+export interface ProjectSpecMergeChainEvidence {
+  passed: boolean;
+  from_version: string;
+  to_version: string;
+  work_items: string[];
+  reason: string;
+}
+
+type ContractEntry = {
+  id: string;
+  owner_module: string;
+  source_refs: string[];
+  enforcement: string;
+  kind: string;
+  module_internal: boolean;
+  raw: Record<string, unknown>;
+};
+
+type ModuleModel = {
+  module_code: string;
+  code_paths_declared: boolean;
+  contract_file_exists: boolean;
+  contract_file_valid: boolean;
+  contract_file_owner: string;
+  design_path: string;
+  contracts_path: string;
+  contracts_declared: boolean;
+  trace_path: string;
+  trace_edges: GovernanceTraceEdge[];
+  trace_generated: boolean;
+  code_paths: string[];
+  design_ids: string[];
+  invalid_design_ids: string[];
+  design_text: string;
+  contract_entries: ContractEntry[];
+};
+
+type TraceEdge = GovernanceTraceEdge;
+
+type ProjectModel = {
+  active: boolean;
+  governanceDeclared: boolean;
+  default_module: string;
+  manifest: any;
+  manifestPath: string;
+  architecturePath: string;
+  dataModelPath: string;
+  architectureIds: string[];
+  dataModelIds: string[];
+  invalidArchitectureIds: string[];
+  invalidDataModelIds: string[];
+  dataModelNotApplicable: boolean;
+  modules: ModuleModel[];
+  contracts: ContractEntry[];
+  trace: TraceEdge[];
+  current_trace: TraceEdge[];
+  trace_delta_operations: GovernanceTraceDeltaOperation[];
+  trace_issues: GovernanceTraceIssue[];
+  already_merged: boolean;
+  inputFiles: string[];
+};
+
+function unique(values: string[]): string[] {
+  return Array.from(new Set(values.filter(Boolean))).sort();
+}
+
+function slash(value: string): string {
+  return String(value ?? '')
+    .replace(/\\/g, '/')
+    .replace(/^\.\//, '')
+    .replace(/\/+/g, '/');
+}
+
+function absolute(projectRoot: string, value: string): string {
+  return path.isAbsolute(value) ? path.resolve(value) : path.resolve(projectRoot, value);
+}
+export function resolveModuleContractsPathValue(
+  rawContracts: unknown,
+  moduleDefinitionContracts: unknown,
+  moduleRoot: string
+): string {
+  for (const candidate of [rawContracts, moduleDefinitionContracts]) {
+    if (typeof candidate === 'string' && candidate.trim().length > 0) {
+      return candidate.trim();
+    }
+  }
+  return `${moduleRoot}/contracts.json`;
+}
+
+async function readText(filePath: string): Promise<string> {
+  try {
+    return await fs.readFile(filePath, 'utf8');
+  } catch {
+    return '';
+  }
+}
+
+async function readFirstExistingText(
+  filePaths: string[]
+): Promise<{ path: string; content: string } | null> {
+  for (const filePath of filePaths) {
+    try {
+      return { path: filePath, content: await fs.readFile(filePath, 'utf8') };
+    } catch (error) {
+      const code = (error as NodeJS.ErrnoException).code;
+      if (code !== 'ENOENT') throw error;
+    }
+  }
+  return null;
+}
+
+async function readJson(filePath: string): Promise<any> {
+  try {
+    return JSON.parse(await fs.readFile(filePath, 'utf8'));
+  } catch {
+    return null;
+  }
+}
+
+const PROJECT_SPEC_VERSION_RE = /^PSV-(\d+)$/;
+
+function projectSpecVersionNumber(value: unknown): number | null {
+  const match = scalarText(value ?? '').match(PROJECT_SPEC_VERSION_RE);
+  if (!match) return null;
+  const parsed = Number(match[1]);
+  return Number.isSafeInteger(parsed) ? parsed : null;
+}
+
+export interface ProjectSpecCoreVersionCoherence {
+  passed: boolean;
+  spec_manifest_version: string;
+  extension_registry_version: string;
+  reason: string;
+  input_files: string[];
+}
+
+export async function inspectProjectSpecCoreVersionCoherence(
+  projectRoot: string
+): Promise<ProjectSpecCoreVersionCoherence> {
+  const manifestPath = path.join(projectRoot, SPEC_DIR, 'project', 'spec_manifest.json');
+  const manifest = await readJson(manifestPath);
+  const registryPath = absolute(
+    projectRoot,
+    String(manifest?.project?.extension_registry ?? `${SPEC_DIR}/project/extension_registry.json`)
+  );
+  const registry = await readJson(registryPath);
+  const [manifestDeclared, registryDeclared] = await Promise.all([
+    fs.access(manifestPath).then(
+      () => true,
+      () => false
+    ),
+    fs.access(registryPath).then(
+      () => true,
+      () => false
+    ),
+  ]);
+  const manifestVersion = String(manifest?.project_spec_version ?? '');
+  const registryVersion = String(registry?.project_spec_version ?? '');
+  const manifestValid = projectSpecVersionNumber(manifestVersion) !== null;
+  const registryValid = projectSpecVersionNumber(registryVersion) !== null;
+  const undeclared = !manifestDeclared && !registryDeclared;
+  const passed =
+    undeclared || (manifestValid && registryValid && manifestVersion === registryVersion);
+  return {
+    passed,
+    spec_manifest_version: manifestVersion,
+    extension_registry_version: registryVersion,
+    reason: undeclared
+      ? 'project_spec_core=not_declared'
+      : passed
+        ? `project_spec_version=${manifestVersion}`
+        : `spec_manifest=${manifestVersion || 'missing'}; extension_registry=${registryVersion || 'missing'}`,
+    input_files: unique([manifestPath, registryPath]),
+  };
+}
+
+function mergeReportField(report: string, label: string): string {
+  const escaped = label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return String(
+    report.match(new RegExp(`^-\\s*${escaped}:\\s*(\\S+)\\s*$`, 'im'))?.[1] ?? ''
+  ).trim();
+}
+
+function successfulMergeRowCount(report: string): number {
+  return report.split(/\r?\n/).filter(line => /^\|\s*success\s*\|/i.test(line)).length;
+}
+
+export async function readSuccessfulProjectSpecMergeHistoryEvidence(input: {
+  projectRoot: string;
+  workItemDir: string;
+  workItemId: string;
+}): Promise<ProjectSpecMergeHistoryEvidence | null> {
+  const candidate = await readJson(path.join(input.workItemDir, 'candidate_manifest.json'));
+  const decision = await readJson(path.join(input.workItemDir, 'user_decision.json'));
+  const reportPath = path.join(input.workItemDir, 'merge_report.md');
+  const report = await readText(reportPath);
+  const mergeVerdict = evaluateMergeReport(report, input.workItemId);
+
+  const baseVersion = String(candidate?.base_spec_version ?? '');
+  const resultVersion = mergeReportField(report, 'Project Spec Version');
+  const baseNumber = projectSpecVersionNumber(baseVersion);
+  const resultNumber = projectSpecVersionNumber(resultVersion);
+
+  if (String(candidate?.work_item_id ?? '') !== input.workItemId) return null;
+  if (candidate?.merge_required !== true) return null;
+  if (String(decision?.work_item_id ?? '') !== input.workItemId) return null;
+  if (!['approved', 'waived'].includes(String(decision?.decision_status ?? ''))) return null;
+  if (!mergeVerdict.valid || mergeVerdict.status !== 'success') return null;
+  if (!/^- Spec Manifest Updated:\s*true\s*$/im.test(report)) return null;
+  if (successfulMergeRowCount(report) <= 0) return null;
+  if (baseNumber === null || resultNumber === null || resultNumber !== baseNumber + 1) return null;
+
+  return {
+    work_item_id: input.workItemId,
+    base_spec_version: baseVersion,
+    project_spec_version: resultVersion,
+    merge_report_path: reportPath,
+  };
+}
+
+async function listProjectSpecMergeHistoryEvidence(
+  projectRoot: string
+): Promise<ProjectSpecMergeHistoryEvidence[]> {
+  const root = path.join(projectRoot, SPEC_DIR, 'work-items');
+  let entries: Array<import('node:fs').Dirent<string>>;
+  try {
+    entries = await fs.readdir(root, { withFileTypes: true });
+  } catch {
+    return [];
+  }
+
+  const evidence: ProjectSpecMergeHistoryEvidence[] = [];
+  for (const entry of entries) {
+    if (!entry.isDirectory() || !/^WI-\d+$/i.test(entry.name)) continue;
+    const workItemDir = path.join(root, entry.name);
+    const item = await readSuccessfulProjectSpecMergeHistoryEvidence({
+      projectRoot,
+      workItemDir,
+      workItemId: entry.name,
+    });
+    if (item) evidence.push(item);
+  }
+
+  return evidence.sort((left, right) => {
+    const l = projectSpecVersionNumber(left.base_spec_version) ?? Number.MAX_SAFE_INTEGER;
+    const r = projectSpecVersionNumber(right.base_spec_version) ?? Number.MAX_SAFE_INTEGER;
+    return l - r || left.work_item_id.localeCompare(right.work_item_id);
+  });
+}
+
+export async function proveProjectSpecVersionAdvancedBySuccessfulMerges(input: {
+  projectRoot: string;
+  fromVersion: string;
+  toVersion: string;
+  finalLastMergedWorkItem: string;
+}): Promise<ProjectSpecMergeChainEvidence> {
+  const from = projectSpecVersionNumber(input.fromVersion);
+  const to = projectSpecVersionNumber(input.toVersion);
+  if (from === null || to === null || to <= from) {
+    return {
+      passed: false,
+      from_version: input.fromVersion,
+      to_version: input.toVersion,
+      work_items: [],
+      reason: 'invalid_or_non_advancing_version_range',
+    };
+  }
+
+  const evidence = await listProjectSpecMergeHistoryEvidence(input.projectRoot);
+  const byBase = new Map<number, ProjectSpecMergeHistoryEvidence[]>();
+  for (const item of evidence) {
+    const base = projectSpecVersionNumber(item.base_spec_version);
+    const result = projectSpecVersionNumber(item.project_spec_version);
+    if (base === null || result !== base + 1) continue;
+    const list = byBase.get(base) ?? [];
+    list.push(item);
+    byBase.set(base, list);
+  }
+
+  const chain: ProjectSpecMergeHistoryEvidence[] = [];
+  for (let version = from; version < to; version += 1) {
+    const candidates = byBase.get(version) ?? [];
+    if (candidates.length !== 1) {
+      return {
+        passed: false,
+        from_version: input.fromVersion,
+        to_version: input.toVersion,
+        work_items: chain.map(item => item.work_item_id),
+        reason: `merge_chain_cardinality_${version}=${candidates.length}`,
+      };
+    }
+    chain.push(candidates[0]);
+  }
+
+  const final = chain[chain.length - 1];
+  if (
+    !final ||
+    final.work_item_id !== input.finalLastMergedWorkItem ||
+    final.project_spec_version !== input.toVersion
+  ) {
+    return {
+      passed: false,
+      from_version: input.fromVersion,
+      to_version: input.toVersion,
+      work_items: chain.map(item => item.work_item_id),
+      reason: 'final_merge_does_not_match_current_spec_manifest',
+    };
+  }
+
+  return {
+    passed: true,
+    from_version: input.fromVersion,
+    to_version: input.toVersion,
+    work_items: chain.map(item => item.work_item_id),
+    reason: 'current_project_spec_version_is_proven_by_successful_atomic_spec_merge_chain',
+  };
+}
+
+function digest(value: unknown): string {
+  return createHash('sha256')
+    .update(typeof value === 'string' ? value : JSON.stringify(value))
+    .digest('hex');
+}
+
+function normalizeArray(value: unknown): string[] {
+  if (!Array.isArray(value)) return [];
+  return unique(value.map(item => String(item ?? '').trim()).filter(Boolean));
+}
+export function isSpecMigrationNoCodeWorkflow(
+  workflowType: unknown,
+  workflowPath: unknown
+): boolean {
+  const type = scalarText(workflowType ?? '')
+    .trim()
+    .toLowerCase()
+    .replace(/[-\s]+/g, '_');
+  const route = scalarText(workflowPath ?? '')
+    .trim()
+    .toLowerCase()
+    .replace(/[-\s]+/g, '_');
+  return type === 'spec_migration' || route === 'spec_migration_path';
+}
+
+export function normalizeImpactScope(value: unknown): ImpactScope {
+  const scope = value && typeof value === 'object' ? (value as any) : {};
+  const affectedModules = [
+    ...normalizeArray(scope.affected_modules),
+    ...normalizeArray(scope.existing_modules),
+    ...normalizeArray(scope.new_modules),
+  ];
+  return {
+    affected_modules: unique(affectedModules),
+    architecture_refs: normalizeArray(scope.architecture_refs),
+    data_model_refs: normalizeArray(scope.data_model_refs),
+    design_refs: normalizeArray(scope.design_refs),
+    project_contract_refs: normalizeArray(scope.project_contract_refs),
+    module_contract_refs: normalizeArray(scope.module_contract_refs),
+    planned_code_paths: normalizeArray(scope.planned_code_paths),
+  };
+}
+
+function isCrossModuleTestHarnessPath(value: string): boolean {
+  const normalized = slash(value);
+  return (
+    normalized.startsWith('tests/') ||
+    /(?:^|\/)[^/]+\.(?:integration\.)?test\.[cm]?[jt]sx?$/i.test(normalized)
+  );
+}
+
+export function parseTaskWriteScopesForGovernance(content: string): Array<{
+  task_id: string;
+  allowed_write_files: string[];
+}> {
+  const semantic = validateTaskArtifactContract(content, { requireAllowedWriteFiles: true });
+  return semantic.tasks.map(task => ({
+    task_id: task.task_id,
+    allowed_write_files: unique(task.allowed_write_files.map(value => slash(value))),
+  }));
+}
+
+async function readTaskWriteScopes(workItemDir: string): Promise<
+  Array<{
+    task_id: string;
+    allowed_write_files: string[];
+  }>
+> {
+  const projectRoot = path.resolve(workItemDir, '..', '..', '..');
+  const workItemId = path.basename(workItemDir);
+  const artifact = await readFirstExistingText([
+    workItemCandidateTasks(projectRoot, workItemId),
+    workItemTasks(projectRoot, workItemId),
+  ]);
+  if (!artifact) return [];
+  return parseTaskWriteScopesForGovernance(artifact.content);
+}
+
+async function readApprovedTaskFiles(workItemDir: string): Promise<Set<string>> {
+  const approved = new Set<string>();
+  for (const task of await readTaskWriteScopes(workItemDir)) {
+    for (const candidate of task.allowed_write_files) approved.add(candidate);
+  }
+  return approved;
+}
+
+function isApprovedMergedGovernanceScope(
+  trigger: any,
+  model: ProjectModel,
+  workItemId: string
+): boolean {
+  const classification = trigger?.classification ?? {};
+  return (
+    [
+      classification.architecture_changed,
+      classification.data_model_changed,
+      classification.design_changed,
+      classification.module_contract_changed,
+    ].some(value => value === true) &&
+    String(model.manifest?.last_merged_work_item ?? '') === workItemId
+  );
+}
+
+function extractIds(text: string, prefix: 'ARCH' | 'DATA' | 'DD'): string[] {
+  const candidates =
+    text.match(new RegExp(`\\b${prefix}-[A-Z][A-Z0-9]{1,11}-[0-9]{3}\\b`, 'g')) ?? [];
+  return unique(candidates.filter(id => prefix !== 'DD' || isValidDesignDecisionId(id)));
+}
+
+function extractDeclaredGovernanceIds(text: string, prefix: 'ARCH' | 'DATA' | 'DD'): string[] {
+  return unique(text.match(new RegExp(`\\b${prefix}-[A-Z0-9][A-Z0-9-]*\\b`, 'g')) ?? []);
+}
+
+function governanceIdFormatChecks(model: ProjectModel): GovernanceCheck[] {
+  const invalidDesignIds = unique(model.modules.flatMap(module => module.invalid_design_ids));
+  return [
+    {
+      check_id: 'architecture_id_format',
+      description: 'Every declared Architecture ID uses ARCH-<DOMAIN>-<NNN>',
+      passed: model.invalidArchitectureIds.length === 0 && model.architectureIds.length > 0,
+      severity: 'error',
+      details: `invalid=${model.invalidArchitectureIds.join(',') || 'none'}; valid=${model.architectureIds.join(',') || 'none'}`,
+    },
+    {
+      check_id: 'data_model_id_format',
+      description:
+        'Every declared Data ID uses DATA-<DOMAIN>-<NNN>, or the model is explicitly not applicable',
+      passed:
+        model.invalidDataModelIds.length === 0 &&
+        (model.dataModelIds.length > 0 || model.dataModelNotApplicable),
+      severity: 'error',
+      details: `invalid=${model.invalidDataModelIds.join(',') || 'none'}; valid=${model.dataModelIds.join(',') || 'none'}; not_applicable=${model.dataModelNotApplicable}`,
+    },
+    {
+      check_id: 'module_design_id_format',
+      description: 'Every declared Module Design ID uses DD-<DOMAIN>-<NNN>',
+      passed: invalidDesignIds.length === 0,
+      severity: 'error',
+      details: `invalid=${invalidDesignIds.join(',') || 'none'}`,
+    },
+  ];
+}
+
+function inactiveGovernanceChecks(
+  model: ProjectModel,
+  compatibilityCheckId: string,
+  compatibilityDescription: string
+): GovernanceCheck[] {
+  if (!model.governanceDeclared) {
+    return [
+      {
+        check_id: compatibilityCheckId,
+        description: compatibilityDescription,
+        passed: true,
+        severity: 'info',
+        details: 'governance_active=false; formal_governance_declared=false',
+      },
+    ];
+  }
+
+  return [
+    ...governanceIdFormatChecks(model),
+    {
+      check_id: 'formal_governance_complete',
+      description:
+        'Declared formal Architecture/Data/Module governance is complete and cannot fall back to compatibility mode',
+      passed: false,
+      severity: 'error',
+      details: `architecture=${model.architectureIds.length}; data=${model.dataModelIds.length}; modules=${model.modules.length}`,
+    },
+  ];
+}
+
+function escapeRegex(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function globToRegex(pattern: string): RegExp {
+  const normalized = slash(pattern).replace(/^\/+/, '');
+  let expression = '^';
+  for (let i = 0; i < normalized.length; i += 1) {
+    const char = normalized[i];
+    if (char === '*') {
+      if (normalized[i + 1] === '*') {
+        i += 1;
+        expression += '.*';
+      } else {
+        expression += '[^/]*';
+      }
+      continue;
+    }
+    if (char === '?') {
+      expression += '[^/]';
+      continue;
+    }
+    expression += escapeRegex(char);
+  }
+  return new RegExp(`${expression}$`);
+}
+
+export function isTaskPathCoveredByImpactScope(
+  taskPath: string,
+  plannedCodePaths: readonly string[]
+): { covered: boolean; matchedPattern: string | null } {
+  const normalizedTask = slash(String(taskPath ?? ''))
+    .replace(/^\.\//, '')
+    .replace(/^\/+/, '');
+  if (!normalizedTask || normalizedTask.split('/').includes('..')) {
+    return { covered: false, matchedPattern: null };
+  }
+  for (const rawPattern of plannedCodePaths) {
+    const normalizedPattern = slash(String(rawPattern ?? ''))
+      .replace(/^\.\//, '')
+      .replace(/^\/+/, '');
+    if (!normalizedPattern || normalizedPattern.split('/').includes('..')) continue;
+    const covered = normalizedPattern.endsWith('/')
+      ? normalizedTask.startsWith(normalizedPattern)
+      : /[*?]/.test(normalizedPattern)
+        ? globToRegex(normalizedPattern).test(normalizedTask)
+        : normalizedTask === normalizedPattern;
+    if (covered) return { covered: true, matchedPattern: rawPattern };
+  }
+  return { covered: false, matchedPattern: null };
+}
+
+export function resolveModuleOwnershipFromManifest(manifest: any, filePath: string): string[] {
+  const relative = slash(filePath).replace(/^\/+/, '');
+  const owners: string[] = [];
+  for (const raw of Array.isArray(manifest?.modules) ? manifest.modules : []) {
+    const identity = resolveSpecModuleIdentity(raw);
+    if (!identity.valid || !identity.moduleCode) continue;
+    const patterns = normalizeArray(raw.code_paths);
+    if (patterns.some(pattern => globToRegex(pattern).test(relative))) {
+      owners.push(identity.moduleCode);
+    }
+  }
+  return unique(owners);
+}
+
+function candidateAbsolute(
+  projectRoot: string,
+  workItemDir: string,
+  candidatePath: string
+): string {
+  if (path.isAbsolute(candidatePath)) return candidatePath;
+  const normalized = slash(candidatePath);
+  return normalized.startsWith(`${SPEC_DIR}/`)
+    ? absolute(projectRoot, normalized)
+    : absolute(workItemDir, normalized);
+}
+
+function canonicalProspectiveTargetKey(projectRoot: string, value: string): string {
+  if (!value) return '';
+  return slash(absolute(projectRoot, value)).toLowerCase();
+}
+function frozenModuleDefinitionCandidateEntry(
+  projectRoot: string,
+  candidateManifest: any,
+  moduleCode: string,
+  moduleFilePath: string
+): any {
+  const expectedTarget = canonicalProspectiveTargetKey(projectRoot, moduleFilePath);
+  const matches = (
+    Array.isArray(candidateManifest?.entries) ? candidateManifest.entries : []
+  ).filter(
+    (entry: any) =>
+      String(entry?.type ?? '') === 'module_definition' &&
+      String(entry?.module_id ?? '')
+        .trim()
+        .toUpperCase() === moduleCode &&
+      String(entry?.operation ?? 'replace') !== 'delete' &&
+      canonicalProspectiveTargetKey(projectRoot, String(entry?.target_path ?? '')) ===
+        expectedTarget
+  );
+  if (matches.length > 1) {
+    throw new Error(`PROSPECTIVE_MODULE_DEFINITION_CANDIDATE_AMBIGUOUS:${moduleCode}`);
+  }
+  return matches[0] ?? null;
+}
+
+async function prospectiveReader(projectRoot: string, workItemDir: string) {
+  const manifestPath = path.join(workItemDir, 'candidate_manifest.json');
+  const candidate = await readJson(manifestPath);
+  const targetMap = new Map<string, { operation: string; candidate?: string }>();
+
+  for (const entry of Array.isArray(candidate?.entries) ? candidate.entries : []) {
+    const target = slash(String(entry?.target_path ?? ''));
+    if (!target) continue;
+    targetMap.set(target, {
+      operation: String(entry?.operation ?? 'replace'),
+      candidate: entry?.candidate_path
+        ? candidateAbsolute(projectRoot, workItemDir, String(entry.candidate_path))
+        : undefined,
+    });
+  }
+
+  async function text(targetPath: string): Promise<string> {
+    const relative = slash(path.relative(projectRoot, targetPath));
+    const entry = targetMap.get(relative) ?? targetMap.get(slash(targetPath));
+    if (entry?.operation === 'delete') return '';
+    if (entry?.candidate) return readText(entry.candidate);
+    return readText(targetPath);
+  }
+
+  async function json(targetPath: string): Promise<any> {
+    const content = await text(targetPath);
+    if (!content) return null;
+    try {
+      return JSON.parse(content);
+    } catch {
+      return null;
+    }
+  }
+
+  return { candidate, text, json, targets: new Set(targetMap.keys()), workItemDir };
+}
+
+function flattenContracts(registry: any, moduleInternal: boolean): ContractEntry[] {
+  const result: ContractEntry[] = [];
+  for (const field of ['shared_enums', 'invariants', 'public_interfaces', 'extension_points']) {
+    for (const entry of Array.isArray(registry?.[field]) ? registry[field] : []) {
+      if (!entry?.id) continue;
+      result.push({
+        id: String(entry.id),
+        owner_module: String(entry.owner_module ?? ''),
+        source_refs: normalizeArray(entry.source_refs),
+        enforcement: String(entry.enforcement ?? '').trim(),
+        kind: field,
+        module_internal: moduleInternal,
+        raw: entry as Record<string, unknown>,
+      });
+    }
+  }
+  return result;
+}
+
+function canonicalModuleEntry(moduleCode: string, existing: any = {}): any {
+  const root = `${SPEC_DIR}/project/modules/${moduleCode}`;
+  return {
+    ...existing,
+    module_code: moduleCode,
+    path: existing?.path ?? root,
+    module_file: existing?.module_file ?? `${root}/module.json`,
+    requirements: existing?.requirements ?? `${root}/requirements.md`,
+    design: existing?.design ?? `${root}/design.md`,
+    trace: existing?.trace ?? `${root}/trace.md`,
+  };
+}
+
+async function prospectiveModuleEntries(
+  projectRoot: string,
+  manifest: any,
+  reader: Awaited<ReturnType<typeof prospectiveReader>>,
+  prospective: boolean
+): Promise<any[]> {
+  const entries = new Map<string, any>();
+  for (const raw of Array.isArray(manifest?.modules) ? manifest.modules : []) {
+    const identity = resolveSpecModuleIdentity(raw);
+    if (!identity.valid || !identity.moduleCode) continue;
+    entries.set(identity.moduleCode, canonicalModuleEntry(identity.moduleCode, raw));
+  }
+
+  if (!prospective) return Array.from(entries.values());
+
+  const frozenEntries = Array.isArray(reader.candidate?.entries) ? reader.candidate.entries : [];
+  for (const frozenEntry of frozenEntries) {
+    const target = slash(String(frozenEntry?.target_path ?? ''));
+    const match = /^\.specforge\/project\/modules\/([^/]+)\/module\.json$/i.exec(target);
+    if (!match?.[1]) continue;
+    const targetModuleCode = match[1].toUpperCase();
+    const explicitType = String(frozenEntry?.type ?? '').trim();
+    const explicitModuleId = String(frozenEntry?.module_id ?? '')
+      .trim()
+      .toUpperCase();
+    if (explicitType && explicitType !== 'module_definition') continue;
+    if (explicitModuleId && explicitModuleId !== targetModuleCode) continue;
+    if (String(frozenEntry?.operation ?? 'replace') === 'delete') continue;
+    if (!frozenEntry?.candidate_path) continue;
+    const candidatePath = candidateAbsolute(
+      projectRoot,
+      reader.workItemDir,
+      String(frozenEntry.candidate_path)
+    );
+    const definition = await readJson(candidatePath);
+    const identity = resolveSpecModuleIdentity(definition);
+    if (!identity.valid || identity.moduleCode !== targetModuleCode) continue;
+    const existing = entries.get(targetModuleCode) ?? {};
+    entries.set(
+      targetModuleCode,
+      canonicalModuleEntry(targetModuleCode, {
+        ...existing,
+        ...definition,
+        module_code: targetModuleCode,
+      })
+    );
+  }
+  return Array.from(entries.values());
+}
+
+async function loadProjectModel(
+  projectRoot: string,
+  workItemDir: string,
+  prospective: boolean
+): Promise<ProjectModel> {
+  const workItemId = path.basename(workItemDir);
+  const reader = await prospectiveReader(projectRoot, workItemDir);
+  const manifestPath = path.join(projectRoot, SPEC_DIR, 'project', 'spec_manifest.json');
+  const formalManifest = await readJson(manifestPath);
+  const historicalMerge = await readSuccessfulProjectSpecMergeHistoryEvidence({
+    projectRoot,
+    workItemDir,
+    workItemId,
+  });
+  const alreadyMerged = historicalMerge !== null;
+  const useCandidateProjection = prospective && !alreadyMerged;
+  const manifest = useCandidateProjection ? await reader.json(manifestPath) : formalManifest;
+  const project = manifest?.project ?? {};
+
+  const architecturePath = absolute(
+    projectRoot,
+    String(project.architecture ?? `${SPEC_DIR}/project/architecture.md`)
+  );
+  const dataModelPath = absolute(
+    projectRoot,
+    String(project.data_model ?? `${SPEC_DIR}/project/data_model.md`)
+  );
+  const architectureText = useCandidateProjection
+    ? await reader.text(architecturePath)
+    : await readText(architecturePath);
+  const dataModelText = useCandidateProjection
+    ? await reader.text(dataModelPath)
+    : await readText(dataModelPath);
+  const architectureIds = extractIds(architectureText, 'ARCH');
+  const dataModelIds = extractIds(dataModelText, 'DATA');
+  const declaredArchitectureIds = extractDeclaredGovernanceIds(architectureText, 'ARCH');
+  const declaredDataModelIds = extractDeclaredGovernanceIds(dataModelText, 'DATA');
+  const invalidArchitectureIds = declaredArchitectureIds.filter(id => !isValidArchitectureId(id));
+  const invalidDataModelIds = declaredDataModelIds.filter(id => !isValidDataModelId(id));
+  const dataModelNotApplicable = /\bDATA_MODEL_NOT_APPLICABLE\b/.test(dataModelText);
+
+  const modules: ModuleModel[] = [];
+  const contracts: ContractEntry[] = [];
+  const inputFiles = [manifestPath, architecturePath, dataModelPath];
+  const traceIssues: GovernanceTraceIssue[] = [];
+
+  const extensionRegistryPath = absolute(
+    projectRoot,
+    String(project.extension_registry ?? `${SPEC_DIR}/project/extension_registry.json`)
+  );
+  const extensionRegistry = useCandidateProjection
+    ? await reader.json(extensionRegistryPath)
+    : await readJson(extensionRegistryPath);
+  if (extensionRegistry?.contracts) {
+    contracts.push(...flattenContracts(extensionRegistry.contracts, false));
+  }
+  inputFiles.push(extensionRegistryPath);
+
+  const projectTracePath = absolute(
+    projectRoot,
+    String(project.trace_matrix ?? `${SPEC_DIR}/project/trace_matrix.md`)
+  );
+  // The candidate artifact is a Delta, never a replacement truth source. Always
+  // read the current formal matrix directly and apply the Delta below.
+  const currentTraceParse = parseGovernanceTrace(
+    await readText(projectTracePath),
+    projectTracePath
+  );
+  traceIssues.push(...currentTraceParse.issues);
+  const currentTrace = currentTraceParse.edges;
+  inputFiles.push(projectTracePath);
+
+  const effectiveModuleEntries = await prospectiveModuleEntries(
+    projectRoot,
+    manifest,
+    reader,
+    useCandidateProjection
+  );
+
+  for (const raw of effectiveModuleEntries) {
+    const identity = resolveSpecModuleIdentity(raw);
+    if (!identity.valid || !identity.moduleCode) continue;
+    const moduleCode = identity.moduleCode;
+    const moduleRoot = `${SPEC_DIR}/project/modules/${moduleCode}`;
+    const moduleFilePath = absolute(
+      projectRoot,
+      String(raw.module_file ?? `${moduleRoot}/module.json`)
+    );
+    const moduleCandidateEntry = useCandidateProjection
+      ? frozenModuleDefinitionCandidateEntry(
+          projectRoot,
+          reader.candidate,
+          moduleCode,
+          moduleFilePath
+        )
+      : null;
+    const moduleCandidatePath = moduleCandidateEntry?.candidate_path
+      ? candidateAbsolute(projectRoot, workItemDir, String(moduleCandidateEntry.candidate_path))
+      : '';
+    const moduleDefinition = moduleCandidateEntry
+      ? await readJson(moduleCandidatePath)
+      : await readJson(moduleFilePath);
+    const designPath = absolute(projectRoot, String(raw.design ?? `${moduleRoot}/design.md`));
+    const configuredContracts = resolveModuleContractsPathValue(
+      raw.contracts,
+      moduleDefinition?.contracts,
+      moduleRoot
+    );
+    const contractsPath = absolute(projectRoot, configuredContracts);
+    const tracePath = absolute(projectRoot, String(raw.trace ?? `${moduleRoot}/trace.md`));
+    const designText = useCandidateProjection
+      ? await reader.text(designPath)
+      : await readText(designPath);
+    const moduleContractJson = useCandidateProjection
+      ? await reader.json(contractsPath)
+      : await readJson(contractsPath);
+    const registryParse = moduleContractJson
+      ? ContractRegistrySchema.safeParse(moduleContractJson.contracts)
+      : null;
+    const parsedModuleContract =
+      moduleContractJson &&
+      moduleContractJson.schema_version === '1.0' &&
+      typeof moduleContractJson.owner_module === 'string' &&
+      moduleContractJson.owner_module.trim().length > 0 &&
+      registryParse?.success
+        ? {
+            owner_module: moduleContractJson.owner_module.trim(),
+            contracts: registryParse.data,
+          }
+        : null;
+    const internalContracts = parsedModuleContract
+      ? flattenContracts(parsedModuleContract.contracts, true)
+      : [];
+    contracts.push(...internalContracts);
+
+    const codePathsDeclared =
+      Array.isArray(raw.code_paths) || Array.isArray(moduleDefinition?.code_paths);
+    const codePaths = normalizeArray(moduleDefinition?.code_paths ?? raw.code_paths);
+    const contractsTarget = slash(path.relative(projectRoot, contractsPath));
+    // Candidate Gate evaluates the Project Spec that Atomic Spec Merge would
+    // canonically materialize. A module_definition Candidate causes the Merge
+    // Runner to rebuild contracts/code_paths when governance is ready, even when
+    // an unchanged contracts.json was materialized away as a no-op Candidate.
+    const prospectiveGovernanceOnlyDefault =
+      moduleCode ===
+        String(manifest?.default_module ?? '')
+          .trim()
+          .toUpperCase() &&
+      Array.isArray(moduleDefinition?.code_paths) &&
+      codePaths.length === 0;
+    const prospectiveCanonicalContractsDeclared =
+      useCandidateProjection &&
+      Boolean(moduleCandidateEntry) &&
+      (codePaths.length > 0 || prospectiveGovernanceOnlyDefault) &&
+      moduleContractJson !== null;
+    const contractsDeclared =
+      (typeof raw.contracts === 'string' && String(raw.contracts).trim().length > 0) ||
+      (typeof moduleDefinition?.contracts === 'string' &&
+        String(moduleDefinition.contracts).trim().length > 0) ||
+      (useCandidateProjection && reader.targets.has(contractsTarget)) ||
+      prospectiveCanonicalContractsDeclared;
+    const moduleTraceText = await readText(tracePath);
+    const moduleTraceParse = parseGovernanceTrace(moduleTraceText, tracePath);
+
+    const designIds = extractIds(designText, 'DD');
+    const declaredDesignIds = extractDeclaredGovernanceIds(designText, 'DD');
+    modules.push({
+      module_code: moduleCode,
+      code_paths_declared: codePathsDeclared,
+      contract_file_exists: moduleContractJson !== null,
+      contract_file_valid: parsedModuleContract !== null,
+      contract_file_owner: parsedModuleContract?.owner_module ?? '',
+      design_path: designPath,
+      contracts_path: contractsPath,
+      contracts_declared: contractsDeclared,
+      trace_path: tracePath,
+      trace_edges: moduleTraceParse.edges,
+      trace_generated: /GENERATED_FROM_PROJECT_TRACE:\s*module projection/i.test(moduleTraceText),
+      code_paths: codePaths,
+      design_ids: designIds,
+      invalid_design_ids: declaredDesignIds.filter(id => !isValidDesignDecisionId(id)),
+      design_text: designText,
+      contract_entries: internalContracts,
+    });
+    inputFiles.push(
+      moduleFilePath,
+      ...(moduleCandidatePath ? [moduleCandidatePath] : []),
+      designPath,
+      contractsPath,
+      tracePath
+    );
+  }
+
+  let traceDeltaOperations: GovernanceTraceDeltaOperation[] = [];
+  let trace = normalizeGovernanceTraceEdges(currentTrace);
+  if (useCandidateProjection) {
+    const traceDeltaArtifact = await readFirstExistingText([
+      workItemCandidateTraceDelta(projectRoot, workItemId),
+      workItemTraceDelta(projectRoot, workItemId),
+    ]);
+    if (traceDeltaArtifact?.content.trim()) {
+      inputFiles.push(traceDeltaArtifact.path);
+      const deltaParse = parseGovernanceTraceDelta(
+        traceDeltaArtifact.content,
+        traceDeltaArtifact.path
+      );
+      traceDeltaOperations = deltaParse.operations;
+      const projection = applyGovernanceTraceDelta({
+        current: currentTrace,
+        operations: traceDeltaOperations,
+        inheritedIssues: deltaParse.issues,
+      });
+      trace = projection.prospective;
+      traceIssues.push(...projection.issues);
+    }
+  }
+
+  const designOwners = new Map<string, string>();
+  for (const module of modules) {
+    for (const designId of module.design_ids) designOwners.set(designId, module.module_code);
+  }
+  traceIssues.push(
+    ...validateGovernanceTraceSemantics({
+      edges: trace,
+      context: {
+        architecture_ids: architectureIds,
+        data_model_ids: dataModelIds,
+        design_owners: designOwners,
+        contracts: contracts.map(contract => ({
+          id: contract.id,
+          owner_module: contract.owner_module,
+          module_internal: contract.module_internal,
+        })),
+      },
+    })
+  );
+
+  // Compatibility rule: Architecture + Data Model are the migration boundary.
+  const active = Boolean(
+    architectureIds.length > 0 &&
+    (dataModelIds.length > 0 || dataModelNotApplicable) &&
+    modules.length > 0
+  );
+  const governanceDeclared = Boolean(
+    declaredArchitectureIds.length > 0 ||
+    declaredDataModelIds.length > 0 ||
+    dataModelNotApplicable ||
+    modules.some(
+      module =>
+        module.design_ids.length > 0 ||
+        module.invalid_design_ids.length > 0 ||
+        module.code_paths.length > 0
+    )
+  );
+
+  const effectiveManifest =
+    manifest && typeof manifest === 'object'
+      ? {
+          ...manifest,
+          modules: effectiveModuleEntries.map((raw: any) => {
+            const identity = resolveSpecModuleIdentity(raw);
+            const model = modules.find(item => item.module_code === identity.moduleCode);
+            return model
+              ? {
+                  ...raw,
+                  code_paths: model.code_paths,
+                  ...(model.contracts_declared
+                    ? { contracts: slash(path.relative(projectRoot, model.contracts_path)) }
+                    : {}),
+                }
+              : raw;
+          }),
+        }
+      : manifest;
+
+  return {
+    active,
+    governanceDeclared,
+    default_module: String(manifest?.default_module ?? '')
+      .trim()
+      .toUpperCase(),
+    manifest: effectiveManifest,
+    manifestPath,
+    architecturePath,
+    dataModelPath,
+    architectureIds,
+    dataModelIds,
+    invalidArchitectureIds,
+    invalidDataModelIds,
+    dataModelNotApplicable,
+    modules,
+    contracts,
+    trace,
+    current_trace: currentTrace,
+    trace_delta_operations: traceDeltaOperations,
+    trace_issues: traceIssues,
+    already_merged: alreadyMerged,
+    inputFiles: unique(inputFiles),
+  };
+}
+
+async function readTrigger(workItemDir: string): Promise<any> {
+  return readJson(path.join(workItemDir, 'trigger_result.json'));
+}
+
+function candidateHasTarget(candidate: any, suffix: string): boolean {
+  return (Array.isArray(candidate?.entries) ? candidate.entries : []).some((entry: any) =>
+    slash(String(entry?.target_path ?? '')).endsWith(slash(suffix))
+  );
+}
+
+function addCheck(
+  checks: GovernanceCheck[],
+  checkId: string,
+  description: string,
+  passed: boolean,
+  details?: string,
+  severity: GovernanceCheck['severity'] = 'error'
+): void {
+  checks.push({
+    check_id: checkId,
+    description,
+    passed,
+    severity: passed ? undefined : severity,
+    details,
+  });
+}
+
+function allIds(model: ProjectModel): Set<string> {
+  return new Set([
+    ...model.architectureIds,
+    ...model.dataModelIds,
+    ...model.modules.flatMap(module => module.design_ids),
+    ...model.contracts.map(contract => contract.id),
+  ]);
+}
+
+function designOwnerMap(model: ProjectModel): Map<string, string> {
+  const owners = new Map<string, string>();
+  for (const module of model.modules) {
+    for (const designId of module.design_ids) owners.set(designId, module.module_code);
+  }
+  return owners;
+}
+
+function contractOwnerMap(model: ProjectModel): Map<string, string> {
+  return new Map(model.contracts.map(contract => [contract.id, contract.owner_module]));
+}
+
+function contractConsumers(
+  model: ProjectModel,
+  contractIds?: Iterable<string>
+): GovernanceContractConsumer[] {
+  return getGovernanceContractConsumers({
+    edges: model.trace,
+    design_owners: designOwnerMap(model),
+    contract_ids: contractIds,
+  });
+}
+
+function expandImpactScopeWithContractConsumers(
+  scope: ImpactScope,
+  model: ProjectModel
+): ImpactScope & { consumer_modules: string[]; consumer_design_refs: string[] } {
+  const changedContracts = unique([...scope.project_contract_refs, ...scope.module_contract_refs]);
+  const consumers = contractConsumers(model, changedContracts);
+  const consumerModules = unique(consumers.map(consumer => consumer.module_code));
+  const consumerDesignRefs = unique(consumers.map(consumer => consumer.design_id));
+  const consumerCodePaths = unique(
+    model.modules
+      .filter(module => consumerModules.includes(module.module_code))
+      .flatMap(module => module.code_paths)
+  );
+  return {
+    affected_modules: unique([...scope.affected_modules, ...consumerModules]),
+    architecture_refs: scope.architecture_refs,
+    data_model_refs: scope.data_model_refs,
+    design_refs: unique([...scope.design_refs, ...consumerDesignRefs]),
+    project_contract_refs: scope.project_contract_refs,
+    module_contract_refs: scope.module_contract_refs,
+    planned_code_paths: unique([...scope.planned_code_paths, ...consumerCodePaths]),
+    consumer_modules: consumerModules,
+    consumer_design_refs: consumerDesignRefs,
+  };
+}
+
+function relationValid(edge: TraceEdge, model: ProjectModel): boolean {
+  const architecture = new Set(model.architectureIds);
+  const data = new Set(model.dataModelIds);
+  const owners = designOwnerMap(model);
+  const design = new Set(owners.keys());
+  const contracts = new Map(model.contracts.map(contract => [contract.id, contract]));
+
+  if (edge.relation === 'constrained_by') {
+    if (data.has(edge.from) && architecture.has(edge.to)) return true;
+    if (!design.has(edge.from)) return false;
+    if (architecture.has(edge.to) || data.has(edge.to)) return true;
+    const contract = contracts.get(edge.to);
+    if (!contract) return false;
+    return !contract.module_internal || owners.get(edge.from) === contract.owner_module;
+  }
+  return (
+    contracts.has(edge.from) &&
+    (architecture.has(edge.to) || data.has(edge.to) || design.has(edge.to))
+  );
+}
+
+export type ProjectGovernanceContractConsumerSnapshot = {
+  active: boolean;
+  already_merged: boolean;
+  contracts: Array<{
+    id: string;
+    owner_module: string;
+    module_internal: boolean;
+    kind: string;
+    source_refs: string[];
+    raw: Record<string, unknown>;
+  }>;
+  consumers: GovernanceContractConsumer[];
+  trace: GovernanceTraceEdge[];
+  current_trace: GovernanceTraceEdge[];
+  trace_delta_operations: GovernanceTraceDeltaOperation[];
+  trace_issues: GovernanceTraceIssue[];
+  module_code_paths: Record<string, string[]>;
+  inputFiles: string[];
+};
+
+export async function inspectProjectGovernanceContractConsumers(input: {
+  projectRoot: string;
+  workItemDir: string;
+  prospective?: boolean;
+}): Promise<ProjectGovernanceContractConsumerSnapshot> {
+  const model = await loadProjectModel(
+    input.projectRoot,
+    input.workItemDir,
+    input.prospective !== false
+  );
+  return {
+    active: model.active,
+    already_merged: model.already_merged,
+    contracts: model.contracts.map(contract => ({
+      id: contract.id,
+      owner_module: contract.owner_module,
+      module_internal: contract.module_internal,
+      kind: contract.kind,
+      source_refs: contract.source_refs,
+      raw: contract.raw,
+    })),
+    consumers: contractConsumers(model),
+    trace: model.trace,
+    current_trace: model.current_trace,
+    trace_delta_operations: model.trace_delta_operations,
+    trace_issues: model.trace_issues,
+    module_code_paths: Object.fromEntries(
+      model.modules.map(module => [module.module_code, module.code_paths])
+    ),
+    inputFiles: model.inputFiles,
+  };
+}
+
+export async function checkProjectGovernanceConsistency(input: {
+  projectRoot: string;
+  workItemDir: string;
+  workItemId: string;
+}): Promise<GovernanceCheckResult> {
+  const model = await loadProjectModel(input.projectRoot, input.workItemDir, true);
+  const checks: GovernanceCheck[] = [];
+
+  if (!model.active) {
+    checks.push(
+      ...inactiveGovernanceChecks(
+        model,
+        'project_governance_compatibility_mode',
+        'Architecture/Data/Module governance stays compatibility-safe until formal Project Spec migration establishes Architecture and Data Model truth sources'
+      )
+    );
+    return {
+      active: false,
+      passed: checks.every(check => check.passed),
+      checks,
+      inputFiles: model.inputFiles,
+    };
+  }
+
+  checks.push(...governanceIdFormatChecks(model));
+
+  addCheck(
+    checks,
+    'architecture_ids_exist',
+    'Formal Project Architecture contains stable ARCH-* IDs',
+    model.architectureIds.length > 0
+  );
+  addCheck(
+    checks,
+    'data_model_declared',
+    'Formal Project Data Model contains DATA-* IDs or explicit DATA_MODEL_NOT_APPLICABLE',
+    model.dataModelIds.length > 0 || model.dataModelNotApplicable
+  );
+
+  for (const module of model.modules) {
+    const governanceOnlyDefault =
+      module.module_code === model.default_module &&
+      module.code_paths_declared &&
+      module.code_paths.length === 0 &&
+      model.modules.some(
+        candidate => candidate.module_code !== module.module_code && candidate.code_paths.length > 0
+      );
+    addCheck(
+      checks,
+      `module_${module.module_code}_code_paths`,
+      `Module ${module.module_code} declares explicit code_paths in spec_manifest.json`,
+      module.code_paths.length > 0 || governanceOnlyDefault,
+      governanceOnlyDefault
+        ? 'default Module is an explicit governance/specification root'
+        : undefined
+    );
+    addCheck(
+      checks,
+      `module_${module.module_code}_contracts_path`,
+      `Module ${module.module_code} declares contracts.json in spec_manifest.json`,
+      module.contracts_declared
+    );
+    addCheck(
+      checks,
+      `module_${module.module_code}_design_ids`,
+      `Module ${module.module_code} Design contains stable DD-* decisions`,
+      module.design_ids.length > 0
+    );
+  }
+
+  for (const [index, issue] of model.trace_issues.entries()) {
+    addCheck(
+      checks,
+      `governance_trace_issue_${index}`,
+      issue.message,
+      false,
+      [issue.code, issue.source ?? '', issue.line ? `line=${issue.line}` : '']
+        .filter(Boolean)
+        .join('; ')
+    );
+  }
+
+  const ids = allIds(model);
+  for (const [index, edge] of model.trace.entries()) {
+    addCheck(
+      checks,
+      `governance_trace_${index}_endpoints`,
+      `${edge.from} ${edge.relation} ${edge.to}: both IDs exist`,
+      ids.has(edge.from) && ids.has(edge.to),
+      edge.source
+    );
+    addCheck(
+      checks,
+      `governance_trace_${index}_shape`,
+      `${edge.from} ${edge.relation} ${edge.to}: relation direction/type is legal`,
+      relationValid(edge, model),
+      edge.source
+    );
+  }
+
+  const trigger = await readTrigger(input.workItemDir);
+  const workflowPath = String(trigger?.workflow_path ?? '');
+  const declaredImpactScope = normalizeImpactScope(
+    trigger?.impact_scope ?? trigger?.impact_summary
+  );
+  const impactScope = expandImpactScopeWithContractConsumers(declaredImpactScope, model);
+
+  if (workflowPath !== 'spec_migration_path') {
+    addCheck(
+      checks,
+      'impact_scope_contract_consumers_expanded',
+      'Impact Scope is expanded from changed Contracts to every formal DD and Module consumer',
+      true,
+      [
+        `declared_modules=${declaredImpactScope.affected_modules.join(',') || 'none'}`,
+        `consumer_modules=${impactScope.consumer_modules.join(',') || 'none'}`,
+        `effective_modules=${impactScope.affected_modules.join(',') || 'none'}`,
+      ].join('; '),
+      'info'
+    );
+    const scopePresent = Object.values(impactScope).some(values => values.length > 0);
+    addCheck(
+      checks,
+      'impact_scope_present',
+      'Active governance requires a non-empty machine-readable Impact Scope',
+      scopePresent
+    );
+
+    for (const ref of [
+      ...impactScope.architecture_refs,
+      ...impactScope.data_model_refs,
+      ...impactScope.design_refs,
+      ...impactScope.project_contract_refs,
+      ...impactScope.module_contract_refs,
+    ]) {
+      addCheck(
+        checks,
+        `impact_ref_${ref.replace(/[^A-Za-z0-9]/g, '_')}`,
+        `Impact Scope reference exists: ${ref}`,
+        ids.has(ref)
+      );
+    }
+
+    for (const plannedPath of impactScope.planned_code_paths) {
+      const owners = resolveModuleOwnershipFromManifest(model.manifest, plannedPath);
+      addCheck(
+        checks,
+        `planned_code_owner_${digest(plannedPath).slice(0, 8)}`,
+        `Planned code path maps to exactly one Module: ${plannedPath}`,
+        owners.length === 1,
+        `owners=${owners.join(',') || 'none'}`
+      );
+      if (owners.length === 1) {
+        addCheck(
+          checks,
+          `planned_code_scope_${digest(plannedPath).slice(0, 8)}`,
+          `Planned code path owner is declared affected: ${plannedPath}`,
+          impactScope.affected_modules.includes(owners[0]),
+          `owner=${owners[0]}`
+        );
+      }
+    }
+
+    const taskWriteScopes = await readTaskWriteScopes(input.workItemDir);
+    for (const taskScope of taskWriteScopes) {
+      addCheck(
+        checks,
+        `task_allowed_write_files_${digest(taskScope.task_id).slice(0, 8)}`,
+        `Task ${taskScope.task_id} declares allowed_write_files`,
+        taskScope.allowed_write_files.length > 0
+      );
+      for (const taskPath of taskScope.allowed_write_files) {
+        const checkKey = digest(`${taskScope.task_id}:${taskPath}`).slice(0, 8);
+        const impactCoverage = isTaskPathCoveredByImpactScope(
+          taskPath,
+          impactScope.planned_code_paths
+        );
+        const approvedByImpact = impactCoverage.covered;
+        addCheck(
+          checks,
+          `task_write_impact_${checkKey}`,
+          `Task ${taskScope.task_id} write path must be covered by approved Impact Scope: ${taskPath}`,
+          approvedByImpact,
+          `covered=${approvedByImpact}; matched_pattern=${impactCoverage.matchedPattern ?? 'none'}`
+        );
+        const owners = resolveModuleOwnershipFromManifest(model.manifest, taskPath);
+        const approvedCrossModuleTestHarness =
+          owners.length === 0 && isCrossModuleTestHarnessPath(taskPath) && approvedByImpact;
+        addCheck(
+          checks,
+          `task_write_owner_${checkKey}`,
+          `Task ${taskScope.task_id} write path maps to exactly one Module or approved cross-module test harness: ${taskPath}`,
+          owners.length === 1 || approvedCrossModuleTestHarness,
+          [
+            `owners=${owners.join(',') || 'none'}`,
+            `approved_cross_module_test_harness=${approvedCrossModuleTestHarness}`,
+          ].join('; ')
+        );
+        if (owners.length === 1) {
+          addCheck(
+            checks,
+            `task_write_scope_${checkKey}`,
+            `Task ${taskScope.task_id} write path owner is declared affected: ${taskPath}`,
+            impactScope.affected_modules.includes(owners[0]),
+            `owner=${owners[0]}`
+          );
+        }
+      }
+    }
+    const classification = trigger?.classification ?? {};
+    const candidate = (await prospectiveReader(input.projectRoot, input.workItemDir)).candidate;
+    if (classification.architecture_changed === true) {
+      addCheck(
+        checks,
+        'architecture_candidate_required',
+        'architecture_changed requires an Architecture Candidate',
+        candidateHasTarget(candidate, '/architecture.md')
+      );
+    }
+    if (classification.data_model_changed === true) {
+      addCheck(
+        checks,
+        'data_model_candidate_required',
+        'data_model_changed requires a Project Data Model Candidate',
+        candidateHasTarget(candidate, '/data_model.md')
+      );
+    }
+    if (classification.design_changed === true) {
+      const present = Boolean((candidate?.entries ?? []).some((entry: any) =>
+        /\/modules\/[^/]+\/design\.md$/.test(slash(String(entry?.target_path ?? '')))
+      ));
+      addCheck(
+        checks,
+        'design_candidate_required',
+        'design_changed requires at least one Module Design Candidate',
+        present
+      );
+    }
+    if (classification.module_contract_changed === true) {
+      const present = Boolean((candidate?.entries ?? []).some((entry: any) =>
+        /\/modules\/[^/]+\/contracts\.json$/.test(slash(String(entry?.target_path ?? '')))
+      ));
+      addCheck(
+        checks,
+        'module_contract_candidate_required',
+        'module_contract_changed requires at least one Module Contract Candidate',
+        present
+      );
+    }
+
+    if (workflowPath === 'code_only_fast_path') {
+      const upperUnchanged =
+        classification.architecture_changed === false &&
+        classification.design_changed === false &&
+        classification.api_contract_changed === false &&
+        classification.data_semantics_changed === false &&
+        classification.data_model_changed !== true &&
+        classification.module_contract_changed !== true;
+      addCheck(
+        checks,
+        'fast_path_upper_spec_unchanged',
+        'Fast Path is legal only when Architecture/Data/Design/Contracts remain unchanged',
+        upperUnchanged
+      );
+      addCheck(
+        checks,
+        'fast_path_trace_unchanged',
+        'Fast Path is legal only when formal Trace relations remain unchanged',
+        model.trace_delta_operations.length === 0,
+        `trace_delta_operations=${model.trace_delta_operations.length}`
+      );
+    }
+  }
+
+  return {
+    active: true,
+    passed: checks.every(check => check.passed),
+    checks,
+    inputFiles: model.inputFiles,
+  };
+}
+
+export async function checkProjectGovernanceContracts(input: {
+  projectRoot: string;
+  workItemDir: string;
+  workItemId: string;
+}): Promise<GovernanceCheckResult> {
+  const model = await loadProjectModel(input.projectRoot, input.workItemDir, true);
+  const checks: GovernanceCheck[] = [];
+
+  if (!model.active) {
+    const inactiveChecks = inactiveGovernanceChecks(
+      model,
+      'module_contract_compatibility_mode',
+      'Module Contract governance waits for formal Project Spec migration'
+    );
+    return {
+      active: false,
+      passed: inactiveChecks.every(check => check.passed),
+      checks: inactiveChecks,
+      inputFiles: model.inputFiles,
+    };
+  }
+
+  checks.push(...governanceIdFormatChecks(model));
+
+  for (const [index, issue] of model.trace_issues.entries()) {
+    addCheck(checks, `contract_trace_issue_${index}`, issue.message, false, issue.code);
+  }
+
+  const contractIdCounts = new Map<string, number>();
+  for (const contract of model.contracts) {
+    contractIdCounts.set(contract.id, (contractIdCounts.get(contract.id) ?? 0) + 1);
+  }
+  for (const [contractId, count] of contractIdCounts) {
+    addCheck(
+      checks,
+      `contract_${contractId}_unique_truth_source`,
+      `Contract ${contractId} has exactly one governance-level definition`,
+      count === 1,
+      `definitions=${count}`
+    );
+  }
+
+  for (const module of model.modules) {
+    addCheck(
+      checks,
+      `module_contract_${module.module_code}_exists`,
+      `Module ${module.module_code} has a contracts.json`,
+      module.contract_file_exists
+    );
+    addCheck(
+      checks,
+      `module_contract_${module.module_code}_valid`,
+      `Module ${module.module_code} contracts.json is valid`,
+      module.contract_file_valid
+    );
+    addCheck(
+      checks,
+      `module_contract_${module.module_code}_owner`,
+      `Module ${module.module_code} contracts.json owner_module matches its directory Module`,
+      module.contract_file_valid && module.contract_file_owner === module.module_code,
+      `owner_module=${module.contract_file_owner || 'missing'}`
+    );
+  }
+
+  const architecture = new Set(model.architectureIds);
+  const data = new Set(model.dataModelIds);
+  const design = new Set(model.modules.flatMap(module => module.design_ids));
+
+  for (const contract of model.contracts) {
+    addCheck(
+      checks,
+      `contract_${contract.id}_owner`,
+      `Contract ${contract.id} declares a valid owner Module`,
+      model.modules.some(module => module.module_code === contract.owner_module),
+      `owner=${contract.owner_module}`
+    );
+    addCheck(
+      checks,
+      `contract_${contract.id}_source_refs`,
+      `Contract ${contract.id} declares source_refs`,
+      contract.source_refs.length > 0
+    );
+    addCheck(
+      checks,
+      `contract_${contract.id}_enforcement`,
+      `Contract ${contract.id} declares machine enforcement`,
+      contract.enforcement.length > 0
+    );
+
+    for (const ref of contract.source_refs) {
+      const validSource = contract.module_internal
+        ? design.has(ref) && extractModuleFromDdId(ref) === contract.owner_module
+        : architecture.has(ref) || data.has(ref);
+      addCheck(
+        checks,
+        `contract_${contract.id}_source_${ref.replace(/[^A-Za-z0-9]/g, '_')}`,
+        `Contract ${contract.id} source is legal: ${ref}`,
+        validSource
+      );
+    }
+
+    const consumers = contractConsumers(model, [contract.id]);
+    for (const consumer of consumers) {
+      addCheck(
+        checks,
+        `contract_${contract.id}_consumer_${consumer.design_id}`,
+        `Contract ${contract.id} consumer ${consumer.design_id} resolves to Module ${consumer.module_code}`,
+        Boolean(consumer.module_code)
+      );
+    }
+    if (contract.module_internal) {
+      const crossModule = consumers.filter(
+        consumer => consumer.module_code !== contract.owner_module
+      );
+      addCheck(
+        checks,
+        `contract_${contract.id}_internal_boundary`,
+        `Internal Contract ${contract.id} is consumed only inside owner Module ${contract.owner_module}`,
+        crossModule.length === 0,
+        crossModule.map(consumer => `${consumer.design_id}->${consumer.module_code}`).join(', ') ||
+          'all consumers are internal'
+      );
+    }
+  }
+
+  return {
+    active: true,
+    passed: checks.every(check => check.passed),
+    checks,
+    inputFiles: model.inputFiles,
+  };
+}
+
+export async function checkProjectGovernanceTrace(input: {
+  projectRoot: string;
+  workItemDir: string;
+  workItemId: string;
+}): Promise<GovernanceCheckResult> {
+  const model = await loadProjectModel(input.projectRoot, input.workItemDir, true);
+  const checks: GovernanceCheck[] = [];
+
+  if (!model.active) {
+    const inactiveChecks = inactiveGovernanceChecks(
+      model,
+      'governance_trace_compatibility_mode',
+      'Governance Trace semantics wait for formal Project Spec migration'
+    );
+    return {
+      active: false,
+      passed: inactiveChecks.every(check => check.passed),
+      checks: inactiveChecks,
+      inputFiles: model.inputFiles,
+    };
+  }
+
+  checks.push(...governanceIdFormatChecks(model));
+
+  for (const [index, issue] of model.trace_issues.entries()) {
+    addCheck(
+      checks,
+      `trace_model_issue_${index}`,
+      issue.message,
+      false,
+      [issue.code, issue.source ?? ''].filter(Boolean).join('; ')
+    );
+  }
+
+  const hasEdge = (from: string, relation: TraceEdge['relation'], to?: string) =>
+    model.trace.some(
+      edge => edge.from === from && edge.relation === relation && (!to || edge.to === to)
+    );
+
+  for (const dataId of model.dataModelIds) {
+    const constrainedByArchitecture = model.trace.some(
+      edge =>
+        edge.from === dataId &&
+        edge.relation === 'constrained_by' &&
+        model.architectureIds.includes(edge.to)
+    );
+    addCheck(
+      checks,
+      `trace_data_${dataId}`,
+      `Data design ${dataId} is constrained by Project Architecture`,
+      constrainedByArchitecture
+    );
+  }
+
+  for (const module of model.modules) {
+    for (const designId of module.design_ids) {
+      addCheck(
+        checks,
+        `trace_dd_${designId}`,
+        `Module Design ${designId} is constrained by Architecture, Data Model, or a formal Contract`,
+        hasEdge(designId, 'constrained_by')
+      );
+    }
+  }
+
+  for (const contract of model.contracts) {
+    for (const ref of contract.source_refs) {
+      addCheck(
+        checks,
+        `trace_contract_${contract.id}_${digest(ref).slice(0, 6)}`,
+        `Contract ${contract.id} formally enforces source ${ref}`,
+        hasEdge(contract.id, 'enforces', ref)
+      );
+    }
+  }
+
+  for (const [index, edge] of model.trace.entries()) {
+    addCheck(
+      checks,
+      `trace_relation_${index}`,
+      `${edge.from} ${edge.relation} ${edge.to} is semantically legal`,
+      relationValid(edge, model),
+      edge.source
+    );
+  }
+
+  if (model.already_merged) {
+    const designOwners = designOwnerMap(model);
+    const contractOwners = contractOwnerMap(model);
+    for (const module of model.modules) {
+      const expected = moduleTraceProjection({
+        edges: model.trace,
+        module_code: module.module_code,
+        design_owners: designOwners,
+        contract_owners: contractOwners,
+      });
+      const comparison = compareGovernanceTraceEdges(expected, module.trace_edges);
+      addCheck(
+        checks,
+        `trace_module_view_${module.module_code}`,
+        `Module ${module.module_code} trace.md is a generated projection of the canonical project Trace Matrix`,
+        module.trace_generated && comparison.matches,
+        [
+          `generated=${module.trace_generated}`,
+          `missing=${comparison.missing.join(',') || 'none'}`,
+          `unexpected=${comparison.unexpected.join(',') || 'none'}`,
+        ].join('; ')
+      );
+    }
+  }
+
+  return {
+    active: true,
+    passed: checks.every(check => check.passed),
+    checks,
+    inputFiles: model.inputFiles,
+  };
+}
+
+function isSubset(child: string[], parent: string[]): boolean {
+  return child.every(item => parent.includes(item));
+}
+
+export async function freezeGovernanceScopeForCodePermission(input: {
+  projectRoot: string;
+  workItemDir: string;
+  workItemId: string;
+  allowedWriteFiles: Array<{ path: string; operation?: string }>;
+}): Promise<{
+  passed: boolean;
+  error?: string;
+  snapshot: GovernanceScopeSnapshot;
+  checks: GovernanceCheck[];
+}> {
+  const model = await loadProjectModel(input.projectRoot, input.workItemDir, false);
+  const trigger = await readTrigger(input.workItemDir);
+  const declaredScope = normalizeImpactScope(trigger?.impact_scope ?? trigger?.impact_summary);
+  const scope = expandImpactScopeWithContractConsumers(declaredScope, model);
+  const mergedGovernanceScope = isApprovedMergedGovernanceScope(trigger, model, input.workItemId);
+  const approvedTaskFiles = await readApprovedTaskFiles(input.workItemDir);
+  const allowedPaths = unique(
+    input.allowedWriteFiles
+      .map(entry => {
+        const raw = String(entry?.path ?? '').trim();
+        if (!raw) return '';
+        return slash(path.isAbsolute(raw) ? path.relative(input.projectRoot, raw) : raw);
+      })
+      .filter(Boolean)
+  );
+
+  const snapshot: GovernanceScopeSnapshot = {
+    schema_version: '1.0',
+    work_item_id: input.workItemId,
+    active: model.active,
+    affected_modules: [],
+    allowed_write_files: allowedPaths,
+    architecture_refs: [],
+    data_model_refs: [],
+    design_refs: [],
+    project_contract_refs: [],
+    module_contract_refs: [],
+    project_spec_version: String(model.manifest?.project_spec_version ?? ''),
+    impact_scope_hash: digest(scope),
+    frozen_at: new Date().toISOString(),
+  };
+  const checks: GovernanceCheck[] = [];
+  const projectSpecCoreVersion = await inspectProjectSpecCoreVersionCoherence(input.projectRoot);
+  addCheck(
+    checks,
+    'permission_project_spec_core_version_coherent',
+    'Project Spec Core files agree on the authoritative project_spec_version before Code Permission',
+    projectSpecCoreVersion.passed,
+    projectSpecCoreVersion.reason
+  );
+  const gitContext = await readJson(path.join(input.workItemDir, 'git_context.json'));
+  const repositoryPresent = await gitRepositoryPresent(
+    input.projectRoot,
+    gitContext?.git_enabled === true
+  );
+  const repositoryHead = repositoryPresent ? await gitHead(input.projectRoot) : '';
+  const repositoryBranch = repositoryPresent ? await gitCurrentBranch(input.projectRoot) : '';
+  const gitBinding = await inspectFormalGitBinding({
+    projectRoot: input.projectRoot,
+    gitContext: repositoryPresent ? gitContext : null,
+    implementationFiles: [],
+  });
+  snapshot.version_control_mode = repositoryPresent ? 'git' : 'filesystem';
+  if (repositoryPresent) {
+    snapshot.git_head_at_freeze = repositoryHead;
+    snapshot.git_branch_at_freeze = repositoryBranch;
+    addCheck(
+      checks,
+      'permission_git_context_prepared',
+      'A Git-backed project has WI branch and base-commit context before Code Permission',
+      gitBinding.enabled &&
+        Boolean(gitBinding.expected_branch) &&
+        gitBinding.branch_name === gitBinding.expected_branch &&
+        Boolean(gitBinding.base_commit) &&
+        gitBinding.base_is_ancestor,
+      `enabled=${gitBinding.enabled}; current=${gitBinding.branch_name || 'missing'}; expected=${gitBinding.expected_branch || 'missing'}; base=${gitBinding.base_commit || 'missing'}`
+    );
+  } else {
+    addCheck(
+      checks,
+      'permission_filesystem_baseline_mode',
+      'A non-Git project freezes filesystem evidence without fabricating Git history',
+      gitContext?.git_enabled !== true,
+      `git_context_enabled=${gitContext?.git_enabled === true}`
+    );
+  }
+
+  if (!model.active) {
+    checks.push(
+      ...inactiveGovernanceChecks(
+        model,
+        'governance_scope_compatibility_mode',
+        'Code Permission governance scope stays compatibility-safe until formal Project Spec migration'
+      )
+    );
+    const passed = checks.every(check => check.passed);
+    return {
+      passed,
+      error: passed
+        ? undefined
+        : checks.some(
+              check => check.check_id === 'permission_git_context_prepared' && !check.passed
+            )
+          ? 'GIT_CONTEXT_REQUIRED_BEFORE_CODE_PERMISSION'
+          : model.governanceDeclared
+            ? 'INVALID_PROJECT_GOVERNANCE'
+            : 'SCOPE_EXPANSION_REQUIRED',
+      snapshot,
+      checks,
+    };
+  }
+
+  checks.push(...governanceIdFormatChecks(model));
+
+  const inferredModules: string[] = [];
+  for (const allowedPath of allowedPaths) {
+    const owners = resolveModuleOwnershipFromManifest(model.manifest, allowedPath);
+    const approvedCrossModuleTestHarness =
+      owners.length === 0 &&
+      isCrossModuleTestHarnessPath(allowedPath) &&
+      approvedTaskFiles.has(allowedPath);
+    addCheck(
+      checks,
+      `permission_owner_${digest(allowedPath).slice(0, 8)}`,
+      `Allowed write file maps to exactly one Module or an approved cross-module test harness: ${allowedPath}`,
+      owners.length === 1 || approvedCrossModuleTestHarness,
+      [
+        `owners=${owners.join(',') || 'none'}`,
+        `approved_cross_module_test_harness=${approvedCrossModuleTestHarness}`,
+      ].join('; ')
+    );
+    if (owners.length === 1) inferredModules.push(owners[0]);
+  }
+
+  snapshot.affected_modules = unique([...inferredModules, ...scope.consumer_modules]);
+  addCheck(
+    checks,
+    'permission_affected_modules_effective',
+    'Code Permission scope includes every Module reached by files and every formal Contract consumer',
+    isSubset(inferredModules, snapshot.affected_modules) &&
+      isSubset(scope.consumer_modules, snapshot.affected_modules),
+    [
+      `file_modules=${unique(inferredModules).join(',') || 'none'}`,
+      `consumer_modules=${scope.consumer_modules.join(',') || 'none'}`,
+      `effective=${snapshot.affected_modules.join(',') || 'none'}`,
+    ].join('; ')
+  );
+
+  for (const consumerModule of scope.consumer_modules) {
+    const module = model.modules.find(candidate => candidate.module_code === consumerModule);
+    const requiresCodeCoverage = Boolean(module && module.code_paths.length > 0);
+    const coveredByAllowedFile = inferredModules.includes(consumerModule);
+    addCheck(
+      checks,
+      `permission_consumer_module_${consumerModule}`,
+      `Code Permission includes an approved file for Contract consumer Module ${consumerModule}`,
+      !requiresCodeCoverage || coveredByAllowedFile,
+      `code_paths=${module?.code_paths.join(',') || 'none'}; covered=${coveredByAllowedFile}`
+    );
+  }
+
+  const mergedModuleDesignRefs = unique(
+    model.modules
+      .filter(module => snapshot.affected_modules.includes(module.module_code))
+      .flatMap(module => module.design_ids)
+  );
+  snapshot.design_refs = unique([
+    ...scope.design_refs,
+    ...(scope.design_refs.length === 0 && mergedGovernanceScope ? mergedModuleDesignRefs : []),
+    ...scope.consumer_design_refs,
+  ]);
+
+  for (const moduleCode of snapshot.affected_modules) {
+    const module = model.modules.find(candidate => candidate.module_code === moduleCode);
+    const moduleRefs = snapshot.design_refs.filter(
+      ref => extractModuleFromDdId(ref) === moduleCode
+    );
+    addCheck(
+      checks,
+      `permission_design_${moduleCode}`,
+      `Impact Scope declares applicable DD refs for Module ${moduleCode}`,
+      moduleRefs.length > 0 && moduleRefs.every(ref => module?.design_ids.includes(ref)),
+      `refs=${moduleRefs.join(',') || 'none'}`
+    );
+  }
+
+  const designEdges = model.trace.filter(
+    edge => snapshot.design_refs.includes(edge.from) && edge.relation === 'constrained_by'
+  );
+  snapshot.data_model_refs = unique(
+    designEdges.filter(edge => model.dataModelIds.includes(edge.to)).map(edge => edge.to)
+  );
+  snapshot.architecture_refs = unique([
+    ...designEdges.filter(edge => model.architectureIds.includes(edge.to)).map(edge => edge.to),
+    ...model.trace
+      .filter(
+        edge =>
+          snapshot.data_model_refs.includes(edge.from) &&
+          edge.relation === 'constrained_by' &&
+          model.architectureIds.includes(edge.to)
+      )
+      .map(edge => edge.to),
+  ]);
+  const designContractEdges = model.trace.filter(
+    edge =>
+      snapshot.design_refs.includes(edge.from) &&
+      edge.relation === 'constrained_by' &&
+      model.contracts.some(contract => contract.id === edge.to)
+  );
+  const consumedContractIds = unique(designContractEdges.map(edge => edge.to));
+  snapshot.project_contract_refs = unique([
+    ...scope.project_contract_refs,
+    ...model.contracts
+      .filter(contract => !contract.module_internal && consumedContractIds.includes(contract.id))
+      .map(contract => contract.id),
+  ]);
+  snapshot.module_contract_refs = unique([
+    ...scope.module_contract_refs,
+    ...model.contracts
+      .filter(contract => contract.module_internal && consumedContractIds.includes(contract.id))
+      .map(contract => contract.id),
+  ]);
+
+  const contractSourceEdges = model.trace.filter(
+    edge => snapshot.project_contract_refs.includes(edge.from) && edge.relation === 'enforces'
+  );
+  snapshot.data_model_refs = unique([
+    ...snapshot.data_model_refs,
+    ...contractSourceEdges
+      .filter(edge => model.dataModelIds.includes(edge.to))
+      .map(edge => edge.to),
+  ]);
+  snapshot.architecture_refs = unique([
+    ...snapshot.architecture_refs,
+    ...contractSourceEdges
+      .filter(edge => model.architectureIds.includes(edge.to))
+      .map(edge => edge.to),
+  ]);
+
+  const comparisons: Array<[string, string[], string[]]> = [
+    [
+      'architecture',
+      snapshot.architecture_refs,
+      scope.architecture_refs.length > 0 || !mergedGovernanceScope
+        ? scope.architecture_refs
+        : snapshot.architecture_refs,
+    ],
+    [
+      'data_model',
+      snapshot.data_model_refs,
+      scope.data_model_refs.length > 0 || !mergedGovernanceScope
+        ? scope.data_model_refs
+        : snapshot.data_model_refs,
+    ],
+    [
+      'project_contract',
+      snapshot.project_contract_refs,
+      scope.project_contract_refs.length > 0 || !mergedGovernanceScope
+        ? scope.project_contract_refs
+        : snapshot.project_contract_refs,
+    ],
+    [
+      'module_contract',
+      snapshot.module_contract_refs,
+      scope.module_contract_refs.length > 0 || !mergedGovernanceScope
+        ? scope.module_contract_refs
+        : snapshot.module_contract_refs,
+    ],
+  ];
+  for (const [name, derived, declared] of comparisons) {
+    addCheck(
+      checks,
+      `permission_${name}_scope`,
+      `Impact Scope covers derived ${name} refs`,
+      isSubset(derived, declared),
+      `derived=${derived.join(',') || 'none'}; declared=${declared.join(',') || 'none'}`
+    );
+  }
+
+  const previous = (await readJson(
+    path.join(input.workItemDir, 'governance_scope.json')
+  )) as GovernanceScopeSnapshot | null;
+  if (previous?.active) {
+    addCheck(
+      checks,
+      'permission_extension_same_modules',
+      'Permission extension cannot add a new governance Module',
+      isSubset(snapshot.affected_modules, previous.affected_modules)
+    );
+    addCheck(
+      checks,
+      'permission_extension_same_design',
+      'Permission extension cannot add new Design scope',
+      isSubset(snapshot.design_refs, previous.design_refs)
+    );
+    addCheck(
+      checks,
+      'permission_extension_same_data',
+      'Permission extension cannot add new Data Model scope',
+      isSubset(snapshot.data_model_refs, previous.data_model_refs)
+    );
+    addCheck(
+      checks,
+      'permission_extension_same_architecture',
+      'Permission extension cannot add new Architecture scope',
+      isSubset(snapshot.architecture_refs, previous.architecture_refs)
+    );
+
+    snapshot.allowed_write_files = unique([...previous.allowed_write_files, ...allowedPaths]);
+    snapshot.affected_modules = previous.affected_modules;
+    snapshot.design_refs = previous.design_refs;
+    snapshot.data_model_refs = previous.data_model_refs;
+    snapshot.architecture_refs = previous.architecture_refs;
+    snapshot.project_contract_refs = previous.project_contract_refs;
+    snapshot.module_contract_refs = previous.module_contract_refs;
+  }
+
+  const passed = checks.every(check => check.passed);
+  return {
+    passed,
+    error: passed
+      ? undefined
+      : checks.some(check => check.check_id === 'permission_git_context_prepared' && !check.passed)
+        ? 'GIT_CONTEXT_REQUIRED_BEFORE_CODE_PERMISSION'
+        : 'SCOPE_EXPANSION_REQUIRED',
+    snapshot,
+    checks,
+  };
+}
+
+export async function persistGovernanceScope(
+  workItemDir: string,
+  snapshot: GovernanceScopeSnapshot
+): Promise<string> {
+  const output = path.join(workItemDir, 'governance_scope.json');
+  await fs.writeFile(output, `${JSON.stringify(snapshot, null, 2)}\n`, 'utf8');
+
+  const workItem = await readWorkItemMetadata(workItemDir, snapshot.work_item_id);
+  workItem.governance_scope = 'governance_scope.json';
+  workItem.affected_modules = snapshot.affected_modules;
+  workItem.architecture_refs = snapshot.architecture_refs;
+  workItem.data_model_refs = snapshot.data_model_refs;
+  workItem.design_refs = snapshot.design_refs;
+  workItem.project_contract_refs = snapshot.project_contract_refs;
+  workItem.module_contract_refs = snapshot.module_contract_refs;
+  workItem.project_spec_version_at_permission = snapshot.project_spec_version;
+  workItem.impact_scope_hash = snapshot.impact_scope_hash;
+  await writeWorkItemMetadata(workItemDir, snapshot.work_item_id, workItem);
+  return output;
+}
+
+function repositoryRelativePath(projectRoot: string, value: string): string {
+  const raw = String(value ?? '').trim();
+  if (!raw) return '';
+  if (!path.isAbsolute(raw)) return slash(raw);
+  const relative = path.relative(projectRoot, raw);
+  if (!relative || relative.startsWith('..') || path.isAbsolute(relative)) return slash(raw);
+  return slash(relative);
+}
+
+/**
+ * Read the durable, passed Changed Files Audit entry set.
+ *
+ * Recovery can legitimately start from a new daemon process where the
+ * in-memory/write-guard observation stream is no longer available.  The
+ * freshly regenerated changed_files_audit.md is therefore the durable
+ * producer contract for the implementation file set used by Formal Version.
+ * Only PASS reports and explicit in_scope entries are accepted.
+ */
+export function extractPassedChangedFilesAuditEntries(
+  auditText: string,
+  expectedWorkItemId?: string
+): string[] {
+  if (!evaluateChangedFilesAuditVerdict(auditText, { expectedWorkItemId }).passed) return [];
+
+  const entriesMatch = auditText.match(/(?:^|\n)## Entries\s*\r?\n([\s\S]*?)(?=\r?\n##\s|\s*$)/);
+  if (!entriesMatch) return [];
+
+  const files: string[] = [];
+  for (const line of entriesMatch[1].split(/\r?\n/)) {
+    const match = line.match(/^\s*-\s*\[[^\]]+\]\s+(.+?)\s+→\s+in_scope\s*$/);
+    if (!match) continue;
+    const file = slash(match[1].trim());
+    if (!file || file === SPEC_DIR || file.startsWith(`${SPEC_DIR}/`)) continue;
+    files.push(file);
+  }
+  return unique(files);
+}
+
+export async function deriveActualChangedFiles(
+  projectRoot: string,
+  workItemDir: string
+): Promise<{ files: string[]; source: string }> {
+  // A passed Changed Files Audit is the durable, phase-complete producer
+  // contract.  It must take precedence over a later Write Guard log because
+  // recovery/gate activity can append governance-only or blocked-operation
+  // entries that do not describe the committed implementation file set.
+  const auditPath = path.join(workItemDir, 'changed_files_audit.md');
+  const auditFiles = normalizeFormalImplementationFiles(
+    extractPassedChangedFilesAuditEntries(await readText(auditPath), path.basename(workItemDir)),
+    projectRoot
+  );
+  if (auditFiles.length > 0) {
+    return {
+      files: auditFiles,
+      source: 'changed_files_audit.md',
+    };
+  }
+
+  // Before a durable PASS audit exists, successful Write Guard observations
+  // remain the preferred live evidence.  Governance-only entries are removed
+  // before deciding whether this source is usable; they must not suppress the
+  // remaining fail-closed fallback chain.
+  const factualFiles = normalizeFormalImplementationFiles(
+    getFactualChangedFiles(workItemDir).map(entry => entry.path),
+    projectRoot
+  );
+  if (factualFiles.length > 0) {
+    return {
+      files: factualFiles,
+      source: 'write_guard_log.jsonl',
+    };
+  }
+
+  const workItem = await readJson(path.join(workItemDir, 'work_item.json'));
+  const actualChangedFiles: unknown = workItem?.actual_changed_files;
+  if (Array.isArray(actualChangedFiles) && actualChangedFiles.length > 0) {
+    return {
+      files: normalizeFormalImplementationFiles(
+        actualChangedFiles.map((entry: unknown) =>
+          typeof entry === 'string'
+            ? entry
+            : scalarText((entry as { path?: unknown } | null)?.path ?? '')
+        ),
+        projectRoot
+      ),
+      source: 'work_item.actual_changed_files',
+    };
+  }
+
+  const baseline = loadBaseline(workItemDir);
+  if (baseline) {
+    const diff = computeFilesystemDiff(baseline, projectRoot, []);
+    if (diff.all_changes.length > 0) {
+      return {
+        files: normalizeFormalImplementationFiles(
+          diff.all_changes.map(entry => entry.path),
+          projectRoot
+        ),
+        source: 'filesystem_baseline.json',
+      };
+    }
+  }
+
+  return { files: [], source: 'none' };
+}
+
+export async function auditActualGovernanceScope(input: {
+  projectRoot: string;
+  workItemDir: string;
+  changedFiles?: Array<{ path: string }> | string[];
+}): Promise<{
+  passed: boolean;
+  active: boolean;
+  violations: string[];
+  actual_modules: string[];
+  actual_files: string[];
+}> {
+  const snapshot = (await readJson(
+    path.join(input.workItemDir, 'governance_scope.json')
+  )) as GovernanceScopeSnapshot | null;
+
+  // The governance activation flag controls module/scope enforcement only.
+  // It must never erase durable implementation-file evidence needed by
+  // Formal Version Git closure, including compatibility-mode and recovered WIs.
+  let actualFiles = (input.changedFiles ?? []).map(raw =>
+    slash(typeof raw === 'string' ? raw : raw.path)
+  );
+  if (input.changedFiles === undefined) {
+    const derived = await deriveActualChangedFiles(input.projectRoot, input.workItemDir);
+    actualFiles = derived.files;
+  }
+  actualFiles = unique(actualFiles.filter(Boolean));
+
+  if (!snapshot?.active) {
+    return {
+      passed: true,
+      active: false,
+      violations: [],
+      actual_modules: [],
+      actual_files: actualFiles,
+    };
+  }
+
+  const manifest = await readJson(
+    path.join(input.projectRoot, SPEC_DIR, 'project', 'spec_manifest.json')
+  );
+  const governedRegenerableArtifacts = await readGovernedRegenerableArtifacts(
+    input.projectRoot,
+    await Promise.all(
+      actualFiles.map(async changedPath => ({
+        path: changedPath,
+        operation: (await fs.stat(path.join(input.projectRoot, changedPath)).catch(() => null))
+          ? ('modify' as const)
+          : ('delete' as const),
+      }))
+    )
+  );
+  const governedRegenerablePaths = new Set(
+    governedRegenerableArtifacts.map(entry => slash(entry.path))
+  );
+  actualFiles = actualFiles.filter(changedPath => !governedRegenerablePaths.has(changedPath));
+  const trustedControlPlanePaths = new Set(
+    readTrustedGitGovernanceProjectWrites(input.projectRoot).map(entry => slash(entry.path))
+  );
+  const violations: string[] = [];
+  const actualModules: string[] = [];
+
+  const approvedPermissionPaths = new Set(
+    normalizeArray(snapshot.allowed_write_files).map(value => slash(value))
+  );
+  for (const changedPath of actualFiles) {
+    if (changedPath === SPEC_DIR || changedPath.startsWith(`${SPEC_DIR}/`)) {
+      continue;
+    }
+    if (trustedControlPlanePaths.has(changedPath)) {
+      continue;
+    }
+    const owners = resolveModuleOwnershipFromManifest(manifest, changedPath);
+    const approvedCrossModuleTestHarness =
+      owners.length === 0 &&
+      isCrossModuleTestHarnessPath(changedPath) &&
+      approvedPermissionPaths.has(changedPath);
+    if (owners.length !== 1) {
+      if (approvedCrossModuleTestHarness) continue;
+      violations.push(
+        `ACTUAL_FILE_MODULE_OWNERSHIP_INVALID: ${changedPath}; owners=${owners.join(',') || 'none'}`
+      );
+      continue;
+    }
+    actualModules.push(owners[0]);
+    if (!snapshot.affected_modules.includes(owners[0])) {
+      violations.push(`ACTUAL_SCOPE_EXCEEDS_APPROVED_MODULES: ${changedPath} -> ${owners[0]}`);
+    }
+  }
+
+  return {
+    passed: violations.length === 0,
+    active: true,
+    violations,
+    actual_modules: unique(actualModules),
+    actual_files: actualFiles,
+  };
+}
+
+export async function verifyProjectGovernanceAfterImplementation(input: {
+  projectRoot: string;
+  workItemDir: string;
+  workItemId: string;
+}): Promise<GovernanceCheckResult> {
+  const workItem = await readJson(path.join(input.workItemDir, 'work_item.json'));
+  const specMigrationNoCode = isSpecMigrationNoCodeWorkflow(
+    workItem?.workflow_type,
+    workItem?.workflow_path
+  );
+  const consistency = await checkProjectGovernanceConsistency(input);
+  const contracts = await checkProjectGovernanceContracts(input);
+  const trace = await checkProjectGovernanceTrace(input);
+  const auditText = await readText(path.join(input.workItemDir, 'changed_files_audit.md'));
+  const auditPassed = evaluateChangedFilesAuditVerdict(auditText, {
+    expectedWorkItemId: input.workItemId,
+  }).passed;
+  const actualScope = await auditActualGovernanceScope({
+    projectRoot: input.projectRoot,
+    workItemDir: input.workItemDir,
+  });
+
+  const checks = [...consistency.checks, ...contracts.checks, ...trace.checks];
+  addCheck(
+    checks,
+    'actual_scope_audit_passed',
+    'Changed Files Audit passed and actual implementation stays inside approved Module scope',
+    auditPassed && actualScope.passed,
+    [
+      `changed_files_audit=${auditPassed ? 'passed' : 'failed'}`,
+      `actual_modules=${actualScope.actual_modules.join(',') || 'none'}`,
+      `violations=${actualScope.violations.join(' | ') || 'none'}`,
+    ].join('; ')
+  );
+
+  const scopePath = path.join(input.workItemDir, 'governance_scope.json');
+  const frozenScope = await readJson(scopePath);
+  const formalManifestPath = path.join(
+    input.projectRoot,
+    SPEC_DIR,
+    'project',
+    'spec_manifest.json'
+  );
+  const formalManifest = await readJson(formalManifestPath);
+  if (consistency.active) {
+    const permissionVersion = String(frozenScope?.project_spec_version ?? '');
+    const currentVersion = String(formalManifest?.project_spec_version ?? '');
+    const exactVersionMatch = Boolean(frozenScope) && permissionVersion === currentVersion;
+    const laterMergeChain =
+      !specMigrationNoCode && Boolean(frozenScope) && permissionVersion !== currentVersion
+        ? await proveProjectSpecVersionAdvancedBySuccessfulMerges({
+            projectRoot: input.projectRoot,
+            fromVersion: permissionVersion,
+            toVersion: currentVersion,
+            finalLastMergedWorkItem: String(formalManifest?.last_merged_work_item ?? ''),
+          })
+        : null;
+
+    addCheck(
+      checks,
+      'project_spec_version_frozen',
+      specMigrationNoCode
+        ? 'Project Spec version is governed by Atomic Spec Merge; Code Permission is not applicable to spec_migration'
+        : 'Project Spec version equals the Code Permission snapshot or every later version is proven by a successful Atomic Spec Merge chain',
+      specMigrationNoCode || exactVersionMatch || laterMergeChain?.passed === true,
+      specMigrationNoCode
+        ? `code_permission=not_applicable; current=${currentVersion || 'missing'}`
+        : [
+            `permission=${permissionVersion || 'missing'}`,
+            `current=${currentVersion || 'missing'}`,
+            `later_merge_chain=${laterMergeChain?.passed === true ? laterMergeChain.work_items.join('->') || 'none' : (laterMergeChain?.reason ?? 'not_needed')}`,
+          ].join('; ')
+    );
+  }
+
+  return {
+    active: consistency.active,
+    passed: checks.every(check => check.passed),
+    checks,
+    inputFiles: unique([
+      ...consistency.inputFiles,
+      ...contracts.inputFiles,
+      ...trace.inputFiles,
+      path.join(input.workItemDir, 'changed_files_audit.md'),
+      path.join(input.workItemDir, 'governance_scope.json'),
+      path.join(input.workItemDir, 'git_context.json'),
+      path.join(input.projectRoot, SPEC_DIR, 'project', 'spec_manifest.json'),
+    ]),
+  };
+}
+
+async function gitHead(projectRoot: string): Promise<string> {
+  try {
+    const { stdout } = await execFileAsync('git', ['rev-parse', 'HEAD'], { cwd: projectRoot });
+    return String(stdout).trim();
+  } catch {
+    return '';
+  }
+}
+
+export async function gitRepositoryPresent(
+  projectRoot: string,
+  allowExplicitAncestorRepository = false
+): Promise<boolean> {
+  try {
+    const { stdout } = await execFileAsync('git', ['rev-parse', '--show-toplevel'], {
+      cwd: projectRoot,
+    });
+    const topLevel = path.resolve(String(stdout ?? '').trim());
+    const requestedRoot = path.resolve(projectRoot);
+    return sameResolvedPath(topLevel, requestedRoot) || allowExplicitAncestorRepository;
+  } catch {
+    return false;
+  }
+}
+
+async function gitLines(projectRoot: string, args: string[]): Promise<string[]> {
+  const { stdout } = await execFileAsync('git', args, {
+    cwd: projectRoot,
+    maxBuffer: 10 * 1024 * 1024,
+  });
+  return unique(
+    String(stdout ?? '')
+      .split(/\r?\n/)
+      .map(value => slash(value.trim()))
+      .filter(Boolean)
+  );
+}
+
+async function gitCurrentBranch(projectRoot: string): Promise<string> {
+  try {
+    const { stdout } = await execFileAsync('git', ['branch', '--show-current'], {
+      cwd: projectRoot,
+    });
+    return String(stdout ?? '').trim();
+  } catch {
+    return '';
+  }
+}
+
+async function gitIsAncestor(
+  projectRoot: string,
+  ancestor: string,
+  descendant: string
+): Promise<boolean> {
+  if (!ancestor || !descendant) return false;
+  try {
+    await execFileAsync('git', ['merge-base', '--is-ancestor', ancestor, descendant], {
+      cwd: projectRoot,
+    });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+async function gitResolveCommit(projectRoot: string, ref: string): Promise<string> {
+  if (!ref) return '';
+  try {
+    const { stdout } = await execFileAsync('git', ['rev-parse', `${ref}^{commit}`], {
+      cwd: projectRoot,
+    });
+    return String(stdout ?? '').trim();
+  } catch {
+    return '';
+  }
+}
+
+function normalizeFormalImplementationFiles(files: string[], projectRoot?: string): string[] {
+  return unique(
+    files
+      .map(value => (projectRoot ? repositoryRelativePath(projectRoot, value) : slash(value)))
+      .filter(value => value && value !== SPEC_DIR && !value.startsWith(`${SPEC_DIR}/`))
+  );
+}
+export interface FormalImplementationFileSetComparison {
+  matches: boolean;
+  missing_from_recorded_files: string[];
+  unexpected_recorded_files: string[];
+}
+export function compareFormalImplementationFileSets(
+  recordedFiles: string[],
+  committedFiles: string[]
+): FormalImplementationFileSetComparison {
+  const recorded = normalizeFormalImplementationFiles(recordedFiles);
+  const committed = normalizeFormalImplementationFiles(committedFiles);
+  const recordedSet = new Set(recorded);
+  const committedSet = new Set(committed);
+  const missingFromRecordedFiles = committed.filter(file => !recordedSet.has(file));
+  const unexpectedRecordedFiles = recorded.filter(file => !committedSet.has(file));
+  return {
+    matches: missingFromRecordedFiles.length === 0 && unexpectedRecordedFiles.length === 0,
+    missing_from_recorded_files: missingFromRecordedFiles,
+    unexpected_recorded_files: unexpectedRecordedFiles,
+  };
+}
+async function gitCommittedImplementationFiles(
+  projectRoot: string,
+  baseCommit: string,
+  headCommit: string
+): Promise<string[]> {
+  if (!baseCommit || !headCommit) return [];
+  return normalizeFormalImplementationFiles(
+    await gitLines(projectRoot, ['diff', '--name-only', `${baseCommit}...${headCommit}`, '--'])
+  );
+}
+async function gitImplementationFingerprint(
+  projectRoot: string,
+  commit: string,
+  files: string[]
+): Promise<string> {
+  const facts: string[] = [];
+  for (const relativePath of unique(files.map(slash))) {
+    try {
+      const { stdout } = await execFileAsync('git', ['rev-parse', `${commit}:${relativePath}`], {
+        cwd: projectRoot,
+      });
+      facts.push(`${relativePath}\0${String(stdout ?? '').trim()}`);
+    } catch {
+      facts.push(`${relativePath}\0deleted`);
+    }
+  }
+  return digest(facts.join('\n'));
+}
+
+export interface FormalGitBinding {
+  enabled: boolean;
+  branch_name: string;
+  expected_branch: string;
+  head_commit: string;
+  base_commit: string;
+  base_is_ancestor: boolean;
+  committed_files: string[];
+  committed_implementation_files: string[];
+  worktree_files: string[];
+  implementation_files: string[];
+  implementation_file_set_matches: boolean;
+  unrecorded_committed_implementation_files: string[];
+  missing_from_commit: string[];
+  uncommitted_implementation_files: string[];
+}
+
+export function evaluateVersionControlMode(input: {
+  frozenMode?: unknown;
+  gitContextEnabled?: boolean;
+  currentRepositoryPresent?: boolean;
+  currentRepositoryHead?: string;
+  legacyFilesystemRecoveryApplied?: boolean;
+  specMigrationNoCode?: boolean;
+  workflowPath?: string;
+}): {
+  mode: 'git' | 'filesystem';
+  git_required: boolean;
+  stable: boolean;
+} {
+  const frozen = scalarText(input.frozenMode ?? '');
+  const currentHasGit =
+    input.currentRepositoryPresent === true ||
+    Boolean(String(input.currentRepositoryHead ?? '').trim());
+  const frozenModeKnown = frozen === 'git' || frozen === 'filesystem';
+  const unresolvedLegacyImplementationMode = !frozenModeKnown && input.specMigrationNoCode !== true;
+  const mode: 'git' | 'filesystem' = frozenModeKnown
+    ? frozen
+    : input.specMigrationNoCode === true && (input.gitContextEnabled === true || currentHasGit)
+      ? 'git'
+      : 'filesystem';
+  const gitRequired =
+    input.specMigrationNoCode === true
+      ? currentHasGit
+      : !unresolvedLegacyImplementationMode &&
+        mode === 'git' &&
+        input.workflowPath !== 'contract_change_path' &&
+        input.workflowPath !== 'rollback_path';
+  return {
+    mode,
+    git_required: gitRequired,
+    stable:
+      !unresolvedLegacyImplementationMode &&
+      (frozen !== 'filesystem' ||
+        !currentHasGit ||
+        (input.legacyFilesystemRecoveryApplied === true &&
+          !String(input.currentRepositoryHead ?? '').trim())),
+  };
+}
+
+const LEGACY_FILESYSTEM_MODE_RECOVERY_FILE = 'version_control_mode_recovery.json';
+
+async function readJsonSource(filePath: string): Promise<{
+  content: string;
+  value: any;
+  sha256: string;
+} | null> {
+  try {
+    const content = await fs.readFile(filePath, 'utf8');
+    return { content, value: JSON.parse(content), sha256: digest(content) };
+  } catch {
+    return null;
+  }
+}
+
+async function writeJsonAtomic(filePath: string, value: unknown): Promise<void> {
+  const temporaryPath = `${filePath}.tmp-${process.pid}-${Date.now()}`;
+  await fs.writeFile(temporaryPath, `${JSON.stringify(value, null, 2)}\n`, 'utf8');
+  await fs.rename(temporaryPath, filePath);
+}
+
+async function currentUnbornRepositoryEvidence(projectRoot: string): Promise<{
+  inspection_valid: boolean;
+  repository_present: boolean;
+  head_commit: string;
+  tracked_files: string[];
+  git_head_mtime_ms: number;
+}> {
+  const repositoryPresent = await gitRepositoryPresent(projectRoot);
+  if (!repositoryPresent) {
+    return {
+      inspection_valid: true,
+      repository_present: false,
+      head_commit: '',
+      tracked_files: [],
+      git_head_mtime_ms: 0,
+    };
+  }
+  const headCommit = await gitHead(projectRoot);
+  let trackedFiles: string[];
+  try {
+    trackedFiles = await gitLines(projectRoot, ['ls-files']);
+  } catch {
+    return {
+      inspection_valid: false,
+      repository_present: true,
+      head_commit: headCommit,
+      tracked_files: [],
+      git_head_mtime_ms: 0,
+    };
+  }
+  let gitHeadMtimeMs: number;
+  try {
+    gitHeadMtimeMs = (await fs.stat(path.join(projectRoot, '.git', 'HEAD'))).mtimeMs;
+  } catch {
+    return {
+      inspection_valid: false,
+      repository_present: true,
+      head_commit: headCommit,
+      tracked_files: trackedFiles,
+      git_head_mtime_ms: 0,
+    };
+  }
+  return {
+    inspection_valid: true,
+    repository_present: true,
+    head_commit: headCommit,
+    tracked_files: trackedFiles,
+    git_head_mtime_ms: gitHeadMtimeMs,
+  };
+}
+
+async function validateLegacyFilesystemRecoveryRecord(input: {
+  projectRoot: string;
+  workItemDir: string;
+  workItemId: string;
+  governanceScopeSource: NonNullable<Awaited<ReturnType<typeof readJsonSource>>>;
+  baselineSource: NonNullable<Awaited<ReturnType<typeof readJsonSource>>>;
+  recovery: any;
+}): Promise<VersionControlModeEvidence> {
+  const recoveryPath = path.join(input.workItemDir, LEGACY_FILESYSTEM_MODE_RECOVERY_FILE);
+  const inputFiles = [
+    path.join(input.workItemDir, 'governance_scope.json'),
+    path.join(input.workItemDir, 'filesystem_baseline.json'),
+    recoveryPath,
+  ];
+  const invalid = (error: string): VersionControlModeEvidence => ({
+    valid: false,
+    mode: '',
+    source: 'missing',
+    legacy_filesystem_recovery_applied: false,
+    error,
+    input_files: inputFiles,
+  });
+  const recovery = input.recovery;
+  if (
+    recovery?.schema_version !== 'legacy-version-control-mode-recovery/v1' ||
+    recovery?.status !== 'applied' ||
+    recovery?.work_item_id !== input.workItemId ||
+    recovery?.recovered_mode !== 'filesystem' ||
+    recovery?.source?.sha256_domain !== 'raw_utf8_file_bytes'
+  ) {
+    return invalid('LEGACY_FILESYSTEM_MODE_RECOVERY_INVALID');
+  }
+  const recoveredAtMs = Date.parse(String(recovery?.recovered_at ?? ''));
+  const frozenAtMs = Date.parse(String(recovery?.source?.governance_scope_frozen_at ?? ''));
+  const baselineAtMs = Date.parse(String(recovery?.source?.filesystem_baseline_timestamp ?? ''));
+  const recordedGitHeadMtimeMs = Number(recovery?.late_git_evidence?.git_head_mtime_ms ?? 0);
+  if (
+    !Number.isFinite(recoveredAtMs) ||
+    !Number.isFinite(frozenAtMs) ||
+    !Number.isFinite(baselineAtMs) ||
+    !Number.isFinite(recordedGitHeadMtimeMs) ||
+    recordedGitHeadMtimeMs <= 0 ||
+    recovery?.late_git_evidence?.repository_present !== true ||
+    recovery?.late_git_evidence?.head_commit !== '' ||
+    !Array.isArray(recovery?.late_git_evidence?.tracked_files) ||
+    recovery.late_git_evidence.tracked_files.length !== 0 ||
+    recovery?.late_git_evidence?.git_context_present !== false ||
+    frozenAtMs > recordedGitHeadMtimeMs ||
+    baselineAtMs > recordedGitHeadMtimeMs ||
+    recoveredAtMs < recordedGitHeadMtimeMs
+  ) {
+    return invalid('LEGACY_FILESYSTEM_MODE_RECOVERY_TIMELINE_INVALID');
+  }
+  if (
+    recovery?.source?.governance_scope_sha256 !== input.governanceScopeSource.sha256 ||
+    recovery?.source?.filesystem_baseline_sha256 !== input.baselineSource.sha256
+  ) {
+    return invalid('LEGACY_FILESYSTEM_MODE_RECOVERY_SOURCE_DRIFT');
+  }
+  if (
+    String(input.governanceScopeSource.value?.work_item_id ?? '') !== input.workItemId ||
+    !sameResolvedPath(String(input.baselineSource.value?.root ?? ''), input.projectRoot) ||
+    recovery?.source?.governance_scope_file !== 'governance_scope.json' ||
+    recovery?.source?.filesystem_baseline_file !== 'filesystem_baseline.json' ||
+    recovery?.source?.governance_scope_frozen_at !== input.governanceScopeSource.value?.frozen_at ||
+    recovery?.source?.filesystem_baseline_timestamp !== input.baselineSource.value?.timestamp
+  ) {
+    return invalid('LEGACY_FILESYSTEM_MODE_RECOVERY_SOURCE_METADATA_MISMATCH');
+  }
+  const gitContext = await readJsonSource(path.join(input.workItemDir, 'git_context.json'));
+  if (gitContext) return invalid('LEGACY_FILESYSTEM_MODE_RECOVERY_GIT_CONTEXT_APPEARED');
+  const currentRepository = await currentUnbornRepositoryEvidence(input.projectRoot);
+  if (!currentRepository.inspection_valid) {
+    return invalid('LEGACY_FILESYSTEM_MODE_GIT_INSPECTION_FAILED');
+  }
+  if (
+    currentRepository.repository_present &&
+    currentRepository.git_head_mtime_ms !== recordedGitHeadMtimeMs
+  ) {
+    return invalid('LEGACY_FILESYSTEM_MODE_RECOVERY_GIT_IDENTITY_CHANGED');
+  }
+  if (
+    currentRepository.repository_present &&
+    (currentRepository.head_commit || currentRepository.tracked_files.length > 0)
+  ) {
+    return invalid('LEGACY_FILESYSTEM_MODE_RECOVERY_GIT_REPOSITORY_ADVANCED');
+  }
+  return {
+    valid: true,
+    mode: 'filesystem',
+    source: 'legacy_filesystem_recovery',
+    legacy_filesystem_recovery_applied: currentRepository.repository_present,
+    input_files: inputFiles,
+  };
+}
+
+export async function resolveVersionControlModeEvidence(input: {
+  projectRoot: string;
+  workItemDir: string;
+  workItemId: string;
+}): Promise<VersionControlModeEvidence> {
+  const governanceScopePath = path.join(input.workItemDir, 'governance_scope.json');
+  const governanceScopeSource = await readJsonSource(governanceScopePath);
+  const mode = String(governanceScopeSource?.value?.version_control_mode ?? '');
+  if (mode === 'git' || mode === 'filesystem') {
+    return {
+      valid: true,
+      mode,
+      source: 'governance_scope',
+      legacy_filesystem_recovery_applied: false,
+      input_files: [governanceScopePath],
+    };
+  }
+  if (!governanceScopeSource) {
+    return {
+      valid: false,
+      mode: '',
+      source: 'missing',
+      legacy_filesystem_recovery_applied: false,
+      error: 'GOVERNANCE_SCOPE_REQUIRED_FOR_VERSION_CONTROL_MODE',
+      input_files: [governanceScopePath],
+    };
+  }
+  const baselinePath = path.join(input.workItemDir, 'filesystem_baseline.json');
+  const baselineSource = await readJsonSource(baselinePath);
+  const recoveryPath = path.join(input.workItemDir, LEGACY_FILESYSTEM_MODE_RECOVERY_FILE);
+  const recoverySource = await readJsonSource(recoveryPath);
+  if (!baselineSource || !recoverySource) {
+    return {
+      valid: false,
+      mode: '',
+      source: 'missing',
+      legacy_filesystem_recovery_applied: false,
+      error: 'LEGACY_VERSION_CONTROL_MODE_RECOVERY_REQUIRED',
+      input_files: [governanceScopePath, baselinePath, recoveryPath],
+    };
+  }
+  return validateLegacyFilesystemRecoveryRecord({
+    ...input,
+    governanceScopeSource,
+    baselineSource,
+    recovery: recoverySource.value,
+  });
+}
+
+export async function recoverLegacyFilesystemVersionControlMode(input: {
+  projectRoot: string;
+  workItemDir: string;
+  workItemId: string;
+  reason: string;
+}): Promise<LegacyFilesystemModeRecoveryResult> {
+  if (input.reason.trim().length < 12) {
+    return { success: false, error: 'LEGACY_FILESYSTEM_MODE_RECOVERY_REASON_REQUIRED' };
+  }
+  const governanceScopePath = path.join(input.workItemDir, 'governance_scope.json');
+  const baselinePath = path.join(input.workItemDir, 'filesystem_baseline.json');
+  const recoveryPath = path.join(input.workItemDir, LEGACY_FILESYSTEM_MODE_RECOVERY_FILE);
+  const governanceScopeSource = await readJsonSource(governanceScopePath);
+  const baselineSource = await readJsonSource(baselinePath);
+  if (!governanceScopeSource) {
+    return { success: false, error: 'LEGACY_FILESYSTEM_MODE_GOVERNANCE_SCOPE_REQUIRED' };
+  }
+  const existingMode = String(governanceScopeSource.value?.version_control_mode ?? '');
+  if (existingMode === 'git' || existingMode === 'filesystem') {
+    return { success: false, error: 'VERSION_CONTROL_MODE_ALREADY_FROZEN' };
+  }
+  if (String(governanceScopeSource.value?.work_item_id ?? '') !== input.workItemId) {
+    return { success: false, error: 'LEGACY_FILESYSTEM_MODE_WORK_ITEM_MISMATCH' };
+  }
+  if (!baselineSource || !Array.isArray(baselineSource.value?.files)) {
+    return { success: false, error: 'LEGACY_FILESYSTEM_MODE_BASELINE_REQUIRED' };
+  }
+  if (!sameResolvedPath(String(baselineSource.value?.root ?? ''), input.projectRoot)) {
+    return { success: false, error: 'LEGACY_FILESYSTEM_MODE_BASELINE_ROOT_MISMATCH' };
+  }
+  const scopeFrozenMs = Date.parse(String(governanceScopeSource.value?.frozen_at ?? ''));
+  const baselineMs = Date.parse(String(baselineSource.value?.timestamp ?? ''));
+  if (!Number.isFinite(scopeFrozenMs) || !Number.isFinite(baselineMs)) {
+    return { success: false, error: 'LEGACY_FILESYSTEM_MODE_SOURCE_TIMESTAMPS_REQUIRED' };
+  }
+  if (await readJsonSource(path.join(input.workItemDir, 'git_context.json'))) {
+    return { success: false, error: 'LEGACY_FILESYSTEM_MODE_GIT_CONTEXT_PRESENT' };
+  }
+  const repository = await currentUnbornRepositoryEvidence(input.projectRoot);
+  if (!repository.inspection_valid) {
+    return { success: false, error: 'LEGACY_FILESYSTEM_MODE_GIT_INSPECTION_FAILED' };
+  }
+  if (!repository.repository_present) {
+    return { success: false, error: 'LEGACY_FILESYSTEM_MODE_LATE_GIT_REPOSITORY_REQUIRED' };
+  }
+  if (repository.head_commit || repository.tracked_files.length > 0) {
+    return { success: false, error: 'LEGACY_FILESYSTEM_MODE_REQUIRES_UNBORN_UNTRACKED_GIT' };
+  }
+  if (
+    !repository.git_head_mtime_ms ||
+    Date.now() < repository.git_head_mtime_ms ||
+    scopeFrozenMs > repository.git_head_mtime_ms ||
+    baselineMs > repository.git_head_mtime_ms
+  ) {
+    return { success: false, error: 'LEGACY_FILESYSTEM_MODE_LATE_GIT_TIMELINE_NOT_PROVEN' };
+  }
+
+  const existingRecovery = await readJsonSource(recoveryPath);
+  if (existingRecovery) {
+    const resolved = await validateLegacyFilesystemRecoveryRecord({
+      ...input,
+      governanceScopeSource,
+      baselineSource,
+      recovery: existingRecovery.value,
+    });
+    return resolved.valid
+      ? {
+          success: true,
+          recovery_path: recoveryPath,
+          record: existingRecovery.value,
+          idempotent: true,
+        }
+      : { success: false, error: resolved.error };
+  }
+
+  const record = {
+    schema_version: 'legacy-version-control-mode-recovery/v1',
+    status: 'applied',
+    work_item_id: input.workItemId,
+    recovered_mode: 'filesystem',
+    producer: 'sf_code_permission',
+    recovered_at: new Date().toISOString(),
+    reason: input.reason.trim(),
+    source: {
+      sha256_domain: 'raw_utf8_file_bytes',
+      governance_scope_file: 'governance_scope.json',
+      governance_scope_sha256: governanceScopeSource.sha256,
+      governance_scope_frozen_at: governanceScopeSource.value.frozen_at,
+      filesystem_baseline_file: 'filesystem_baseline.json',
+      filesystem_baseline_sha256: baselineSource.sha256,
+      filesystem_baseline_timestamp: baselineSource.value.timestamp,
+    },
+    late_git_evidence: {
+      repository_present: true,
+      head_commit: '',
+      tracked_files: [],
+      git_context_present: false,
+      git_head_mtime_ms: repository.git_head_mtime_ms,
+    },
+  };
+  await writeJsonAtomic(recoveryPath, record);
+  return { success: true, recovery_path: recoveryPath, record, idempotent: false };
+}
+
+export async function inspectFormalGitBinding(input: {
+  projectRoot: string;
+  gitContext: any;
+  implementationFiles: string[];
+}): Promise<FormalGitBinding> {
+  const enabled = input.gitContext?.git_enabled === true;
+  const expectedBranch = String(input.gitContext?.branch_name ?? '');
+  const baseCommit = String(input.gitContext?.base_commit ?? '');
+  const implementationFiles = unique(
+    input.implementationFiles
+      .map(value => repositoryRelativePath(input.projectRoot, value))
+      .filter(value => value && value !== SPEC_DIR && !value.startsWith(`${SPEC_DIR}/`))
+  );
+  if (!enabled) {
+    return {
+      enabled,
+      branch_name: '',
+      expected_branch: expectedBranch,
+      head_commit: '',
+      base_commit: baseCommit,
+      base_is_ancestor: false,
+      committed_files: [],
+      committed_implementation_files: [],
+      worktree_files: [],
+      implementation_files: implementationFiles,
+      implementation_file_set_matches: implementationFiles.length === 0,
+      unrecorded_committed_implementation_files: [],
+      missing_from_commit: implementationFiles,
+      uncommitted_implementation_files: implementationFiles,
+    };
+  }
+
+  const headCommit = await gitHead(input.projectRoot);
+  const [branchName, committedFiles, trackedWorktreeFiles, untrackedFiles] = await Promise.all([
+    gitCurrentBranch(input.projectRoot),
+    baseCommit && headCommit
+      ? gitLines(input.projectRoot, ['diff', '--name-only', `${baseCommit}...${headCommit}`, '--'])
+      : Promise.resolve([]),
+    gitLines(input.projectRoot, ['diff', '--name-only', 'HEAD', '--']),
+    gitLines(input.projectRoot, ['ls-files', '--others', '--exclude-standard']),
+  ]);
+  const worktreeFiles = unique([...trackedWorktreeFiles, ...untrackedFiles]);
+  const committedImplementationFiles = normalizeFormalImplementationFiles(committedFiles);
+  const implementationFileSet = compareFormalImplementationFileSets(
+    implementationFiles,
+    committedImplementationFiles
+  );
+  const worktreeSet = new Set(worktreeFiles.map(slash));
+
+  return {
+    enabled,
+    branch_name: branchName,
+    expected_branch: expectedBranch,
+    head_commit: headCommit,
+    base_commit: baseCommit,
+    base_is_ancestor: await gitIsAncestor(input.projectRoot, baseCommit, headCommit),
+    committed_files: committedFiles,
+    committed_implementation_files: committedImplementationFiles,
+    worktree_files: worktreeFiles,
+    implementation_files: implementationFiles,
+    implementation_file_set_matches: implementationFileSet.matches,
+    unrecorded_committed_implementation_files: implementationFileSet.missing_from_recorded_files,
+    missing_from_commit: implementationFileSet.unexpected_recorded_files,
+    uncommitted_implementation_files: implementationFiles.filter(file => worktreeSet.has(file)),
+  };
+}
+
+async function gitDiffFingerprint(projectRoot: string, baseCommit: string): Promise<string> {
+  try {
+    const [{ stdout: trackedStdout }, { stdout: untrackedStdout }] = await Promise.all([
+      execFileAsync('git', ['diff', '--name-only', baseCommit, '--'], { cwd: projectRoot }),
+      execFileAsync('git', ['ls-files', '--others', '--exclude-standard'], { cwd: projectRoot }),
+    ]);
+    const changedPaths = unique(
+      `${String(trackedStdout)}\n${String(untrackedStdout)}`
+        .split(/\r?\n/)
+        .map(value => slash(value.trim()))
+        .filter(Boolean)
+    );
+    const facts: string[] = [];
+    for (const relativePath of changedPaths) {
+      const filePath = path.resolve(projectRoot, relativePath);
+      try {
+        const content = await fs.readFile(filePath);
+        facts.push(`${relativePath}\0file\0${createHash('sha256').update(content).digest('hex')}`);
+      } catch {
+        // A path still reported by git but absent from the filesystem is a deletion.
+        facts.push(`${relativePath}\0deleted`);
+      }
+    }
+    return digest(facts.join('\n'));
+  } catch {
+    return '';
+  }
+}
+
+export interface SpecMigrationProjectSpecGitSnapshot {
+  base_commit: string;
+  project_spec_files: string[];
+  project_spec_git_diff_fingerprint: string;
+}
+
+function isUnrelatedWorkItemGovernancePath(relativePath: string, workItemId: string): boolean {
+  const normalized = slash(relativePath);
+  const prefix = `${SPEC_DIR}/work-items/`;
+  const current = `${prefix}${workItemId}/`;
+  return normalized.startsWith(prefix) && !normalized.startsWith(current);
+}
+
+async function gitProjectSpecDiffFiles(projectRoot: string, baseCommit: string): Promise<string[]> {
+  if (!baseCommit) return [];
+  const [tracked, untracked] = await Promise.all([
+    gitLines(projectRoot, ['diff', '--name-only', baseCommit, '--', `${SPEC_DIR}/project`]),
+    gitLines(projectRoot, [
+      'ls-files',
+      '--others',
+      '--exclude-standard',
+      '--',
+      `${SPEC_DIR}/project`,
+    ]),
+  ]);
+  return unique(
+    [...tracked, ...untracked].map(slash).filter(value => value.startsWith(`${SPEC_DIR}/project/`))
+  );
+}
+
+async function fingerprintRepositoryFiles(projectRoot: string, files: string[]): Promise<string> {
+  const facts: string[] = [];
+  for (const relativePath of unique(files.map(slash))) {
+    try {
+      const content = await fs.readFile(path.resolve(projectRoot, relativePath));
+      facts.push(`${relativePath}\0file\0${createHash('sha256').update(content).digest('hex')}`);
+    } catch {
+      facts.push(`${relativePath}\0deleted`);
+    }
+  }
+  return digest(facts.join('\n'));
+}
+
+export async function captureSpecMigrationProjectSpecGitDiff(
+  projectRoot: string,
+  baseCommit: string
+): Promise<SpecMigrationProjectSpecGitSnapshot> {
+  const projectSpecFiles = await gitProjectSpecDiffFiles(projectRoot, baseCommit);
+  return {
+    base_commit: baseCommit,
+    project_spec_files: projectSpecFiles,
+    project_spec_git_diff_fingerprint: await fingerprintRepositoryFiles(
+      projectRoot,
+      projectSpecFiles
+    ),
+  };
+}
+
+export async function assertSpecMigrationProjectSpecGitDiffUnchanged(input: {
+  projectRoot: string;
+  baseCommit: string;
+  expectedFingerprint: string;
+}): Promise<void> {
+  if (!input.baseCommit || !input.expectedFingerprint) {
+    throw new Error('SPEC_MIGRATION_FORMAL_PROJECT_SPEC_GIT_BINDING_REQUIRED');
+  }
+  const current = await captureSpecMigrationProjectSpecGitDiff(input.projectRoot, input.baseCommit);
+  if (current.project_spec_git_diff_fingerprint !== input.expectedFingerprint) {
+    throw new Error('SPEC_MIGRATION_FORMAL_PROJECT_SPEC_GIT_DIFF_CHANGED');
+  }
+}
+
+export async function checkFormalVersionEligibility(input: {
+  executionEvidenceConsumer?: import('../../verification/execution-evidence-consumer').ExecutionEvidenceConsumer;
+  projectRoot: string;
+  workItemDir: string;
+  workItemId: string;
+  workflowPath: string;
+}): Promise<GovernanceCheckResult> {
+  const checks: GovernanceCheck[] = [];
+  const inputFiles: string[] = [];
+  const specMigrationNoCode = isSpecMigrationNoCodeWorkflow('', input.workflowPath);
+  const executionIntegrity = await inspectVerificationEvidenceIntegrity({
+    projectRoot: input.projectRoot,
+    workItemDir: input.workItemDir,
+    workItemId: input.workItemId,
+    executionEvidenceConsumer: input.executionEvidenceConsumer,
+  });
+  addCheck(
+    checks,
+    'formal_execution_evidence_integrity',
+    'Execution evidence is authentic, current and completely terminated',
+    executionIntegrity.invalidity_reasons.length === 0,
+    executionIntegrity.invalidity_reasons.join('; ') || undefined
+  );
+
+  const readGate = async (gateId: string) => {
+    const gatePath = path.join(input.workItemDir, 'gates', `${gateId}.json`);
+    inputFiles.push(gatePath);
+    return readJson(gatePath);
+  };
+
+  const verification = await readGate('verification_gate');
+  addCheck(
+    checks,
+    'formal_verification_gate',
+    'Verification Gate passed',
+    verification?.status === 'passed'
+  );
+
+  const auditPath = path.join(input.workItemDir, 'changed_files_audit.md');
+  const audit = await readText(auditPath);
+  inputFiles.push(auditPath);
+  addCheck(
+    checks,
+    'formal_changed_files_audit',
+    'Changed Files Audit passed',
+    evaluateChangedFilesAuditVerdict(audit, { expectedWorkItemId: input.workItemId }).passed
+  );
+
+  const actualScope = await auditActualGovernanceScope({
+    projectRoot: input.projectRoot,
+    workItemDir: input.workItemDir,
+  });
+  inputFiles.push(
+    path.join(input.workItemDir, 'governance_scope.json'),
+    path.join(input.workItemDir, 'git_context.json')
+  );
+  addCheck(
+    checks,
+    'formal_actual_governance_scope',
+    'Actual implementation files map to exactly one approved Module and do not expand governance scope',
+    actualScope.passed,
+    `actual_modules=${actualScope.actual_modules.join(',') || 'none'}; violations=${actualScope.violations.join(' | ') || 'none'}`
+  );
+
+  const gitContextPath = path.join(input.workItemDir, 'git_context.json');
+  const gitContext = await readJson(gitContextPath);
+  const governanceScope = await readJson(path.join(input.workItemDir, 'governance_scope.json'));
+  const versionControlEvidence = await resolveVersionControlModeEvidence({
+    projectRoot: input.projectRoot,
+    workItemDir: input.workItemDir,
+    workItemId: input.workItemId,
+  });
+  inputFiles.push(...versionControlEvidence.input_files);
+  const currentRepositoryPresent = await gitRepositoryPresent(
+    input.projectRoot,
+    gitContext?.git_enabled === true
+  );
+  const currentRepositoryHead = currentRepositoryPresent ? await gitHead(input.projectRoot) : '';
+  const frozenVersionControlMode = versionControlEvidence.mode;
+  const versionControl = evaluateVersionControlMode({
+    frozenMode: frozenVersionControlMode,
+    gitContextEnabled: gitContext?.git_enabled === true,
+    currentRepositoryPresent,
+    currentRepositoryHead,
+    legacyFilesystemRecoveryApplied: versionControlEvidence.legacy_filesystem_recovery_applied,
+    specMigrationNoCode,
+    workflowPath: input.workflowPath,
+  });
+  const gitRequired = versionControl.git_required;
+  const expectedImplementation =
+    gitRequired &&
+    normalizeArray(governanceScope?.allowed_write_files).some(
+      value => value !== SPEC_DIR && !slash(value).startsWith(`${SPEC_DIR}/`)
+    );
+  const gitBinding = await inspectFormalGitBinding({
+    projectRoot: input.projectRoot,
+    gitContext,
+    implementationFiles: actualScope.actual_files,
+  });
+  inputFiles.push(gitContextPath);
+  addCheck(
+    checks,
+    'formal_version_control_mode_evidence',
+    'Pre-implementation version-control mode is frozen or recovered from bound legacy evidence',
+    specMigrationNoCode || versionControlEvidence.valid,
+    specMigrationNoCode
+      ? 'not_applicable=spec_migration_no_code'
+      : `source=${versionControlEvidence.source}; mode=${versionControlEvidence.mode || 'missing'}; error=${versionControlEvidence.error ?? 'none'}`
+  );
+  addCheck(
+    checks,
+    'formal_repository_mode_stable',
+    'Version-control mode remains the mode frozen before implementation',
+    versionControl.stable,
+    `frozen=${frozenVersionControlMode || 'missing'}; source=${versionControlEvidence.source}; effective=${versionControl.mode}; current=${currentRepositoryPresent ? 'git' : 'filesystem'}; head=${currentRepositoryHead || 'unborn'}; legacy_recovery=${versionControlEvidence.legacy_filesystem_recovery_applied}`
+  );
+  const specMigrationProjectSpecGit =
+    specMigrationNoCode && gitBinding.enabled && gitBinding.base_commit
+      ? await captureSpecMigrationProjectSpecGitDiff(input.projectRoot, gitBinding.base_commit)
+      : null;
+  if (specMigrationNoCode) {
+    addCheck(
+      checks,
+      'formal_spec_migration_project_spec_git_diff',
+      'Spec Migration Project Spec diff is committed/bound to the WI Git base',
+      Boolean(
+        specMigrationProjectSpecGit && specMigrationProjectSpecGit.project_spec_files.length > 0
+      ),
+      `files=${specMigrationProjectSpecGit?.project_spec_files.join(',') || 'none'}`
+    );
+  }
+  addCheck(
+    checks,
+    'formal_git_context',
+    'Git-enabled implementation is bound to WI branch and base commit',
+    !gitRequired ||
+      (gitBinding.enabled &&
+        Boolean(gitBinding.expected_branch) &&
+        Boolean(gitBinding.base_commit)),
+    `required=${gitRequired}; enabled=${gitBinding.enabled}; branch=${gitBinding.expected_branch || 'missing'}; base=${gitBinding.base_commit || 'missing'}`
+  );
+  if (gitBinding.enabled) {
+    addCheck(
+      checks,
+      'formal_git_branch',
+      'Current branch matches git_context branch',
+      gitBinding.branch_name === gitBinding.expected_branch,
+      `current=${gitBinding.branch_name || 'missing'}; expected=${gitBinding.expected_branch || 'missing'}`
+    );
+    addCheck(
+      checks,
+      'formal_git_base_ancestor',
+      'git_context base commit is an ancestor of the implementation commit',
+      gitBinding.base_is_ancestor,
+      `base=${gitBinding.base_commit || 'missing'}; head=${gitBinding.head_commit || 'missing'}`
+    );
+    addCheck(
+      checks,
+      'formal_git_actual_files_present',
+      'Implementation produced observable project-file changes',
+      !expectedImplementation || gitBinding.implementation_files.length > 0,
+      `expected=${expectedImplementation}; actual=${gitBinding.implementation_files.join(',') || 'none'}`
+    );
+    addCheck(
+      checks,
+      'formal_git_implementation_file_set_complete',
+      'Formal Version implementation files exactly match the WI committed non-governance Git diff',
+      gitBinding.implementation_file_set_matches,
+      `committed=${gitBinding.committed_implementation_files.join(',') || 'none'}; unrecorded=${gitBinding.unrecorded_committed_implementation_files.join(',') || 'none'}; absent_from_commit=${gitBinding.missing_from_commit.join(',') || 'none'}`
+    );
+    addCheck(
+      checks,
+      'formal_git_implementation_committed',
+      'Every observed implementation file is present in the WI committed diff',
+      gitBinding.missing_from_commit.length === 0,
+      `implementation_commit=${gitBinding.head_commit || 'missing'}; missing=${gitBinding.missing_from_commit.join(',') || 'none'}`
+    );
+    addCheck(
+      checks,
+      'formal_git_implementation_worktree_clean',
+      'Observed implementation files have no staged, unstaged, or untracked changes',
+      gitBinding.uncommitted_implementation_files.length === 0,
+      `uncommitted=${gitBinding.uncommitted_implementation_files.join(',') || 'none'}`
+    );
+  }
+
+  const semanticRequired =
+    input.workflowPath !== 'contract_change_path' && input.workflowPath !== 'rollback_path';
+  const semanticPath = path.join(input.workItemDir, '.semantic_closure.json');
+  const semantic = semanticRequired ? await readJson(semanticPath) : null;
+  if (semanticRequired) inputFiles.push(semanticPath);
+  addCheck(
+    checks,
+    'formal_semantic_closure',
+    semanticRequired
+      ? 'Semantic closure evidence exists'
+      : 'Semantic closure is not applicable to this no-code formal workflow',
+    semanticRequired ? Boolean(semantic) : true
+  );
+
+  const candidateManifest = await readJson(path.join(input.workItemDir, 'candidate_manifest.json'));
+  const formalMergeRequired = candidateManifest?.merge_required === true;
+  if (formalMergeRequired) {
+    const mergePath = path.join(input.workItemDir, 'merge_report.md');
+    const merge = await readText(mergePath);
+    const mergeVerdict = evaluateMergeReport(merge, input.workItemId);
+    inputFiles.push(mergePath);
+    addCheck(
+      checks,
+      'formal_spec_merge',
+      'Formal Spec Candidate merge succeeded',
+      mergeVerdict.valid && mergeVerdict.status === 'success'
+    );
+
+    const decisionPath = path.join(input.workItemDir, 'user_decision.json');
+    const decision = await readJson(decisionPath);
+    inputFiles.push(decisionPath);
+    addCheck(
+      checks,
+      'formal_user_decision',
+      'User Decision is approved/waived',
+      ['approved', 'waived'].includes(String(decision?.decision_status ?? ''))
+    );
+  }
+
+  const gatesDirectory = path.join(input.workItemDir, 'gates');
+  try {
+    for (const name of await fs.readdir(gatesDirectory)) {
+      if (
+        !name.endsWith('.json') ||
+        name === 'formal_version_gate.json' ||
+        name === 'close_gate.json' ||
+        name === 'gate_summary_gate.json'
+      ) {
+        continue;
+      }
+      const report = await readJson(path.join(gatesDirectory, name));
+      if (report?.gate_type === 'hard_gate') {
+        addCheck(
+          checks,
+          `formal_hard_gate_${name.replace(/\W/g, '_')}`,
+          `Hard Gate ${name} did not fail`,
+          ['passed', 'skipped'].includes(String(report?.status ?? ''))
+        );
+      }
+    }
+  } catch {
+    addCheck(checks, 'formal_gate_reports_dir', 'Gate report directory exists', false);
+  }
+
+  const projectSpecCoreVersion = await inspectProjectSpecCoreVersionCoherence(input.projectRoot);
+  inputFiles.push(...projectSpecCoreVersion.input_files);
+  addCheck(
+    checks,
+    'formal_project_spec_core_version_coherent',
+    'Project Spec Core files agree on the authoritative project_spec_version',
+    projectSpecCoreVersion.passed,
+    projectSpecCoreVersion.reason
+  );
+
+  const model = await loadProjectModel(input.projectRoot, input.workItemDir, false);
+  if (model.active || model.governanceDeclared) {
+    const consistency = await checkProjectGovernanceConsistency(input);
+    const contracts = await checkProjectGovernanceContracts(input);
+    const trace = await checkProjectGovernanceTrace(input);
+    addCheck(
+      checks,
+      'formal_project_consistency',
+      'Project Architecture/Data/Design consistency is valid',
+      consistency.passed
+    );
+    addCheck(
+      checks,
+      'formal_contract_integrity',
+      'Project/Module Contract integrity is valid',
+      contracts.passed
+    );
+    addCheck(checks, 'formal_trace_integrity', 'Governance Trace is valid', trace.passed);
+    const frozenScope = await readJson(path.join(input.workItemDir, 'governance_scope.json'));
+    addCheck(
+      checks,
+      'formal_governance_scope_frozen',
+      specMigrationNoCode ||
+        input.workflowPath === 'contract_change_path' ||
+        input.workflowPath === 'rollback_path'
+        ? 'Frozen governance scope is not applicable to this no-code formal workflow'
+        : 'Implementation has a frozen governance scope',
+      specMigrationNoCode ||
+        input.workflowPath === 'contract_change_path' ||
+        input.workflowPath === 'rollback_path'
+        ? true
+        : Boolean(frozenScope?.active)
+    );
+  }
+
+  const passed = checks.every(check => check.passed);
+  if (passed) {
+    const headCommit = gitBinding.head_commit || (await gitHead(input.projectRoot));
+    const baseCommit = gitBinding.base_commit || String(gitContext?.base_commit ?? '');
+    const filesystemImplementationFiles = gitBinding.enabled
+      ? []
+      : normalizeFormalImplementationFiles(actualScope.actual_files, input.projectRoot);
+    const implementationFiles = gitBinding.enabled
+      ? gitBinding.committed_implementation_files
+      : filesystemImplementationFiles;
+    const snapshot = {
+      schema_version: '1.0',
+      work_item_id: input.workItemId,
+      version_control_mode: versionControl.mode,
+      head_commit: headCommit,
+      implementation_commit: gitBinding.enabled ? headCommit : '',
+      branch_name: gitBinding.enabled ? gitBinding.branch_name : '',
+      implementation_files: implementationFiles,
+      implementation_tree_fingerprint:
+        gitBinding.enabled && headCommit
+          ? await gitImplementationFingerprint(
+              input.projectRoot,
+              headCommit,
+              gitBinding.committed_implementation_files
+            )
+          : await fingerprintRepositoryFiles(input.projectRoot, filesystemImplementationFiles),
+      base_commit: baseCommit,
+      diff_fingerprint: baseCommit ? await gitDiffFingerprint(input.projectRoot, baseCommit) : '',
+      spec_migration_project_spec_git_diff_fingerprint:
+        specMigrationProjectSpecGit?.project_spec_git_diff_fingerprint ?? '',
+      created_at: new Date().toISOString(),
+    };
+    const snapshotPath = path.join(input.workItemDir, 'formal_version_snapshot.json');
+    await fs.writeFile(snapshotPath, `${JSON.stringify(snapshot, null, 2)}\n`, 'utf8');
+    inputFiles.push(snapshotPath);
+  }
+
+  return {
+    active: model.active,
+    passed,
+    checks,
+    inputFiles: unique(inputFiles),
+  };
+}
+
+export async function assertFilesystemFormalVersionSnapshotCurrent(
+  projectRoot: string,
+  workItemId: string
+): Promise<void> {
+  const workItemDir = path.join(projectRoot, SPEC_DIR, 'work-items', workItemId);
+  const report = await readJson(path.join(workItemDir, 'gates', 'formal_version_gate.json'));
+  if (report?.status !== 'passed') {
+    throw new Error('FORMAL_VERSION_GATE_REQUIRED');
+  }
+
+  const governanceScope = await readJson(path.join(workItemDir, 'governance_scope.json'));
+  const snapshot = await readJson(path.join(workItemDir, 'formal_version_snapshot.json'));
+  const mode = String(
+    snapshot?.version_control_mode ?? governanceScope?.version_control_mode ?? ''
+  );
+  if (!snapshot || typeof snapshot !== 'object') {
+    if (mode === 'filesystem' || governanceScope?.active === true) {
+      throw new Error('FORMAL_VERSION_SNAPSHOT_REQUIRED');
+    }
+    return;
+  }
+  if (!mode && governanceScope?.active === true) {
+    throw new Error('FORMAL_VERSION_SNAPSHOT_VERSION_CONTROL_MODE_REQUIRED');
+  }
+  if (mode !== 'filesystem') return;
+
+  const recordedFiles = normalizeFormalImplementationFiles(
+    normalizeArray(snapshot.implementation_files)
+  );
+  const actualScope = await auditActualGovernanceScope({ projectRoot, workItemDir });
+  const actualFiles = normalizeFormalImplementationFiles(actualScope.actual_files, projectRoot);
+  const fileSet = compareFormalImplementationFileSets(recordedFiles, actualFiles);
+  if (!fileSet.matches) {
+    throw new Error(
+      `FORMAL_VERSION_FILESYSTEM_FILE_SET_MISMATCH: missing_from_snapshot=${fileSet.missing_from_recorded_files.join(',') || 'none'}; unexpected_in_snapshot=${fileSet.unexpected_recorded_files.join(',') || 'none'}`
+    );
+  }
+  const expectedFingerprint = String(snapshot.implementation_tree_fingerprint ?? '');
+  if (!expectedFingerprint) {
+    throw new Error('FORMAL_VERSION_FILESYSTEM_FINGERPRINT_REQUIRED');
+  }
+  const currentFingerprint = await fingerprintRepositoryFiles(projectRoot, actualFiles);
+  if (currentFingerprint !== expectedFingerprint) {
+    throw new Error('FORMAL_VERSION_FILESYSTEM_IMPLEMENTATION_CHANGED_AFTER_GATE');
+  }
+}
+
+export async function assertFormalVersionSnapshotForGitMerge(
+  projectRoot: string,
+  workItemId: string
+): Promise<void> {
+  const workItemDir = path.join(projectRoot, SPEC_DIR, 'work-items', workItemId);
+  const closeReport = await readJson(path.join(workItemDir, 'gates', 'close_gate.json'));
+  if (closeReport?.status !== 'passed') {
+    throw new Error('FORMAL_GIT_MERGE_REQUIRES_CLOSE_GATE');
+  }
+  const report = await readJson(path.join(workItemDir, 'gates', 'formal_version_gate.json'));
+  if (report?.status !== 'passed') {
+    throw new Error('FORMAL_VERSION_GATE_REQUIRED_BEFORE_GIT_MERGE');
+  }
+
+  const decodedSnapshot: unknown = await readJson(path.join(workItemDir, 'formal_version_snapshot.json'));
+  if (!decodedSnapshot || typeof decodedSnapshot !== 'object' || Array.isArray(decodedSnapshot)) {
+    throw new Error('FORMAL_VERSION_SNAPSHOT_REQUIRED_BEFORE_GIT_MERGE');
+  }
+  const snapshot = decodedSnapshot as Record<string, unknown>;
+
+  const governanceScope = await readJson(path.join(workItemDir, 'governance_scope.json'));
+  const mode = String(snapshot.version_control_mode ?? governanceScope?.version_control_mode ?? '');
+  if (mode === 'filesystem') {
+    await assertFilesystemFormalVersionSnapshotCurrent(projectRoot, workItemId);
+    return;
+  }
+
+  if (snapshot.implementation_commit) {
+    if (typeof snapshot.implementation_commit !== 'string') throw new Error('FORMAL_VERSION_IMPLEMENTATION_COMMIT_INVALID');
+    const [currentHead, currentBranch, trackedWorktreeFiles, untrackedFiles] = await Promise.all([
+      gitHead(projectRoot),
+      gitCurrentBranch(projectRoot),
+      gitLines(projectRoot, ['diff', '--name-only', 'HEAD', '--']),
+      gitLines(projectRoot, ['ls-files', '--others', '--exclude-standard']),
+    ]);
+    const formalWorktreeFiles = unique([...trackedWorktreeFiles, ...untrackedFiles]).filter(
+      relativePath => !isUnrelatedWorkItemGovernancePath(relativePath, workItemId)
+    );
+    if (formalWorktreeFiles.length > 0) {
+      throw new Error('FORMAL_VERSION_WORKTREE_NOT_CLEAN_BEFORE_GIT_MERGE');
+    }
+    if (snapshot.branch_name && currentBranch !== snapshot.branch_name) {
+      throw new Error('FORMAL_VERSION_BRANCH_CHANGED_AFTER_GATE');
+    }
+    if (!(await gitIsAncestor(projectRoot, snapshot.implementation_commit, currentHead))) {
+      throw new Error('FORMAL_VERSION_IMPLEMENTATION_COMMIT_NOT_ANCESTOR');
+    }
+    const baseCommit = String(snapshot.base_commit ?? '');
+    if (!baseCommit) {
+      throw new Error('FORMAL_VERSION_BASE_COMMIT_REQUIRED');
+    }
+    const implementationFiles = normalizeFormalImplementationFiles(
+      normalizeArray(snapshot.implementation_files)
+    );
+    const currentImplementationFiles = await gitCommittedImplementationFiles(
+      projectRoot,
+      baseCommit,
+      currentHead
+    );
+    const implementationFileSet = compareFormalImplementationFileSets(
+      implementationFiles,
+      currentImplementationFiles
+    );
+    if (!implementationFileSet.matches) {
+      throw new Error(
+        `FORMAL_VERSION_IMPLEMENTATION_FILE_SET_MISMATCH: missing_from_snapshot=${implementationFileSet.missing_from_recorded_files.join(',') || 'none'}; unexpected_in_snapshot=${implementationFileSet.unexpected_recorded_files.join(',') || 'none'}`
+      );
+    }
+    const fingerprint = await gitImplementationFingerprint(
+      projectRoot,
+      currentHead,
+      implementationFiles
+    );
+    if (fingerprint !== snapshot.implementation_tree_fingerprint) {
+      throw new Error('FORMAL_VERSION_IMPLEMENTATION_CHANGED_AFTER_GATE');
+    }
+    return;
+  }
+
+  if (snapshot.base_commit) {
+    if (typeof snapshot.base_commit !== 'string') throw new Error('FORMAL_VERSION_BASE_COMMIT_INVALID');
+    const fingerprint = await gitDiffFingerprint(projectRoot, snapshot.base_commit);
+    if (fingerprint !== snapshot.diff_fingerprint) {
+      throw new Error('FORMAL_VERSION_DIFF_CHANGED_AFTER_GATE');
+    }
+    return;
+  }
+
+  throw new Error('FORMAL_VERSION_SNAPSHOT_VERSION_CONTROL_MODE_REQUIRED');
+}
+
+export interface FormalVersionPostMergeVerification {
+  work_item_id: string;
+  close_gate_passed: boolean;
+  formal_version_gate_passed: boolean;
+  snapshot_present: boolean;
+  implementation_commit: string;
+  implementation_commit_ancestor: boolean;
+  implementation_file_set_matches: boolean;
+  implementation_tree_matches: boolean;
+  base_diff_matches: boolean;
+}
+
+export async function verifyFormalVersionSnapshotAfterGitMerge(
+  projectRoot: string,
+  workItemId: string,
+  targetHead: string
+): Promise<FormalVersionPostMergeVerification> {
+  const workItemDir = path.join(projectRoot, SPEC_DIR, 'work-items', workItemId);
+  const closeReport = await readJson(path.join(workItemDir, 'gates', 'close_gate.json'));
+  if (closeReport?.status !== 'passed') {
+    throw new Error('POST_MERGE_VERIFY_REQUIRES_CLOSE_GATE');
+  }
+  const formalReport = await readJson(path.join(workItemDir, 'gates', 'formal_version_gate.json'));
+  if (formalReport?.status !== 'passed') {
+    throw new Error('POST_MERGE_VERIFY_REQUIRES_FORMAL_VERSION_GATE');
+  }
+  const snapshot = await readJson(path.join(workItemDir, 'formal_version_snapshot.json'));
+  if (!snapshot || typeof snapshot !== 'object') {
+    throw new Error('POST_MERGE_VERIFY_REQUIRES_FORMAL_VERSION_SNAPSHOT');
+  }
+  if (!targetHead) {
+    throw new Error('POST_MERGE_VERIFY_TARGET_HEAD_REQUIRED');
+  }
+
+  let implementationCommitAncestor = true;
+  let implementationFileSetMatches = true;
+  let implementationTreeMatches = true;
+  let baseDiffMatches = true;
+  const implementationCommit = String(snapshot.implementation_commit ?? '');
+
+  if (implementationCommit) {
+    implementationCommitAncestor = await gitIsAncestor(
+      projectRoot,
+      implementationCommit,
+      targetHead
+    );
+    if (!implementationCommitAncestor) {
+      throw new Error('POST_MERGE_IMPLEMENTATION_COMMIT_NOT_ANCESTOR');
+    }
+    const baseCommit = String(snapshot.base_commit ?? '');
+    if (!baseCommit) {
+      throw new Error('POST_MERGE_BASE_COMMIT_REQUIRED');
+    }
+    const sourceBranch = String(snapshot.branch_name ?? '');
+    const sourceHead = await gitResolveCommit(projectRoot, sourceBranch);
+    if (!sourceBranch || !sourceHead) {
+      throw new Error('POST_MERGE_SOURCE_BRANCH_REQUIRED');
+    }
+    if (!(await gitIsAncestor(projectRoot, sourceHead, targetHead))) {
+      throw new Error('POST_MERGE_SOURCE_HEAD_NOT_ANCESTOR');
+    }
+    const implementationFiles = normalizeFormalImplementationFiles(
+      normalizeArray(snapshot.implementation_files)
+    );
+    const sourceImplementationFiles = await gitCommittedImplementationFiles(
+      projectRoot,
+      baseCommit,
+      sourceHead
+    );
+    const implementationFileSet = compareFormalImplementationFileSets(
+      implementationFiles,
+      sourceImplementationFiles
+    );
+    implementationFileSetMatches = implementationFileSet.matches;
+    if (!implementationFileSetMatches) {
+      throw new Error(
+        `POST_MERGE_IMPLEMENTATION_FILE_SET_MISMATCH: missing_from_snapshot=${implementationFileSet.missing_from_recorded_files.join(',') || 'none'}; unexpected_in_snapshot=${implementationFileSet.unexpected_recorded_files.join(',') || 'none'}`
+      );
+    }
+    const fingerprint = await gitImplementationFingerprint(
+      projectRoot,
+      targetHead,
+      implementationFiles
+    );
+    implementationTreeMatches =
+      fingerprint === String(snapshot.implementation_tree_fingerprint ?? '');
+    if (!implementationTreeMatches) {
+      throw new Error('POST_MERGE_IMPLEMENTATION_TREE_CHANGED');
+    }
+  } else if (snapshot.base_commit) {
+    const fingerprint = await gitDiffFingerprint(projectRoot, String(snapshot.base_commit));
+    baseDiffMatches = fingerprint === String(snapshot.diff_fingerprint ?? '');
+    if (!baseDiffMatches) {
+      throw new Error('POST_MERGE_FORMAL_DIFF_CHANGED');
+    }
+  }
+
+  return {
+    work_item_id: workItemId,
+    close_gate_passed: true,
+    formal_version_gate_passed: true,
+    snapshot_present: true,
+    implementation_commit: implementationCommit,
+    implementation_commit_ancestor: implementationCommitAncestor,
+    implementation_file_set_matches: implementationFileSetMatches,
+    implementation_tree_matches: implementationTreeMatches,
+    base_diff_matches: baseDiffMatches,
+  };
+}

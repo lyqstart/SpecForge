@@ -1,0 +1,1011 @@
+{
+  "utc": "2026-11-08T07:47:38.569Z",
+  "addressed_diagnostics": 236,
+  "skipped": [
+    {
+      "file": "packages\\cli\\src\\BlobOptimizer.ts",
+      "line": 122,
+      "name": "lastChunkTime",
+      "kind": "BinaryExpression",
+      "reason": "requires owner-specific repair"
+    },
+    {
+      "file": "packages\\cli\\src\\commands\\job-wait.ts",
+      "line": 34,
+      "name": "modeSwitch",
+      "kind": "BindingElement",
+      "reason": "requires owner-specific repair"
+    },
+    {
+      "file": "packages\\daemon-core\\src\\http\\HTTPServer.ts",
+      "line": 2524,
+      "name": "request",
+      "kind": "BinaryExpression",
+      "reason": "requires owner-specific repair"
+    },
+    {
+      "file": "packages\\daemon-core\\src\\tools\\lib\\sf_doc_lint_core.ts",
+      "line": 1092,
+      "name": "inAcceptanceCriteria",
+      "kind": "BinaryExpression",
+      "reason": "requires owner-specific repair"
+    },
+    {
+      "file": "packages\\daemon-core\\src\\tools\\lib\\sf_doc_lint_core.ts",
+      "line": 1410,
+      "name": "inAcceptanceCriteria",
+      "kind": "BinaryExpression",
+      "reason": "requires owner-specific repair"
+    },
+    {
+      "file": "packages\\daemon-core\\src\\tools\\lib\\sf_doc_lint_core.ts",
+      "line": 1647,
+      "name": "inAcceptanceCriteria",
+      "kind": "BinaryExpression",
+      "reason": "requires owner-specific repair"
+    },
+    {
+      "file": "packages\\daemon-core\\src\\tools\\lib\\sf_doc_lint_core.ts",
+      "line": 1902,
+      "name": "inAcceptanceCriteria",
+      "kind": "BinaryExpression",
+      "reason": "requires owner-specific repair"
+    },
+    {
+      "file": "packages\\daemon-core\\src\\tools\\lib\\sf_doc_lint_core.ts",
+      "line": 2228,
+      "name": "agentConstitutionLine",
+      "kind": "BinaryExpression",
+      "reason": "requires owner-specific repair"
+    },
+    {
+      "file": "packages\\daemon-core\\src\\tools\\lib\\sf_ears_parser.ts",
+      "line": 828,
+      "name": "sections",
+      "kind": "BindingElement",
+      "reason": "requires owner-specific repair"
+    },
+    {
+      "file": "packages\\permission-engine\\src\\services\\api-key-manager.ts",
+      "line": 322,
+      "name": "key",
+      "kind": "BindingElement",
+      "reason": "requires owner-specific repair"
+    },
+    {
+      "file": "packages\\permission-engine\\src\\services\\api-key-manager.ts",
+      "line": 336,
+      "name": "key",
+      "kind": "BindingElement",
+      "reason": "requires owner-specific repair"
+    },
+    {
+      "file": "packages\\permission-engine\\src\\services\\api-key-manager.ts",
+      "line": 349,
+      "name": "key",
+      "kind": "BindingElement",
+      "reason": "requires owner-specific repair"
+    },
+    {
+      "file": "packages\\permission-engine\\src\\services\\api-key-manager.ts",
+      "line": 374,
+      "name": "key",
+      "kind": "BindingElement",
+      "reason": "requires owner-specific repair"
+    },
+    {
+      "file": "packages\\permission-engine\\src\\services\\api-key-manager.ts",
+      "line": 400,
+      "name": "key",
+      "kind": "BindingElement",
+      "reason": "requires owner-specific repair"
+    },
+    {
+      "file": "D:\\code\\SpecForge\\.lint-review-a01\\packages\\permission-engine\\src\\services\\bearer-token-validator.ts",
+      "line": 15,
+      "reason": "bound import directive requires explicit review"
+    },
+    {
+      "file": "packages\\workflow-runtime\\tests\\property\\composite-gate-property-3.sequential-execution.test.ts",
+      "line": 215,
+      "name": "_",
+      "kind": "VariableDeclaration",
+      "reason": "requires owner-specific repair"
+    },
+    {
+      "file": "D:\\code\\SpecForge\\.lint-review-a01\\packages\\workflow-runtime\\tests\\property\\generators.ts",
+      "line": 121,
+      "reason": "variable statement has modifiers/using/comment-sensitive text"
+    },
+    {
+      "file": "packages\\workflow-runtime\\tests\\property\\helpers.ts",
+      "line": 249,
+      "name": "stateId",
+      "kind": "BindingElement",
+      "reason": "requires owner-specific repair"
+    }
+  ],
+  "members": [
+    {
+      "file": "packages/cli/src/blob/BlobHandler.ts",
+      "before_sha256": "5db05b2c044bb80397e751b6cf0af7e53ae6f04d4de3ca024b0f90a8bdf952e7",
+      "after_sha256": "b81793e0852dfaf4f8acca8f59b4fbe48669be03472ea2e7cb38b5c4d1069a2f",
+      "changes": [
+        "remove unused import bindings; TS build/runtime regression required"
+      ]
+    },
+    {
+      "file": "packages/cli/src/cli.ts",
+      "before_sha256": "6916973e776cf899c1e1877e68a47c3cd94f21c082ee56dccc787a87603e34ab",
+      "after_sha256": "c9d7fc6da7856ed8824cb33a092b8086598482cdf5523fa4021b44ccf40f82bf",
+      "changes": [
+        "unused type-only or uninvoked local function declaration",
+        "unused type-only or uninvoked local function declaration",
+        "unused parameter; existing argsIgnorePattern ^_",
+        "unused type-only or uninvoked local function declaration",
+        "remove unused local binding; retain every possibly-effectful initializer as explicit discarded expression",
+        "remove unused import bindings; TS build/runtime regression required",
+        "remove unused import bindings; TS build/runtime regression required",
+        "remove unused import bindings; TS build/runtime regression required",
+        "remove unused import bindings; TS build/runtime regression required"
+      ]
+    },
+    {
+      "file": "packages/cli/src/commands/daemon-client.ts",
+      "before_sha256": "b07a2057c25b5b6c5624ddbfa3734ca58b2372b63ce9dc2e381b5acac628f7a0",
+      "after_sha256": "41f1959c1552de76760b51846020589b2581c100082bbe55b95c8d01d15a12bf",
+      "changes": [
+        "unused type-only or uninvoked local function declaration",
+        "remove unused import bindings; TS build/runtime regression required"
+      ]
+    },
+    {
+      "file": "packages/cli/src/commands/daemon/index.ts",
+      "before_sha256": "0894962dd9778522be4fb2c46d4d76f89932cb8da2d940278747d7332f4d8ca7",
+      "after_sha256": "e192d090b385c35061d032de4a2b10f8e15ad170746d7124ebc9fe3e7ebfc4e5",
+      "changes": [
+        "unused parameter; existing argsIgnorePattern ^_",
+        "remove unused import bindings; TS build/runtime regression required"
+      ]
+    },
+    {
+      "file": "packages/cli/src/commands/daemon/install-service.ts",
+      "before_sha256": "671645da40f7b2e08ff8fd63c32d90214d7cea22fbfaae89de0ed1c260f06d65",
+      "after_sha256": "3823b2b6b31bde36ac08ad388198a11d012379bc8abf866158b61dd210b765ce",
+      "changes": [
+        "remove unused local binding; retain every possibly-effectful initializer as explicit discarded expression"
+      ]
+    },
+    {
+      "file": "packages/cli/src/commands/help.ts",
+      "before_sha256": "d673cd77549ef1530ffb2586b263be739fc79220e0318afad1621e6de647aa8b",
+      "after_sha256": "a62e50c807b2c091147f65fddd48fefec25c246a03877b1e75cf7e8774249b7e",
+      "changes": [
+        "remove unused import bindings; TS build/runtime regression required",
+        "remove unused import bindings; TS build/runtime regression required"
+      ]
+    },
+    {
+      "file": "packages/cli/src/commands/opencode-server/index.ts",
+      "before_sha256": "15203cbf43fab757a382cc4b7a3a6277b6b05d5fa702bacb53e8f4e0f48fe66e",
+      "after_sha256": "42d189f947dbb0cc920d6c76ab85442ae2d06ba7323c70a76d506237303ad574",
+      "changes": [
+        "unused parameter; existing argsIgnorePattern ^_",
+        "remove unused import bindings; TS build/runtime regression required"
+      ]
+    },
+    {
+      "file": "packages/cli/src/commands/opencode-server/install-service.ts",
+      "before_sha256": "2afeefb75272c5a47b3d6378d0e7540ab737d534ad3c0a8116168555f8f2a2b4",
+      "after_sha256": "ae78d958d906dd1b137a16cb7d26785ad94ddc8341f78d8663a082d93a5c195d",
+      "changes": [
+        "remove unused local binding; retain every possibly-effectful initializer as explicit discarded expression"
+      ]
+    },
+    {
+      "file": "packages/cli/src/commands/plugin.ts",
+      "before_sha256": "f901fde2ddd9df203cc2b3e77360b0154ac8090f10e9afeb8ddc24f2fe060e05",
+      "after_sha256": "2ebe94f8a58bcf834ee470e4dab26d0128cd5354968bab06b974ad47ecc9f550",
+      "changes": [
+        "unused type-only or uninvoked local function declaration",
+        "remove unused import bindings; TS build/runtime regression required"
+      ]
+    },
+    {
+      "file": "packages/cli/src/commands/progress.ts",
+      "before_sha256": "f5216b484fd0dfe31e5c280b65776ec2b8e42701e02abc21ec1a7ec532c57daf",
+      "after_sha256": "358d1c0815df101077664a20d16511ebc0f06e940b13a76f289c72ece7176cb2",
+      "changes": [
+        "unused parameter; existing argsIgnorePattern ^_"
+      ]
+    },
+    {
+      "file": "packages/cli/src/commands/services/index.ts",
+      "before_sha256": "2ded4c227c767efa431db2e401ca91f450e1a5c8a340466d3d42336efbc10221",
+      "after_sha256": "aae85a3e0cef268cbd8d7e7fc08c81a3e1dddc15e7d3643f376decfc516d8753",
+      "changes": [
+        "unused parameter; existing argsIgnorePattern ^_",
+        "remove unused local binding; retain every possibly-effectful initializer as explicit discarded expression",
+        "unused type-only or uninvoked local function declaration",
+        "remove unused import bindings; TS build/runtime regression required",
+        "remove unused import bindings; TS build/runtime regression required"
+      ]
+    },
+    {
+      "file": "packages/cli/src/commands/spec.ts",
+      "before_sha256": "a69368f19d9bb898fc927ffcc9002cddb96835d5ea0622db84584100493f797b",
+      "after_sha256": "d80f1e37049094637327a94d41ce67aba16e4091b0a303c721beeb54f3c19f45",
+      "changes": [
+        "unused type-only or uninvoked local function declaration",
+        "remove unused import bindings; TS build/runtime regression required"
+      ]
+    },
+    {
+      "file": "packages/cli/src/commands/version-cmd.ts",
+      "before_sha256": "3fae6ff4bc838628eaba6f3a14b8a4adb76781bf3af13a9563cf2160f349f7f8",
+      "after_sha256": "0d4f0550f2d6ad0568869cea556348e16b09488b3be02bd22ebd91307e1d38be",
+      "changes": [
+        "unused catch binding; exception handling retained",
+        "unused catch binding; exception handling retained",
+        "unused catch binding; exception handling retained"
+      ]
+    },
+    {
+      "file": "packages/cli/src/commands/webhook.ts",
+      "before_sha256": "eabbd3d2c8362d0600e9c3179ac78952fbaaca6f2be89e37caad93dd5377c5da",
+      "after_sha256": "4ee26c39ec4aad4d1b525fca41a8d0990e22eff14c257884d7aea238ef040f1c",
+      "changes": [
+        "unused type-only or uninvoked local function declaration",
+        "remove unused import bindings; TS build/runtime regression required",
+        "remove unused import bindings; TS build/runtime regression required"
+      ]
+    },
+    {
+      "file": "packages/cli/src/distribution/package-validator.ts",
+      "before_sha256": "f6c9976fbbee0500d94e8cde67491f6ba9b153b9839eb91740f59425b1798fb6",
+      "after_sha256": "b5635736f8bccb59c31a712f6ae0980b86d95f0468db21d6725a41d5878e6a23",
+      "changes": [
+        "unused parameter; existing argsIgnorePattern ^_"
+      ]
+    },
+    {
+      "file": "packages/cli/src/help/HelpSystem.ts",
+      "before_sha256": "f7eceb0c47a061c7e396a6a8912db6ba49186ca2a9b24c8cad9b26a00b95312c",
+      "after_sha256": "9b01e69c41699aacbc8cd3851a2822932cc4229299f6430a06f747784b31372d",
+      "changes": [
+        "remove unused import bindings; TS build/runtime regression required"
+      ]
+    },
+    {
+      "file": "packages/cli/src/http/DaemonClient.ts",
+      "before_sha256": "16bf495b7e3bc89d7b14fe527616f677dd26959c103e76457f4986675e8bbc40",
+      "after_sha256": "338f29eaa878841028c00a67827b2c8157a4d680fec433e89452c85d05ba0ef2",
+      "changes": [
+        "remove unused import bindings; TS build/runtime regression required"
+      ]
+    },
+    {
+      "file": "packages/cli/src/job/JobTracker.ts",
+      "before_sha256": "f82afd93b74e53681377af3185a98ecf86c002c21cd9cc4e81684132ee297cd7",
+      "after_sha256": "4f7dcb558a1112cacba4d438afd16e137909df559b369100c1cdf8fca121e7e7",
+      "changes": [
+        "remove unused import bindings; TS build/runtime regression required"
+      ]
+    },
+    {
+      "file": "packages/configuration/src/config-loader.ts",
+      "before_sha256": "a3f3a6f810c8ea34ce034c02317f9059315e7a4aee49e403e3137425864d5934",
+      "after_sha256": "2ef8c51ea32035d0bfb02df0fab781ad75994bb85878fdc8f17381c5e5316d45",
+      "changes": [
+        "remove unused import bindings; TS build/runtime regression required"
+      ]
+    },
+    {
+      "file": "packages/configuration/src/config-validator.ts",
+      "before_sha256": "3ce430e4a6fb0f70bbd13a4f6661406a0fed95ba1cc8a0d6344a085c5efc0dad",
+      "after_sha256": "716d8702adaa8ef1c33f40716b90bc182cd199c181aac5fd3b36e66fa07d4c6d",
+      "changes": [
+        "remove unused import bindings; TS build/runtime regression required"
+      ]
+    },
+    {
+      "file": "packages/daemon-core/src/daemon/HandshakeManager.ts",
+      "before_sha256": "9d5adc856eb9280b25d53d861cad59c4b080a4e0e930582f29883af2c22d61e3",
+      "after_sha256": "f70a503c1f57306b8b19a678fbbbdd8d1b63f64c169a5e58e54a687d1c3a7e35",
+      "changes": [
+        "unused catch binding; exception handling retained",
+        "unused catch binding; exception handling retained"
+      ]
+    },
+    {
+      "file": "packages/daemon-core/src/daemon/path-resolver.ts",
+      "before_sha256": "cd2dbc0b1777f3831dd20dafa9b0403d1da2509939d5532127ba3f785fd1aaeb",
+      "after_sha256": "f099e81ee8b187966ce075e2aef48c94a6767c317dd7fe2c3589ec8308a3edb4",
+      "changes": [
+        "remove unused import bindings; TS build/runtime regression required"
+      ]
+    },
+    {
+      "file": "packages/daemon-core/src/http/HTTPServer.ts",
+      "before_sha256": "5d461d69ecc8b052d9bb154191f104d70832961bc6133664c3378bc7bb1d4568",
+      "after_sha256": "642c04bdf15ab2504d9d2b7d39acdc7efa3e04c49575d6cd0fc70b59d27806da",
+      "changes": [
+        "unused parameter; existing argsIgnorePattern ^_",
+        "unused parameter; existing argsIgnorePattern ^_"
+      ]
+    },
+    {
+      "file": "packages/daemon-core/src/payload-handler.ts",
+      "before_sha256": "af9200db72dc808ac74135b7689713fd59d3cb4efcb452ee817cd505ee707f7a",
+      "after_sha256": "1c38b0d092323b48177b3a8c0a5a82daf3f7a4bdce380bb4a22ab7671bef1b6e",
+      "changes": [
+        "remove unused local binding; retain every possibly-effectful initializer as explicit discarded expression"
+      ]
+    },
+    {
+      "file": "packages/daemon-core/src/recovery/RecoverySubsystem.test.ts",
+      "before_sha256": "373b65aacf068eaccf73a0bf4e13c7ab7dcb8ea73b139075ce71ef91b043aeaa",
+      "after_sha256": "eed40052c7fe86eb636bb8bf6abd3a38e0ab79757d5a668238953726e1b38649",
+      "changes": [
+        "remove unused local binding; retain every possibly-effectful initializer as explicit discarded expression",
+        "unused parameter; existing argsIgnorePattern ^_"
+      ]
+    },
+    {
+      "file": "packages/daemon-core/src/session/SessionRegistry.ts",
+      "before_sha256": "d0e379e4965b3aff88dc0139d87d2f97f8b0142133b980b9237806f4215cbcad",
+      "after_sha256": "f98a3e2c7c5a7cd7a8ce00402a5db83a7fba5432959c70c7243b97c6a336f7fb",
+      "changes": [
+        "remove unused import bindings; TS build/runtime regression required"
+      ]
+    },
+    {
+      "file": "packages/daemon-core/src/state/StateManager.ts",
+      "before_sha256": "371772aea92487d2a880164ecb41de165ecd95e03f62687806db5fbd63d9f118",
+      "after_sha256": "e575bb0ce01cd06fc54f8f7324a5903bdb164cf79c2c9b929fe10af8b400ce43",
+      "changes": [
+        "unused catch binding; exception handling retained"
+      ]
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-safe-bash.ts",
+      "before_sha256": "ba020a59006db726ebfd683ddd8ceb738ab74317e153c65ccbef1454dbcad303",
+      "after_sha256": "8ec5fe469faf84db5228906c2f97969b1559f469c0b9c37f4d98c299cf796be0",
+      "changes": [
+        "unused type-only or uninvoked local function declaration"
+      ]
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/artifact-schema-validation.ts",
+      "before_sha256": "ce2c10029ab994fbe64e274a89a963f097f6d0bdc6089d2557df57218b9f8115",
+      "after_sha256": "4f6a98acad5fb7080a1664b2c71e6eabdc3d18d43e7964bb295633460c7a4d69",
+      "changes": [
+        "unused catch binding; exception handling retained",
+        "unused catch binding; exception handling retained"
+      ]
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/gate-chain.ts",
+      "before_sha256": "6cdc389b5a344a71319f87745f0767de2da81b26230049bc3327bfc8c1a19042",
+      "after_sha256": "f96d7836e473e677310142c4071c96834bb05cccf945beb640d0d24f2b33f320",
+      "changes": [
+        "remove unused import bindings; TS build/runtime regression required"
+      ]
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/git-governance-core.ts",
+      "before_sha256": "17515720590d60340bed2af41b2f86b840aee082bf78616d437ab6d569fd8383",
+      "after_sha256": "e82420c088c2a6df7f8f1d6c2b53d77944c839c46640acc3b8b15098f36e686d",
+      "changes": [
+        "remove unused import bindings; TS build/runtime regression required"
+      ]
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/rollback-runner-v11.ts",
+      "before_sha256": "41aa8f4d7fefb38ddfd156744d6040bcc82fd619bb5b791c9adc4dd97063ab44",
+      "after_sha256": "a74a442e8f70efa2326872d696a5b2588acb1887d4a195dc34134d0e2ce0fdb5",
+      "changes": [
+        "remove unused import bindings; TS build/runtime regression required"
+      ]
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_design_gate_core.ts",
+      "before_sha256": "74b989dd25ac249ed068f5cf459263cd10052551b62f83a0bc48b05e89204de6",
+      "after_sha256": "fbafa97f41ac4bc57f6cfad6ba495593258b99c49c63b7ae5def66c89b2f67f8",
+      "changes": [
+        "remove unused import bindings; TS build/runtime regression required"
+      ]
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_doc_lint_core.ts",
+      "before_sha256": "77cde26963f932a82135e1aa1c5613d90141b6da5d7cd0ea7fdcc810c4f60e45",
+      "after_sha256": "0a1a3167c42e33c584103a91d3f79705da7ee39a008559c7dcfe1a43654bcf36",
+      "changes": [
+        "unused type-only or uninvoked local function declaration",
+        "unused type-only or uninvoked local function declaration",
+        "unused type-only or uninvoked local function declaration",
+        "unused type-only or uninvoked local function declaration",
+        "unused type-only or uninvoked local function declaration",
+        "unused type-only or uninvoked local function declaration"
+      ]
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_ears_parser.ts",
+      "before_sha256": "52b0966f7a8a2f207384066c89c139b60becfec42556d83532d0cc194934357b",
+      "after_sha256": "95cc8a12faf2f5cb69e101c586a778a698c78f8a3f61c3813f1afabfc2a512d4",
+      "changes": [
+        "unused catch binding; exception handling retained"
+      ]
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_knowledge_base_core.ts",
+      "before_sha256": "fa6853722a0ad88b2979c39a40da834e9f673e0063948091f3249ed8a603f045",
+      "after_sha256": "bffe6d797c550c1041a128c7f821320e7e990681a830a16174801df8eeb26736",
+      "changes": [
+        "remove unused import bindings; TS build/runtime regression required"
+      ]
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/tool-permissions.ts",
+      "before_sha256": "1c36935be440d302abec7d8a5486a98ab6b9c68f814785d1cb8d15a862dc89cd",
+      "after_sha256": "8784e2b4c57b62eba4dd38ae8122a693a0c6caa5418b1047e9ac85a00225102e",
+      "changes": [
+        "remove unused import bindings; TS build/runtime regression required"
+      ]
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/verification-evidence-v11.ts",
+      "before_sha256": "96998cb04b880ceb723c87cbe23fef9cbf7debcf3dc0a3a38ed61ddbe56d61dd",
+      "after_sha256": "d8f77bb6272584f7c6a1ab863f52828216fd6a8da11bc430cec0801067e68c05",
+      "changes": [
+        "remove unused import bindings; TS build/runtime regression required"
+      ]
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/waiver.ts",
+      "before_sha256": "48ef50b8d32b6713c1f176c1b34d6c87014f8eecc4a5d85b870253cea3d6e8c1",
+      "after_sha256": "0f7dc8551474fb469576edc2d1bdaf4aca513d75b92d9cec4eb4ec80f074635d",
+      "changes": [
+        "remove unused import bindings; TS build/runtime regression required"
+      ]
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/work-item-lifecycle-v11.ts",
+      "before_sha256": "e0c7c85df2632422f75b4c39643bad3941bcdb5a2f0e897083ce64f5c299b42e",
+      "after_sha256": "54b62b1c8d6895f64b3e62565a41a490f062adadbdcaa5cbdba96f56b1739b6b",
+      "changes": [
+        "remove unused local binding; retain every possibly-effectful initializer as explicit discarded expression"
+      ]
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/write-guard-runtime-v12.ts",
+      "before_sha256": "b13db9408fbd69746211f67f8b7d09294f6588322e509da15f542af132da89e4",
+      "after_sha256": "d50ba93c3470916191c765f5b44bc037bf7f047373d748183e76a77c32179c3b",
+      "changes": [
+        "remove unused import bindings; TS build/runtime regression required"
+      ]
+    },
+    {
+      "file": "packages/host-profile/src/probe-os.ts",
+      "before_sha256": "180e107748787571ec0ae31aa04e858e83778a897bd16eba86f15cf06db6283f",
+      "after_sha256": "13b4554df1197c0a8cb435322f8ae9db7ecb300d858007b6d83d1696762ed580",
+      "changes": [
+        "remove unused import bindings; TS build/runtime regression required"
+      ]
+    },
+    {
+      "file": "packages/host-profile/src/probe-utils.ts",
+      "before_sha256": "513b5593a4460356697207590099378272b1c7ddf370296dd48fdf028d8f91af",
+      "after_sha256": "e5480b47974017a7d92cdb16337d194ccf180a48f42c8a5cb1aad34133ee23f7",
+      "changes": [
+        "remove unused local binding; retain every possibly-effectful initializer as explicit discarded expression"
+      ]
+    },
+    {
+      "file": "packages/observability/tests/property/property-30-event-schema-multisync.pbt.ts",
+      "before_sha256": "f454348a2f250510a57793f431740737663f205fa04db872206ab591f5013725",
+      "after_sha256": "b4a7f28a3ed33f52e06650da87118beb26e359550cd0055c8b22a0fa545cac60",
+      "changes": [
+        "remove unused import bindings; TS build/runtime regression required",
+        "remove unused import bindings; TS build/runtime regression required",
+        "remove unused import bindings; TS build/runtime regression required",
+        "remove unused import bindings; TS build/runtime regression required"
+      ]
+    },
+    {
+      "file": "packages/observability/tests/property/property-30-event-schema-multisync.property.test.ts",
+      "before_sha256": "c2dd785259f27186d15c636e6183d8887519fc721377b0174f7daff4bd7f9e88",
+      "after_sha256": "8e19ab04288458b75bbc318404d6c321852d6b643ea61932aa9534c059f58011",
+      "changes": [
+        "remove unused import bindings; TS build/runtime regression required"
+      ]
+    },
+    {
+      "file": "packages/permission-engine/src/services/plugin-loader-integration.ts",
+      "before_sha256": "f3e43fe867852cad70f4b6a60573568f9850d27e27899ed474eabc754bc0e465",
+      "after_sha256": "88e36e83e472ac86475cfd0dedf7c1af413bde4f5c38a0520d9a70c46b7d9aa1",
+      "changes": [
+        "remove unused import bindings; TS build/runtime regression required",
+        "remove unused import bindings; TS build/runtime regression required"
+      ]
+    },
+    {
+      "file": "packages/permission-engine/tests/integration/crash-recovery.test.ts",
+      "before_sha256": "ebe84848ef954b8e2bd93892b6ab72f62fa8fbbed3c954c1432132f5f91ae838",
+      "after_sha256": "b2aab5bfecaadc92c9b16d9ba133120a2b67f537321213a5c357b4890d10aeb9",
+      "changes": [
+        "remove unused import bindings; TS build/runtime regression required",
+        "remove unused import bindings; TS build/runtime regression required",
+        "remove unused import bindings; TS build/runtime regression required"
+      ]
+    },
+    {
+      "file": "packages/permission-engine/tests/integration/remote-access-integration.test.ts",
+      "before_sha256": "69ee2a74a6923aa2b8495fc56c3d379ec7ec9018960a687ab5869a169ab0b6ef",
+      "after_sha256": "5d9fb216ae3c222b2eb01d6956995f5998545834b352e36a31728645274916c6",
+      "changes": [
+        "remove unused local binding; retain every possibly-effectful initializer as explicit discarded expression"
+      ]
+    },
+    {
+      "file": "packages/permission-engine/tests/property/bearer-token-enforcement-property-16.test.ts",
+      "before_sha256": "121f821ba640fcd97f51a2f979a78507d3b8a5321599234fba081a42fc436c94",
+      "after_sha256": "f79ca94ff2839266d4b9f1f0a7720a27d2f88dfab4cca52173b0fd53ed74b6d2",
+      "changes": [
+        "remove unused import bindings; TS build/runtime regression required"
+      ]
+    },
+    {
+      "file": "packages/permission-engine/tests/property/permission-decision-traceability-property-10.test.ts",
+      "before_sha256": "dcb1aee7610de124516ad24407df97d5ea1624b5ae545916adc4e3d7fa2315bf",
+      "after_sha256": "891bd5ccefbec810a8dcca6fbab2afe60a7dbff3019aa2fadbd932c10475cbfd",
+      "changes": [
+        "remove unused local binding; retain every possibly-effectful initializer as explicit discarded expression"
+      ]
+    },
+    {
+      "file": "packages/permission-engine/tests/property/plugin-permission-gate-property-28.test.ts",
+      "before_sha256": "a4517e1838dd50105a50322b5df4f669bcdf7ec897ec55413a5be509c6ef0375",
+      "after_sha256": "2a5d9b7882a09fa8c69026665621b2e62c3b44cc2db3448b4256e63fc147268a",
+      "changes": [
+        "remove unused import bindings; TS build/runtime regression required",
+        "remove unused import bindings; TS build/runtime regression required",
+        "remove unused import bindings; TS build/runtime regression required"
+      ]
+    },
+    {
+      "file": "packages/permission-engine/tests/property/remote-access-guard-property-26.test.ts",
+      "before_sha256": "c6b35e1882455ffafd5add9581461933baf8f971f3a2d466d9e22845fabb2dc0",
+      "after_sha256": "ff60f1f7047ad453db15c9c15f994cd29f9b35504bca5b31293117b2485a2619",
+      "changes": [
+        "remove unused import bindings; TS build/runtime regression required"
+      ]
+    },
+    {
+      "file": "packages/permission-engine/tests/unit/bearer-token-validator.test.ts",
+      "before_sha256": "61fba31f78e26e01d55d8289aa07bf31b29edf375ead4793b3525f7fa84888e3",
+      "after_sha256": "c558a3d482a6d44c60610e24c0f6e4825868d2cb6cdc1d945df435c56e63f39d",
+      "changes": [
+        "remove unused import bindings; TS build/runtime regression required"
+      ]
+    },
+    {
+      "file": "packages/permission-engine/tests/unit/daemon-integration.test.ts",
+      "before_sha256": "c8a271e51dcc55f4238960ce542abb91b2ff9aca7ef12ddf7c3f92fe82f62508",
+      "after_sha256": "2825e7b0e4d4cd2f7cbbd1454efd10a3d2696758e7d873e15998d8aa4cd23861",
+      "changes": [
+        "remove unused local binding; retain every possibly-effectful initializer as explicit discarded expression",
+        "remove unused local binding; retain every possibly-effectful initializer as explicit discarded expression"
+      ]
+    },
+    {
+      "file": "packages/permission-engine/tests/unit/two-step-confirmation.test.ts",
+      "before_sha256": "ade2220672e00db0bb581c3e2ba9432a00bc041ab0f615409cea742d95625ec7",
+      "after_sha256": "403fa19ace2df85a567889e1b0e3e8daa119aa4f52a15a7442980c8c9b988989",
+      "changes": [
+        "remove unused import bindings; TS build/runtime regression required",
+        "remove unused import bindings; TS build/runtime regression required"
+      ]
+    },
+    {
+      "file": "packages/permission-engine/tests/unit/user-binding.test.ts",
+      "before_sha256": "ebdb13e81cd85bfb28110fcabff9884729a620aaafe0d26e2cae36d4e697d823",
+      "after_sha256": "1646cd7875d8f7965e62d3962851bdc60a69da98bd4538cd8c602330b8386356",
+      "changes": [
+        "remove unused local binding; retain every possibly-effectful initializer as explicit discarded expression",
+        "remove unused local binding; retain every possibly-effectful initializer as explicit discarded expression",
+        "remove unused local binding; retain every possibly-effectful initializer as explicit discarded expression"
+      ]
+    },
+    {
+      "file": "packages/service-management/src/orchestrator/healthcheck.ts",
+      "before_sha256": "369fe7005a8f3e62c0ed7fd2b23b0f348aead538f2415a711582a7a0ac40d849",
+      "after_sha256": "ac14a34566c06a4a844d2d7d6ee8a9a31c692a2fb7cc391aa68774079ba11c0d",
+      "changes": [
+        "unused catch binding; exception handling retained",
+        "remove unused import bindings; TS build/runtime regression required"
+      ]
+    },
+    {
+      "file": "packages/service-management/src/orchestrator/lifecycle-events.ts",
+      "before_sha256": "a6da13905b484d0600241218c74f01d25d6197efa82c08e2bc57607679900615",
+      "after_sha256": "1565e51b54d9e4ab6dd5b7c920f52626d00a4179f12feaba4497f108dd0259f7",
+      "changes": [
+        "remove unused import bindings; TS build/runtime regression required"
+      ]
+    },
+    {
+      "file": "packages/service-management/src/orchestrator/service-lifecycle-orchestrator.ts",
+      "before_sha256": "b0667658e5cb2b133822a94062dc8de2b16bf0c3c20ba95ad4a7bb96d37fa823",
+      "after_sha256": "483c6518aff856fa79c72589ff89fc49b2a51a2258f60515c22915cdefd13f13",
+      "changes": [
+        "remove unused import bindings; TS build/runtime regression required"
+      ]
+    },
+    {
+      "file": "packages/service-management/src/plugin/reconnecting-daemon-client.ts",
+      "before_sha256": "8899878a441dafbb0c83efafbe5c590cfbbda1bc697fba7d9547a9ff5896f041",
+      "after_sha256": "ce71af1dc2237ac5f92124ea75d30eb9d1ff729a43f3bb733c9fee131965a74d",
+      "changes": [
+        "remove unused import bindings; TS build/runtime regression required"
+      ]
+    },
+    {
+      "file": "packages/service-management/src/service-manager/systemd-service-manager.ts",
+      "before_sha256": "7b257a468a61dd7ea1331a77e5625cb924de0dcfa22b25b01aaf7f58d26c9545",
+      "after_sha256": "ec2d0623e32cd252b2d244293d627cce69fc88feea28eee1df1d96c55800c481",
+      "changes": [
+        "remove unused import bindings; TS build/runtime regression required"
+      ]
+    },
+    {
+      "file": "packages/workflow-runtime/src/retry.ts",
+      "before_sha256": "75503f658c967044bde14a53710dc987354e45cf7096d089feef1e73be2b4796",
+      "after_sha256": "2c274feb4642a5f71cf9a3ad830945b9d08bca729f2a150b1e836a46cf970295",
+      "changes": [
+        "remove unused import bindings; TS build/runtime regression required"
+      ]
+    },
+    {
+      "file": "packages/workflow-runtime/src/v11/runtime/PathPolicy.ts",
+      "before_sha256": "9973206eb9acff22f91d444430f5777f3b4cf478d03bedc6785710af91b3caf2",
+      "after_sha256": "6921631abb5fbc30a4e30fc79bbec96966fe2b0be57908c66a83c32c373d5732",
+      "changes": [
+        "unused parameter; existing argsIgnorePattern ^_",
+        "unused parameter; existing argsIgnorePattern ^_"
+      ]
+    },
+    {
+      "file": "packages/workflow-runtime/tests/acceptance.test.ts",
+      "before_sha256": "1dbeb7de4f19767dbed9e247ef51716b5fbb4cb67c0664b1920c0820b21baab5",
+      "after_sha256": "92ce72aef945ebc0449223036f4b8952f7e1eeb0705cf944bd4e990945deccdb",
+      "changes": [
+        "unused catch binding; exception handling retained",
+        "remove unused import bindings; TS build/runtime regression required",
+        "remove unused import bindings; TS build/runtime regression required",
+        "remove unused import bindings; TS build/runtime regression required"
+      ]
+    },
+    {
+      "file": "packages/workflow-runtime/tests/engine/WorkflowLoader.test.ts",
+      "before_sha256": "73229a99968b5a8ecfbcb4ed9619b9f35d339a2ad8a93ca04febb3f3ea8d9984",
+      "after_sha256": "87a64fbc1503e03bd8adc015b3cf60aaebd64fc90e49b2523909dfd88507ee01",
+      "changes": [
+        "unused catch binding; exception handling retained"
+      ]
+    },
+    {
+      "file": "packages/workflow-runtime/tests/event-filter.test.ts",
+      "before_sha256": "f0a7d21fb754f79090af89f204c2d3b84f8d57d38859c277c0cc574c2820fa1a",
+      "after_sha256": "4ec6f914d6bfa913922c9cdaaab509c2bf8d98ef65a48cbadb8082f878bc67ef",
+      "changes": [
+        "remove unused import bindings; TS build/runtime regression required"
+      ]
+    },
+    {
+      "file": "packages/workflow-runtime/tests/event-subscription.test.ts",
+      "before_sha256": "5036adc65b64061c6c61071b172c98a54f1f02215e5ffcaf1795d5a4c0061ea6",
+      "after_sha256": "112ca7e272e4ec0ab67c196ac5090c38d89130d03ab33858f85eac5b43d10844",
+      "changes": [
+        "unused parameter; existing argsIgnorePattern ^_",
+        "remove unused local binding; retain every possibly-effectful initializer as explicit discarded expression",
+        "remove unused local binding; retain every possibly-effectful initializer as explicit discarded expression",
+        "remove unused local binding; retain every possibly-effectful initializer as explicit discarded expression",
+        "unused parameter; existing argsIgnorePattern ^_"
+      ]
+    },
+    {
+      "file": "packages/workflow-runtime/tests/integration/agent-runner.test.ts",
+      "before_sha256": "dcc1a8127e5caf0adfae20dfdf9d215914bd9ba6e366669dd08a63af2045794d",
+      "after_sha256": "e78908ff1cd510f77de6ea183511cc1658f4a563492f7c3efe0dbc1dfb0f8085",
+      "changes": [
+        "remove unused local binding; retain every possibly-effectful initializer as explicit discarded expression",
+        "remove unused local binding; retain every possibly-effectful initializer as explicit discarded expression",
+        "remove unused local binding; retain every possibly-effectful initializer as explicit discarded expression",
+        "remove unused local binding; retain every possibly-effectful initializer as explicit discarded expression",
+        "remove unused import bindings; TS build/runtime regression required",
+        "remove unused import bindings; TS build/runtime regression required"
+      ]
+    },
+    {
+      "file": "packages/workflow-runtime/tests/integration/event-integration.test.ts",
+      "before_sha256": "1a5d4908db962e029bea216fc01028697429bb101baac8f13b6239b044659bd9",
+      "after_sha256": "325c131140f1f03b475ce705dd55922d3e7553e54b912f2c67e3f97428010641",
+      "changes": [
+        "remove unused local binding; retain every possibly-effectful initializer as explicit discarded expression",
+        "remove unused local binding; retain every possibly-effectful initializer as explicit discarded expression",
+        "remove unused local binding; retain every possibly-effectful initializer as explicit discarded expression",
+        "remove unused import bindings; TS build/runtime regression required",
+        "remove unused import bindings; TS build/runtime regression required"
+      ]
+    },
+    {
+      "file": "packages/workflow-runtime/tests/integration/workflow-e2e-property-29.test.ts",
+      "before_sha256": "c4456fe44b6b2b81dbcde110774b68dfc093fe18fad8d00c5933c8e56fc2b709",
+      "after_sha256": "832fa3e696802b606b4ba295859a10e27359bf4452834e9570cf2b3fd4c8274c",
+      "changes": [
+        "remove unused local binding; retain every possibly-effectful initializer as explicit discarded expression",
+        "remove unused import bindings; TS build/runtime regression required",
+        "remove unused import bindings; TS build/runtime regression required"
+      ]
+    },
+    {
+      "file": "packages/workflow-runtime/tests/performance/workflow-performance.test.ts",
+      "before_sha256": "9bb14a40b2200a90eaa5ca7fa8c65862ac6cae3c7b64f5d768f66fa8ccc4640e",
+      "after_sha256": "57f6999bae2790ecd5a8c0a6b5420b8b55a596a6644a08010cfa02eede3d1368",
+      "changes": [
+        "remove unused local binding; retain every possibly-effectful initializer as explicit discarded expression"
+      ]
+    },
+    {
+      "file": "packages/workflow-runtime/tests/property/composite-gate-parallel.property.test.ts",
+      "before_sha256": "b6177b230dda1227387f4ec2ad987b628728d41fd50ba4fe36a3c7dfeb6b1e66",
+      "after_sha256": "511e186d406e25e5ebe32b9f1e8b64b02ad991a1244948b08adaaf08002e0265",
+      "changes": [
+        "unused catch binding; exception handling retained",
+        "remove unused local binding; retain every possibly-effectful initializer as explicit discarded expression",
+        "remove unused import bindings; TS build/runtime regression required"
+      ]
+    },
+    {
+      "file": "packages/workflow-runtime/tests/property/composite-gate-property-3.sequential-execution.test.ts",
+      "before_sha256": "fb2311977b561611d53946f212e3f436e09bb0d0e3c2aee2d7c087cb7ed3b56f",
+      "after_sha256": "ef3b8951baf5005192be80a2b8788dc63b8dad103c3e010e1d2bf7a847450e11",
+      "changes": [
+        "unused parameter; existing argsIgnorePattern ^_",
+        "remove unused local binding; retain every possibly-effectful initializer as explicit discarded expression",
+        "remove unused local binding; retain every possibly-effectful initializer as explicit discarded expression",
+        "remove unused local binding; retain every possibly-effectful initializer as explicit discarded expression",
+        "remove unused local binding; retain every possibly-effectful initializer as explicit discarded expression",
+        "remove unused local binding; retain every possibly-effectful initializer as explicit discarded expression",
+        "remove unused local binding; retain every possibly-effectful initializer as explicit discarded expression",
+        "remove unused import bindings; TS build/runtime regression required"
+      ]
+    },
+    {
+      "file": "packages/workflow-runtime/tests/property/composite-gate-property-4.parallel-execution.test.ts",
+      "before_sha256": "5d96ce2ab256345dc776f5126fd0679cc52dd9684e1f03d0b7bf5a9a27c0c38b",
+      "after_sha256": "7838215ef649c4f5c40bafd12f57ebeba3d57e61b74884ac81b5e1d866e34337",
+      "changes": [
+        "remove unused local binding; retain every possibly-effectful initializer as explicit discarded expression",
+        "unused type-only or uninvoked local function declaration",
+        "remove unused import bindings; TS build/runtime regression required"
+      ]
+    },
+    {
+      "file": "packages/workflow-runtime/tests/property/composite-gate-property-5.fail-fast-parallel.test.ts",
+      "before_sha256": "2e0e3f0f557c39c63d26e019f4455323ae45aa5aa5b2f7675cf08066ba9a7263",
+      "after_sha256": "5e6e79a6c4c6e09b1453e0a7e1bb22e0406c9c63f15786fdb2697950aac49050",
+      "changes": [
+        "remove unused local binding; retain every possibly-effectful initializer as explicit discarded expression",
+        "remove unused import bindings; TS build/runtime regression required"
+      ]
+    },
+    {
+      "file": "packages/workflow-runtime/tests/property/error-handling-property.test.ts",
+      "before_sha256": "d1cd416aa0f60c56d6231e7fe5823cedd7022213bc5c7e21c67f6998e45583a2",
+      "after_sha256": "10d542bc7f1ee05900d93f2ced793a102fba40afb6b4be4d9e4cd1e332398e7c",
+      "changes": [
+        "remove unused import bindings; TS build/runtime regression required"
+      ]
+    },
+    {
+      "file": "packages/workflow-runtime/tests/property/helpers.ts",
+      "before_sha256": "7d3126f8d585422e5831c6de3635826d84f939fc8db949a02c49771dae781223",
+      "after_sha256": "edf8e47823c5a47bccc1006afd9e6bf9a3cf9a7b7255891aab0429a712059551",
+      "changes": [
+        "remove unused import bindings; TS build/runtime regression required",
+        "remove unused import bindings; TS build/runtime regression required"
+      ]
+    },
+    {
+      "file": "packages/workflow-runtime/tests/property/workflow-property-1.state-machine-consistency.test.ts",
+      "before_sha256": "aea70d649b1d987399ce28cedf477a5c762b9589a08418237b7926cc8801e3fb",
+      "after_sha256": "b6da4c0eb936837d07c7f0bc80b7b2ff102ba1d56e401b8d8fa52c3e159bdbf4",
+      "changes": [
+        "remove unused import bindings; TS build/runtime regression required"
+      ]
+    },
+    {
+      "file": "packages/workflow-runtime/tests/property/workflow-property-6.event-ordering.test.ts",
+      "before_sha256": "1e329c92435079f0121af252a8f476b54ac7a3c21ecc7edc2e95a516af3017c4",
+      "after_sha256": "a4bf9b1f5112eb8e3f28883b628b8dd86e83362eeb12614acfb1d76bc6d8ee29",
+      "changes": [
+        "unused catch binding; exception handling retained",
+        "unused type-only or uninvoked local function declaration",
+        "remove unused import bindings; TS build/runtime regression required",
+        "remove unused import bindings; TS build/runtime regression required"
+      ]
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/AgentWorkflowEngine.evidence-guard.test.ts",
+      "before_sha256": "09b1f82bb258c5690d6440c51f8b1bb245b92947a64ddd618a9bec3b07e0ac22",
+      "after_sha256": "212c650cef0f428afda1c9af5e56ebd0ee01e2c89589baf42686440639d48b26",
+      "changes": [
+        "remove unused local binding; retain every possibly-effectful initializer as explicit discarded expression",
+        "remove unused import bindings; TS build/runtime regression required"
+      ]
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/AgentWorkflowEngine.test.ts",
+      "before_sha256": "a6c232c650660c2f7cbcae5843d506d7c5bafd211747c6314275b3d08e114bc4",
+      "after_sha256": "209a431eec2ab5ba97eb7514828395d0b2e67b1e6f54af6fb1cc4bb081b629b4",
+      "changes": [
+        "remove unused local binding; retain every possibly-effectful initializer as explicit discarded expression",
+        "remove unused import bindings; TS build/runtime regression required"
+      ]
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/CompositeGateCancellation.test.ts",
+      "before_sha256": "0589e49022600fcfc5025c86e8a6795f18d19d9ede6b9f51bbb0ff31398f5501",
+      "after_sha256": "01f4659f6ab17aaed7718df65e0c662fa837acac9514c321b4271beeb047a7fd",
+      "changes": [
+        "remove unused local binding; retain every possibly-effectful initializer as explicit discarded expression",
+        "remove unused local binding; retain every possibly-effectful initializer as explicit discarded expression",
+        "remove unused local binding; retain every possibly-effectful initializer as explicit discarded expression",
+        "remove unused local binding; retain every possibly-effectful initializer as explicit discarded expression",
+        "remove unused import bindings; TS build/runtime regression required"
+      ]
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/CompositeGateResultAggregation.test.ts",
+      "before_sha256": "bd8cc8ad20257fc81cae0082b49b6c88ce4bc96cc53a789077489cbcf90703b3",
+      "after_sha256": "4ea1c6f9cdf6e1ccee9151e145a6874936c6051098e37046b27094dc2a1cba05",
+      "changes": [
+        "remove unused import bindings; TS build/runtime regression required"
+      ]
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/CompositeGateSerializer.test.ts",
+      "before_sha256": "6431acb83a5d61a7dfadaa66eadab5f677001a7517e4650934a9985f990ddfd6",
+      "after_sha256": "4aedd8a4f28bdbf134663d86851557a463f57634754caeb974773c98b92d9a55",
+      "changes": [
+        "remove unused import bindings; TS build/runtime regression required",
+        "remove unused import bindings; TS build/runtime regression required"
+      ]
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/GateDefinition.test.ts",
+      "before_sha256": "cd3d3d000b9c56f095db95f8f21c45e280b3e014e103a3b4ee3dad6e98bcd22d",
+      "after_sha256": "8c46dbc1b9c7b7f2f8e016cd676c04730014b275f05bb5df3fd895e1b95837f4",
+      "changes": [
+        "remove unused import bindings; TS build/runtime regression required"
+      ]
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/GateResult.test.ts",
+      "before_sha256": "de0e32aa81f187f407b8e603579e40f3c6bb797c50c8f8219375b9a3ceb8ddc3",
+      "after_sha256": "20d7af2a3124d98284759266d43ce3740693119f0008b5e7fb0e68c2df01691c",
+      "changes": [
+        "remove unused local binding; retain every possibly-effectful initializer as explicit discarded expression",
+        "remove unused local binding; retain every possibly-effectful initializer as explicit discarded expression",
+        "remove unused local binding; retain every possibly-effectful initializer as explicit discarded expression",
+        "remove unused local binding; retain every possibly-effectful initializer as explicit discarded expression",
+        "remove unused local binding; retain every possibly-effectful initializer as explicit discarded expression"
+      ]
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/GateRunnerErrorHandling.test.ts",
+      "before_sha256": "92dbd341dd2c292ab74785cc74c7e6919e9fac833c2e08a84afe20beb06717a1",
+      "after_sha256": "34495bec937f249e6e6ee6ed4674a6e0305584c461caed9653b52b4cc6b4b2fb",
+      "changes": [
+        "remove unused local binding; retain every possibly-effectful initializer as explicit discarded expression"
+      ]
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/WorkflowDefinitionLoader.test.ts",
+      "before_sha256": "32ead14b9ffd1980be33be0c3f60aea0f94f941094e3f2089abd268d70ea2460",
+      "after_sha256": "31608718d183e9b062a295c2b553893856da88d2f21365b8e01e26870acdca90",
+      "changes": [
+        "unused catch binding; exception handling retained"
+      ]
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/WorkflowErrorHandling.test.ts",
+      "before_sha256": "26352b11812239cb722baab7416d5429c234ac644e1e44651507b525d98a6a3d",
+      "after_sha256": "015ef1a581191a3d60ee8991cb0672f300f5e373657d46a1c92ff7d249eb116a",
+      "changes": [
+        "remove unused local binding; retain every possibly-effectful initializer as explicit discarded expression",
+        "remove unused import bindings; TS build/runtime regression required"
+      ]
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/engine.test.ts",
+      "before_sha256": "9ede25069f0a8b2268c2fc27970b2e444feb7d0e96f3d556bf2d950f88982e0c",
+      "after_sha256": "7c7536a8572fd1fda684fbca7acb85a2b661c91e9f61043bb29996e1b7e1145c",
+      "changes": [
+        "remove unused import bindings; TS build/runtime regression required"
+      ]
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/error-handler.test.ts",
+      "before_sha256": "6a975a027a3629a13a4fa434bc3106e40394f13a334d8a291329b55476340d19",
+      "after_sha256": "ebfb9208dd23c363cd6439ec6cc97a239a24deac6c19bd8474efc4bebff7447f",
+      "changes": [
+        "remove unused import bindings; TS build/runtime regression required"
+      ]
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/error-propagation.test.ts",
+      "before_sha256": "61cb35605114c9c0f09a80d5d79f1106be5b61aa5d5106528eb1065377337ac2",
+      "after_sha256": "22db36dd94373c93e1887bfe34188cecaafe4a4117ded4f060193f5109385aa5",
+      "changes": [
+        "unused parameter; existing argsIgnorePattern ^_",
+        "unused parameter; existing argsIgnorePattern ^_",
+        "unused parameter; existing argsIgnorePattern ^_",
+        "unused parameter; existing argsIgnorePattern ^_"
+      ]
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/rbac/FileAuthorizationPolicy.test.ts",
+      "before_sha256": "b6093840772a006c4f270d5d8b39d979262c71ead4fc0157684721f5e6e76115",
+      "after_sha256": "a5e4c26ca766919f63c75b7330df9f98e8be0f54aa79ba4f28f86ee3769cc36c",
+      "changes": [
+        "remove unused import bindings; TS build/runtime regression required"
+      ]
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/rbac/RBACEngine-RoundB.test.ts",
+      "before_sha256": "1852eb634d7527df1077a6162d2e7df0b5f7a54b5af8494d3f2c1f517118c247",
+      "after_sha256": "c2ed307338b928819b05e99d80be962f74dbee3a69ba1285ee69d3a609113e5d",
+      "changes": [
+        "remove unused import bindings; TS build/runtime regression required",
+        "remove unused import bindings; TS build/runtime regression required"
+      ]
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/rbac/TransitionAuthorizer.test.ts",
+      "before_sha256": "d1a55f57325827999c7a73c4e0cee1d00b3220a293b72726f1f4ae06ac6be5ad",
+      "after_sha256": "14eb164d864aa7623f3c99e85704d114663c21746eb9f80703c92344619959ca",
+      "changes": [
+        "remove unused import bindings; TS build/runtime regression required"
+      ]
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/rbac/seal-transitions.test.ts",
+      "before_sha256": "f037c398bee2e4f48a282996252e629f96cf1921b356d5b41b23367caf3a7974",
+      "after_sha256": "98ebd6768460a601d369daa0b6450fe14420fd71d6c19fd1f66eb1b93bf8edd4",
+      "changes": [
+        "remove unused import bindings; TS build/runtime regression required"
+      ]
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/retry.test.ts",
+      "before_sha256": "3d6f734bbf679fb4b2a8165b344413f9b83df323bfa1d799c23125bae73c8061",
+      "after_sha256": "d7bef7624cfb6126775f0c6b0ae3c02221ebfb547af3010cae3d78e4822a345e",
+      "changes": [
+        "remove unused local binding; retain every possibly-effectful initializer as explicit discarded expression",
+        "remove unused import bindings; TS build/runtime regression required"
+      ]
+    },
+    {
+      "file": "packages/workflow-runtime/tests/v11/property/parsers.property.test.ts",
+      "before_sha256": "75765c681c8517eb162be007c9fe76cd7a853aaeed28f2ac456d27e74287d3c7",
+      "after_sha256": "800874046acedcdf9a68f594c679380491fb33bd54c3f71ea048de77ca459821",
+      "changes": [
+        "remove unused import bindings; TS build/runtime regression required"
+      ]
+    }
+  ],
+  "contract": "Explicit AST binding ownership; no blanket unused-rule exception. Possibly effectful initializers remain evaluated once; property parameters/destructuring/loop bindings/directives require owner repair. All targets parsed and hashes checked before writes; build and actual regressions remain mandatory."
+}

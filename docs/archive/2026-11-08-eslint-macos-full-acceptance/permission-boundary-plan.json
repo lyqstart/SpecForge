@@ -1,0 +1,27 @@
+{
+  "utc": "2026-11-08T07:58:28.519Z",
+  "members": [
+    {
+      "file": "packages/permission-engine/src/hard-rules.ts",
+      "before": "f0e105a5a6f628bc5276fbbdc8236cbbfc36bbb6d30ec1085cf1eb64c5be88cf",
+      "after": "448b519312d8139e9fd6ec6784ed8f3cd354c48444542552fff10c99f02c5eab"
+    },
+    {
+      "file": "packages/permission-engine/src/index.ts",
+      "before": "48ea676b60d0ff35af74985bb06173c199c9367537ba8069954f9688cc935412",
+      "after": "db8f163a3d4e3d5705f02ab19b5002352102a68bd64390821ec9dec3c47540e2"
+    },
+    {
+      "file": "packages/permission-engine/src/utils/unknown-boundary.ts",
+      "before": "ABSENT",
+      "after": "f928361f02aa73a6fc08194e5f28f3335226b532570519c1265e3bc47c479206"
+    },
+    {
+      "file": "packages/permission-engine/tests/unit/unknown-permission-boundary.test.ts",
+      "before": "ABSENT",
+      "after": "513602123feb6dbb682aeab8de3f97751784b176a755d018dedde2dcb041f62f"
+    }
+  ],
+  "semantics": "Explicit optional string/record/array validation at real permission owner; valid values retain behavior, malformed non-string fields reject rather than become permissive fallbacks; no caller raw values in diagnostic messages. Typed EventLoggerConfig comes from its owner.",
+  "required_regression": "unknown-permission-boundary and existing hard-rule/API-key/remote guard suites; every consumer compile."
+}

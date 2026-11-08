@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/prepare-independent-publication-carrier.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "prepare-independent-final-publication-carrier",
+  "expected_writes": "Own ignored publication-live same carrier bytes; source/receipt provenance before final seal, no sealed file mutation afterward",
+  "started_utc": "2026-11-08T13:39:14.897Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\prepare-independent-publication-carrier.cjs",
+      "sha256": "c19dc9a3dc27147f8766e972a3a0377f8352c1de7418473935739f78683a0f31",
+      "size": 1009,
+      "extension": ".cjs"
+    }
+  ]
+}

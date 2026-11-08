@@ -1,0 +1,19 @@
+{
+  "owner": "service-management",
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "test",
+    "--",
+    "--maxWorkers=1",
+    "--reporter=json",
+    "--outputFile=D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\structured-qualification-patched\\service-management.vitest.json"
+  ],
+  "cwd": "D:\\code\\SpecForge\\.lint-shortpath-a01\\packages\\service-management",
+  "context_sha256": "6718af96ad6d72872663e3feadf61af12de0cdc94afdd0ba7e1b02a71ab1908b",
+  "started_utc": "2026-11-08T12:36:40.061Z",
+  "finished_utc": "2026-11-08T12:36:47.009Z",
+  "exit": 0,
+  "stdout_sha256": "c3d936ccc1a64885f85cc1dc90d09234dc73b9ddd727eea0cd3ea3d7a3f9c6af",
+  "stderr_sha256": "67821a177322eeb435d10fe68988c49876dc7bb462d27c23be654d5ae55681e2"
+}

@@ -1,0 +1,2 @@
+{"name":"daemon-core","exit":1,"files":231,"errors":75,"warnings":0,"rules":{"prettier/prettier":55,"@typescript-eslint/no-unsafe-argument":19,"@typescript-eslint/no-unused-vars":1}}
+{"name":"workflow-runtime","exit":1,"files":124,"errors":11,"warnings":0,"rules":{"import/order":8,"@typescript-eslint/no-unused-vars":3}}

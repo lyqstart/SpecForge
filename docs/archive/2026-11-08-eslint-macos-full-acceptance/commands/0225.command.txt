@@ -1,0 +1,35 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "test",
+    "--",
+    "tests/unit/verification-source-snapshot.test.ts",
+    "tests/unit/candidate-generation-integrity.test.ts",
+    "--maxWorkers=1",
+    "--minWorkers=1"
+  ],
+  "cwd": "D:\\code\\SpecForge\\.lint-shortpath-a01\\packages\\daemon-core",
+  "purpose": "shortpath-real-git-and-posix-full-files",
+  "expected_writes": "Actual Git identity and Candidate requirement consumers; same strict product guards",
+  "started_utc": "2026-11-08T12:24:04.953Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 3,
+      "path": "D:\\code\\SpecForge\\.lint-shortpath-a01\\packages\\daemon-core\\tests\\unit\\verification-source-snapshot.test.ts",
+      "sha256": "af4997d6de3a0cca99f73293b04b93c621fdaab8404438526f504e5e8330ab2f",
+      "size": 6757,
+      "extension": ".ts"
+    },
+    {
+      "argument_index": 4,
+      "path": "D:\\code\\SpecForge\\.lint-shortpath-a01\\packages\\daemon-core\\tests\\unit\\candidate-generation-integrity.test.ts",
+      "sha256": "ff1cbf2f163ee63f37d222dfd8301e41cb28e719c77dd01aae429936430c6cc6",
+      "size": 19205,
+      "extension": ".ts"
+    }
+  ]
+}

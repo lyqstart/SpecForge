@@ -1,0 +1,137 @@
+{
+  "utc": "2026-11-08T10:00:59.185Z",
+  "kind": "SEMANTICALLY_EQUIVALENT_SUGGESTED_ESCAPE_REMOVAL",
+  "policy": "Bounded planning uses only current ESLint core no-useless-escape; final acceptance still uses untouched full package configs. Only removeEscape suggestions consumed. Actual TypeScript-emitted JS AST and locked regexpp semantic AST match; raw/position/parent/reference links omitted, all operators/variable kinds/regex values preserved. Positive and negative range/operator/const canaries pass.",
+  "edit_collector_sha256": "2982bb1b55cb368df0961671246a58e4a7b07083f7070cce7ff7d9d13dc8ed87",
+  "proofs": [
+    {
+      "file": "packages/daemon-core/src/tools/lib/gate-runner-v11.ts",
+      "suggestions": [
+        {
+          "line": 1529,
+          "message": "Unnecessary escape character: \\-."
+        }
+      ],
+      "before_semantic_sha256": "5593e26472299f5e77c9e8d88361732dc38041d9f98648994bfb1823952c1a48",
+      "after_semantic_sha256": "5593e26472299f5e77c9e8d88361732dc38041d9f98648994bfb1823952c1a48",
+      "regex_parser_version": "4.12.2"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/git-governance-stage4.ts",
+      "suggestions": [
+        {
+          "line": 151,
+          "message": "Unnecessary escape character: \\/."
+        },
+        {
+          "line": 64,
+          "message": "Unnecessary escape character: \\/."
+        }
+      ],
+      "before_semantic_sha256": "de2ae97e775d4e373c87ad9d3165f2712ba68fe3569f7b33c12cb2b5c0fcb1ad",
+      "after_semantic_sha256": "de2ae97e775d4e373c87ad9d3165f2712ba68fe3569f7b33c12cb2b5c0fcb1ad",
+      "regex_parser_version": "4.12.2"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/governance-invariants-v11.ts",
+      "suggestions": [
+        {
+          "line": 362,
+          "message": "Unnecessary escape character: \\/."
+        },
+        {
+          "line": 357,
+          "message": "Unnecessary escape character: \\/."
+        },
+        {
+          "line": 352,
+          "message": "Unnecessary escape character: \\/."
+        }
+      ],
+      "before_semantic_sha256": "07e6c790b9d5a34422cb32d138f9b87bcd4b38ce679a1bfca7ba0f255b366f15",
+      "after_semantic_sha256": "07e6c790b9d5a34422cb32d138f9b87bcd4b38ce679a1bfca7ba0f255b366f15",
+      "regex_parser_version": "4.12.2"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_doc_lint_core.ts",
+      "suggestions": [
+        {
+          "line": 571,
+          "message": "Unnecessary escape character: \\*."
+        }
+      ],
+      "before_semantic_sha256": "8d24e8a004a0feae520cadefb4bf629b459be8bf359c06311f9dabc2ac235200",
+      "after_semantic_sha256": "8d24e8a004a0feae520cadefb4bf629b459be8bf359c06311f9dabc2ac235200",
+      "regex_parser_version": "4.12.2"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_ears_parser.ts",
+      "suggestions": [
+        {
+          "line": 133,
+          "message": "Unnecessary escape character: \\/."
+        },
+        {
+          "line": 116,
+          "message": "Unnecessary escape character: \\/."
+        },
+        {
+          "line": 111,
+          "message": "Unnecessary escape character: \\/."
+        }
+      ],
+      "before_semantic_sha256": "922613e1baa39693206c86bd2cc5e2269ff4d7bf74e94b13ddc5ecc76fc18658",
+      "after_semantic_sha256": "922613e1baa39693206c86bd2cc5e2269ff4d7bf74e94b13ddc5ecc76fc18658",
+      "regex_parser_version": "4.12.2"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/utils.ts",
+      "suggestions": [
+        {
+          "line": 42,
+          "message": "Unnecessary escape character: \\-."
+        },
+        {
+          "line": 36,
+          "message": "Unnecessary escape character: \\-."
+        }
+      ],
+      "before_semantic_sha256": "52fa6c04f8d799b46e2274b35e4be0ab13739480945d307657cfae0e756b5112",
+      "after_semantic_sha256": "52fa6c04f8d799b46e2274b35e4be0ab13739480945d307657cfae0e756b5112",
+      "regex_parser_version": "4.12.2"
+    }
+  ],
+  "members": [
+    {
+      "file": "packages/daemon-core/src/tools/lib/gate-runner-v11.ts",
+      "before": "18c06054b1968811616c28da780aa595976e6b4f9cac90effdea651849942740",
+      "after": "ce57fde082d792f33bd8d95ba41fd875d3e08b60616e37aec0b23bbaf7005247"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/git-governance-stage4.ts",
+      "before": "dcce0dd87cf5064c12c798665cc6375bd47ff9b359f14a1e8d5a244061b40110",
+      "after": "5bc812d8558c45b75f97f0e05c0ca976110ae19b78a732f5bb233f231ff93e69"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/governance-invariants-v11.ts",
+      "before": "1b30b1998ac24c4110509a3f2165e81601ff7a9d2cf7f23c5a5fbe6720bd48bc",
+      "after": "1eeb25a110b203339fe892c5f563664c39b74a82d1f3aa661933596d47122547"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_doc_lint_core.ts",
+      "before": "707c53555d7d437b026be33dcdcf17fdb71072e5afa030b3c91e9529701bf726",
+      "after": "b6d84d025277f45074d96b9c4b506c949caf3573e585ab756a580b750173b40a"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_ears_parser.ts",
+      "before": "442af873a15edd8d2583e40ed1370949119842b1b72634d3ff803b6b9ca7640f",
+      "after": "15ef34101825c321fb19534b4889f9115b9dcd5124ae393b1e2b476d51b6847e"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/utils.ts",
+      "before": "68feb1acdcb7fc0530d980cf41eeed63f8d044723c4dbe2954a8d29e5613f6b8",
+      "after": "0da272200ea16564ff2314a51cce2b456fc0d848640e735467b8e0d64f5f4b9a"
+    }
+  ],
+  "required": "Full real lint, compiler and current suites. No rule or command/path rejection disabled."
+}

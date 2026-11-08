@@ -1,0 +1,11 @@
+{
+  "command": "daemon",
+  "subcommand": "restart",
+  "description": "Restart the installed daemon and verify health",
+  "examples": [
+    {
+      "description": "Restart daemon",
+      "command": "specforge daemon restart"
+    }
+  ]
+}

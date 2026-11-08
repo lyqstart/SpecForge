@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/freeze-shortpath-candidate.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "freeze-shortpath-candidate",
+  "expected_writes": "All523 exact complete members with three final reviewed fixture delta; no other payload drift",
+  "started_utc": "2026-11-08T12:25:07.306Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\freeze-shortpath-candidate.cjs",
+      "sha256": "86cffc41d4e2635ae68d641990e2ab18bd5812d8a5189bc5165f7864987ff8ab",
+      "size": 2315,
+      "extension": ".cjs"
+    }
+  ]
+}

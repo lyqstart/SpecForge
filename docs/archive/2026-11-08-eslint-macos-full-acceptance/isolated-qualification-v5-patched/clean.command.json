@@ -1,0 +1,12 @@
+{
+  "leg": "patched",
+  "phase": "clean",
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "scripts/clean-workspace.ts"
+  ],
+  "cwd": "D:\\code\\SpecForge\\.lint-signal-a01",
+  "started_utc": "2026-11-08T12:58:40.370Z",
+  "context_sha256": "13c6c5fd873b748a49e35a7d60a3a4380794e4aee22aea2b077a2a9925d9f99c",
+  "expected_writes": "Owned isolated dependencies/build/test/install roots and sealed reports; no real business project or user configuration writes"
+}

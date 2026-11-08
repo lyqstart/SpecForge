@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/repair-autofix-import.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "repair-confirmed-invalid-auto-import-and-record-carrier-failure",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES:private value/type import repair;REPOSITORY_TRACKED_WRITES:ledger;EXTERNAL_EVIDENCE_WRITES:invalid source snapshot",
+  "started_utc": "2026-11-08T07:42:28.994Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\repair-autofix-import.cjs",
+      "sha256": "75e7a082adbb7fa3fddc7a8981be2e68e5abd3b8590614d0d139792826750c53",
+      "size": 2025,
+      "extension": ".cjs"
+    }
+  ]
+}

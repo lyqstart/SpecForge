@@ -1,0 +1,13 @@
+{
+  "exe": "C:\\Program Files\\nodejs\\node.exe",
+  "args": [
+    "scripts/lint-package.mjs",
+    "observability",
+    "--json"
+  ],
+  "cwd": "D:\\code\\SpecForge\\.lint-review-a01",
+  "started_utc": "2026-11-08T08:23:57.663Z",
+  "finished_utc": "2026-11-08T08:24:05.401Z",
+  "inner_exit_code": 1,
+  "spawn_error": null
+}

@@ -1,0 +1,55 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "test",
+    "--",
+    "tests/performance.test.ts",
+    "tests/integration/daemon-integration.test.ts",
+    "tests/integration/api-endpoints.test.ts",
+    "--maxWorkers=1"
+  ],
+  "cwd": "D:\\code\\SpecForge\\.lint-signal-a01\\packages\\daemon-core",
+  "purpose": "signal-fixed-daemon-real-lifecycle-regressions",
+  "expected_writes": "Actual stopped Daemon performance lifecycle/API files; preserve complete raw logs and check actual former warning",
+  "started_utc": "2026-11-08T12:54:59.547Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 3,
+      "path": "D:\\code\\SpecForge\\.lint-signal-a01\\packages\\daemon-core\\tests\\performance.test.ts",
+      "sha256": "6a13da2170d596e836a1c09e22f2a3aab91fa7251d0812098cb31ceb25bdb0f2",
+      "size": 16216,
+      "extension": ".ts"
+    },
+    {
+      "argument_index": 4,
+      "path": "D:\\code\\SpecForge\\.lint-signal-a01\\packages\\daemon-core\\tests\\integration\\daemon-integration.test.ts",
+      "sha256": "5de6f59f002a1ca82a5b6e087f99d8e7e0d0283cb95c9b7161f1b5b3e9377f6e",
+      "size": 17038,
+      "extension": ".ts"
+    },
+    {
+      "argument_index": 5,
+      "path": "D:\\code\\SpecForge\\.lint-signal-a01\\packages\\daemon-core\\tests\\integration\\api-endpoints.test.ts",
+      "sha256": "d0e99eb1ba5545dff04be14a721ac7ff4f984855df2afe4073958185f8a2b9d7",
+      "size": 8204,
+      "extension": ".ts"
+    }
+  ],
+  "finished_utc": "2026-11-08T12:55:08.029Z",
+  "carrier_exit_code": 0,
+  "inner_exit_code": 0,
+  "numeric_inner_exit_code_available": true,
+  "process_started": true,
+  "child_pid": 14760,
+  "spawn_error": null,
+  "signal": null,
+  "observed_writes": {
+    "repository_status_before": " M .gitattributes\n M bun.lock\n D docs/archive/2026-11-07-verification-production/consumer-source-review/current/docs/archive/2026-11-07-verification-production/evidence-guidance-baseline/setup/userlevel-opencode/skills/superpowers-verification-before-completion/SKILL.md\n M packages/service-management/src/shutdown/graceful-shutdown-handler.ts\n M packages/service-management/tests/unit/graceful-shutdown-handler.test.ts\n M scripts/run-ci-regression.mjs\n",
+    "repository_status_after": " M .gitattributes\n M bun.lock\n D docs/archive/2026-11-07-verification-production/consumer-source-review/current/docs/archive/2026-11-07-verification-production/evidence-guidance-baseline/setup/userlevel-opencode/skills/superpowers-verification-before-completion/SKILL.md\n M packages/service-management/src/shutdown/graceful-shutdown-handler.ts\n M packages/service-management/tests/unit/graceful-shutdown-handler.test.ts\n M scripts/run-ci-regression.mjs\n",
+    "other": "See expected writes and owner-specific receipt; status does not enumerate external runtime writes."
+  }
+}

@@ -1,0 +1,4 @@
+$ vitest run tests/event-subscription.test.ts tests/integration/agent-runner.test.ts "--maxWorkers=1" "--minWorkers=1"
+stderr | tests/event-subscription.test.ts > EventSubscriptionManager > getActiveSubscriptions > should reflect subscription removal
+[EventSubscriptionManager] Subscription not found: 1775b190-7995-424d-b7cf-45e9b3c46a8b
+

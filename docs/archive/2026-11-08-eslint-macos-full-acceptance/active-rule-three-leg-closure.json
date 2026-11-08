@@ -1,0 +1,9 @@
+{
+  "utc": "2026-11-08T11:03:09.626Z",
+  "file": "docs/rule/specforge-active-development-rules.md",
+  "sha256": "ca4e06e247572f2d3c7efc2832f0d1e07fcc12988844d48deb76d37797a36830",
+  "previous_full_read_and_EXP091_supplement": "gate.json and active-rule-reference-closure-update.json",
+  "new_section_read": "EXP-122 complete three-leg development-tool exception, rule retains exact original baseline and same-lock middle/patched checks",
+  "history_search": "EXP-122; 同一锁; 依赖变更; toolchain",
+  "scope": "Development-only qualification protocol; no product authority or original WI changes"
+}

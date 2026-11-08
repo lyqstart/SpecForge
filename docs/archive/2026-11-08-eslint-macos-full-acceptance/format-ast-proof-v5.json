@@ -1,0 +1,14 @@
+{
+  "utc": "2026-11-08T10:53:53.122Z",
+  "algorithm": "TypeScript forEachChild tree; canonical identifiers/literal cooked values and tagged-template raw values, operator/modifier kinds; unwrap redundant ParenthesizedExpression/Type; ignore trivia/positions only. Both parse diagnostics empty.",
+  "scope": "Exact original three Prettier-enabled package source scopes; no import sorting, type or behavior edits.",
+  "files": [
+    {
+      "file": "packages/daemon-core/src/tools/lib/architecture-governance-v7-regression.test.ts",
+      "before_sha256": "b1a12703fdbb363e1801640c85f2d01fa6b21703afc212677732f6d66262417f",
+      "after_sha256": "dd8e117a10a18c7426decff70eb5edd637fdf6793074e1071b0a2a062b2660e2",
+      "semantic_sha256": "371a6354bcdadcd18643976ff7964c443b5ee2c5f6c9e7369a289ff3b2afbb44"
+    }
+  ],
+  "result": "PASS_ALL_SEMANTIC_TREES_EQUAL"
+}

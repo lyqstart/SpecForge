@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/verify-runtime-reference-rule.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "verify-typescript-aware-runtime-binding-regression-rule",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES:real ESLint canary evidence;RUNTIME_OBSERVER_WRITES:parser only;no canary execution or source mutation",
+  "started_utc": "2026-11-08T08:09:31.169Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\verify-runtime-reference-rule.cjs",
+      "sha256": "fe7ddc0490d62fad25d88dc649d424ef3213fd19d72845b4d9d126076664fa45",
+      "size": 2410,
+      "extension": ".cjs"
+    }
+  ]
+}

@@ -1,0 +1,1 @@
+{"observer_only":true,"expected_skips":2,"contract":".github/workflows/distribution-smoke.yml:39-40","all_other_steps_require_success":true}

@@ -1,0 +1,101 @@
+diff --git a/.gitattributes b/.gitattributes
+index eeeb5109..f9529698 100644
+--- a/.gitattributes
++++ b/.gitattributes
+@@ -58,3 +58,9 @@ docs/archive/2026-10-19-config-activation-loss-evidence/** -text -diff
+ /docs/archive/2026-11-08-role-alignment/** -text -diff
+ /docs/archive/2026-11-08-crossplatform-consumer-audit/** -text -diff
+ /docs/archive/design/SpecForge架构一致性治理最终实施方案.full-history-20261006.md -text -diff
++
++/docs/archive/2026-11-08-eslint-macos-full-acceptance/** -text -diff
++
++# Keep frozen dependency inputs byte-identical on all hosts.
++bun.lock text eol=lf
++/.gitattributes text eol=lf
+diff --git a/packages/service-management/src/shutdown/graceful-shutdown-handler.ts b/packages/service-management/src/shutdown/graceful-shutdown-handler.ts
+index 4e7feafd..9ef38a80 100644
+--- a/packages/service-management/src/shutdown/graceful-shutdown-handler.ts
++++ b/packages/service-management/src/shutdown/graceful-shutdown-handler.ts
+@@ -123,15 +123,13 @@ export class GracefulShutdownHandler implements AsyncDisposable {
+     // SIGINT - Interrupt from keyboard (Ctrl+C)
+     // SERVICE_CONTROL_STOP - Windows service stop signal
+ 
++    const sigtermHandler = () => handleSignal('SIGTERM');
++    process.on('SIGTERM', sigtermHandler);
++    this._signalHandlers.set('SIGTERM', sigtermHandler);
+     if (process.platform !== 'win32') {
+-      process.on('SIGTERM', () => handleSignal('SIGTERM'));
+-      process.on('SIGINT', () => handleSignal('SIGINT'));
+-      this._signalHandlers.set('SIGTERM', handleSignal);
+-      this._signalHandlers.set('SIGINT', handleSignal);
+-    } else {
+-      // Handle SIGTERM consistently when the host process forwards it.
+-      process.on('SIGTERM', () => handleSignal('SIGTERM'));
+-      this._signalHandlers.set('SIGTERM', handleSignal);
++      const sigintHandler = () => handleSignal('SIGINT');
++      process.on('SIGINT', sigintHandler);
++      this._signalHandlers.set('SIGINT', sigintHandler);
+     }
+ 
+     this._attached = true;
+diff --git a/packages/service-management/tests/unit/graceful-shutdown-handler.test.ts b/packages/service-management/tests/unit/graceful-shutdown-handler.test.ts
+index 482d8ffa..f9348eb2 100644
+--- a/packages/service-management/tests/unit/graceful-shutdown-handler.test.ts
++++ b/packages/service-management/tests/unit/graceful-shutdown-handler.test.ts
+@@ -391,21 +391,35 @@ describe('GracefulShutdownHandler', () => {
+       await handler.dispose();
+     });
+ 
+-    it('should not attach twice if already attached', () => {
++    it('should not attach twice if already attached', async () => {
+       const handler = new GracefulShutdownHandler();
+       handlers.push(handler);
+ 
++      const before=process.listenerCount('SIGTERM');
+       handler.attachToProcess();
+-      // Should not throw or cause issues when called again
++      expect(process.listenerCount('SIGTERM')).toBe(before+1);
+       handler.attachToProcess();
+-
+-      // Multiple attaches should be idempotent
+-      expect(true).toBe(true);
+-
+-      // Note: We can't easily test cleanup here since we can't remove listeners
+-      // but the code has the _attached guard
++      expect(process.listenerCount('SIGTERM')).toBe(before+1);
++      await handler.dispose();
++      expect(process.listenerCount('SIGTERM')).toBe(before);
+     });
+ 
++    it('releases exact signal callbacks and preserves foreign listeners across repeated lifecycles', async () => {
++      const signals=process.platform==='win32'?['SIGTERM'] as const:['SIGTERM','SIGINT'] as const;
++      const foreign=()=>undefined;
++      for(const signal of signals)process.on(signal,foreign);
++      const before=new Map(signals.map(signal=>[signal,process.listeners(signal)]));
++      try {
++        for(let index=0;index<12;index++){
++          const handler=new GracefulShutdownHandler();handlers.push(handler);
++          handler.attachToProcess();handler.attachToProcess();
++          for(const signal of signals)expect(process.listenerCount(signal)).toBe(before.get(signal)!.length+1);
++          if(index%2===0)await handler.trigger('owned lifecycle regression');else await handler.dispose();
++          for(const signal of signals)expect(process.listeners(signal)).toEqual(before.get(signal));
++          expect(handler.getActiveTaskCount()).toBe(0);expect(handler.getActiveTimerCount()).toBe(0);
++        }
++      } finally {for(const signal of signals)process.removeListener(signal,foreign);}
++    });
+     it('should log shutdown reason on SIGTERM', async () => {
+       const handler = new GracefulShutdownHandler();
+       handlers.push(handler);
+diff --git a/scripts/run-ci-regression.mjs b/scripts/run-ci-regression.mjs
+index 67965b18..2c2cdaec 100644
+--- a/scripts/run-ci-regression.mjs
++++ b/scripts/run-ci-regression.mjs
+@@ -41,7 +41,7 @@ async function main() {
+   if (!path.isAbsolute(bun) || !fs.statSync(bun).isFile()) throw new Error('CI_BUN_IDENTITY_INVALID');
+   const version = run(bun, ['--version']);
+   if (version.status !== 0 || version.stdout.toString().trim() !== '1.3.14') throw new Error('CI_BUN_VERSION_MISMATCH');
+-  const context = { temporary_directory: { requested: temporary.requested, canonical: temporary.canonical, ancestors: temporary.ancestors }, source_commit: head.stdout.toString().trim(), platform: process.platform, arch: process.arch, os_release: os.release(), node: process.version, node_path: process.execPath, node_sha256: hash(fs.readFileSync(process.execPath)), bun: version.stdout.toString().trim(), bun_path: bun, bun_sha256: hash(fs.readFileSync(bun)) };
++  const context = { lock_sha256: hash(fs.readFileSync(path.join(root, 'bun.lock'))), temporary_directory: { requested: temporary.requested, canonical: temporary.canonical, ancestors: temporary.ancestors }, source_commit: head.stdout.toString().trim(), platform: process.platform, arch: process.arch, os_release: os.release(), node: process.version, node_path: process.execPath, node_sha256: hash(fs.readFileSync(process.execPath)), bun: version.stdout.toString().trim(), bun_path: bun, bun_sha256: hash(fs.readFileSync(bun)) };
+   const contextFile = path.join(reportRoot, 'context.json');
+   if (fs.existsSync(contextFile)) {
+     if (JSON.stringify(JSON.parse(fs.readFileSync(contextFile))) !== JSON.stringify(context)) throw new Error('CI_CONTEXT_DRIFT');

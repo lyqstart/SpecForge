@@ -1,0 +1,44 @@
+{
+  "utc": "2026-11-08T08:31:10.400Z",
+  "members": [
+    {
+      "file": "packages/permission-engine/src/services/plugin-loader-integration.ts",
+      "before": "88e36e83e472ac86475cfd0dedf7c1af413bde4f5c38a0520d9a70c46b7d9aa1",
+      "after": "38311d37be4a04b3f8cbe73a048965850e89f29a8e0fa3a9ffd11a127ae92e23",
+      "runtime_names": [
+        "EventLogger"
+      ]
+    },
+    {
+      "file": "packages/workflow-runtime/tests/event-subscription.test.ts",
+      "before": "112ca7e272e4ec0ab67c196ac5090c38d89130d03ab33858f85eac5b43d10844",
+      "after": "6ba06843f6af0fd69c0ffa09ed00e96531b2dcbeaac8db614fd73ee1ca6bd054",
+      "runtime_names": [
+        "createEventSubscriptionManager"
+      ]
+    },
+    {
+      "file": "packages/workflow-runtime/tests/integration/agent-runner.test.ts",
+      "before": "e78908ff1cd510f77de6ea183511cc1658f4a563492f7c3efe0dbc1dfb0f8085",
+      "after": "9b9b9fc2c149e97647cc7e66390910132e041a784c716173520f7c6bf6901da4",
+      "runtime_names": [
+        "createAgentScheduler",
+        "createWorkflowAgentRunner",
+        "WorkflowAgentRunner"
+      ]
+    },
+    {
+      "file": "eslint.config.mjs",
+      "before": "99f13dd21b10e91d1ab5741a4c82fbe346888dcbf3025c5bb4a34ae9d325ba45",
+      "after": "8a0f4267d9f398406901ed2989fae6c261dc2eceff193aeef86b7eea4156cfb4"
+    },
+    {
+      "file": "packages/permission-engine/tests/unit/static-permission-logger-owner.test.ts",
+      "before": "ABSENT",
+      "after": "f311e449b7e1c8c65b52329e1a0ef06ed787e10a432825761f0820ef5a7d1c73"
+    }
+  ],
+  "same_tool_ab": "Old mixed/separate fix makes actual constructor import type-only; aligned inline fix retains value and is idempotent. Rule severities/options inherited from converted effective original rules; only compatible import syntax style changes.",
+  "existing_logger_defect": "Baseline3549c23c retained static permission helper constructs an observability interface. Its existing local permission EventLogger implements the exact used lifecycle/log method contract. Fix local producer ownership; does not enable third-party runtime plugin loading or change registry.",
+  "required": "Actual guard zero type-only runtime references, compiler and complete failed Workflow/Permission suites; logger owner regression."
+}

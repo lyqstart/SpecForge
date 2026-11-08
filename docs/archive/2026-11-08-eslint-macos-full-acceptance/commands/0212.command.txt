@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/review-consumer-delta-v2.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "final-consumer-delta-ast-comparison",
+  "expected_writes": "AST expression structure preserves literals operators omitted elements, eliminates formatting-only candidate noise",
+  "started_utc": "2026-11-08T12:14:48.698Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\review-consumer-delta-v2.cjs",
+      "sha256": "1f0ec222acacae58034fb36dba41698b6263cb1256ad4fc1e09d9a16d5536cb5",
+      "size": 3368,
+      "extension": ".cjs"
+    }
+  ]
+}

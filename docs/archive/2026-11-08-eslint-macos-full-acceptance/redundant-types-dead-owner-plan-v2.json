@@ -1,0 +1,74 @@
+{
+  "utc": "2026-11-08T09:58:28.408Z",
+  "policy": "Twelve existing any|null unions mean any already; remove only redundant null, preserving the existing package rule profile and unvalidated JSON status. HardStop audit type now refers to its actual schema-owned record field, eliminating the misleading literal|string copy. Remove one unused builtin import and a private uncalled helper after identifier census. Contextual fixture casts and absent-dependency casts become actual values. No rule, source/test scope, runtime guard or evidence check is disabled.",
+  "required": "All12 compiler, current affected suites and full lint; unused imports created by removed type casts must also be cleaned by their actual references.",
+  "redundant_unions": 12,
+  "edit_collector_sha256": "2982bb1b55cb368df0961671246a58e4a7b07083f7070cce7ff7d9d13dc8ed87",
+  "members": [
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-artifact-write.ts",
+      "before": "04c1c1c131359015537c09aefdabb42abfa1e256b431b7ee77773cda855d874f",
+      "after": "e484f8a968ed051223d0c0748086396be4804fc09b78e7b3ccd9dcf8e3964634"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-changed-files-audit.ts",
+      "before": "8688f4aec03ff34734d3ba5c2a670f8265b35f266b94aa4d3f3656ea501685b3",
+      "after": "fd2d85604af4811148983521a67c71484b31d5aed20aea2c3acce0afdfc0eeba"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-hard-stop-resolve.ts",
+      "before": "056141410b62e9077f12448bf3ebddb7ed43fd959e42b17feaf8846357492fd0",
+      "after": "9eea18e6cd906c9c6bce33ec62519cf9989bb076b09fbc39e2d775251e17baa9"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-safe-bash.ts",
+      "before": "ea24defd6dd909524ed880020bb6adafded643c5f115044806e264cdf7df1d31",
+      "after": "b84ec4e0a3bb184e1503e2b69f6252d9364396b3f081387136278ade00f8eb16"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-v11-code-permission.ts",
+      "before": "c2c01a7d11c7d71533f4977a0aa2f0b2ad3c4f790a66e365f11255b96b8b3909",
+      "after": "e1ced8451ba33513bab0693ef3461b2d23107841745cec0cf3fe836872908c3e"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-v11-merge.ts",
+      "before": "b7329fd44b337f816db9696c56922ea86bbc719b554a5eca8da2d3ed5b33b9f8",
+      "after": "5b1d16bd0bb3dafde84692fc8efabefa2691dbd982a9b8ca4ddeb412873481ed"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/project-governance-v2.ts",
+      "before": "993e9d19da0cbb72d385b6b3c802dce58e48968bfd57634c4a470e8d067cba30",
+      "after": "73fca1e9b4efb7bd878b3fffc8808dfab5d954fd558f492e9bf2a52b9384f845"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/hard-stop-resolution-log.ts",
+      "before": "990810ba3eb3961e28a61b3990038b12a138fce0f7556233525a86c62d2ae708",
+      "after": "5ca04f0f85ae05dc9f2d48ed2c3de369179d0d3395e077d12a2c3d9dbd683c97"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_doc_lint_core.ts",
+      "before": "c373171a5ee5c012f92bf604c3136825762f8c00557f9a3e9ba0d4ba9e2cef16",
+      "after": "707c53555d7d437b026be33dcdcf17fdb71072e5afa030b3c91e9529701bf726"
+    },
+    {
+      "file": "packages/daemon-core/src/http/HTTPServer.test.ts",
+      "before": "04748483d4918aa7190fed8929deeeb25f6dc2cb7fa8f8dc219a62c132634fea",
+      "after": "5e1b97f7fb813ece7a19b0fd48b438467cbe8b38f964d11bdcfd6fbe08fb94cc"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_project_init_core.test.ts",
+      "before": "2cabea16c95ddadcd389b36867692f5925dd916267aad45d003b8aad49b20e95",
+      "after": "7a97006f5f0bc40674b38fa3a97bb8f8bee1fae9b89ddbd90e6d8898e057f9cc"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/unit/AgentGateRunner.test.ts",
+      "before": "afbd5a57748dc84e0fdb2446d46dce6814608198ca018bb08cd93f1438d1bb0b",
+      "after": "2e4194904476e34f59d3a2336fb0640adcae81c533f0a0d498c52d0cfe5a24da"
+    },
+    {
+      "file": "packages/workflow-runtime/tests/performance/workflow-performance.test.ts",
+      "before": "b9e06172aeea50900e310578b4c0092fe827557cf511420177adb9e30a0fd7e2",
+      "after": "bba46d520dafa30146fe88a1cfefcc5a08dbdf5a5e63641d69272045a0fcda2b"
+    }
+  ]
+}

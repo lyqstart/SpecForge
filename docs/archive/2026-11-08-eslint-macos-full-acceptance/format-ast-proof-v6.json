@@ -1,0 +1,7 @@
+{
+  "utc": "2026-11-08T11:12:36.517Z",
+  "algorithm": "TypeScript forEachChild tree; canonical identifiers/literal cooked values and tagged-template raw values, operator/modifier kinds; unwrap redundant ParenthesizedExpression/Type; ignore trivia/positions only. Both parse diagnostics empty.",
+  "scope": "Exact original three Prettier-enabled package source scopes; no import sorting, type or behavior edits.",
+  "files": [],
+  "result": "PASS_ALL_SEMANTIC_TREES_EQUAL"
+}

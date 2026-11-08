@@ -1,0 +1,34 @@
+{
+  "command": "daemon",
+  "subcommand": "start",
+  "description": "Start the daemon",
+  "parameters": [
+    {
+      "name": "--detach",
+      "type": "boolean",
+      "required": false,
+      "description": "Run in background (detach from terminal)",
+      "aliases": [
+        "-d"
+      ],
+      "default": false
+    },
+    {
+      "name": "--bind",
+      "type": "string",
+      "required": false,
+      "description": "Loopback address; custom addresses require daemon deployment configuration",
+      "default": "127.0.0.1"
+    }
+  ],
+  "examples": [
+    {
+      "description": "Start daemon in foreground",
+      "command": "specforge daemon start"
+    },
+    {
+      "description": "Start daemon in background",
+      "command": "specforge daemon start --detach"
+    }
+  ]
+}

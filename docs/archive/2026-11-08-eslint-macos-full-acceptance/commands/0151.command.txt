@@ -1,0 +1,23 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/collect-lint-diagnostics.cjs",
+    "unified-lint-patch-candidate"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "patch-candidate-full-eslint-refresh",
+  "expected_writes": "read-only all12 source plus immutable reports",
+  "started_utc": "2026-11-08T10:57:50.625Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\collect-lint-diagnostics.cjs",
+      "sha256": "c04a6861dce68b215b8036683f7e9a246357e9603278f178435670c61aabdd6e",
+      "size": 1958,
+      "extension": ".cjs"
+    }
+  ]
+}

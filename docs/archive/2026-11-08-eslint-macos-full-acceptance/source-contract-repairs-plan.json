@@ -1,0 +1,165 @@
+{
+  "id": "source-contract-repairs",
+  "reason": "0136 actual 12 test failures: retain meaningful semantic code requirements across quote/wrapping/trailing-comma changes, strengthen snapshot argument assertion to actual AST call, synchronize existing duplicated knowledge validation projection exactly. Negative parser canaries reject changed values/operators/array holes/comments/callees.",
+  "required_verification": "All affected files, full build/lint, complete frozen platform suite",
+  "files": [
+    {
+      "file": "tests/helpers/source-structure.ts",
+      "content": "import ts from 'typescript';\n\n/** Compare code tokens, retaining literal values/operators but ignoring quote style and trivia. */\nfunction tokens(text: string): string[] {\n  const source = ts.createSourceFile('contract.ts', text, ts.ScriptTarget.Latest, true);\n  const result: Array<{ kind: ts.SyntaxKind; value: string }> = [];\n  function visit(node: ts.Node): void {\n    if (node.kind === ts.SyntaxKind.EndOfFileToken || (node.kind >= ts.SyntaxKind.FirstJSDocNode && node.kind <= ts.SyntaxKind.LastJSDocNode)) return;\n    const children = node.getChildren(source);\n    if (children.length) { for (const child of children) visit(child); return; }\n    if (node.end === node.pos || node.kind === ts.SyntaxKind.SyntaxList) return;\n    result.push({ kind: node.kind, value: ts.isStringLiteralLike(node) ? node.text : node.getText(source) });\n  }\n  visit(source);\n  // Only a separator after an actual element may be optional; preserve array holes.\n  const normalized = result.filter((token, index) => token.kind !== ts.SyntaxKind.CommaToken || ![ts.SyntaxKind.CloseParenToken, ts.SyntaxKind.CloseBracketToken, ts.SyntaxKind.CloseBraceToken].includes(result[index + 1]?.kind) || index === 0 || [ts.SyntaxKind.CommaToken, ts.SyntaxKind.OpenParenToken, ts.SyntaxKind.OpenBracketToken, ts.SyntaxKind.OpenBraceToken].includes(result[index - 1].kind));\n  return normalized.map(token => JSON.stringify([token.kind, token.value]));\n}\nexport function codeContains(source: string, fragment: string): boolean {\n  const actual = tokens(source), expected = tokens(fragment);\n  if (!expected.length) throw new Error('SOURCE_CONTRACT_EMPTY_FRAGMENT');\n  return actual.some((_, start) => expected.every((token, index) => actual[start + index] === token));\n}\nexport function hasCallArgument(source: string, callee: string, argument: string): boolean {\n  const tree = ts.createSourceFile('contract.ts', source, ts.ScriptTarget.Latest, true);\n  let found = false;\n  function visit(node: ts.Node): void {\n    if (ts.isCallExpression(node) && ts.isIdentifier(node.expression) && node.expression.text === callee && node.arguments.some(value => ts.isIdentifier(value) && value.text === argument)) found = true;\n    ts.forEachChild(node, visit);\n  }\n  visit(tree); return found;\n}\n"
+    },
+    {
+      "file": "packages/scope-gate/tests/current-permission-write-guard-boundary.test.ts",
+      "changes": [
+        {
+          "from": "import { existsSync, readFileSync } from 'node:fs';\n",
+          "to": "import { codeContains } from '../../../tests/helpers/source-structure';\nimport { existsSync, readFileSync } from 'node:fs';\n"
+        },
+        {
+          "from": "expect(daemonWriteGuard).toContain('targetDetails: WriteTargetDetails = {},');",
+          "to": "expect(codeContains(daemonWriteGuard, 'targetDetails: WriteTargetDetails = {}')).toBe(true);"
+        },
+        {
+          "from": "expect(daemonWriteGuard).toContain(\n      'return decideWritePermission(ctx, targetPath, operation, targetDetails);',\n    );",
+          "to": "expect(codeContains(daemonWriteGuard, 'return decideWritePermission(ctx, targetPath, operation, targetDetails);')).toBe(true);"
+        },
+        {
+          "from": "expect(daemonHttp).toContain('checkNativeTool(this.deps,');",
+          "to": "expect(codeContains(daemonHttp, 'checkNativeTool(this.deps,')).toBe(true);"
+        }
+      ]
+    },
+    {
+      "file": "packages/daemon-core/tests/design-governance-orchestrator-closure.test.ts",
+      "changes": [
+        {
+          "from": "import { authoritativeStateFixture } from './helpers/authoritative-state-fixture';\n",
+          "to": "import { codeContains } from '../../../tests/helpers/source-structure';\nimport { authoritativeStateFixture } from './helpers/authoritative-state-fixture';\n"
+        },
+        {
+          "from": "expect(stateMachine).toContain(`${workflowType}: \"${workflowPath}\"`);",
+          "to": "expect(codeContains(stateMachine, `${workflowType}: \"${workflowPath}\"`)).toBe(true);"
+        }
+      ]
+    },
+    {
+      "file": "packages/daemon-core/tests/v11-final-governance-regression.test.ts",
+      "changes": [
+        {
+          "from": "import { describe, it, expect } from 'vitest';\n",
+          "to": "import { codeContains } from '../../../tests/helpers/source-structure';\nimport { describe, it, expect } from 'vitest';\n"
+        },
+        {
+          "from": "expect(transition).toContain('state_authority: \"StateManager\"');",
+          "to": "expect(codeContains(transition, 'state_authority: \"StateManager\"')).toBe(true);"
+        },
+        {
+          "from": "expect(closeGate).toContain('expected_state: \"verification_done\"');",
+          "to": "expect(codeContains(closeGate, 'expected_state: \"verification_done\"')).toBe(true);"
+        }
+      ]
+    },
+    {
+      "file": "packages/daemon-core/tests/v6-authority-consumer-alignment.test.ts",
+      "changes": [
+        {
+          "from": "import { readFileSync } from 'node:fs';\n",
+          "to": "import { codeContains } from '../../../tests/helpers/source-structure';\nimport { readFileSync } from 'node:fs';\n"
+        },
+        {
+          "from": "expect(daemonLint).toContain(`\"${principle}\"`);",
+          "to": "expect(codeContains(daemonLint, `\"${principle}\"`)).toBe(true);"
+        },
+        {
+          "from": "expect(userlevelLint).toContain(`\"${principle}\"`);",
+          "to": "expect(codeContains(userlevelLint, `\"${principle}\"`)).toBe(true);"
+        }
+      ]
+    },
+    {
+      "file": "packages/daemon-core/tests/unit/candidate-gate-historical-attempt-reconcile.test.ts",
+      "changes": [
+        {
+          "from": "import { afterEach, describe, expect, it } from 'vitest';\n",
+          "to": "import { hasCallArgument } from '../../../../tests/helpers/source-structure';\nimport { afterEach, describe, expect, it } from 'vitest';\n"
+        },
+        {
+          "from": "expect(chain).toContain('sealInputPaths,');",
+          "to": "expect(hasCallArgument(chain, 'buildGateAttemptInputSnapshot', 'sealInputPaths')).toBe(true);"
+        }
+      ]
+    },
+    {
+      "file": "packages/daemon-core/tests/unit/candidate-runtime-truth-contract.test.ts",
+      "changes": [
+        {
+          "from": "import { readFileSync } from 'node:fs';\n",
+          "to": "import { codeContains } from '../../../../tests/helpers/source-structure';\nimport { readFileSync } from 'node:fs';\n"
+        },
+        {
+          "from": "expect(transition).toContain('materializeImplementationBaseline(projectPath, workItemId)');",
+          "to": "expect(codeContains(transition, 'materializeImplementationBaseline(projectPath, workItemId)')).toBe(true);"
+        }
+      ]
+    },
+    {
+      "file": "packages/daemon-core/tests/unit/current-project-layout-boundary.test.ts",
+      "changes": [
+        {
+          "from": "import { afterEach, beforeEach, describe, expect, it } from 'vitest';\n",
+          "to": "import { codeContains } from '../../../../tests/helpers/source-structure';\nimport { afterEach, beforeEach, describe, expect, it } from 'vitest';\n"
+        },
+        {
+          "from": "expect(transitionSource).toMatch(\n      /SPEC_DIR_NAME,\\s*\"project\",\\s*\"spec_manifest\\.json\"/,\n    );",
+          "to": "expect(codeContains(transitionSource, 'SPEC_DIR_NAME, \"project\", \"spec_manifest.json\"')).toBe(true);"
+        }
+      ]
+    },
+    {
+      "file": "packages/daemon-core/tests/unit/err155-159-contract-governance-recovery.test.ts",
+      "changes": [
+        {
+          "from": "import { afterEach, describe, expect, it } from 'vitest';\n",
+          "to": "import { codeContains } from '../../../../tests/helpers/source-structure';\nimport { afterEach, describe, expect, it } from 'vitest';\n"
+        },
+        {
+          "from": "expect(handler).toContain(\"['add','update','reset']\");",
+          "to": "expect(codeContains(handler, \"['add','update','reset']\")).toBe(true);"
+        },
+        {
+          "from": "expect(userTool).toContain(\"['add', 'update', 'reset']\");",
+          "to": "expect(codeContains(userTool, \"['add', 'update', 'reset']\")).toBe(true);"
+        }
+      ]
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/architecture-governance-v7-regression.test.ts",
+      "changes": [
+        {
+          "from": "import { readFileSync, mkdtempSync, mkdirSync, writeFileSync, rmSync } from 'node:fs';\n",
+          "to": "import { codeContains } from '../../../../../tests/helpers/source-structure';\nimport { readFileSync, mkdtempSync, mkdirSync, writeFileSync, rmSync } from 'node:fs';\n"
+        },
+        {
+          "from": "expect(gateRunner).toContain(\n      \"['module.json', 'requirements.md', 'design.md', 'contracts.json', 'trace.md']\"\n    );",
+          "to": "expect(codeContains(gateRunner, \"['module.json', 'requirements.md', 'design.md', 'contracts.json', 'trace.md']\")).toBe(true);"
+        },
+        {
+          "from": "expect(mergeRunner).toContain(\n      \"['module.json', 'requirements.md', 'design.md', 'contracts.json', 'trace.md']\"\n    );",
+          "to": "expect(codeContains(mergeRunner, \"['module.json', 'requirements.md', 'design.md', 'contracts.json', 'trace.md']\")).toBe(true);"
+        }
+      ]
+    },
+    {
+      "file": "setup/userlevel-opencode/tools/lib/sf_knowledge_base_core.ts",
+      "changes": [
+        {
+          "from": "export function validateKnowledgeStore(value: unknown): asserts value is GlobalKnowledgeStore {\n  const object=(v: unknown): v is Record<string, any> => !!v && typeof v === 'object' && !Array.isArray(v);\n  if (!object(value) || value.version !== '1.0') throw new Error('KNOWLEDGE_STORE_SCHEMA_UNSUPPORTED: explicit version=1.0 required; existing data preserved, no automatic conversion');\n  const strings=(v: unknown) => Array.isArray(v) && v.every(x=>typeof x==='string');\n  const counter=(v: unknown) => Number.isSafeInteger(v) && Number(v)>=0;\n  const date=(v: unknown) => typeof v==='string' && Number.isFinite(Date.parse(v));\n  if (!Array.isArray(value.categories) || !value.categories.every(c=>object(c)&&['id','name','description'].every(k=>typeof c[k]==='string')) ||\n      !Array.isArray(value.entries) || !object(value.metadata) || !counter(value.metadata.total_entries) || !date(value.metadata.last_updated)) throw new Error('KNOWLEDGE_STORE_SCHEMA_INVALID: categories, entries and metadata must satisfy the current contract');\n  for (const entry of value.entries) {\n    if (!object(entry) || !['id','title','content','category','source_project','source_work_item','applicability','normalized_key'].every(k=>typeof entry[k]==='string') ||\n        !['tags','applicable_file_patterns','anti_conditions'].every(k=>strings(entry[k])) ||\n        !['high','medium','low'].includes(entry.confidence) || !['active','candidate','archived'].includes(entry.status) ||\n        !['verified','unverified','disproved'].includes(entry.verification_status) ||\n        !['usage_count','helpful_count','rejected_count'].every(k=>counter(entry[k])) || !counter(entry.version) || entry.version<1 ||\n        !date(entry.created_at) || !date(entry.updated_at) || !(entry.last_used_at===null || date(entry.last_used_at)) ||\n        !(entry.workflow_type===undefined || typeof entry.workflow_type==='string')) throw new Error('KNOWLEDGE_STORE_SCHEMA_INVALID: entry does not satisfy the current contract');\n  }\n}",
+          "to": "export function validateKnowledgeStore(value: unknown): asserts value is GlobalKnowledgeStore {\n  const object = (v: unknown): v is Record<string, unknown> =>\n    !!v && typeof v === 'object' && !Array.isArray(v);\n  if (!object(value) || value.version !== '1.0')\n    throw new Error(\n      'KNOWLEDGE_STORE_SCHEMA_UNSUPPORTED: explicit version=1.0 required; existing data preserved, no automatic conversion'\n    );\n  const strings = (v: unknown): v is string[] =>\n    Array.isArray(v) && v.every((x: unknown) => typeof x === 'string');\n  const counter = (v: unknown): v is number =>\n    typeof v === 'number' && Number.isSafeInteger(v) && v >= 0;\n  const date = (v: unknown) => typeof v === 'string' && Number.isFinite(Date.parse(v));\n  if (\n    !Array.isArray(value.categories) ||\n    !value.categories.every(\n      c => object(c) && ['id', 'name', 'description'].every(k => typeof c[k] === 'string')\n    ) ||\n    !Array.isArray(value.entries) ||\n    !object(value.metadata) ||\n    !counter(value.metadata.total_entries) ||\n    !date(value.metadata.last_updated)\n  )\n    throw new Error(\n      'KNOWLEDGE_STORE_SCHEMA_INVALID: categories, entries and metadata must satisfy the current contract'\n    );\n  for (const entry of value.entries) {\n    if (\n      !object(entry) ||\n      ![\n        'id',\n        'title',\n        'content',\n        'category',\n        'source_project',\n        'source_work_item',\n        'applicability',\n        'normalized_key',\n      ].every(k => typeof entry[k] === 'string') ||\n      !['tags', 'applicable_file_patterns', 'anti_conditions'].every(k => strings(entry[k])) ||\n      typeof entry.confidence !== 'string' ||\n      !['high', 'medium', 'low'].includes(entry.confidence) ||\n      typeof entry.status !== 'string' ||\n      !['active', 'candidate', 'archived'].includes(entry.status) ||\n      typeof entry.verification_status !== 'string' ||\n      !['verified', 'unverified', 'disproved'].includes(entry.verification_status) ||\n      !['usage_count', 'helpful_count', 'rejected_count'].every(k => counter(entry[k])) ||\n      !counter(entry.version) ||\n      entry.version < 1 ||\n      !date(entry.created_at) ||\n      !date(entry.updated_at) ||\n      !(entry.last_used_at === null || date(entry.last_used_at)) ||\n      !(entry.workflow_type === undefined || typeof entry.workflow_type === 'string')\n    )\n      throw new Error(\n        'KNOWLEDGE_STORE_SCHEMA_INVALID: entry does not satisfy the current contract'\n      );\n  }\n}"
+        }
+      ]
+    },
+    {
+      "file": "packages/daemon-core/tests/unit/source-structure-contract.test.ts",
+      "content": "import { describe, expect, it } from 'vitest';\nimport { codeContains, hasCallArgument } from '../../../../tests/helpers/source-structure';\ndescribe('source contract syntax normalization', () => {\n  it('preserves the same string values and optional trailing separators', () => {\n    expect(codeContains('const paths = [\"a\", \\n \"b\",];', \"['a', 'b']\")).toBe(true);\n    expect(codeContains('feature_spec: \"requirement_change_path\"', \"feature_spec: 'requirement_change_path'\")).toBe(true);\n  });\n  it('does not hide changed literal values, operators, array holes or comments', () => {\n    expect(codeContains('const paths = [\"a\", \"changed\"];', \"['a', 'b']\")).toBe(false);\n    expect(codeContains('const value = left - right;', 'left + right')).toBe(false);\n    expect(codeContains('const value = [1,,];', '[1,]')).toBe(false);\n    expect(codeContains('// target(call);\\nconst value = \"target(call)\";', 'target(call)')).toBe(false);\n  });\n  it('requires the real named call and argument instead of text mention', () => {\n    expect(hasCallArgument('snapshot(root, paths);', 'snapshot', 'paths')).toBe(true);\n    expect(hasCallArgument('other(root, paths);', 'snapshot', 'paths')).toBe(false);\n    expect(hasCallArgument('snapshot(root, other);', 'snapshot', 'paths')).toBe(false);\n  });\n});\n"
+    }
+  ]
+}

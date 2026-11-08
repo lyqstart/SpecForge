@@ -1,0 +1,58 @@
+{
+  "id": "shortpath-native-and-posix-fixture",
+  "reason": "Actual849 Windows Git probes prove root8.3 vs Gitlong identity mismatch; 0217/0218 actual Node/Bun realpathSync preserves short names while native/promises expand. Actual Mac849 only1 failed case incorrectly expects Windows dedup on case-insensitive POSIX despite SPS529 requiring distinct POSIX identities. Repair test environment/API and exact assertions by observed filesystem presence; no production path/Git/duplicate-definition guard change.",
+  "required_verification": "Affected scope/real snapshot/Candidate full files, all12 lint/build, actual3OS full CI, final same-lock isolated qualification and structured case comparison.",
+  "files": [
+    {
+      "file": "scripts/lib/qualification-environment.mjs",
+      "changes": [
+        {
+          "from": "const canonical = fs.realpathSync(absolute);",
+          "to": "const canonical = fs.realpathSync.native(absolute);"
+        }
+      ]
+    },
+    {
+      "file": "packages/scope-gate/tests/current-crossplatform-ci-contract.test.ts",
+      "changes": [
+        {
+          "from": "realpathSync(owned)!==owned",
+          "to": "realpathSync.native(owned)!==owned"
+        },
+        {
+          "from": "const parent=realpathSync(tmpdir())",
+          "to": "const parent=realpathSync.native(tmpdir())"
+        },
+        {
+          "from": "toBe(realpathSync(physical))",
+          "to": "toBe(realpathSync.native(physical))"
+        },
+        {
+          "from": "  it('uses the official current release",
+          "to": "  it.runIf(process.platform==='win32'&&existsSync(path.join(process.env.SystemDrive||'C:','PROGRA~1')))('expands an actual existing Windows short path with the native physical identity',()=>{\n    const short=path.join(process.env.SystemDrive||'C:','PROGRA~1'),expected=realpathSync.native(short),result=qualifyTemporaryEnvironment(short);\n    expect(expected).not.toMatch(/~[0-9]/);\n    expect(result.canonical).toBe(expected);\n    expect(result.environment).toEqual({TMPDIR:expected,TEMP:expected,TMP:expected});\n  });\n  it('uses the official current release"
+        }
+      ]
+    },
+    {
+      "file": "packages/daemon-core/tests/unit/candidate-generation-integrity.test.ts",
+      "changes": [
+        {
+          "from": "mkdtemp, mkdir, readFile, rm, writeFile",
+          "to": "access, mkdtemp, mkdir, readFile, rm, writeFile"
+        },
+        {
+          "from": "it('counts a Windows CORE/core Candidate alias once while preserving real noncanonical REQ failures'",
+          "to": "it('keeps target-platform Candidate identities and real noncanonical REQ failures on the actual filesystem'"
+        },
+        {
+          "from": "    expect(artifacts).toHaveLength(1);\n    expect(artifacts[0].path).toBe(requirementsPath);",
+          "to": "    const lowerPath=join(workItemDir,'candidates','project','modules','core','requirements.candidate.md');\n    const lowerExists=await access(lowerPath).then(()=>true,(error:NodeJS.ErrnoException)=>{if(error.code==='ENOENT')return false;throw error;});\n    const distinctPosixAlias=process.platform!=='win32'&&lowerExists;\n    expect(artifacts.map(artifact=>artifact.path)).toEqual(distinctPosixAlias?[requirementsPath,lowerPath]:[requirementsPath]);"
+        },
+        {
+          "from": "    expect(result.errors.join('\\n')).not.toContain('REQUIREMENT_DEFINITION_DUPLICATE');",
+          "to": "    if(distinctPosixAlias)expect(result.errors.join('\\n')).toContain('REQUIREMENT_DEFINITION_DUPLICATE');\n    else expect(result.errors.join('\\n')).not.toContain('REQUIREMENT_DEFINITION_DUPLICATE');"
+        }
+      ]
+    }
+  ]
+}

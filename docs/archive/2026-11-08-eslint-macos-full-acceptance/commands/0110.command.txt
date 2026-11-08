@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-ESLINT-MACOS-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-eslint-macos-full-acceptance/infer-workflow-return-contracts.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "explicit-actual-inferred-workflow-return-contracts",
+  "expected_writes": "private-fixture-type-only-edits-and-proof",
+  "started_utc": "2026-11-08T09:46:53.612Z",
+  "carrier_source_sha256": "975feb5cd1ae0c38ec66a9ecfff0a57a7d899c2bbe8b964865216c6501288d32",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\infer-workflow-return-contracts.cjs",
+      "sha256": "4e8a3e069dfbf34d1d54248d900cce5beb5ababfebf306a03ffec3fe277f463b",
+      "size": 6560,
+      "extension": ".cjs"
+    }
+  ]
+}
