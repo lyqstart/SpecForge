@@ -158,6 +158,7 @@ export class ReconnectingDaemonClient implements Disposable {
   private degraded = false;
   private degradedWarningPrinted = false;
   private backoffTimer: ReturnType<typeof setTimeout> | null = null;
+  private backoffResolve: ((result: PostResult) => void) | null = null;
   private currentBackoffMs: number;
   private cumulativeBackoffMs = 0;
   private retryCount = 0;
@@ -302,56 +303,33 @@ export class ReconnectingDaemonClient implements Disposable {
 
   // ── Private methods ──
 
-  private async startBackoff(
-    sessionId: string,
-    type: string,
-    data: unknown
-  ): Promise<PostResult> {
+  private async startBackoff(sessionId: string, type: string, data: unknown): Promise<PostResult> {
+    if (this.disposed) return { ok: false, dropped: true, reason: "disposed" };
     this.pendingEvent = { sessionId, type, data };
-
     if (this.cumulativeBackoffMs >= this.options.maxCumulativeBackoffMs) {
       this.enterDegradedMode();
       return { ok: false, dropped: true, reason: "degraded" };
     }
-
+    // One owner, one timer. Replacing or disposing a wait also settles its caller.
     this.clearBackoffTimer();
-
     return new Promise<PostResult>((resolve) => {
-      let timer: ReturnType<typeof setTimeout> | undefined;
-
-      const backoffPromise = new Promise<void>((resolveBackoff) => {
-        timer = setTimeout(() => resolveBackoff(), this.currentBackoffMs);
-      });
-
-      const timeoutPromise = new Promise<void>((resolveTimeout) => {
-        const timeoutTimer = setTimeout(() => resolveTimeout(), this.currentBackoffMs);
-        timer = timeoutTimer;
-      });
-
-      Promise.race([backoffPromise, timeoutPromise])
-        .finally(() => {
-          if (timer) clearTimeout(timer);
-        })
-        .then(() => {
-          this.cumulativeBackoffMs += this.currentBackoffMs;
-          this.retryCount++;
-          this.currentBackoffMs = Math.floor(
-            this.currentBackoffMs * this.options.backoffFactor
-          );
-
-          if (this.cumulativeBackoffMs >= this.options.maxCumulativeBackoffMs) {
-            this.clearBackoffTimer();
-            this.enterDegradedMode();
-            resolve({ ok: false, dropped: true, reason: "degraded" });
-            return;
-          }
-
-          this.retryPendingEvent().then((result) => resolve(result));
-        });
-
-      if (timer) {
-        this.backoffTimer = timer;
-      }
+      this.backoffResolve = resolve;
+      this.backoffTimer = setTimeout(() => {
+        this.backoffTimer = null;
+        this.backoffResolve = null;
+        if (this.disposed) { resolve({ ok: false, dropped: true, reason: "disposed" }); return; }
+        this.cumulativeBackoffMs += this.currentBackoffMs;
+        this.retryCount++;
+        this.currentBackoffMs = Math.floor(this.currentBackoffMs * this.options.backoffFactor);
+        if (this.cumulativeBackoffMs >= this.options.maxCumulativeBackoffMs) {
+          this.enterDegradedMode();
+          resolve({ ok: false, dropped: true, reason: "degraded" });
+          return;
+        }
+        this.retryPendingEvent().then(resolve, () => resolve({
+          ok: false, dropped: true, reason: this.disposed ? "disposed" : "rejected",
+        }));
+      }, this.currentBackoffMs);
     });
   }
 
@@ -470,10 +448,7 @@ export class ReconnectingDaemonClient implements Disposable {
 
   private printDegradedWarningOnce(): void {
     if (!this.degradedWarningPrinted) {
-      console.error(
-        "[specforge] Daemon unreachable for over 60 seconds, entering degraded mode. " +
-          "See 'specforge daemon status' for details."
-      );
+      console.error(`[specforge] Daemon reconnect budget exhausted (${this.options.maxCumulativeBackoffMs}ms), entering degraded mode. See 'specforge daemon status' for details.`);
       this.degradedWarningPrinted = true;
     }
   }
@@ -485,10 +460,11 @@ export class ReconnectingDaemonClient implements Disposable {
   }
 
   private clearBackoffTimer(): void {
-    if (this.backoffTimer) {
-      clearTimeout(this.backoffTimer);
-      this.backoffTimer = null;
-    }
+    if (this.backoffTimer !== null) clearTimeout(this.backoffTimer);
+    this.backoffTimer = null;
+    const complete = this.backoffResolve;
+    this.backoffResolve = null;
+    complete?.({ ok: false, dropped: true, reason: this.disposed ? "disposed" : "rejected" });
   }
 
 }

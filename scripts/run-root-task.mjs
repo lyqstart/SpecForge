@@ -16,7 +16,7 @@ const TASK_STEPS = Object.freeze({
   ],
   lint: [
     ['scripts/render-workflow-docs.ts', '--check'],
-    ['run', '--filter', './packages/*', 'lint'],
+    ['scripts/lint-workspace.ts'],
   ],
   'render-workflows': [['scripts/render-workflow-docs.ts']],
   'check-workflows': [['scripts/render-workflow-docs.ts', '--check']],

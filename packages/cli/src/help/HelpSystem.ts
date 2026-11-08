@@ -469,7 +469,7 @@ export function createDefaultHelpSystem(): HelpSystem {
                 name: '--bind',
                 type: 'string',
                 required: false,
-                description: 'Bind address',
+                description: 'Loopback address; custom addresses require daemon deployment configuration',
                 default: '127.0.0.1',
               },
             ],
@@ -556,7 +556,7 @@ export function createDefaultHelpSystem(): HelpSystem {
         troubleshooting: [
           {
             problem: 'Daemon fails to start',
-            solution: 'Check if port 3847 is already in use: `netstat -an | grep 3847`',
+            solution: 'Run `specforge daemon status`; use the current OpenCode config root handshake and daemon logs for the actual endpoint. Do not create or repair handshake by hand.',
           },
           {
             problem: 'Cannot connect to daemon',
@@ -896,7 +896,7 @@ export function createDefaultHelpSystem(): HelpSystem {
       },
       {
         name: 'config',
-        description: 'Show or modify CLI configuration',
+        description: 'Show read-only CLI configuration and resolved paths',
         examples: [
           {
             description: 'Show current configuration',
@@ -940,8 +940,28 @@ export function createDefaultHelpSystem(): HelpSystem {
   }
   config.commands.push(
     { name: 'doctor', description: 'Inspect local SpecForge installation and project status' },
-    { name: 'services', description: 'Manage supported OS services' },
-    { name: 'opencode-server', description: 'Manage the OpenCode Server service' },
+    {
+      name: 'services', description: 'Manage OS services through Linux systemd --user; unsupported on Windows/macOS',
+      subcommands: ['install','uninstall','start','stop','restart','status'].map(name=>({
+        name,description: `${name} the installed SpecForge/OpenCode user services`,
+        parameters: [
+          {name:'--json',type:'boolean' as const,required:false,description:'Output as JSON'},
+          ...(['stop','restart'].includes(name)?[{name:'--timeout',type:'number' as const,required:false,description:'Stop timeout in seconds; default comes from accepted configuration'}]:[]),
+        ],
+        examples:[{description:'Linux systemd user service operation',command:`specforge services ${name} --json`}],
+      })),
+    },
+    {
+      name: 'opencode-server', description: 'Manage the OpenCode user service through Linux systemd --user',
+      subcommands: ['install-service','uninstall-service','start','stop','restart','status'].map(name=>({
+        name,description:`${name} the OpenCode user service`,
+        parameters:[
+          {name:'--json',type:'boolean' as const,required:false,description:'Output as JSON',aliases:['-j'],default:false},
+          ...(['stop','restart'].includes(name)?[{name:'--timeout',type:'number' as const,required:false,description:'Stop timeout in seconds; default comes from accepted configuration'}]:[]),
+        ],
+        examples:[{description:'Linux systemd user service operation',command:`specforge opencode-server ${name} --json`}],
+      })),
+    },
   );
   return new HelpSystem(config);
 }

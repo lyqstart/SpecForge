@@ -1,5 +1,7 @@
 # 项目工程规则 — Node.js / TypeScript
 
+> 使用边界：这是业务项目规则素材，模板值和版本示例不是已核验事实。命令仅作待批准 Task 的验收声明；D18 sf_safe_bash 保持只读。真实 sf-orchestrator 使用 sf_verification_plan，真实 sf-verifier 使用 sf_verification_run；不支持的命令保持 not_executed/blocked，不得改走 shell。模板不能扩大 D23 的 Windows x64 严格单进程只读 Node profile。
+
 <!-- 继承 _BASE.md 的 R1-R8，本文件只写 Node.js 特有规则 -->
 
 ---
@@ -12,8 +14,6 @@ node_target:
   # 为什么要配：Node.js 各版本对 ESM / CommonJS / 内置 API 支持不同
   # 如何决策：
   #   - Node 18 LTS：2025 年 4 月前维护，适合大多数项目
-  #   - Node 20 LTS：当前主流，推荐新项目
-  #   - Node 22 LTS：最新，激进项目可用
 
 typescript_strict: true
   # 是否启用 TypeScript strict 模式

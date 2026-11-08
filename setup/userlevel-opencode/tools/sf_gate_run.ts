@@ -53,7 +53,7 @@ export default tool({
           "candidate/tasks 执行阶段完整 Gate Profile。",
       ),
     workflow_type: tool.schema
-      .string()
+      .enum(["feature_spec"])
       .optional()
       .describe("显式 workflow_type；通常从 trigger_result.json 读取。"),
     candidate_phase: tool.schema

@@ -1,3 +1,4 @@
+import { SPEC_DIR_NAME } from "@specforge/types/directory-layout";
 /** SPS §9.2 / D18: closed set of in-process read operations. Never a shell. */
 import * as fs from 'node:fs';
 import * as path from 'node:path';
@@ -42,7 +43,7 @@ export interface ExecuteOptions {
 export function appendShellAudit(projectRoot: string, entry: Record<string, unknown>): void {
   try {
     let dir = fs.realpathSync(projectRoot);
-    for (const part of ['.specforge', 'runtime', 'logs']) {
+    for (const part of [SPEC_DIR_NAME, 'runtime', 'logs']) {
       dir = path.join(dir, part);
       if (!fs.existsSync(dir)) fs.mkdirSync(dir);
       const st = fs.lstatSync(dir);
@@ -68,7 +69,7 @@ function boundedPath(root: string, cwd: string, input: string, allowMissing = fa
   const base = fs.realpathSync(root), target = path.resolve(cwd, input), relative = path.relative(base, target);
   if (relative === '..' || relative.startsWith('..' + path.sep) || path.isAbsolute(relative)) throw new Error('READ_PATH_OUTSIDE_PROJECT');
   const parts = relative.split(path.sep);
-  if (parts.some(p => ['.specforge', '.git', 'sf-user'].includes(p.toLowerCase())) || parts.some(p => p.includes(':'))) throw new Error('READ_PATH_REQUIRES_CONTROLLED_OWNER');
+  if (parts.some(p => [SPEC_DIR_NAME, '.git', 'sf-user'].includes(p.toLowerCase())) || parts.some(p => p.includes(':'))) throw new Error('READ_PATH_REQUIRES_CONTROLLED_OWNER');
   let current = base;
   for (const part of parts) {
     if (!part) continue;

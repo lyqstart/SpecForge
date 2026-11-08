@@ -1,6 +1,6 @@
 {
   "name": "@specforge/workflow-runtime",
-  "version": "1.0.23",
+  "version": "1.0.24",
   "schema_version": "1.0",
   "description": "Workflow Runtime module for SpecForge - Implements compositeGate semantics (Property 29)",
   "type": "module",
@@ -9,7 +9,7 @@
   "scripts": {
     "build": "bun ../../scripts/build-workflow-runtime.ts",
     "build:watch": "tsc --watch",
-    "clean": "rimraf dist",
+    "clean": "bun ../../scripts/clean-workspace.ts --package workflow-runtime",
     "lint": "eslint src/**/*.ts tests/**/*.ts",
     "lint:fix": "eslint src/**/*.ts tests/**/*.ts --fix",
     "format": "prettier --write \"src/**/*.ts\" \"tests/**/*.ts\"",

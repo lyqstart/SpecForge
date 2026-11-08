@@ -10,48 +10,20 @@ import { WorkflowDefinitionLoader, ValidationResult } from '../loaders/WorkflowD
 import { WorkflowDefinition } from '../types.js';
 
 /**
- * Schema version migration handler
- */
-export interface SchemaMigration {
-  from: string;
-  to: string;
-  migrate: (definition: any) => any;
-}
-
-/**
  * Workflow Loader
  * Provides high-level API for loading workflow definitions with schema version support
  */
 export class WorkflowLoader {
   private definitionLoader: WorkflowDefinitionLoader;
-  private migrations: Map<string, SchemaMigration> = new Map();
   private loadedDefinitions: Map<string, WorkflowDefinition> = new Map();
 
   constructor() {
     this.definitionLoader = new WorkflowDefinitionLoader();
-    this.registerDefaultMigrations();
-  }
-
-  /**
-   * Register default schema migrations
-   */
-  private registerDefaultMigrations(): void {
-    // Currently only supporting 1.0, so no migrations needed
-    // This is a placeholder for future schema versions
-  }
-
-  /**
-   * Register a custom schema migration
-   * @param migration The migration to register
-   */
-  registerMigration(migration: SchemaMigration): void {
-    const key = `${migration.from}->${migration.to}`;
-    this.migrations.set(key, migration);
   }
 
   /**
    * Load a workflow definition from a file
-   * Automatically handles schema version migration if needed
+   * Rejects unsupported or missing schema; never converts persisted inputs.
    * @param filePath Path to the workflow definition file
    * @returns The loaded workflow definition
    * @throws Error if file cannot be read, parsed, or validated
@@ -135,22 +107,10 @@ export class WorkflowLoader {
    */
   async loadFromDirectory(dirPath: string): Promise<WorkflowDefinition[]> {
     try {
-      const files = await fs.readdir(dirPath);
-      const definitions: WorkflowDefinition[] = [];
-
-      for (const file of files) {
-        const ext = path.extname(file).toLowerCase();
-        if (ext === '.json' || ext === '.yaml' || ext === '.yml') {
-          const filePath = path.join(dirPath, file);
-          try {
-            const definition = await this.loadFromFile(filePath);
-            definitions.push(definition);
-          } catch (error) {
-            // Log error but continue loading other files
-            console.warn(`Failed to load workflow from ${filePath}:`, error);
-          }
-        }
-      }
+      const files = (await fs.readdir(dirPath)).sort().filter(file => ['.json', '.yaml', '.yml'].includes(path.extname(file).toLowerCase()));
+      // Validate the complete set before publishing any new cache entries.
+      const definitions = await Promise.all(files.map(file => this.definitionLoader.loadFromFile(path.join(dirPath, file))));
+      for (const definition of definitions) this.loadedDefinitions.set(definition.id, definition);
 
       return definitions;
     } catch (error) {
@@ -181,36 +141,6 @@ export class WorkflowLoader {
       const errorMessages = result.errors.map(e => `${e.field}: ${e.message}`).join('\n');
       throw new Error(`Workflow definition validation failed:\n${errorMessages}`);
     }
-  }
-
-  /**
-   * Migrate a workflow definition to a target schema version
-   * @param definition The workflow definition to migrate
-   * @param targetVersion The target schema version
-   * @returns The migrated workflow definition
-   * @throws Error if migration path is not available
-   */
-  migrate(definition: any, targetVersion: string): WorkflowDefinition {
-    const currentVersion = definition.schema_version || '1.0';
-
-    if (currentVersion === targetVersion) {
-      // No migration needed
-      return this.definitionLoader.loadFromObject(definition);
-    }
-
-    // Find migration path
-    const migrationKey = `${currentVersion}->${targetVersion}`;
-    const migration = this.migrations.get(migrationKey);
-
-    if (!migration) {
-      throw new Error(
-        `No migration path found from schema version ${currentVersion} to ${targetVersion}`
-      );
-    }
-
-    // Apply migration
-    const migratedDefinition = migration.migrate(definition);
-    return this.definitionLoader.loadFromObject(migratedDefinition);
   }
 
   /**
@@ -267,14 +197,10 @@ export class WorkflowLoader {
    */
   async loadBuiltinWorkflows(builtinDir?: string): Promise<WorkflowDefinition[]> {
     const dir = builtinDir || WorkflowLoader.BUILTIN_DIR;
-    try {
-      const definition = await this.loadFromFile(path.join(dir, 'feature_spec.json'));
-      return [definition];
-    } catch (error) {
-      // Log but don't throw - daemon should still start
-      console.warn(`Failed to load builtin workflows from ${dir}:`, error);
-      return [];
-    }
+    const definition = await this.definitionLoader.loadFromFile(path.join(dir, 'feature_spec.json'));
+    if (definition.id !== 'feature_spec') throw new Error('BUILTIN_WORKFLOW_IDENTITY_MISMATCH');
+    this.loadedDefinitions.set(definition.id, definition);
+    return [definition];
   }
 
   /**
@@ -285,8 +211,9 @@ export class WorkflowLoader {
    */
   async hotReload(dirPath?: string): Promise<number> {
     const dir = dirPath || WorkflowLoader.BUILTIN_DIR;
-    this.clearLoadedDefinitions();
     const definitions = await this.loadBuiltinWorkflows(dir);
+    this.clearLoadedDefinitions();
+    for (const definition of definitions) this.loadedDefinitions.set(definition.id, definition);
     return definitions.length;
   }
 
@@ -310,7 +237,8 @@ export class WorkflowLoader {
    * @param definition The workflow definition to register
    */
   register(definition: WorkflowDefinition): void {
-    this.loadedDefinitions.set(definition.id, definition);
+    const accepted = this.definitionLoader.loadFromObject(definition);
+    this.loadedDefinitions.set(accepted.id, accepted);
   }
 
   /**

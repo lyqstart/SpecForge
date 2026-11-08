@@ -9,6 +9,7 @@ export interface NodeReleaseSurfaceProducerOptions {
   candidateRoot: string;
   releaseId: string;
   candidateId: string;
+  platform?: NodeJS.Platform;
 }
 
 export interface SurfaceReportProductionResult {
@@ -300,9 +301,20 @@ export async function produceCleanBuildSurfaceReport(
           }
           const entry = raw as Record<string, unknown>;
           const id = typeof entry.id === 'string' ? entry.id.trim() : '';
-          const declaredPath = typeof entry.path === 'string'
+          let declaredPath = typeof entry.path === 'string'
             ? entry.path.trim().replaceAll('\\', '/')
             : '';
+          if (entry.platformExecutable !== undefined && typeof entry.platformExecutable !== 'boolean') {
+            errors.push(`clean_build:${id}:platform_executable_invalid`);
+            continue;
+          }
+          if (entry.platformExecutable === true && declaredPath) {
+            if (declaredPath.endsWith('.exe')) {
+              errors.push(`clean_build:${id}:platform_executable_base_required`);
+              continue;
+            }
+            if ((options.platform ?? process.platform) === 'win32') declaredPath += '.exe';
+          }
           if (!id || !declaredPath) {
             errors.push('clean_build:root_release_file_fields_invalid');
             continue;

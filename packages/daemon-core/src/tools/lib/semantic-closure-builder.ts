@@ -10,6 +10,7 @@
 
 import {
   validateSemanticClosure,
+  SEMANTIC_CLOSURE_SCHEMA_VERSION,
   type SemanticClosureManifest,
   type SemanticClosureValidationResult,
   type SemanticEvidence,
@@ -201,7 +202,7 @@ function manifestFromEvidenceManifestSections(
   ) {
     const evidenceEntries = getEvidenceEntries(em);
     return {
-      schema_version: String(em.schema_version ?? '1.0'),
+      schema_version: SEMANTIC_CLOSURE_SCHEMA_VERSION,
       work_item_id: String(em.work_item_id ?? input.workItemId),
       outcomes: Array.isArray(em.outcomes) ? em.outcomes : [],
       requirements: Array.isArray(em.requirements) ? em.requirements : [],
@@ -235,7 +236,7 @@ function manifestFromTraceChains(
   const evidenceIds = unique(chains.map(chain => chain.evidenceId));
 
   return {
-    schema_version: '1.0',
+    schema_version: SEMANTIC_CLOSURE_SCHEMA_VERSION,
     work_item_id: input.workItemId,
     outcomes: outcomeIds.map(id => ({
       id,
@@ -303,7 +304,7 @@ function insufficientManifest(
 ): SemanticClosureManifest {
   const evidenceEntries = getEvidenceEntries(input.evidenceManifest);
   return {
-    schema_version: '1.0',
+    schema_version: SEMANTIC_CLOSURE_SCHEMA_VERSION,
     work_item_id: input.workItemId,
     outcomes: [],
     requirements: [],

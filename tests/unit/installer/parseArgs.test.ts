@@ -44,9 +44,8 @@ describe("parseArgs — current installer", () => {
       expect(opts.subcommand).toBeNull()
     })
 
-    it("should set subcommand to null when only options provided", () => {
-      const opts = parseArgs(["--force"])
-      expect(opts.subcommand).toBeNull()
+    it("rejects force without an upgrade operation", () => {
+      expect(() => parseArgs(["--force"])).toThrow(InstallerError)
     })
   })
 
@@ -125,9 +124,13 @@ describe("parseArgs — current installer", () => {
 
   describe("argument order flexibility", () => {
     it("should parse flags before subcommand", () => {
-      const opts = parseArgs(["--force", "install"])
-      expect(opts.subcommand).toBe("install")
+      const opts = parseArgs(["--force", "upgrade"])
+      expect(opts.subcommand).toBe("upgrade")
       expect(opts.force).toBe(true)
     })
+  })
+
+  it.each([["install","-x"],["install","uninstall"],["install","--force"],["verify","--version"]])("rejects ambiguous or unsupported arguments %s %s", (...args) => {
+    expect(() => parseArgs(args)).toThrow(InstallerError)
   })
 })

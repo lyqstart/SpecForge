@@ -37,6 +37,7 @@ export type ContractKind = 'shared_enum' | 'invariant' | 'public_interface' | 'e
 
 export type RegistrationKind = ContractKind | 'namespace_type';
 export type ContractCandidateAction = 'add' | 'update' | 'promote' | 'repair_relocate_to_module' | 'reset';
+export interface CurrentContractSubject { workflow_type: 'feature_spec'; workflow_path: string; }
 
 type NamespaceName =
   | 'requirement_types'
@@ -62,7 +63,7 @@ const NAMESPACE_NAMES = new Set<NamespaceName>([
 ]);
 
 const CANDIDATE_REL = 'candidates/project/extension_registry.json';
-const TARGET_REL = '.specforge/project/extension_registry.json';
+const TARGET_REL = (`${SPEC_DIR_NAME}/project/extension_registry.json` as const);
 
 export interface AuthorContractResult {
   success: boolean;
@@ -102,6 +103,7 @@ export async function authorContractCandidate(params: {
   fromContractId?: string;
   migrationConclusion?: string;
   compatibility?: string;
+  currentSubject?: CurrentContractSubject;
 }): Promise<AuthorContractResult> {
   const { projectRoot, workItemId } = params;
   const action = params.action ?? 'add';
@@ -142,6 +144,7 @@ export async function authorContractCandidate(params: {
       projectRoot,
       workItemId,
       workflowPath: params.workflowPath,
+      currentSubject: params.currentSubject,
       registry: next,
       action,
       contractRef: undefined,
@@ -361,6 +364,7 @@ export async function authorContractCandidate(params: {
     projectRoot,
     workItemId,
     workflowPath: params.workflowPath,
+    currentSubject: params.currentSubject,
     registry: next,
     action,
     contractRef:
@@ -810,7 +814,7 @@ async function authorContractRepairRelocationCandidate(params: {
     moduleCandidate: {
       moduleCode: sourceModule,
       candidatePath: `candidates/project/modules/${sourceModule}/contracts.candidate.json`,
-      targetPath: `.specforge/project/modules/${sourceModule}/contracts.json`,
+      targetPath: `${SPEC_DIR_NAME}/project/modules/${sourceModule}/contracts.json`,
       registry: nextModuleRegistry,
     },
   });
@@ -1073,7 +1077,7 @@ async function authorContractPromotionCandidate(params: {
     moduleCandidate: {
       moduleCode: sourceModule,
       candidatePath: `candidates/project/modules/${sourceModule}/contracts.candidate.json`,
-      targetPath: `.specforge/project/modules/${sourceModule}/contracts.json`,
+      targetPath: `${SPEC_DIR_NAME}/project/modules/${sourceModule}/contracts.json`,
       registry: nextModuleRegistry,
     },
   });
@@ -1088,6 +1092,7 @@ async function writeContractCandidate(params: {
   contractRef?: string;
   promotion?: PromotionMetadata;
   moduleCandidate?: ContractModuleCandidate;
+  currentSubject?: CurrentContractSubject;
 }): Promise<AuthorContractResult> {
   const wiDir = path.join(params.projectRoot, SPEC_DIR_NAME, 'work-items', params.workItemId);
   const candidateAbs = path.join(wiDir, 'candidates', 'project', 'extension_registry.json');
@@ -1117,16 +1122,19 @@ async function writeContractCandidate(params: {
     manifest = {
       schema_version: '1.0',
       work_item_id: params.workItemId,
-      workflow_type: params.action === 'promote' ? 'architecture_change' : 'contract_change',
+      workflow_type: params.currentSubject?.workflow_type ?? (params.action === 'promote' ? 'architecture_change' : 'contract_change'),
       workflow_path:
-        params.action === 'promote'
+        params.currentSubject?.workflow_path ?? (params.action === 'promote'
           ? 'architecture_change_path'
-          : params.workflowPath ?? 'contract_change_path',
+          : params.workflowPath ?? 'contract_change_path'),
       candidate_phase: 'full',
       base_spec_version: params.registry.project_spec_version ?? 'PSV-0001',
       merge_required: true,
       entries: [],
     };
+  }
+  if (params.currentSubject && (manifest.workflow_type !== params.currentSubject.workflow_type || manifest.workflow_path !== params.currentSubject.workflow_path || (manifest.candidate_phase !== undefined && manifest.candidate_phase !== 'full'))) {
+    return {success:false,error:'CURRENT_CONTRACT_CANDIDATE_SUBJECT_MISMATCH'};
   }
   if (
     params.workflowPath &&
@@ -1161,7 +1169,7 @@ async function writeContractCandidate(params: {
   if (!manifest.schema_version) manifest.schema_version = '1.0';
   if (!manifest.workflow_path)
     manifest.workflow_path = params.workflowPath ?? 'contract_change_path';
-  if (manifest.workflow_path === 'contract_change_path') {
+  if (manifest.workflow_path === 'contract_change_path' && !params.currentSubject) {
     manifest.workflow_type = 'contract_change';
     manifest.candidate_phase = 'full';
     manifest.merge_required = true;

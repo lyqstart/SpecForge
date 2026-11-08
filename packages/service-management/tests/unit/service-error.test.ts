@@ -11,6 +11,12 @@ import {
 } from '../../src/errors/index.js';
 
 describe('ServiceError', () => {
+  it('keeps recovery advice within the actual owner and configured budget', () => {
+    expect(createServiceError('SVC_AUTO_RECONNECT_GAVE_UP').suggestion).toContain('configured retry budget');
+    expect(createServiceError('SVC_AUTO_RECONNECT_GAVE_UP').suggestion).not.toContain('60 seconds');
+    expect(createServiceError('SVC_INSTALL_ROLLBACK_FAILED').suggestion).toContain('do not manually delete');
+    expect(createServiceError('SVC_PORT_IN_USE').suggestion).toContain('do not terminate an unknown process');
+  });
   it('should create error with code, message, and suggestion', () => {
     const error = createServiceError('SVC_SYSTEMD_NOT_AVAILABLE');
 

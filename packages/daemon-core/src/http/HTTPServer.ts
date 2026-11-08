@@ -1245,7 +1245,7 @@ export class HTTPServer {
       if ((err as Error).message === 'PROJECT_NOT_INITIALIZED') {
         this.sendJsonResponse(res, 409, {
           error: 'PROJECT_NOT_INITIALIZED',
-          message: '项目未初始化。请先完成启动流程（步骤 1-4）再注册。',
+          message: '项目未初始化。请由 sf-orchestrator 使用受控 sf_project_init 完成初始化，再注册；不要手工创建或修复 Project Spec、Manifest 或 Runtime 状态。',
           projectPath: request.projectPath,
         });
         return;
@@ -1350,8 +1350,9 @@ export class HTTPServer {
       }
     };
 
+    let overallTimer: ReturnType<typeof setTimeout> | undefined;
     const overallTimeout = new Promise<void>((resolve) => {
-      setTimeout(() => {
+      overallTimer = setTimeout(() => {
         respond(200, this.successBody({
           received: true,
           type: request.type ?? 'unknown',
@@ -1384,7 +1385,11 @@ export class HTTPServer {
       }
     })();
 
-    await Promise.race([processing, overallTimeout]);
+    try {
+      await Promise.race([processing, overallTimeout]);
+    } finally {
+      clearTimeout(overallTimer);
+    }
   }
 
   /**
@@ -1694,16 +1699,19 @@ export class HTTPServer {
    * if the promise rejects or the timeout fires first.
    */
   private async withTimeout<T>(promise: Promise<T>, timeoutMs: number, fallback: T): Promise<T> {
+    let timer: ReturnType<typeof setTimeout> | undefined;
     try {
       const result = await Promise.race([
         promise,
-        new Promise<T>((_, reject) =>
-          setTimeout(() => reject(new Error(`Timeout after ${timeoutMs}ms`)), timeoutMs)
-        ),
+        new Promise<T>((_, reject) => {
+          timer = setTimeout(() => reject(new Error(`HTTP event timeout after ${timeoutMs}ms`)), timeoutMs);
+        }),
       ]);
       return result;
     } catch {
       return fallback;
+    } finally {
+      clearTimeout(timer);
     }
   }
 
@@ -1954,7 +1962,7 @@ export class HTTPServer {
 
   private async handleV11WriteGuardBash(_req: http.IncomingMessage, res: http.ServerResponse, _body: string): Promise<void> {
     this.sendJsonResponse(res, 200, this.successBody({ allowed: false,
-      reason: 'NATIVE_SHELL_REQUIRES_CONTROLLED_EXECUTION: use sf_safe_bash; declared filenames cannot constrain arbitrary shell writes' }));
+      reason: 'NATIVE_SHELL_REQUIRES_CONTROLLED_EXECUTION: sf_safe_bash supports internal reads only; approved verification uses sf_verification_plan / sf_verification_run. Declared filenames cannot constrain arbitrary shell writes; do not retry through another shell or helper.' }));
   }
 
   private async handleV11WriteGuardAudit(_req: http.IncomingMessage, res: http.ServerResponse, body: string): Promise<void> {
@@ -2018,7 +2026,7 @@ export class HTTPServer {
         .filter(item => !['closed', 'rejected', 'superseded'].includes(item.current_state));
       if (active.length !== 1) throw new Error('UNAMBIGUOUS_ACTIVE_WORK_ITEM_REQUIRED');
       const state = active[0];
-      const wi = await readWorkItemMetadata(path.join(projectPath, '.specforge', 'work-items', state.work_item_id), state.work_item_id);
+      const wi = await readWorkItemMetadata(path.join(projectPath, SPEC_DIR_NAME, 'work-items', state.work_item_id), state.work_item_id);
       return {
         hasActiveWI: true, callerRole: callerRole as any, isFrozen: isCandidateFrozenState(state.current_state),
         workItem: { work_item_id: state.work_item_id, status: state.current_state,

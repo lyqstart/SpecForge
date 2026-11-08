@@ -1,3 +1,4 @@
+import { SPEC_DIR_NAME } from "@specforge/types/directory-layout";
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 import { spawn } from 'node:child_process';
@@ -59,8 +60,8 @@ async function marker(file: string, value: unknown) {
 }
 function paths(root: string, id: string) {
   checkId(id);
-  const wi = path.join(root, '.specforge/work-items', id);
-  return { wi, owner: path.join(wi, 'git_bootstrap'), context: path.join(wi, 'git_context.json'), runtime: path.join(root, '.specforge/runtime') };
+  const wi = path.join(root, (`${SPEC_DIR_NAME}/work-items` as const), id);
+  return { wi, owner: path.join(wi, 'git_bootstrap'), context: path.join(wi, 'git_context.json'), runtime: path.join(root, (`${SPEC_DIR_NAME}/runtime` as const)) };
 }
 export async function withGitBranchMutationLease<T>(root: string, id: string, action: () => Promise<T>): Promise<T> {
   checkId(id);
@@ -138,7 +139,7 @@ async function snapshot(root: string, expected: string, receipts: CommandReceipt
   // plumbing only, include ignored files, and compare raw tracked blobs below.
   const untracked = await requireGit(root, ['ls-files', '--others', '-z'], receipts, audit);
   for (const entry of untracked.split('\0').filter(Boolean)) {
-    if (!entry.startsWith('.specforge/')) fail('BUSINESS_OR_STAGED_DRIFT');
+    if (!entry.startsWith((`${SPEC_DIR_NAME}/` as const))) fail('BUSINESS_OR_STAGED_DRIFT');
     safePath(entry); await noLinks(path.join(root, entry));
   }
   const tree = await requireGit(root, ['ls-tree', '-rz', '--full-tree', expected], receipts, audit);

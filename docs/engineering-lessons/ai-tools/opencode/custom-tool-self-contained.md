@@ -12,6 +12,8 @@ related: [shell-command-execution, host-environment-detection]
 
 # OpenCode 自定义工具必须完全自包含（禁止跨目录 import）
 
+> **适用边界**：本文是通用工程经验及历史示例，不是 SpecForge 当前产品合同，也不授予执行权限。涉及 SpecForge 时，以 SPS、Authority Registry 与活动开发规则为准；D18 `sf_safe_bash` 保持只读，D23 仅由受控验证工具在批准的平台与 profile 内执行。示例中的环境、路径、依赖和命令须在目标项目重新核验。
+
 ## 症状
 
 安装 SpecForge 后，OpenCode 所有 agent（包括内置 Build/Plan）全部卡死——发消息后无任何回复，底部一直转圈。

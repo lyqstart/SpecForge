@@ -1,5 +1,7 @@
 # 项目工程规则 — Java
 
+> 使用边界：这是业务项目规则素材，模板值和版本示例不是已核验事实。命令仅作待批准 Task 的验收声明；D18 sf_safe_bash 保持只读。真实 sf-orchestrator 使用 sf_verification_plan，真实 sf-verifier 使用 sf_verification_run；不支持的命令保持 not_executed/blocked，不得改走 shell。模板不能扩大 D23 的 Windows x64 严格单进程只读 Node profile。
+
 <!-- 继承 _BASE.md 的 R1-R8，本文件只写 Java 特有规则 -->
 
 ---
@@ -11,9 +13,6 @@ java_target:
   min_version: "[来自 prod-environment.md 的 java_min]"
   # 如何决策（选 LTS 版本）：
   #   - Java 8：老系统，2030 年前有商业支持，但语法落后
-  #   - Java 11 LTS：最低推荐，lambda/var/模块化
-  #   - Java 17 LTS：当前主流，sealed class/record，推荐新项目
-  #   - Java 21 LTS：最新 LTS，虚拟线程（Project Loom），高并发项目推荐
 
   build_tool: maven               # 构建工具
                                   # 可选：maven / gradle

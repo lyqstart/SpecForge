@@ -478,7 +478,7 @@ artifacts: []
       expect(loaded.schema_version).toBe('1.0');
     });
 
-    it('should auto-add schema_version if missing', () => {
+    it('rejects missing schema_version without silently adding it', () => {
       const obj = {
         id: 'test-workflow',
         displayName: 'Test Workflow',
@@ -503,8 +503,8 @@ artifacts: []
         artifacts: [],
       };
 
-      const loaded = loader.loadFromObject(obj);
-      expect(loaded.schema_version).toBe('1.0');
+      expect(() => loader.loadFromObject(obj)).toThrow('schema_version is required');
+      expect(obj).not.toHaveProperty('schema_version');
     });
   });
 

@@ -5,6 +5,8 @@ import * as path from 'node:path';
 
 import { runDoctorCommand } from '../src/commands/doctor';
 import { projectSpecManifest } from '../src/utils/directory-layout';
+import * as cliLayout from '../src/utils/directory-layout';
+import * as canonicalLayout from '@specforge/types/directory-layout';
 
 const temporaryRoots: string[] = [];
 
@@ -15,6 +17,11 @@ afterEach(async () => {
 });
 
 describe('current release CLI project layout boundary', () => {
+  it('uses the canonical layout owner for every CLI export', () => {
+    for (const [name, value] of Object.entries(cliLayout)) {
+      expect(value, name).toEqual(Reflect.get(canonicalLayout, name));
+    }
+  });
   it('Doctor reads only the current Project Spec manifest and reports schema_version', async () => {
     const projectDir = await fs.mkdtemp(path.join(os.tmpdir(), 'sf-cli-current-project-'));
     temporaryRoots.push(projectDir);

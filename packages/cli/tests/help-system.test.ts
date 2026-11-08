@@ -11,6 +11,9 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { HelpSystem, createDefaultHelpSystem, CommandDefinition } from '../src/help/HelpSystem';
 import { ModeSwitch } from '../src/mode-switch';
+import { readFileSync } from 'node:fs';
+import ts from 'typescript';
+const expectedProductVersion = JSON.parse(readFileSync(new URL('../../../package.json', import.meta.url), 'utf8')).version;
 
 describe('HelpSystem', () => {
   let helpSystem: HelpSystem;
@@ -20,11 +23,35 @@ describe('HelpSystem', () => {
   });
 
   describe('General Help', () => {
+    it('documents every registered service subcommand and its explicit option names', () => {
+      for (const [group,file] of [['services','services/index.ts'],['opencode-server','opencode-server/index.ts']] as const) {
+        const source=ts.createSourceFile(file,readFileSync(new URL('../src/commands/'+file,import.meta.url),'utf8'),ts.ScriptTarget.Latest,true);
+        const registrations:Array<{name:string;options:string[]}>=[];
+        function visit(node:ts.Node):void{
+          if(ts.isCallExpression(node)&&ts.isPropertyAccessExpression(node.expression)&&node.expression.name.text==='command'&&node.arguments[0]&&ts.isStringLiteral(node.arguments[0])){
+            const name=node.arguments[0].text;
+            if(name!==group){const options:string[]=[];function flags(child:ts.Node):void{if(ts.isCallExpression(child)&&ts.isPropertyAccessExpression(child.expression)&&child.expression.name.text==='option'&&child.arguments[0]&&ts.isStringLiteral(child.arguments[0]))options.push('--'+child.arguments[0].text);ts.forEachChild(child,flags);}if(node.arguments[2])flags(node.arguments[2]);registrations.push({name,options});}
+          }ts.forEachChild(node,visit);
+        }visit(source);
+        const documented=JSON.parse(helpSystem.generateCommandHelp(group,new ModeSwitch('json')));
+        expect(documented.subcommands.map((s:any)=>s.name).sort()).toEqual(registrations.map(r=>r.name).sort());
+        for(const registration of registrations){const sub=JSON.parse(helpSystem.generateCommandHelp(group,new ModeSwitch('json'),registration.name));expect(sub.parameters.map((p:any)=>p.name).sort()).toEqual(registration.options.sort());}
+      }
+    });
+    it('describes config as readonly and daemon diagnostics through current health/handshake owners', () => {
+      const config = JSON.parse(helpSystem.generateCommandHelp('config', new ModeSwitch('json')));
+      expect(config.description).not.toMatch(/modify|write|edit/i);
+      const daemon = JSON.parse(helpSystem.generateCommandHelp('daemon', new ModeSwitch('json')));
+      expect(JSON.stringify(daemon.troubleshooting)).not.toContain('3847');
+      expect(JSON.stringify(daemon.troubleshooting)).toContain('handshake');
+      const start = JSON.parse(helpSystem.generateCommandHelp('daemon', new ModeSwitch('json'), 'start'));
+      expect(start.parameters.find((p: any) => p.name === '--bind').description).toContain('deployment');
+    });
     it('should generate general help in interactive mode', () => {
       const modeSwitch = new ModeSwitch('human');
       const helpText = helpSystem.generateGeneralHelp(modeSwitch);
       
-      expect(helpText).toContain('SpecForge v1.0.21');
+      expect(helpText).toContain(`SpecForge v${expectedProductVersion}`);
       expect(helpText).toContain('Usage: specforge <command> [options]');
       expect(helpText).toContain('Available commands:');
       expect(helpText).toContain('daemon');
@@ -40,7 +67,7 @@ describe('HelpSystem', () => {
       const parsed = JSON.parse(helpText);
       
       expect(parsed.appName).toBe('SpecForge');
-      expect(parsed.version).toBe('1.0.21');
+      expect(parsed.version).toBe(expectedProductVersion);
       expect(Array.isArray(parsed.commands)).toBe(true);
       expect(parsed.commands.length).toBeGreaterThan(0);
       expect(Array.isArray(parsed.globalFlags)).toBe(true);

@@ -33,7 +33,7 @@ describe('ERR-167 daemon startup README contract', () => {
     const daemonReadme = readRepo('packages/daemon-core/README.md');
 
     for (const text of [rootReadme, daemonReadme]) {
-      expect(text).toContain('bun run packages/daemon-core/src/index.ts');
+      expect(text).toContain('specforge daemon start --detach');
       expect(text).toContain('/api/v1/healthz');
     }
 

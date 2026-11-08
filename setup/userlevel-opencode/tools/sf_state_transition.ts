@@ -18,7 +18,7 @@ export default tool({
       .optional()
       .describe("流转依据，如 Gate 结果"),
     workflow_type: tool.schema
-      .string()
+      .enum(["feature_spec"])
       .optional()
       .describe("工作流类型；状态推进通常不需要提供"),
     workflow_path: tool.schema

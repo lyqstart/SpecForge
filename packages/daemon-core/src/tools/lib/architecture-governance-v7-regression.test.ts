@@ -1,5 +1,8 @@
-import { readFileSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { readFileSync, mkdtempSync, mkdirSync, writeFileSync, rmSync } from 'node:fs';
+import { resolve, dirname, join } from 'node:path';
+import { tmpdir } from 'node:os';
+import { readDeclaredProjectSpecTargetPaths } from './path-policy';
+import { projectSpecManifest, SPEC_DIR_NAME } from '@specforge/types/directory-layout';
 import { describe, expect, it } from 'vitest';
 
 function source(relativePath: string): string {
@@ -74,12 +77,16 @@ describe('Architecture governance v7 closure', () => {
     expect(userTool).toContain('"candidate_data_model"');
     expect(userTool).toContain('"candidate_module_contract"');
   });
-  it('treats contracts.json as a declared governance target for every declared Module', () => {
-    const pathPolicy = source('src/tools/lib/path-policy.ts');
-    expect(pathPolicy).toContain("import { resolveSpecModuleIdentity } from '@specforge/types';");
-    expect(pathPolicy).toContain(
-      'declared.add(`.specforge/project/modules/${identity.moduleCode}/contracts.json`);'
-    );
+  it('treats contracts.json as a declared governance target for every declared Module', async () => {
+    const root=mkdtempSync(join(tmpdir(),'sf-declared-contracts-'));
+    try {
+      const manifest=projectSpecManifest(root);mkdirSync(dirname(manifest),{recursive:true});
+      writeFileSync(manifest,JSON.stringify({modules:[{module_code:'CORE'},{module_code:'AUTH'},{module_code:'../escape'}]}));
+      const declared=await readDeclaredProjectSpecTargetPaths(root);
+      expect(declared.has(`${SPEC_DIR_NAME}/project/modules/CORE/contracts.json`)).toBe(true);
+      expect(declared.has(`${SPEC_DIR_NAME}/project/modules/AUTH/contracts.json`)).toBe(true);
+      expect([...declared].some(value=>value.includes('escape'))).toBe(false);
+    } finally {rmSync(root,{recursive:true,force:true});}
   });
   it('validates Module Contract provenance in the existing hard contract integrity Gate', () => {
     const integrity = source('src/tools/lib/contract-integrity.ts');

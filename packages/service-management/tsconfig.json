@@ -28,12 +28,7 @@
     "types": [
       "node"
     ],
-    "baseUrl": ".",
-    "paths": {
-      "@specforge/types/directory-layout": [
-        "src/types/specforge-types-directory-layout.ts"
-      ]
-    }
+    "baseUrl": "."
   },
   "include": [
     "src/**/*"

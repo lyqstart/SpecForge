@@ -1,3 +1,4 @@
+import { SPEC_DIR_NAME } from "./directory-layout.js";
 import { MODULE_CODE_PATTERN } from "./id-rules.js";
 
 export const SPEC_MODULE_IDENTITY_FIELDS = [
@@ -85,7 +86,7 @@ export function canonicalProjectSpecModuleEntry(
 ) {
   const moduleCode = normalizeModuleCodeReference(moduleCodeValue);
   if (!moduleCode) throw new Error(`Invalid MODULE_CODE: ${String(moduleCodeValue)}`);
-  const root = `.specforge/project/modules/${moduleCode}`;
+  const root = `${SPEC_DIR_NAME}/project/modules/${moduleCode}`;
   const base = {
     module_code: moduleCode,
     path: root,

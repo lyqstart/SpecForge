@@ -1,3 +1,4 @@
+import { SPEC_DIR_NAME } from "@specforge/types/directory-layout";
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 import { createHash } from 'node:crypto';
@@ -28,7 +29,7 @@ function parseDeclaredTime(value: unknown): number | null {
 async function readCloseEventAt(projectRoot: string, workItemId: string): Promise<string | null> {
   let events;
   try {
-    events = (await new WAL(path.join(projectRoot, '.specforge', 'runtime', 'events.jsonl')).readAllEvents()).events;
+    events = (await new WAL(path.join(projectRoot, SPEC_DIR_NAME, 'runtime', 'events.jsonl')).readAllEvents()).events;
   } catch {
     return null;
   }
@@ -110,7 +111,7 @@ export async function inspectVerificationEvidenceIntegrity(input: {
     const relative = String(entry.path ?? '').replace(/\\/g, '/');
     const parts = relative.split('/');
     if (!relative || path.isAbsolute(relative) || parts.includes('..') || parts.includes('.') ||
-        !relative.startsWith('.specforge/work-items/') && !relative.startsWith('evidence/')) {
+        !relative.startsWith((`${SPEC_DIR_NAME}/work-items/` as const)) && !relative.startsWith('evidence/')) {
       reasons.push(`manual_acceptance_source_invalid:${id}`);
       continue;
     }

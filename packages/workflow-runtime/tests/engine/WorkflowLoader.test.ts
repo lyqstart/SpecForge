@@ -320,9 +320,8 @@ artifacts: []
       await fs.writeFile(path.join(tempDir, 'invalid.json'), '{ invalid json }');
       await fs.writeFile(path.join(tempDir, 'readme.txt'), 'This is not a workflow');
 
-      const definitions = await loader.loadFromDirectory(tempDir);
-      expect(definitions).toHaveLength(1);
-      expect(definitions[0].id).toBe('valid-workflow');
+      await expect(loader.loadFromDirectory(tempDir)).rejects.toThrow();
+      expect(loader.getAllLoadedDefinitions()).toEqual([]);
     });
 
     it('should throw error for non-existent directory', async () => {
@@ -452,109 +451,6 @@ artifacts: []
       } as WorkflowDefinition;
 
       expect(() => loader.validateOrThrow(definition)).toThrow('validation failed');
-    });
-  });
-
-  describe('migrate', () => {
-    it('should not migrate if schema version matches', () => {
-      const definition = {
-        schema_version: '1.0',
-        id: 'test-workflow',
-        displayName: 'Test Workflow',
-        intent: 'Test workflow intent',
-        stateMachine: {
-          schema_version: '1.0',
-          initial: 'state1',
-          states: {
-            state1: {
-              schema_version: '1.0',
-              agent: 'test-agent',
-              gate: {
-                schema_version: '1.0',
-                type: 'simple',
-                id: 'gate1',
-                name: 'Gate 1',
-              },
-              skills: ['skill1'],
-            },
-          },
-        },
-        artifacts: [],
-      };
-
-      const migrated = loader.migrate(definition, '1.0');
-      expect(migrated.schema_version).toBe('1.0');
-      expect(migrated.id).toBe('test-workflow');
-    });
-
-    it('should throw error if migration path not found', () => {
-      const definition = {
-        schema_version: '0.9',
-        id: 'test-workflow',
-        displayName: 'Test Workflow',
-        intent: 'Test workflow intent',
-        stateMachine: {
-          schema_version: '1.0',
-          initial: 'state1',
-          states: {
-            state1: {
-              schema_version: '1.0',
-              agent: 'test-agent',
-              gate: {
-                schema_version: '1.0',
-                type: 'simple',
-                id: 'gate1',
-                name: 'Gate 1',
-              },
-              skills: ['skill1'],
-            },
-          },
-        },
-        artifacts: [],
-      };
-
-      expect(() => loader.migrate(definition, '1.0')).toThrow('No migration path found');
-    });
-
-    it('should apply custom migration', () => {
-      // Register a custom migration
-      loader.registerMigration({
-        from: '0.9',
-        to: '1.0',
-        migrate: (def: any) => ({
-          ...def,
-          schema_version: '1.0',
-          displayName: def.displayName || 'Migrated Workflow',
-        }),
-      });
-
-      const definition = {
-        schema_version: '0.9',
-        id: 'test-workflow',
-        intent: 'Test workflow intent',
-        stateMachine: {
-          schema_version: '1.0',
-          initial: 'state1',
-          states: {
-            state1: {
-              schema_version: '1.0',
-              agent: 'test-agent',
-              gate: {
-                schema_version: '1.0',
-                type: 'simple',
-                id: 'gate1',
-                name: 'Gate 1',
-              },
-              skills: ['skill1'],
-            },
-          },
-        },
-        artifacts: [],
-      };
-
-      const migrated = loader.migrate(definition, '1.0');
-      expect(migrated.schema_version).toBe('1.0');
-      expect(migrated.displayName).toBe('Migrated Workflow');
     });
   });
 

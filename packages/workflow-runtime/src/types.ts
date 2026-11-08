@@ -4,6 +4,8 @@
  */
 
 // Note: WorkflowEvent is defined locally in WorkflowEngine.ts
+export const SUPPORTED_WORKFLOW_DEFINITION_SCHEMAS = ['1.0', '2.0'] as const;
+export type WorkflowDefinitionSchemaVersion = typeof SUPPORTED_WORKFLOW_DEFINITION_SCHEMAS[number];
 
 /**
  * Basic workflow event structure (used in WorkflowInstance history)
@@ -46,7 +48,7 @@ export type GateType = 'simple' | 'composite';
  * Simple Gate definition
  */
 export interface SimpleGateDefinition {
-  schema_version: "1.0";
+  schema_version: WorkflowDefinitionSchemaVersion;
   type: 'simple';
   id: string;
   name: string;
@@ -71,7 +73,7 @@ export type FailPolicy = 'fail_fast' | 'collect_all';
  * Composite Gate definition
  */
 export interface CompositeGateDefinition {
-  schema_version: "1.0";
+  schema_version: WorkflowDefinitionSchemaVersion;
   type: 'composite';
   id: string;
   name: string;
@@ -89,7 +91,7 @@ export type GateDefinition = SimpleGateDefinition | CompositeGateDefinition;
  * Workflow state definition
  */
 export interface WorkflowState {
-  schema_version: "1.0";
+  schema_version: WorkflowDefinitionSchemaVersion;
   agent: string;
   gate: GateDefinition;
   skills: string[];
@@ -100,7 +102,7 @@ export interface WorkflowState {
  * State machine definition
  */
 export interface StateMachine {
-  schema_version: "1.0";
+  schema_version: WorkflowDefinitionSchemaVersion;
   initial: string;
   states: Record<string, WorkflowState>;
 }
@@ -118,7 +120,7 @@ export interface ArtifactDefinition {
  * Workflow definition
  */
 export interface WorkflowDefinition {
-  schema_version: "1.0";
+  schema_version: WorkflowDefinitionSchemaVersion;
   id: string;
   displayName: string;
   intent: string;

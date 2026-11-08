@@ -28,17 +28,17 @@ class ConsoleLogger implements Logger {
 
   debug(message: string, meta?: Record<string, unknown>): void {
     if (meta) {
-      console.debug(`${this.prefix} DEBUG`, message, this.safeMeta(meta))
+      console.error(`${this.prefix} DEBUG`, message, this.safeMeta(meta))
     } else {
-      console.debug(`${this.prefix} DEBUG`, message)
+      console.error(`${this.prefix} DEBUG`, message)
     }
   }
 
   info(message: string, meta?: Record<string, unknown>): void {
     if (meta) {
-      console.info(`${this.prefix} INFO`, message, this.safeMeta(meta))
+      console.error(`${this.prefix} INFO`, message, this.safeMeta(meta))
     } else {
-      console.info(`${this.prefix} INFO`, message)
+      console.error(`${this.prefix} INFO`, message)
     }
   }
 

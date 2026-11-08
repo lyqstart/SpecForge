@@ -1,3 +1,4 @@
+import { SPEC_DIR_NAME } from "@specforge/types/directory-layout";
 /**
  * sf-v11-work-item-create — v1.1 Work Item 创建 handler
  *
@@ -35,7 +36,7 @@ async function isPlaceholder(filePath: string): Promise<boolean> {
 export async function requiredGreenfieldClassificationFields(
   projectRoot: string,
 ): Promise<string[]> {
-  const projectDir = join(projectRoot, '.specforge', 'project');
+  const projectDir = join(projectRoot, SPEC_DIR_NAME, 'project');
   let manifest: Record<string, any>;
   try {
     manifest = JSON.parse(await fs.readFile(join(projectDir, 'spec_manifest.json'), 'utf-8'));

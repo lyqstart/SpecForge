@@ -3,7 +3,7 @@ import { daemon } from "./lib/thin-client"
 
 export default tool({
   description:
-    "全局知识库工具：添加/更新/删除知识条目、检索、去重检测、效果反馈、质量检查、分类管理",
+    "全局知识库工具：添加/更新/归档知识条目（remove 保留条目并设为 archived）、检索、去重检测、效果反馈、质量检查、分类管理。存储合同使用独立 version=1.0；未知、缺失或损坏格式拒绝读写并保留，不自动转换。",
   args: {
     operation: tool.schema
       .enum([

@@ -5,18 +5,17 @@ const refs = () => tool.schema.array(tool.schema.string()).optional();
 
 const semanticClosureSchema = tool.schema.object({
   schema_version: tool.schema
-    .string()
-    .optional()
+    .literal("1.0")
     .describe("契约版本，当前使用 1.0"),
   work_item_id: tool.schema
     .string()
     .optional()
     .describe("必须与外层 work_item_id 一致"),
   closure_profile: tool.schema
-    .string()
+    .enum(['feature_spec'])
     .optional()
-    .describe("Investigation 使用 investigation"),
-  workflow_type: tool.schema.string().optional(),
+    .describe("当前仅 feature_spec；不启用历史 Investigation 或 Migration profile"),
+  workflow_type: tool.schema.enum(['feature_spec']).optional(),
   outcomes: tool.schema
     .array(
       tool.schema.object({
@@ -118,6 +117,7 @@ const semanticClosureSchema = tool.schema.object({
 export default tool({
   description:
     "按 semantic-closure/v1 契约生成并校验 Work Item 的 .semantic_closure.json。" +
+    "Manifest 必须显式使用独立 schema_version=1.0；未知、缺失或损坏版本保持阻断，force 不能自动转换。" +
     "首选直接传 semantic_closure 结构化对象；兼容来源为 verification_report fenced JSON、" +
     "evidence_manifest 语义 sections、或 trace_delta 的 OUT→REQ→DD→TASK→EV 显式链。" +
     "正常工作流需要 outcomes、requirements、design_decisions、tasks、evidence、project_integration；" +

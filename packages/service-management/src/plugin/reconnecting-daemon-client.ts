@@ -10,7 +10,7 @@
  * - Re-reads handshake.json on each retry to get fresh port/token
  * - Degraded mode after 60s cumulative backoff
  * - Disposable pattern with getActiveBackoffTimerCount() for test verification
- * - Promise.race loser timer cleanup (C1)
+ * - Single owned backoff timer with cancellation settlement
  * - Token field never logged (Req 11.4)
  */
 
@@ -153,6 +153,7 @@ export class ReconnectingDaemonClient implements Disposable {
   private degraded = false;
   private degradedWarningPrinted = false;
   private backoffTimer: ReturnType<typeof setTimeout> | null = null;
+  private backoffResolve: ((result: PostResult) => void) | null = null;
   private currentBackoffMs: number;
   private cumulativeBackoffMs = 0;
   private retryCount = 0;
@@ -248,78 +249,33 @@ export class ReconnectingDaemonClient implements Disposable {
   /**
    * Starts the exponential backoff retry loop
    */
-  private async startBackoff(
-    sessionId: string,
-    type: string,
-    data: unknown
-  ): Promise<PostResult> {
-    // Store the event for retry
+  private async startBackoff(sessionId: string, type: string, data: unknown): Promise<PostResult> {
+    if (this.disposed) return { ok: false, dropped: true, reason: "disposed" };
     this.pendingEvent = { sessionId, type, data };
-
-    // Check if we've exceeded cumulative backoff
     if (this.cumulativeBackoffMs >= this.options.maxCumulativeBackoffMs) {
       this.enterDegradedMode();
       return { ok: false, dropped: true, reason: "degraded" };
     }
-
-    // Ensure only one active backoff timer (invariant: getActiveBackoffTimerCount() ≤ 1)
+    // One owner, one timer. Replacing or disposing a wait also settles its caller.
     this.clearBackoffTimer();
-
-    // Schedule next retry with Promise.race and proper loser cleanup (C1)
     return new Promise<PostResult>((resolve) => {
-      let timer: ReturnType<typeof setTimeout> | undefined;
-
-      // Use Promise.race with a timeout to implement backoff
-      const backoffPromise = new Promise<void>((resolveBackoff) => {
-        timer = setTimeout(() => {
-          resolveBackoff();
-        }, this.currentBackoffMs);
-      });
-
-      // C1: Promise.race loser timer cleanup in finally
-      const timeoutPromise = new Promise<void>((resolveTimeout) => {
-        const timeoutTimer = setTimeout(() => {
-          resolveTimeout();
-        }, this.currentBackoffMs);
-        // Store for cleanup - we'll clear both when race resolves
-        timer = timeoutTimer;
-      });
-
-      Promise.race([backoffPromise, timeoutPromise])
-        .finally(() => {
-          // C1: Always clear the loser timer
-          if (timer) {
-            clearTimeout(timer);
-          }
-        })
-        .then(() => {
-          // Update cumulative backoff
-          this.cumulativeBackoffMs += this.currentBackoffMs;
-          this.retryCount++;
-
-          // Calculate next backoff
-          this.currentBackoffMs = Math.floor(
-            this.currentBackoffMs * this.options.backoffFactor
-          );
-
-          // Check if we've exceeded max cumulative
-          if (this.cumulativeBackoffMs >= this.options.maxCumulativeBackoffMs) {
-            this.clearBackoffTimer();
-            this.enterDegradedMode();
-            resolve({ ok: false, dropped: true, reason: "degraded" });
-            return;
-          }
-
-          // Retry: re-read handshake for fresh port/token
-          this.retryPendingEvent().then((result) => {
-            resolve(result);
-          });
-        });
-
-      // Store timer reference for cleanup
-      if (timer) {
-        this.backoffTimer = timer;
-      }
+      this.backoffResolve = resolve;
+      this.backoffTimer = setTimeout(() => {
+        this.backoffTimer = null;
+        this.backoffResolve = null;
+        if (this.disposed) { resolve({ ok: false, dropped: true, reason: "disposed" }); return; }
+        this.cumulativeBackoffMs += this.currentBackoffMs;
+        this.retryCount++;
+        this.currentBackoffMs = Math.floor(this.currentBackoffMs * this.options.backoffFactor);
+        if (this.cumulativeBackoffMs >= this.options.maxCumulativeBackoffMs) {
+          this.enterDegradedMode();
+          resolve({ ok: false, dropped: true, reason: "degraded" });
+          return;
+        }
+        this.retryPendingEvent().then(resolve, () => resolve({
+          ok: false, dropped: true, reason: this.disposed ? "disposed" : "rejected",
+        }));
+      }, this.currentBackoffMs);
     });
   }
 
@@ -458,11 +414,7 @@ export class ReconnectingDaemonClient implements Disposable {
    */
   private printDegradedWarningOnce(): void {
     if (!this.degradedWarningPrinted) {
-      // Using console.error to write to stderr
-      console.error(
-        "[specforge] Daemon unreachable for over 60 seconds, entering degraded mode. " +
-          "See 'specforge daemon status' for details."
-      );
+      console.error(`[specforge] Daemon reconnect budget exhausted (${this.options.maxCumulativeBackoffMs}ms), entering degraded mode. See 'specforge daemon status' for details.`);
       this.degradedWarningPrinted = true;
     }
   }
@@ -480,10 +432,11 @@ export class ReconnectingDaemonClient implements Disposable {
    * Clears the backoff timer
    */
   private clearBackoffTimer(): void {
-    if (this.backoffTimer) {
-      clearTimeout(this.backoffTimer);
-      this.backoffTimer = null;
-    }
+    if (this.backoffTimer !== null) clearTimeout(this.backoffTimer);
+    this.backoffTimer = null;
+    const complete = this.backoffResolve;
+    this.backoffResolve = null;
+    complete?.({ ok: false, dropped: true, reason: this.disposed ? "disposed" : "rejected" });
   }
 
   /**

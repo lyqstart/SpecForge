@@ -1,7 +1,7 @@
 /**
  * sf_safe_bash 类型定义
  *
- * 详细规范见 docs/engineering-lessons/universal/shell-command-execution.md
+ * 当前合同：SPS §9.2 / D18。保留的内部类型不授予 Shell 或子进程执行能力。
  */
 
 /** Shell 名称（内联，不依赖外部文件） */
@@ -9,15 +9,15 @@ export type ShellName = string
 
 /** 工具输入参数 */
 export interface SafeBashArgs {
-  /** 要执行的 shell 命令 */
+  /** 内部只读操作文本，不是 Shell 命令 */
   command: string
   /** 工作目录（绝对路径或相对仓库根目录的路径）。不传则用调用方 context.directory */
   cwd?: string
   /** 命令超时（毫秒），默认 60000 (60秒) */
   timeoutMs?: number
-  /** 环境变量增量（合并到当前 env） */
+  /** 保留输入字段；当前入口拒绝传入 env，不合并宿主环境 */
   env?: Record<string, string>
-  /** stdin 输入（多数命令不需要） */
+  /** 保留输入字段；当前入口拒绝传入 stdin */
   stdin?: string
   /** 限制 stdout/stderr 截断长度（字符），默认 4096 */
   outputLimit?: number
@@ -27,7 +27,7 @@ export interface SafeBashArgs {
 export interface SafeBashResult {
   /** 整体是否成功（exitCode === 0 且未被拦截） */
   success: boolean
-  /** 子进程退出码，被拦截或异常时为 null */
+  /** 内部操作结果码；无子进程，被拦截时为 null */
   exitCode: number | null
   /** 标准输出（已按 outputLimit 截断） */
   stdout: string
@@ -35,15 +35,15 @@ export interface SafeBashResult {
   stderr: string
   /** 执行耗时（毫秒），被拦截时为 0 */
   durationMs: number
-  /** 实际执行的命令（可能含编码注入前缀和自动包装） */
+  /** 原始操作文本，不进行编码注入或自动包装 */
   command: string
   /** 实际工作目录 */
   cwd: string | null
-  /** 使用的 shell 名 */
+  /** 保留结果字段；当前始终为 null */
   shell: ShellName | null
   /** true = 被规则引擎拒绝，未真正执行 */
   rejected: boolean
-  /** true = 超时被强杀 */
+  /** true = 内部操作达到时间预算；未启动进程 */
   timeout: boolean
   /** 超时阈值（仅 timeout=true 时有意义） */
   timeoutMs?: number
@@ -67,7 +67,7 @@ export interface RejectionResult {
   hint?: string
 }
 
-/** 命令重写结果（不拒绝，但替换命令为更安全的版本） */
+/** 历史类型投影；当前规则库不返回 rewrite，也不据此启动执行 */
 export interface RewriteResult {
   /** 命中的规则 ID */
   rule: string

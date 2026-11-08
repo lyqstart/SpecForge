@@ -240,7 +240,7 @@ export class ServiceHealthChecker implements Disposable {
    * Perform HTTP GET request with timeout (Promise.race pattern per C1)
    */
   private async httpGet(url: string, token: string): Promise<HealthCheckResponse> {
-    let timeoutTimer: ReturnType<typeof setTimeout>;
+    let timeoutTimer: ReturnType<typeof setTimeout> | undefined;
 
     const fetchPromise = fetch(url, {
       method: 'GET',
@@ -260,9 +260,6 @@ export class ServiceHealthChecker implements Disposable {
       timeoutTimer = setTimeout(() => {
         reject(new Error(`Request timeout after ${this.requestTimeoutMs}ms`));
       }, this.requestTimeoutMs);
-    }).finally(() => {
-      // C1: Clear the loser timer
-      clearTimeout(timeoutTimer);
     });
 
     try {
@@ -272,6 +269,9 @@ export class ServiceHealthChecker implements Disposable {
         throw new Error(`Health check request timed out after ${this.requestTimeoutMs}ms`);
       }
       throw error;
+    } finally {
+      // The request may settle first; cleanup belongs to the race owner.
+      clearTimeout(timeoutTimer);
     }
   }
 
@@ -279,7 +279,7 @@ export class ServiceHealthChecker implements Disposable {
    * Perform HTTP GET request without auth (for opencode-server)
    */
   private async httpGetRaw(url: string): Promise<{ status: number }> {
-    let timeoutTimer: ReturnType<typeof setTimeout>;
+    let timeoutTimer: ReturnType<typeof setTimeout> | undefined;
 
     const fetchPromise = fetch(url, {
       method: 'GET',
@@ -292,9 +292,6 @@ export class ServiceHealthChecker implements Disposable {
       timeoutTimer = setTimeout(() => {
         reject(new Error(`Request timeout after ${this.requestTimeoutMs}ms`));
       }, this.requestTimeoutMs);
-    }).finally(() => {
-      // C1: Clear the loser timer
-      clearTimeout(timeoutTimer);
     });
 
     try {
@@ -305,6 +302,8 @@ export class ServiceHealthChecker implements Disposable {
         throw new Error(`Health check request timed out after ${this.requestTimeoutMs}ms`);
       }
       throw error;
+    } finally {
+      clearTimeout(timeoutTimer);
     }
   }
 

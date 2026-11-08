@@ -44,7 +44,7 @@ describe('plugin registration does not initialize projects', () => {
       const response = await fetch(`http://127.0.0.1:${port}/api/v1/ingest/register`, {
         method: 'POST', headers: { authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({ projectPath: root }),
-      });
+      }).catch(error=>{throw new Error(`REGISTRATION_PROBE_TRANSPORT_FAILED:port=${port}:cause=${String(error.cause??error)}`,{cause:error});});
       expect(response.status).toBe(legacy ? 500 : 409);
       expect(await response.text()).toContain(legacy ? 'UNSUPPORTED_PROJECT_LAYOUT' : 'PROJECT_NOT_INITIALIZED');
       expect(await snapshot(root)).toEqual(before);

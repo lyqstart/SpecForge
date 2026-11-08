@@ -76,10 +76,9 @@ describe('ERR-125—ERR-126 build output and generated workflow documentation go
 
     const runnerUrl = pathToFileURL(path.join(repoRoot, 'scripts', 'run-root-task.mjs')).href;
     const runner = await import(runnerUrl);
-    expect(runner.resolveInvokingBun({ npm_execpath: 'C:\\tools\\bun.exe' })).toBe(
-      'C:\\tools\\bun.exe',
-    );
-    expect(() => runner.resolveInvokingBun({ npm_execpath: 'C:\\tools\\npm.cmd' })).toThrow(
+    const invokingBun=process.platform==='win32'?'C:\\tools\\bun.exe':'/tools/bun';
+    expect(runner.resolveInvokingBun({ npm_execpath: invokingBun })).toBe(invokingBun);
+    expect(() => runner.resolveInvokingBun({ npm_execpath: process.platform==='win32'?'C:\\tools\\npm.cmd':'/tools/npm' })).toThrow(
       'ROOT_TASK_REQUIRES_BUN',
     );
     expect(runner.rootTaskSteps('build')).toEqual([

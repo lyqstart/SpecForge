@@ -1,3 +1,4 @@
+import { SPEC_DIR_NAME } from "@specforge/types/directory-layout";
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { createHash } from 'node:crypto';
@@ -13,7 +14,7 @@ export const ATOMIC_SPEC_MERGE_WRITE_PROVENANCE_SCHEMA =
 
 export type TrustedAtomicSpecMergeWrite = AtomicSpecMergeTrustedWrite;
 
-const SPEC_ROOT = '.specforge/project/';
+const SPEC_ROOT = (`${SPEC_DIR_NAME}/project/` as const);
 
 function normalizeRelative(value: string): string {
   return String(value ?? '')
@@ -24,7 +25,7 @@ function normalizeRelative(value: string): string {
 function provenancePath(projectRoot: string): string {
   return path.join(
     projectRoot,
-    '.specforge',
+    SPEC_DIR_NAME,
     'runtime',
     'atomic_spec_merge_controlled_writes.json',
   );

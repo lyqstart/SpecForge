@@ -1,3 +1,4 @@
+import { SPEC_DIR_NAME } from "@specforge/types/directory-layout";
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 import { createHash } from 'node:crypto';
@@ -41,7 +42,7 @@ export async function reconstructInitialization(rootInput: string, input: Recons
   let lock: fs.FileHandle | undefined;
   let lockPath: string | undefined;
   try {
-    await fs.access(await guardedPath(root, '.specforge/manifest.json'));
+    await fs.access(await guardedPath(root, (`${SPEC_DIR_NAME}/manifest.json` as const)));
     const gitRoot = (await git(root, ['rev-parse', '--show-toplevel'])).toString().trim();
     if (await fs.realpath(gitRoot) !== root) throw Error('RECOVERY_GIT_ROOT_MISMATCH');
     await git(root, ['merge-base', '--is-ancestor', input.baseline_commit, 'HEAD']);
@@ -68,17 +69,17 @@ export async function reconstructInitialization(rootInput: string, input: Recons
         if ((await git(root, ['ls-files', '--', entry.file])).length) throw Error('RECOVERY_NEW_TRACKED_FILE');
         const text = original.toString('utf8');
         const placeholder = text === '> TODO: 由首次 intake 阶段填充\n';
-        const coreDefinition = entry.file === '.specforge/project/modules/CORE/module.json' &&
+        const coreDefinition = entry.file === (`${SPEC_DIR_NAME}/project/modules/CORE/module.json` as const) &&
           text === JSON.stringify({ schema_version: '1.0', module_code: 'CORE', status: 'active' }, null, 2) + '\n';
         if (!placeholder && !coreDefinition) throw Error('RECOVERY_NEW_FILE_NOT_INIT_TEMPLATE');
       }
       operations.push({ file: entry.file, before_sha256: entry.sha256, before_base64: entry.bytes_base64,
         after_sha256: target ? hash(target) : null, after_base64: target ? target.toString('base64') : null });
     }
-    const archiveRelative = `.specforge/runtime/init-recovery/${input.snapshot_sha256}`;
+    const archiveRelative = `${SPEC_DIR_NAME}/runtime/init-recovery/${input.snapshot_sha256}`;
     const archive = await guardedPath(root, archiveRelative);
     await fs.mkdir(archive, { recursive: true });
-    lockPath = await guardedPath(root, '.specforge/runtime/init-recovery/owner.lock');
+    lockPath = await guardedPath(root, (`${SPEC_DIR_NAME}/runtime/init-recovery/owner.lock` as const));
     lock = await fs.open(lockPath, 'wx');
     const planPath = path.join(archive, 'plan.json');
     const plan = { schema_version: '1.0', owner: 'ProjectInit', snapshot_sha256: input.snapshot_sha256,

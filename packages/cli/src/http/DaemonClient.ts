@@ -164,7 +164,7 @@ export class DaemonUnreachableError extends DaemonClientError {
       cause,
     });
     this.name = 'DaemonUnreachableError';
-    this.suggestion = '请运行 "specforge daemon start" 启动 Daemon';
+    this.suggestion = '先运行 "specforge daemon status" 核对当前实例；需要启动时使用 "specforge daemon start --detach"，不要手工创建 handshake 或修改 token';
   }
 }
 

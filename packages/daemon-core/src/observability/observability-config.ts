@@ -1,3 +1,4 @@
+import { SPEC_DIR_NAME } from "@specforge/types/directory-layout";
 /** Current V6 daemon observability configuration adapter. */
 import * as fs from 'node:fs';
 import * as path from 'node:path';
@@ -67,7 +68,7 @@ export function resolveProjectRootFromContext(context?: Record<string, unknown>)
 }
 
 export function getObservabilityConfigPath(projectRoot: string): string {
-  return path.join(projectRoot, '.specforge', 'config', 'observability.json');
+  return path.join(projectRoot, SPEC_DIR_NAME, 'config', 'observability.json');
 }
 
 export function loadSfObservabilityConfig(projectRoot: string): SfObservabilityConfig {

@@ -1,3 +1,4 @@
+import { SPEC_DIR_NAME } from "@specforge/types/directory-layout";
 /**
  * ProtectedFileMatcher.ts — 受保护文件路径匹配器
  *
@@ -112,7 +113,7 @@ export const ProtectedFileMatcher = {
 
     // 安全边界：只识别 .specforge/ 下的路径
     // 不将普通源码文件误判
-    if (!normalized.includes('.specforge/')) {
+    if (!normalized.includes((`${SPEC_DIR_NAME}/` as const))) {
       return undefined;
     }
 

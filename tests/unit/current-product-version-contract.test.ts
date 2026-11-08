@@ -9,6 +9,7 @@ import {
   loadProductIdentity,
 } from '../../scripts/lib/product-identity';
 import { readCliOption } from '../../scripts/lib/cli-option';
+import ts from 'typescript';
 
 const ROOT = resolve(import.meta.dirname, '../..');
 
@@ -62,6 +63,15 @@ describe('current product version contract', () => {
         }),
     )).filter((version): version is string => version !== undefined);
     expect(new Set(versions)).toEqual(new Set([identity.version]));
+  });
+
+  it('keeps Bun workspace identity metadata on the same product version', async () => {
+    const identity = await loadProductIdentity(ROOT);
+    const parsed = ts.parseConfigFileTextToJson('bun.lock', await readFile(resolve(ROOT, 'bun.lock'), 'utf8'));
+    expect(parsed.error).toBeUndefined();
+    for (const workspace of Object.values(parsed.config.workspaces) as Array<{version?: string}>) {
+      if (workspace.version !== undefined) expect(workspace.version).toBe(identity.version);
+    }
   });
 
   it('projects the same release identity through current authority and release entrypoints', async () => {

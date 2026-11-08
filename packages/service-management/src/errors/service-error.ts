@@ -150,7 +150,7 @@ const ErrorMessages: Record<ErrorCode, { message: (ctx: ServiceErrorContext) => 
   },
   SVC_PORT_IN_USE: {
     message: (ctx) => `Port ${ctx.port ?? 'unknown'} is already in use`,
-    suggestion: () => 'The daemon port is already in use by another process. Stop the existing process or configure a different port.',
+    suggestion: () => 'Identify the listener and inspect specforge daemon status. Use the owning lifecycle manager for an identified service, or configure a supported unused port; do not terminate an unknown process.',
   },
   SVC_OPENCODE_SERVER_BINARY_MISSING: {
     message: () => 'opencode-server binary not found',
@@ -168,7 +168,7 @@ const ErrorMessages: Record<ErrorCode, { message: (ctx: ServiceErrorContext) => 
   },
   SVC_INSTALL_ROLLBACK_FAILED: {
     message: () => 'Installation failed and rollback also failed',
-    suggestion: () => 'The installation failed and the automatic rollback could not complete. Please manually clean up any partial installation artifacts.',
+    suggestion: () => 'Preserve the failure and rollback logs. Inspect installation verification and the owning installation/recovery operation before retrying; do not manually delete runtime state, locks or user data.',
   },
   SVC_HEALTH_CHECK_FAILED: {
     message: (ctx) => `Health check failed for service: ${ctx.serviceName ?? 'unknown'}`,
@@ -176,7 +176,7 @@ const ErrorMessages: Record<ErrorCode, { message: (ctx: ServiceErrorContext) => 
   },
   SVC_AUTO_RECONNECT_GAVE_UP: {
     message: () => 'Plugin auto-reconnect gave up after cumulative timeout',
-    suggestion: () => 'Could not reconnect to daemon after 60 seconds. Run "specforge daemon status" to check daemon health.',
+    suggestion: () => 'Could not reconnect within the configured retry budget. Run "specforge daemon status" and inspect the current daemon logs; the Plugin does not start or restart the daemon.',
   },
 };
 

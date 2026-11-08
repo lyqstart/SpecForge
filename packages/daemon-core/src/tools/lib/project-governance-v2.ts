@@ -1,3 +1,4 @@
+import { SPEC_DIR_NAME } from "@specforge/types/directory-layout";
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 import { createHash } from 'node:crypto';
@@ -43,7 +44,7 @@ import { sameResolvedPath } from './path-identity.js';
 import { inspectVerificationEvidenceIntegrity } from './verification-evidence-integrity.js';
 
 const execFileAsync = promisify(execFile);
-const SPEC_DIR = '.specforge';
+const SPEC_DIR = SPEC_DIR_NAME;
 
 export interface ImpactScope {
   affected_modules: string[];

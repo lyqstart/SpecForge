@@ -61,6 +61,14 @@ function closedManifest(): SemanticClosureManifest {
 }
 
 describe('validateSemanticClosure', () => {
+  it.each([undefined, null, 1, '9.0'])('rejects unsupported schema %s without converting the input', schema_version => {
+    const manifest = {...closedManifest(), schema_version};
+    const before = JSON.stringify(manifest);
+    const result = validateSemanticClosure(manifest);
+    expect(result.passed).toBe(false);
+    expect(result.errors.map(issue => issue.check_id)).toContain('semantic_manifest_schema_version');
+    expect(JSON.stringify(manifest)).toBe(before);
+  });
   it('passes a fully closed OUT -> REQ -> DD -> TASK -> EV chain', () => {
     const result = validateSemanticClosure(closedManifest());
 

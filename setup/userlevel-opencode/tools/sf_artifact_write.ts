@@ -10,12 +10,11 @@ export default tool({
     " evidence_manifest每个entry的基本必填字段为evidence_id、type、path、description、created_at；type是test_output/command_output等已登记载体枚举，evidence_type/artifact_type不能替代type，id/location/timestamp也不能替代对应必填字段。" +
     " verification_evidence仅用于合同要求的独立人工/其他合法观测源，由sf-verifier以唯一artifact_name写入evidence/source，返回Runtime SHA-256与真实recorded_at，清单引用该独立文件。名称以ASCII字母数字开始，主体只含字母数字._-且最多101字符，扩展名仅jsonl/txt/png/webp/jpg/jpeg；.json、.md、无扩展名和路径分隔符均拒绝。verification_gate通过后输入被冻结；修改先按恢复流程回到implementation_ready。" +
     " 项目配置只能由 sf-orchestrator 在 intake_ready 使用 project_prod_environment 或 project_rules 写入 .specforge/config/，不得在 Write Guard 拒绝后改用原生写入。" +
-    " file_type=work_item 时内容至少应包含 schema_version、work_item_id、status、workflow_type、workflow_path。",
+    " work_item.json 由 Runtime 专用工具维护，禁止通用产物写入；创建用 sf_work_item_create，状态用 sf_state_transition，代码权限用 sf_code_permission。merge_report 仅由 Merge Runner 事务生成。",
   args: {
     work_item_id: tool.schema.string().describe("Work Item ID，例如 WI-0001"),
     module_id: tool.schema.string().optional().describe("模块级 Candidate 的明确 MODULE_CODE；多模块或新增模块场景必填。"),
     file_type: tool.schema.enum([
-        "work_item",
         "intake",
         "change_classification",
         "impact_analysis",
@@ -37,7 +36,6 @@ export default tool({
         "candidate_tasks",
         "trace_delta",
         "candidate_manifest",
-        "merge_report",
         "verification_report",
         "evidence_manifest",
         "verification_evidence",

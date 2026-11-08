@@ -1,3 +1,4 @@
+import { SPEC_DIR_NAME } from "@specforge/types/directory-layout";
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 import * as os from 'node:os';
@@ -208,7 +209,7 @@ export async function restoreProjectArchive(resolver: IPathResolver, input: Proj
   const target = path.resolve(input.project_path), parent = path.dirname(target);
   if ([path.parse(target).root, os.homedir(), os.tmpdir(), process.cwd()].some(value => projectPathIdentity(value) === projectPathIdentity(target)) ||
       path.relative(target, input.archive_path) === '' || !path.relative(target, input.archive_path).startsWith('..' + path.sep) && !path.isAbsolute(path.relative(target, input.archive_path))) fail('UNSAFE_TARGET');
-  if (projectPathIdentity(resolver.resolveProjectRuntimeDir(target)) !== projectPathIdentity(path.join(target, '.specforge/runtime'))) fail('EXTERNAL_RUNTIME_UNSUPPORTED');
+  if (projectPathIdentity(resolver.resolveProjectRuntimeDir(target)) !== projectPathIdentity(path.join(target, (`${SPEC_DIR_NAME}/runtime` as const)))) fail('EXTERNAL_RUNTIME_UNSUPPORTED');
   await noLinks(target);
   const entries = await readArchive(input);
   const key = digest(projectPathIdentity(target)).slice(0, 24);
@@ -278,10 +279,10 @@ export async function restoreProjectArchive(resolver: IPathResolver, input: Proj
         await auditEvent(audit, { event: 'staged_file', path: entry.path, sha256: entry.sha256 });
       }
       // Verify the original event history with the real StateManager without persisting a projection.
-      if (!entries.some(entry => entry.path === '.specforge/runtime/events.jsonl')) fail('EVENT_HISTORY_REQUIRED');
+      if (!entries.some(entry => entry.path === (`${SPEC_DIR_NAME}/runtime/events.jsonl` as const))) fail('EVENT_HISTORY_REQUIRED');
       const state = await new StateManager(resolver, plan.stage).rebuildState();
       if (!state.lastEventId) fail('EMPTY_EVENT_HISTORY');
-      const projection = entries.find(entry => entry.path === '.specforge/runtime/state.json');
+      const projection = entries.find(entry => entry.path === (`${SPEC_DIR_NAME}/runtime/state.json` as const));
       if (projection) {
         const value = JSON.parse(decodeEntry(projection).toString('utf8'));
         if (projectPathIdentity(value.projectPath) !== projectPathIdentity(target) || value.lastEventId !== state.lastEventId || value.lastEventTs !== state.lastEventTs ||

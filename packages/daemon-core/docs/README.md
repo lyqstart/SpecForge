@@ -1,52 +1,24 @@
-# Daemon Core API Documentation
+# Daemon operating references
 
-Welcome to the Daemon Core API documentation. This section covers all public APIs, endpoints, event schemas, and error codes for the SpecForge Daemon Core module.
+Derived references for the independent SpecForge Daemon. Authority: [Product Specification](../../../docs/product-specification/specforge-product-specification.md).
 
-## Table of Contents
-
-- [HTTP Endpoints](./http-endpoints.md)
-- [Event Schema](./event-schema.md)
-- [Error Codes](./error-codes.md)
-- [Authentication](./authentication.md)
-- [CLI Integration](./cli-integration.md)
-- [Thin Plugin Integration](./thin-plugin-integration.md)
-- [Error Handling](./error-handling.md)
-
-## Overview
-
-The Daemon Core is the central process and **Single Source of Truth** for the entire V6 architecture. It provides:
-
-- HTTP/1.1 + SSE communication protocol
-- Event Bus for cross-layer communication
-- Session Registry with pending/active/history states
-- Project isolation via path-based namespacing
-- WAL (Write-Ahead Log) for crash recovery
-
-## Quick Start
-
-### Starting the Daemon
+Use the [official installer](../../../docs/user/install.md), then:
 
 ```bash
-# Start as thin plugin (auto-exit on idle)
-bun run src/index.ts
-
-# Start in detached mode (persistent)
-bun run src/index.ts --detach
+specforge daemon start --detach
+specforge daemon status
+specforge daemon restart
+specforge daemon stop
 ```
 
-### Connecting Clients
+Daemon owns authoritative project state, controlled tools, permission/write guards and workflow closure. CLI and Thin Plugin are clients. Closing/restarting OpenCode does not stop/restart Daemon.
 
-1. Read the handshake file at `~/.config/opencode/sf-user/runtime/handshake.json`
-2. Use the `port` to connect to the HTTP server
-3. Include `Authorization: Bearer <token>` header in all requests
+- [CLI lifecycle](cli-integration.md)
+- [Thin Plugin boundary](thin-plugin-integration.md)
+- [Authentication](authentication.md)
+- [HTTP routes](http-endpoints.md)
+- [Error handling](error-handling.md)
+- [Error codes](error-codes.md)
+- [Event ownership](event-schema.md)
 
-```bash
-# Example request
-curl -H "Authorization: Bearer <token>" http://127.0.0.1:<port>/
-```
-
-## Related Documentation
-
-- [Requirements](../requirements.md)
-- [Design](../design.md)
-- [Development Guide](../DEVELOPMENT.md)
+Follow runtime-returned recovery conditions. Do not manufacture a handshake, edit project state, suppress HardStops or rerun a closed WI to repair installation.

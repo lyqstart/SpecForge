@@ -8,7 +8,7 @@
 |---|---|---|
 | [directory-layout.md](directory-layout.md) | 自动生成的项目级目录投影 | `packages/types/src/directory-layout.ts` |
 | [file-naming.md](file-naming.md) | 当前文件与 ID 命名摘要 | SPS §4、`directory-layout.ts`、ID contract |
-| [wi-lifecycle.md](wi-lifecycle.md) | 当前 Work Item 状态与关键门禁摘要 | SPS §6、Workflow Runtime state machine |
+| [wi-lifecycle.md](wi-lifecycle.md) | 当前 Work Item 状态与关键门禁摘要 | SPS §6、Daemon StateManager 与共享状态合同 |
 | [workflow-types.md](workflow-types.md) | 当前启用工作流及旧名称处理 | SPS §6、`sf-orchestrator` |
 | [agent-roles.md](agent-roles.md) | 已部署 Agent 的职责边界 | `setup/userlevel-opencode/agents/` |
 | [glossary.md](glossary.md) | 当前术语简表 | SPS 与当前 Contract |

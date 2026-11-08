@@ -380,7 +380,7 @@ export function addDaemonCommands(yargsInstance: Argv): Argv {
               })
               .option('bind', {
                 type: 'string',
-                describe: 'Bind address',
+                describe: 'Loopback address; custom addresses require daemon deployment configuration',
                 default: '127.0.0.1',
               });
           },
@@ -448,7 +448,7 @@ export async function runDaemonCommand(
           })
           .option('bind', {
             type: 'string',
-            describe: 'Bind address',
+            describe: 'Loopback address; custom addresses require daemon deployment configuration',
             default: '127.0.0.1',
           });
       },

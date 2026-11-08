@@ -1,3 +1,4 @@
+import { SPEC_DIR_NAME } from "@specforge/types/directory-layout";
 /**
  * SpecForge OBS-FULL Layer 1 — daemon observability recorder.
  *
@@ -127,7 +128,7 @@ export function recordDaemonObservation(
     const trace_id = input.trace_id ?? createSfTraceId();
     const root = path.join(
       projectRoot,
-      ".specforge",
+      SPEC_DIR_NAME,
       "logs",
       "observability",
       "daemon",
@@ -193,7 +194,7 @@ export function recordDaemonObservation(
       error_file: errorFile ? path.relative(projectRoot, errorFile) : undefined,
       payload: inlinePayload,
       error: inlineError,
-      metadata: input.metadata,
+      metadata: config.redact_secrets ? redactSecrets(input.metadata) : input.metadata,
     };
 
     appendJsonl(path.join(root, categoryFileName(input.category)), record);

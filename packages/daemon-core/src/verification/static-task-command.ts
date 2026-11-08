@@ -1,3 +1,4 @@
+import { SPEC_DIR_NAME } from "@specforge/types/directory-layout";
 /** Finite readonly predicates, normalized to the existing isolated Node inline backend. */
 import path from 'node:path';
 import { createHash } from 'node:crypto';
@@ -13,7 +14,7 @@ const flags=['--no-addons','--preserve-symlinks','--preserve-symlinks-main'];
 export const isStaticTaskDeclaration=(value:string)=>/^(?:test|grep|!)\s/.test(value);
 function relative(value:string):string {
   assertVerificationRelativePath(value);
-  if(!/^[A-Za-z0-9_.\-/]+$/.test(value)||value.split('/').some(p=>['.git','.specforge','node_modules'].includes(p.toLowerCase()))||!/(?:\.md|\.json|\.[cm]?js|\.ts)$/.test(value))fail('PATH');
+  if(!/^[A-Za-z0-9_.\-/]+$/.test(value)||value.split('/').some(p=>['.git',SPEC_DIR_NAME,'node_modules'].includes(p.toLowerCase()))||!/(?:\.md|\.json|\.[cm]?js|\.ts)$/.test(value))fail('PATH');
   return value;
 }
 export function parseStaticTaskDeclaration(command:string):Declaration {

@@ -1,3 +1,4 @@
+import { SPEC_DIR_NAME } from "@specforge/types/directory-layout";
 /**
  * sf-v11-verification — §13 Trace/Verification/Evidence handler
  */
@@ -34,7 +35,7 @@ registerHandler('sf_v11_verification', async (args, context, deps) => {
       return { success: false, error: 'work_item_id is required' };
     }
 
-    const wiDir = path.join(projectRoot, '.specforge', 'work-items', workItemId);
+    const wiDir = path.join(projectRoot, SPEC_DIR_NAME, 'work-items', workItemId);
 
     if (action === 'validate_trace_delta') {
       const content = args['content'] as string;

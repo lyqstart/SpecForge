@@ -1,5 +1,7 @@
 # Gate执行错误处理机制实现总结
 
+> **历史实施证据**：本文件记录形成时的实现、测试和计划，不是当前 API、安装、权限或项目状态说明。原始字节封存于 `docs/archive/2026-11-08-crossplatform-consumer-audit/original-documents/`。当前产品边界见 SPS 与 Authority Registry；当前使用说明见本包 README，实际执行仍需当前受控入口。
+
 ## 任务完成情况
 
 已成功实现Phase 2.2.1任务：实现Gate执行错误处理机制。具体完成内容如下：

@@ -1,5 +1,7 @@
 # 项目工程规则 — Vue
 
+> 使用边界：这是业务项目规则素材，模板值和版本示例不是已核验事实。命令仅作待批准 Task 的验收声明；D18 sf_safe_bash 保持只读。真实 sf-orchestrator 使用 sf_verification_plan，真实 sf-verifier 使用 sf_verification_run；不支持的命令保持 not_executed/blocked，不得改走 shell。模板不能扩大 D23 的 Windows x64 严格单进程只读 Node profile。
+
 <!-- 继承 _BASE.md + languages/nodejs.md，本文件只写 Vue 特有规则 -->
 
 ---
@@ -9,7 +11,6 @@
 ```yaml
 vue_version: "3"                  # Vue 主版本
                                   # 如何决策：
-                                  #   Vue 3：Composition API，当前主流，推荐所有新项目
                                   #   Vue 2：EOL（2023 年 12 月），仅维护老项目
 
 build_tool: vite                  # 构建工具（Vue 官方推荐）

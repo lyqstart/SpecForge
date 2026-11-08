@@ -18,7 +18,9 @@
 4. 当前仍不得以代码、旧测试、README、handoff、历史实施方案或归档 Kiro 材料单独推导产品决定；冲突报告为 `AUTHORITY_CONFLICT`，证据不足报告为 `INSUFFICIENT_EVIDENCE`。
 5. 新会话从根 `AGENTS.md` 进入，运行只读 `scripts/project-session-bootstrap.mjs`，读取唯一 `docs/project-status.md` 后恢复；旧 authority-model-recovery 与 current-handoff 已归档，不再是恢复入口。
 
-## Confirmed conflicts to resolve
+## Historical conflicts at the recovery baseline
+
+以下记录冻结建立时的差异，不是当前待办清单。当前事实须核对源码与运行证据，当前进度仅见 `docs/project-status.md`。
 
 - 用户级路径：ADR-010/011 的 OpenCode 配置目录边界与安装器、Plugin、daemon 客户端中的 `~/.specforge` 实现不一致。
 - daemon 生命周期：ADR-009 禁止 Plugin 自动启动 daemon，而当前 Plugin 仍有自动启动逻辑。

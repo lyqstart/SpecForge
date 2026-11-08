@@ -175,50 +175,9 @@ function lintRequirements(content: string, fileName: string): DocLintResult {
 
   // V6 架构: 仅对包含对应 REQ 节的文档检查对应规则
   // 检查文档是否包含V6相关关键词
-  const isV6ArchitectureDoc = content.includes("V6") || 
-                              content.includes("v6-architecture") ||
-                              content.includes("SpecForge V6") ||
-                              content.includes("V6架构")
+  /* Historical V6 content algorithms are retained below, but are not current product lint policy. */
   
-  if (isV6ArchitectureDoc) {
-    // 仅在文档包含对应 REQ 节时检查对应规则
-    if (content.match(/^#{1,6}\s+(?:REQ-2|Requirement\s+2|需求\s*2)[:：]?\s+V6\s+不做的边界/im)) {
-      const boundaryResult = checkV6ArchNotDoingBoundary(content, fileName, "requirements")
-      issues.push(...boundaryResult.issues)
-    }
-    
-    if (content.match(/^#{1,6}\s+(?:REQ-3|Requirement\s+3|需求\s*3)[:：]?\s+北极星目标/im)) {
-      const northStarResult = checkV6ArchNorthStarScenarios(content, fileName, "requirements")
-      issues.push(...northStarResult.issues)
-    }
-    
-    if (content.match(/^#{1,6}\s+(?:REQ-25|Requirement\s+25|需求\s*25)[:：]?\s*(?:V6\.0\s+)?开发范围边界/im)) {
-      const scopeListsResult = checkV6ArchScopeLists(content, fileName, "requirements")
-      issues.push(...scopeListsResult.issues)
-    }
-    
-    if (content.match(/^#{1,6}\s+(?:REQ-27|Requirement\s+27|需求\s*27)[:：]?\s+V6\.0\s+质量门槛/im)) {
-      const releaseGatesResult = checkV6ArchReleaseGates(content, fileName, "requirements")
-      issues.push(...releaseGatesResult.issues)
-    }
-    
-    if (content.match(/^#{1,6}\s+(?:REQ-28|Requirement\s+28|需求\s*28)[:：]?\s+平台与环境/im)) {
-      const platformDeclarationResult = checkV6ArchPlatformDeclaration(content, fileName, "requirements")
-      issues.push(...platformDeclarationResult.issues)
-    }
-    
-    if (content.match(/^#{1,6}\s+(?:REQ-29|Requirement\s+29|需求\s*29)[:：]?\s+里程碑规划/im)) {
-      const milestonesResult = checkV6ArchMilestones(content, fileName, "requirements")
-      issues.push(...milestonesResult.issues)
-    }
-    
-    // V6 架构: 检查 Agent Constitution 节（REQ-7.8）
-    // 仅在文档包含 REQ-7 或 Glossary 中有 Agent Constitution 引用时检查
-    if (content.includes("Agent Constitution") || content.match(/^#{1,6}\s+(?:REQ-7|Requirement\s+7|需求\s*7)[:：]/im)) {
-      const agentConstitutionResult = checkV6ArchAgentConstitution(content, fileName, "requirements")
-      issues.push(...agentConstitutionResult.issues)
-    }
-  }
+  /* Historical V6 content algorithms are retained below, but are not current product lint policy. */
 
   return {
     status: issues.filter((i) => i.severity === "error").length === 0 ? "pass" : "fail",
@@ -272,61 +231,9 @@ function lintDesign(content: string, fileName: string): DocLintResult {
 
   // V6 架构: 检查核心设计原则节（仅对V6架构文档）
   // 检查文档是否包含V6相关关键词或核心设计原则节
-  const isV6ArchitectureDoc = content.includes("V6") || 
-                              content.includes("v6-architecture") ||
-                              content.includes("SpecForge V6") ||
-                              content.includes("V6架构") ||
-                              content.includes("核心设计原则")
+  /* Historical V6 content algorithms are retained below, but are not current product lint policy. */
   
-  if (isV6ArchitectureDoc) {
-    // 仅在文档包含对应节时检查对应规则
-    if (content.match(/^#{1,6}\s+核心设计原则/im)) {
-      const designPrinciplesResult = checkV6ArchDesignPrinciples(content, fileName)
-      issues.push(...designPrinciplesResult.issues)
-    }
-    
-    // 检查 V6 不做边界节（仅在节存在时）
-    if (content.match(/^#{1,6}\s+V6\s+不做边界/im)) {
-      const boundaryResult = checkV6ArchNotDoingBoundary(content, fileName, "design")
-      issues.push(...boundaryResult.issues)
-    }
-    
-    // V6 架构: 检查北极星目标节（仅在节存在时）
-    if (content.match(/^#{1,6}\s+北极星目标/im)) {
-      const northStarResult = checkV6ArchNorthStarScenarios(content, fileName, "design")
-      issues.push(...northStarResult.issues)
-    }
-    
-    // V6 架构: 检查范围列表节（仅在"本文档自身的验收检查"节存在时）
-    if (content.match(/^#{1,6}\s+本文档自身的验收检查/im)) {
-      const scopeListsResult = checkV6ArchScopeLists(content, fileName, "design")
-      issues.push(...scopeListsResult.issues)
-    }
-    
-    // V6 架构: 检查发版门槛节（仅在节存在时）
-    if (content.match(/^#{1,6}\s+V6\.0\s+发版综合测试门槛/im)) {
-      const releaseGatesResult = checkV6ArchReleaseGates(content, fileName, "design")
-      issues.push(...releaseGatesResult.issues)
-    }
-    
-    // V6 架构: 检查平台声明节（仅在"本文档自身的验收检查"节存在时）
-    if (content.match(/^#{1,6}\s+本文档自身的验收检查/im) || content.match(/^#{1,6}\s+平台与环境/im)) {
-      const platformDeclarationResult = checkV6ArchPlatformDeclaration(content, fileName, "design")
-      issues.push(...platformDeclarationResult.issues)
-    }
-    
-    // V6 架构: 检查里程碑节（仅在"本文档自身的验收检查"节或里程碑节存在时）
-    if (content.match(/^#{1,6}\s+本文档自身的验收检查/im) || content.match(/^#{1,6}\s+里程碑/im)) {
-      const milestonesResult = checkV6ArchMilestones(content, fileName, "design")
-      issues.push(...milestonesResult.issues)
-    }
-    
-    // V6 架构: 检查 Agent Constitution 节（仅在节存在时）
-    if (content.match(/Agent\s+Constitution\s+9\s+条/im) || content.match(/^#{1,6}\s+.*Agent\s+Constitution/im)) {
-      const agentConstitutionResult = checkV6ArchAgentConstitution(content, fileName, "design")
-      issues.push(...agentConstitutionResult.issues)
-    }
-  }
+  /* Historical V6 content algorithms are retained below, but are not current product lint policy. */
 
   return {
     status: issues.filter((i) => i.severity === "error").length === 0 ? "pass" : "fail",

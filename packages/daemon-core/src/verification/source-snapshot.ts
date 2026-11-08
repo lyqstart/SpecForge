@@ -1,3 +1,4 @@
+import { SPEC_DIR_NAME } from "@specforge/types/directory-layout";
 /** Read-only Git plumbing plus physical/raw-byte inventory. Never invokes shell, filters or hooks. */
 import * as fs from 'node:fs/promises';
 import path from 'node:path';
@@ -56,7 +57,7 @@ export async function captureVerificationSource(projectRoot: string, inputPaths?
   const configBefore = verificationId(await readVerificationFile(path.join(root, '.git', 'config')));
   for (const name of (await gitRead(root, ['ls-files', '--others', '--exclude-standard', '-z'])).split('\0').filter(Boolean)) {
     assertVerificationRelativePath(name);
-    if (!name.toLowerCase().startsWith('.specforge/')) throw new Error('VERIFICATION_UNTRACKED_INPUT:' + name);
+    if (!name.toLowerCase().startsWith((`${SPEC_DIR_NAME}/` as const))) throw new Error('VERIFICATION_UNTRACKED_INPUT:' + name);
   }
   const files: VerificationInputFile[] = [], trackedPaths: string[] = [], identities = new Set<string>();
   const selected = inputPaths === undefined ? null : new Set(inputPaths);
@@ -71,7 +72,7 @@ export async function captureVerificationSource(projectRoot: string, inputPaths?
     if (identities.has(identity)) throw new Error('VERIFICATION_INPUT_PATH_ALIAS');
     identities.add(identity);
     if (relative.split('/').some(p => ['.git', 'node_modules'].includes(p.toLowerCase()))) throw new Error('VERIFICATION_DEPENDENCY_OR_GIT_INPUT');
-    if (relative.toLowerCase().startsWith('.specforge/')) continue;
+    if (relative.toLowerCase().startsWith((`${SPEC_DIR_NAME}/` as const))) continue;
     trackedPaths.push(relative);
     if (selected && !selected.has(relative)) continue;
     const full = path.join(root, relative), bytes = await readVerificationFile(full), stat = await fs.lstat(full, { bigint: true });

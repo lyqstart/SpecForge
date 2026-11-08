@@ -206,6 +206,26 @@ function createEmptyStore(): GlobalKnowledgeStore {
  * - 文件不存在时自动创建空库
  * - JSON 解析失败时抛出错误（不覆盖原文件，不返回空库）
  */
+/** Current knowledge-store contract uses its existing independent version=1.0. */
+export function validateKnowledgeStore(value: unknown): asserts value is GlobalKnowledgeStore {
+  const object=(v: unknown): v is Record<string, any> => !!v && typeof v === 'object' && !Array.isArray(v);
+  if (!object(value) || value.version !== '1.0') throw new Error('KNOWLEDGE_STORE_SCHEMA_UNSUPPORTED: explicit version=1.0 required; existing data preserved, no automatic conversion');
+  const strings=(v: unknown) => Array.isArray(v) && v.every(x=>typeof x==='string');
+  const counter=(v: unknown) => Number.isSafeInteger(v) && Number(v)>=0;
+  const date=(v: unknown) => typeof v==='string' && Number.isFinite(Date.parse(v));
+  if (!Array.isArray(value.categories) || !value.categories.every(c=>object(c)&&['id','name','description'].every(k=>typeof c[k]==='string')) ||
+      !Array.isArray(value.entries) || !object(value.metadata) || !counter(value.metadata.total_entries) || !date(value.metadata.last_updated)) throw new Error('KNOWLEDGE_STORE_SCHEMA_INVALID: categories, entries and metadata must satisfy the current contract');
+  for (const entry of value.entries) {
+    if (!object(entry) || !['id','title','content','category','source_project','source_work_item','applicability','normalized_key'].every(k=>typeof entry[k]==='string') ||
+        !['tags','applicable_file_patterns','anti_conditions'].every(k=>strings(entry[k])) ||
+        !['high','medium','low'].includes(entry.confidence) || !['active','candidate','archived'].includes(entry.status) ||
+        !['verified','unverified','disproved'].includes(entry.verification_status) ||
+        !['usage_count','helpful_count','rejected_count'].every(k=>counter(entry[k])) || !counter(entry.version) || entry.version<1 ||
+        !date(entry.created_at) || !date(entry.updated_at) || !(entry.last_used_at===null || date(entry.last_used_at)) ||
+        !(entry.workflow_type===undefined || typeof entry.workflow_type==='string')) throw new Error('KNOWLEDGE_STORE_SCHEMA_INVALID: entry does not satisfy the current contract');
+  }
+}
+
 export async function loadStore(): Promise<GlobalKnowledgeStore> {
   try {
     const storePath = getGlobalStorePath()
@@ -219,21 +239,16 @@ export async function loadStore(): Promise<GlobalKnowledgeStore> {
         // 文件不存在，创建空库
         const emptyStore = createEmptyStore()
         await mkdir(dirname(storePath), { recursive: true })
-        await writeFile(storePath, JSON.stringify(emptyStore, null, 2), "utf-8")
+        await writeFile(storePath, JSON.stringify(emptyStore, null, 2), {encoding:"utf-8",flag:"wx"})
         return emptyStore
       }
       throw new Error(`Failed to read knowledge store: ${error.message}`)
     }
 
-    // JSON 解析失败时抛出错误
-    try {
-      const store = JSON.parse(content) as GlobalKnowledgeStore
-      return store
-    } catch {
-      throw new Error(
-        "insights.json is corrupted: JSON parse failed. File preserved for manual recovery."
-      )
-    }
+    let store: unknown
+    try { store=JSON.parse(content) } catch { throw new Error('KNOWLEDGE_STORE_JSON_INVALID: file preserved; do not edit or delete outside the knowledge owner') }
+    validateKnowledgeStore(store)
+    return store
   } catch (err) {
     await logErrorToFile(process.cwd(), "sf_knowledge_base_core", "loadStore", err)
     throw err
@@ -246,7 +261,14 @@ export async function loadStore(): Promise<GlobalKnowledgeStore> {
  */
 export async function saveStore(store: GlobalKnowledgeStore): Promise<void> {
   try {
+    validateKnowledgeStore(store)
     const storePath = getGlobalStorePath()
+    // A valid new value cannot silently convert an existing unsupported store.
+    try { const existing=JSON.parse(await readFile(storePath,"utf-8")); validateKnowledgeStore(existing) }
+    catch(error) {
+      if(error instanceof SyntaxError) throw new Error('KNOWLEDGE_STORE_JSON_INVALID: existing store preserved; no automatic conversion')
+      if((error as NodeJS.ErrnoException).code!=="ENOENT") throw error
+    }
     const tempPath = storePath + ".tmp"
 
     // 更新 metadata

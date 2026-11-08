@@ -5,6 +5,7 @@ import type { DocType } from '../lib/sf_doc_lint_core';
 registerHandler('sf_doc_lint', async (args, context, _deps) => {
   const workItemId = args['work_item_id'] as string;
   const docType = args['doc_type'] as string;
+  if (docType && !['requirements','design','tasks'].includes(docType)) return {success:false,error:'UNSUPPORTED_CURRENT_DOCUMENT_TYPE'};
 
   if (!workItemId || !docType) {
     return { success: false, error: 'work_item_id and doc_type required' };

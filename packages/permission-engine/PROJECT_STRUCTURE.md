@@ -1,5 +1,7 @@
 # Permission Engine Project Structure
 
+> **历史实施证据**：本文件记录形成时的实现、测试和计划，不是当前 API、安装、权限或项目状态说明。原始字节封存于 `docs/archive/2026-11-08-crossplatform-consumer-audit/original-documents/`。当前产品边界见 SPS 与 Authority Registry；当前使用说明见本包 README，实际执行仍需当前受控入口。
+
 ## Overview
 This document describes the project structure and build configuration for the Permission Engine module.
 
@@ -8,25 +10,25 @@ This document describes the project structure and build configuration for the Pe
 ```
 permission-engine/
 ├── src/                    # Source code
-�?  ├── types/             # TypeScript type definitions
-�?  �?  └── index.ts       # Permission-related interfaces
-�?  ├── models/            # Data models and schemas
-�?  �?  └── index.ts       # Zod schemas for validation
-�?  ├── services/          # Business logic services
-�?  �?  └── index.ts       # Permission service implementation
-�?  ├── utils/             # Utility functions
-�?  �?  └── index.ts       # Helper utilities
-�?  └── index.ts           # Main entry point
+�?  ├── types/             # TypeScript type definitions
+�?  �?  └── index.ts       # Permission-related interfaces
+�?  ├── models/            # Data models and schemas
+�?  �?  └── index.ts       # Zod schemas for validation
+�?  ├── services/          # Business logic services
+�?  �?  └── index.ts       # Permission service implementation
+�?  ├── utils/             # Utility functions
+�?  �?  └── index.ts       # Helper utilities
+�?  └── index.ts           # Main entry point
 ├── tests/                 # Test files
-�?  ├── unit/              # Unit tests
-�?  �?  └── permission-engine.test.ts
-�?  ├── integration/       # Integration tests
-�?  ├── property/          # Property-based tests
-�?  └── helpers/           # Test helpers
+�?  ├── unit/              # Unit tests
+�?  �?  └── permission-engine.test.ts
+�?  ├── integration/       # Integration tests
+�?  ├── property/          # Property-based tests
+�?  └── helpers/           # Test helpers
 ├── dist/                  # Build output
-�?  └── src/              # Compiled JavaScript and type definitions
+�?  └── src/              # Compiled JavaScript and type definitions
 ├── scripts/               # Build and utility scripts
-�?  └── verify-build.js   # Build verification script
+�?  └── verify-build.js   # Build verification script
 ├── package.json           # Module dependencies and scripts
 ├── tsconfig.json          # TypeScript configuration
 ├── vitest.config.ts       # Test configuration
@@ -46,7 +48,7 @@ permission-engine/
 - Strict mode enabled
 - Declaration files generated
 - Source maps enabled
-- Path aliases: `@/*` �?`src/*`, `@tests/*` �?`tests/*`
+- Path aliases: `@/*` �?`src/*`, `@tests/*` �?`tests/*`
 
 ### Package Scripts
 - `bun run build` - Compile TypeScript

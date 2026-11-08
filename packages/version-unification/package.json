@@ -1,6 +1,6 @@
 {
   "name": "@specforge/version-unification",
-  "version": "1.0.23",
+  "version": "1.0.24",
   "private": true,
   "type": "module",
   "main": "dist/index.js",
@@ -18,7 +18,7 @@
     "test:watch": "vitest",
     "build": "tsc",
     "lint": "eslint src --ext .ts",
-    "clean": "rm -rf dist"
+    "clean": "bun ../../scripts/clean-workspace.ts --package version-unification"
   },
   "devDependencies": {
     "vitest": "^4.1.5"

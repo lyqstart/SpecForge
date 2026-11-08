@@ -1,5 +1,7 @@
 # 项目工程规则 — MySQL / MariaDB
 
+> 使用边界：这是业务项目规则素材，模板值和版本示例不是已核验事实。命令仅作待批准 Task 的验收声明；D18 sf_safe_bash 保持只读。真实 sf-orchestrator 使用 sf_verification_plan，真实 sf-verifier 使用 sf_verification_run；不支持的命令保持 not_executed/blocked，不得改走 shell。模板不能扩大 D23 的 Windows x64 严格单进程只读 Node profile。
+
 <!-- 继承 _BASE.md，本文件只写 MySQL 特有规则 -->
 
 ---
@@ -9,7 +11,6 @@
 ```yaml
 mysql_version: "[来自 prod-environment.md]"
 # 如何决策：
-#   MySQL 8.0：当前主流，支持 JSON、窗口函数，推荐
 #   MySQL 5.7：EOL（2023 年 10 月），仅维护老项目
 #   MariaDB 10.6+：MySQL 兼容，开源，部分云平台默认
 ```

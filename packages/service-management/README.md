@@ -1,43 +1,18 @@
 # @specforge/service-management
 
-Service Management subsystem for SpecForge - OS service lifecycle management for daemon and opencode-server.
+Supporting library for independent Daemon/client lifecycle and Linux systemd user service management. Product authority: [SPS](../../docs/product-specification/specforge-product-specification.md).
 
-## Overview
-
-This package provides cross-platform service management capabilities:
-- **Linux**: systemd --user unit management
-
-## Features
-
-- Service install/uninstall/start/stop/restart/status
-- Linux systemd user-service abstraction
-- Service lifecycle orchestration with dependency management
-- Graceful shutdown handling
-- Environment pre-check before installation
-
-## Installation
-
-This package is part of the SpecForge monorepo and is managed via workspaces:
+Current direct lifecycle uses the installed short CLI:
 
 ```bash
-bun install
+specforge daemon start --detach
+specforge daemon status
+specforge daemon restart
+specforge daemon stop
 ```
 
-## Development
+OS service registration is Linux systemd --user only. Windows uses direct independent Daemon lifecycle; no NSSM or Windows/macOS OS-service registration is implied. The opencode-server group follows its actual supported service contract.
 
-```bash
-# Build
-bun run build
+Shared owners provide handshake parsing, process/health identity checks, bounded startup/shutdown, reconnection and cleanup. Restart must prove the previous PID ended and a new healthy PID started. Plugin is a client and cannot own Daemon lifecycle.
 
-# Test
-bun test
-
-# Watch mode
-bun test:watch
-```
-
-## Documentation
-
-- [Current Product Specification](../../docs/product-specification/specforge-product-specification.md)
-- [Authority Registry](../../docs/product-specification/authority-registry.md)
-- Historical Kiro material: `docs/archive/kiro/specs/service-management/`
+Install with the [official installer](../../docs/user/install.md). Build/test from the repository root with the current workspace dependency order. Real platform lifecycle acceptance is separate from mocked unit coverage; retain failures and unsupported cases.

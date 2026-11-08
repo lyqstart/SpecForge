@@ -1,5 +1,7 @@
 # 项目工程规则 — React
 
+> 使用边界：这是业务项目规则素材，模板值和版本示例不是已核验事实。命令仅作待批准 Task 的验收声明；D18 sf_safe_bash 保持只读。真实 sf-orchestrator 使用 sf_verification_plan，真实 sf-verifier 使用 sf_verification_run；不支持的命令保持 not_executed/blocked，不得改走 shell。模板不能扩大 D23 的 Windows x64 严格单进程只读 Node profile。
+
 <!-- 继承 _BASE.md + languages/nodejs.md，本文件只写 React 特有规则 -->
 
 ---
@@ -9,8 +11,6 @@
 ```yaml
 react_version: "18"               # React 主版本
                                   # 如何决策：
-                                  #   React 18：并发特性，当前主流，推荐
-                                  #   React 19：最新，部分 API 变化，激进项目可用
 
 build_tool: vite                  # 构建工具
                                   # 可选：vite（推荐，快）/ create-react-app（老，不推荐新项目）

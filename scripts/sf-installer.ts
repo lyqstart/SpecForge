@@ -88,12 +88,12 @@ export function parseArgs(args: string[]): CLIOptions {
     } else if (arg === "--help" || arg === "-h") {
       showUsage()
       process.exit(0)
-    } else if (arg.startsWith("--")) {
+    } else if (arg.startsWith("-")) {
       throw new InstallerError(
         InstallerErrorCode.E_INVALID_JSON,
         `未知参数 ${arg}`
       )
-    } else if (!arg.startsWith("-") && opts.subcommand === null) {
+    } else if (opts.subcommand === null) {
       if (validSubcommands.includes(arg)) {
         opts.subcommand = arg as CLIOptions["subcommand"]
       } else {
@@ -101,7 +101,16 @@ export function parseArgs(args: string[]): CLIOptions {
         console.error(`   建议: 可用子命令为 install, upgrade, verify, uninstall`)
         process.exit(1)
       }
+    } else {
+      throw new InstallerError(InstallerErrorCode.E_INVALID_JSON, `多余位置参数 ${arg}；每次只允许一个子命令`)
     }
+  }
+
+  if (opts.force && (opts.subcommand !== "upgrade" || opts.showVersion)) {
+    throw new InstallerError(InstallerErrorCode.E_INVALID_JSON, "--force 仅适用于 upgrade，不授予其他操作或权限")
+  }
+  if (opts.showVersion && opts.subcommand !== null) {
+    throw new InstallerError(InstallerErrorCode.E_INVALID_JSON, "--version 必须独立使用，不可同时指定子命令")
   }
 
   return opts
@@ -121,15 +130,18 @@ SpecForge 安装器 — 用户级共享组件管理
   uninstall         卸载共享组件
 
 选项:
-  --force     upgrade 时强制覆盖所有文件
+  --force     仅 upgrade：重新复制 release manifest 中的受管文件，包括清单版本未变化的文件
   --version   显示已安装的 SpecForge 版本
   --help, -h  显示此帮助信息
 
 示例:
   bun scripts/sf-installer.ts install
-  bun scripts/sf-installer.ts upgrade --force
+  bun scripts/sf-installer.ts upgrade
   bun scripts/sf-installer.ts verify
   bun scripts/sf-installer.ts uninstall
+
+升级会替换发布版本发生变化的受管文件；--force 还会重新复制未变化的受管项。
+这不是任意目录覆盖权限。修复前先 verify 并核对、保存需要保留的受管文件改动。
 `)
 }
 

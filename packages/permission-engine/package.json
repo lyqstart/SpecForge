@@ -1,6 +1,6 @@
 {
   "name": "@specforge/permission-engine",
-  "version": "1.0.23",
+  "version": "1.0.24",
   "description": "Permission Engine module for SpecForge - Fine-grained access control and authorization",
   "type": "module",
   "main": "dist/src/index.js",
@@ -8,7 +8,7 @@
   "scripts": {
     "build": "tsc",
     "build:watch": "tsc --watch",
-    "clean": "rimraf dist",
+    "clean": "bun ../../scripts/clean-workspace.ts --package permission-engine",
     "lint": "eslint src/**/*.ts tests/**/*.ts",
     "lint:fix": "eslint src/**/*.ts tests/**/*.ts --fix",
     "format": "prettier --write \"src/**/*.ts\" \"tests/**/*.ts\"",

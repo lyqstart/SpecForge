@@ -10,7 +10,7 @@
  * Platform: Linux only (skipped on non-Linux)
  */
 
-import { describe, it, expect, beforeAll, afterAll, afterEach } from 'vitest';
+import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import * as fs from 'node:fs/promises';
@@ -34,11 +34,17 @@ const isLinux = process.platform === 'linux';
 // ---------------------------------------------------------------------------
 
 /** Run a systemctl --user command and return trimmed stdout. */
-async function systemctlUser(args: string[]): Promise<string> {
-  const { stdout } = await execFileAsync('systemctl', ['--user', ...args], {
-    timeout: 15_000,
-  });
-  return stdout.trim();
+async function systemctlUser(args: string[], acceptedExitCodes: number[] = [0]): Promise<string> {
+  try {
+    const { stdout } = await execFileAsync('systemctl', ['--user', ...args], { timeout: 15_000 });
+    expect(acceptedExitCodes).toContain(0);
+    return stdout.trim();
+  } catch (error) {
+    const result = error as Error & { code?: number; stdout?: string; stderr?: string };
+    if (typeof result.code !== 'number') throw error;
+    expect(acceptedExitCodes, result.stderr).toContain(result.code);
+    return (result.stdout ?? '').trim();
+  }
 }
 
 /** Check whether the unit file exists on disk. */
@@ -100,34 +106,14 @@ describe.skipIf(!isLinux)('Linux systemd full lifecycle', () => {
   });
 
   // -------------------------------------------------------------------------
-  // Cleanup: afterEach — best-effort stop + disable any registered service
-  // -------------------------------------------------------------------------
-  afterEach(async () => {
-    for (const svc of registeredServices) {
-      try {
-        await manager.stop(svc);
-      } catch {
-        // best effort
-      }
-      try {
-        await systemctlUser(['disable', `${svc}.service`]);
-      } catch {
-        // best effort
-      }
-      try {
-        await manager.uninstall(svc);
-      } catch {
-        // best effort
-      }
-    }
-    // Remove tracking entries after cleanup attempt
-    registeredServices.length = 0;
-  });
+  // This suite is one ordered lifecycle transaction. Removing the unit between
+  // its steps invalidates every subsequent assertion; cleanup belongs below.
 
   // -------------------------------------------------------------------------
   // Cleanup: afterAll — dispose manager and scrub temp dir
   // -------------------------------------------------------------------------
   afterAll(async () => {
+    expect(serviceName).toMatch(/^specforge-daemon-test-[0-9a-f-]{36}$/);
     // Final safety net: ensure the primary service is fully removed
     try {
       await manager.stop(serviceName);
@@ -142,8 +128,11 @@ describe.skipIf(!isLinux)('Linux systemd full lifecycle', () => {
 
     await manager.dispose();
     expect(manager.getActiveTimerCount()).toBe(0);
+    await expect(fs.stat(path.join(unitDir, `${serviceName}.service`))).rejects.toMatchObject({ code: 'ENOENT' });
 
     // Remove temp directory
+    expect(path.dirname(path.resolve(tempDir))).toBe(path.resolve(os.tmpdir()));
+    expect(path.basename(tempDir)).toMatch(/^specforge-test-/);
     await fs.rm(tempDir, { recursive: true, force: true });
   });
 
@@ -215,10 +204,9 @@ describe.skipIf(!isLinux)('Linux systemd full lifecycle', () => {
     // PID should have changed after restart
     const pidAfter = (await manager.status(serviceName)).pid;
     expect(pidAfter).not.toBeNull();
-    // On fast systems the PID may recycle, but most of the time it differs
-    // We only assert that a valid PID exists
     expect(typeof pidAfter).toBe('number');
     expect(pidAfter!).toBeGreaterThan(0);
+    expect(pidAfter).not.toBe(pidBefore);
   });
 
   it('stop: service enters stopped state', async () => {
@@ -229,7 +217,7 @@ describe.skipIf(!isLinux)('Linux systemd full lifecycle', () => {
     expect(['stopped', 'already-stopped']).toContain(result.state);
 
     // Assert systemctl --user is-active reports "inactive" or "stopped"
-    const isActive = await systemctlUser(['is-active', `${serviceName}.service`]);
+    const isActive = await systemctlUser(['is-active', `${serviceName}.service`], [3]);
     expect(['inactive', 'stopped']).toContain(isActive);
 
     // Assert status reflects non-running state
@@ -244,13 +232,8 @@ describe.skipIf(!isLinux)('Linux systemd full lifecycle', () => {
     await systemctlUser(['disable', unitFileName]);
 
     // Assert is-enabled reports "disabled" or "static"
-    let enabledOutput = 'disabled';
-    try {
-      enabledOutput = await systemctlUser(['is-enabled', unitFileName]);
-    } catch {
-      // is-enabled exits non-zero when disabled — that's fine
-    }
-    expect(['disabled', 'static', 'linked', 'indirect']).toContain(enabledOutput);
+    const enabledOutput = await systemctlUser(['is-enabled', unitFileName], [1]);
+    expect(enabledOutput).toBe('disabled');
   });
 
   it('uninstall: removes unit file completely', async () => {

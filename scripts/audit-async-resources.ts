@@ -2,7 +2,7 @@
 /**
  * 异步资源规范审查脚本
  *
- * 根据 docs/engineering-lessons/async-resource-lifecycle.md 中的经验，
+ * 根据 docs/engineering-lessons/universal/async-resource-lifecycle.md 中的经验，
  * 扫描 packages/ 下所有源码和测试文件，报告违反规则的位置。
  *
  * 用法：
@@ -19,6 +19,7 @@
 
 import { readFileSync, readdirSync, statSync, writeFileSync } from 'fs';
 import { join, relative } from 'path';
+import { reviewRaceTimers } from './lint/source-policy';
 
 const ROOT = join(import.meta.dir, '..');
 const PACKAGES_DIR = join(ROOT, 'packages');
@@ -65,30 +66,16 @@ function walkFiles(dir: string, ext: string[]): string[] {
 
 // ─── 规则 C1：Promise.race 必须在 finally 中 clearTimeout ───────────────────
 function checkC1(file: string, lines: string[]) {
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i]!;
-    if (!line.includes('Promise.race')) continue;
-
-    // 向后扫描 30 行，检查是否有 finally + clearTimeout
-    const window = lines.slice(i, Math.min(i + 30, lines.length)).join('\n');
-    const hasFinally = window.includes('finally');
-    const hasClearTimeout = window.includes('clearTimeout');
-
-    // 检查 race 中是否有 setTimeout（才需要清理）
-    const raceBlock = lines.slice(i, Math.min(i + 20, lines.length)).join('\n');
-    if (!raceBlock.includes('setTimeout')) continue;
-
-    if (!hasFinally || !hasClearTimeout) {
+  for (const finding of reviewRaceTimers(lines.join('\n'), file)) {
       addFinding({
         rule: 'C1',
         severity: 'error',
         file,
-        line: i + 1,
-        message: 'Promise.race 中有 setTimeout，但附近没有 finally + clearTimeout',
-        snippet: line.trim(),
+        line: finding.line,
+        message: 'Promise.race 的作用域内存在 timer，未识别到覆盖所有 timer 的外层 finally 清理；需要核对实际所有权',
+        snippet: lines[finding.line - 1]!.trim(),
         suggestion: '在 Promise.race 外层加 try/finally，在 finally 中 clearTimeout 所有 timer',
       });
-    }
   }
 }
 
@@ -169,7 +156,7 @@ function checkC3(file: string, lines: string[]) {
 
 // ─── 规则 T1：afterEach 不能用硬编码 ID 清理动态资源 ────────────────────────
 function checkT1(file: string, lines: string[]) {
-  if (!file.includes('/tests/')) return;
+  if (!file.replace(/\\/g, '/').includes('/tests/')) return;
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i]!;
@@ -339,7 +326,7 @@ console.log(`  ${YELLOW}警告${RESET}：${warnings.length} 个（建议修复�
 if (findings.length === 0) {
   console.log(`\n${GREEN}✓ 所有检查通过！${RESET}\n`);
 } else {
-  console.log(`\n完整经验文档：docs/engineering-lessons/async-resource-lifecycle.md`);
+    console.log(`\n完整经验文档：docs/engineering-lessons/universal/async-resource-lifecycle.md`);
   console.log(`规范文档：docs/engineering-lessons/universal/async-resource-lifecycle.md`);
   if (!FIX_CONFIG && errors.some(f => f.rule === 'T3')) {
     console.log(`\n提示：运行 ${CYAN}bun run scripts/audit-async-resources.ts --fix-config${RESET} 可自动修复 vitest.config.ts`);

@@ -180,7 +180,7 @@ export class SystemdServiceManager implements ServiceManager {
       }
     } catch {
       // Best effort rollback - errors here are logged but not propagated
-      console.error('Rollback failed, manual cleanup may be required');
+      console.error('Rollback failed; preserve logs and inspect the owning service installation/recovery operation. Do not manually delete runtime state or unknown service files.');
     }
   }
 

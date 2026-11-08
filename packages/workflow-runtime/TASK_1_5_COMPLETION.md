@@ -1,5 +1,7 @@
 # Task 1.5 Completion Report: Event System Integration
 
+> **历史实施证据**：本文件记录形成时的实现、测试和计划，不是当前 API、安装、权限或项目状态说明。原始字节封存于 `docs/archive/2026-11-08-crossplatform-consumer-audit/original-documents/`。当前产品边界见 SPS 与 Authority Registry；当前使用说明见本包 README，实际执行仍需当前受控入口。
+
 ## Overview
 Task 1.5 has been successfully completed. The workflow event system has been fully integrated with the Event Bus, enabling comprehensive event publishing and subscription for workflow execution.
 

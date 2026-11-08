@@ -1,3 +1,4 @@
+import { SPEC_DIR_NAME } from "@specforge/types/directory-layout";
 /**
  * CloseGate.ts — SpecForge v1.1 Close Gate
  *
@@ -188,7 +189,7 @@ export class CloseGate {
    * Never uses notApplicableFlags to bypass evidence/verification/trace checks.
    */
   validateFromFileSystem(params: FileSystemValidationParams): CloseValidationResult {
-    const workItemDir = `.specforge/work-items/${params.workItemId}`;
+    const workItemDir = `${SPEC_DIR_NAME}/work-items/${params.workItemId}`;
 
     // Derive booleans from filesystem
     const evidenceManifestPath = `${workItemDir}/evidence/evidence_manifest.json`;

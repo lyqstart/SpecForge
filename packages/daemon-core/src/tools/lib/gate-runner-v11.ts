@@ -1,3 +1,4 @@
+import { SPEC_DIR_NAME } from "@specforge/types/directory-layout";
 /**
  * gate-runner-v11.ts — v1.1 标准 Gate Runner（§9）
  *
@@ -725,7 +726,7 @@ registerGate('candidate_manifest_gate', 'hard_gate', true, async ctx => {
         });
 
         const targetValid =
-          targetPath.startsWith('.specforge/project/') || targetPath.startsWith('project/');
+          targetPath.startsWith((`${SPEC_DIR_NAME}/project/` as const)) || targetPath.startsWith('project/');
         checks.push({
           check_id: `entry_${i}_target_path`,
           description: `Entry ${i}: target_path in .specforge/project/`,
@@ -735,7 +736,7 @@ registerGate('candidate_manifest_gate', 'hard_gate', true, async ctx => {
 
         const normalizedTargetPath = normalizeProjectSpecTargetPath(targetPath);
         const moduleId = moduleIdFromManifestEntry(entry);
-        const newModuleRoot = moduleId ? `.specforge/project/modules/${moduleId}/` : '';
+        const newModuleRoot = moduleId ? `${SPEC_DIR_NAME}/project/modules/${moduleId}/` : '';
         const newModuleFilename =
           newModuleRoot && normalizedTargetPath.startsWith(newModuleRoot)
             ? normalizedTargetPath.slice(newModuleRoot.length)
@@ -1485,11 +1486,11 @@ registerGate('post_merge_gate', 'hard_gate', true, async ctx => {
   });
 
   // 2. Project Spec Core exists and its duplicated version fields are coherent.
-  const projectDir = path.join(ctx.projectRoot, '.specforge', 'project');
+  const projectDir = path.join(ctx.projectRoot, SPEC_DIR_NAME, 'project');
   const projectDirExists = await fs.stat(projectDir).then(stat => stat.isDirectory()).catch(() => false);
   checks.push({
     check_id: 'post_merge_project_dir',
-    description: '.specforge/project/ directory exists',
+    description: (`${SPEC_DIR_NAME}/project/ directory exists` as const),
     passed: projectDirExists,
   });
 
@@ -1825,7 +1826,7 @@ async function checkProjectSpecRepairGate(ctx: GateContext): Promise<GateResult>
       blockingIssues.push('project_spec_repair_plan requires architecture evidence paths');
     }
     for (const evidencePath of evidencePaths) {
-      if (typeof evidencePath !== 'string' || !evidencePath.startsWith('.specforge/project/')) {
+      if (typeof evidencePath !== 'string' || !evidencePath.startsWith((`${SPEC_DIR_NAME}/project/` as const))) {
         blockingIssues.push(`invalid Project Spec repair evidence path: ${String(evidencePath)}`);
         continue;
       }

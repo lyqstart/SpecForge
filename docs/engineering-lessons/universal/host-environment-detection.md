@@ -11,6 +11,8 @@ related: [shell-command-execution]
 
 # 宿主机环境探测与 host-profile 规范
 
+> **适用边界**：本文是通用工程经验及历史示例，不是 SpecForge 当前产品合同，也不授予执行权限。涉及 SpecForge 时，以 SPS、Authority Registry 与活动开发规则为准；D18 `sf_safe_bash` 保持只读，D23 仅由受控验证工具在批准的平台与 profile 内执行。示例中的环境、路径、依赖和命令须在目标项目重新核验。
+
 > **来源**：SpecForge V6 中 agent 在不同机器上跑同一段命令出现完全不同结果（中文乱码、shell 不存在、工具找不到、路径分隔符错）的根因抽象。
 > **适用范围**：所有需要在用户机器上执行命令、读写文件、调用外部工具的项目。
 > **与 [shell-command-execution](shell-command-execution.md) 关系**：本文规定**怎么探测环境并写入档案**，对方规定**怎么按档案执行命令**。两者一起用：先探测、写档案，命令执行工具读档案后按档案规则跑。

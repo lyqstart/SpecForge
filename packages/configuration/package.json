@@ -1,13 +1,13 @@
 {
   "name": "@specforge/configuration",
-  "version": "1.0.23",
+  "version": "1.0.24",
   "description": "Configuration subsystem for SpecForge",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc",
     "watch": "tsc --watch",
-    "clean": "rm -rf dist",
+    "clean": "bun ../../scripts/clean-workspace.ts --package configuration",
     "lint": "eslint src --ext .ts",
     "lint:fix": "eslint src --ext .ts --fix",
     "format": "prettier --write src tests",

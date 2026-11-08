@@ -9,6 +9,8 @@
 
 > **当前解释（2026-10-11）**：本 ADR 继续决定“项目架构一致性必须形成机器可验证闭环”。具体 Core 文件、按需产物、工作流、Gate 和关闭条件由 SPS-1.0 与已登记的当前实现合同定义；正文中把 `data_model.md`、完整 Contract 或旧路径视为所有项目无条件必需的内容，只保留为决策形成时的历史方案。
 
+> **当前效力补充（2026-11-08）**：下文保留的旧兼容工作流、迁移能力与 Phase 进度不构成当前发布授权。当前仅发布已登记的 feature_spec 工作流；关闭条件与恢复入口由 SPS、Authority Registry 和唯一 Project Status 分别负责。
+
 ## Context
 
 SpecForge 已具备 Requirement、Impact、Candidate、Gate、User Decision、Merge、Code Permission、Implementation、Verification、Close 等治理骨架，但项目级架构、项目级数据模型、模块内部 Contract、真实代码归属、实际变更范围和正式版本资格之间缺少统一的机器闭环。

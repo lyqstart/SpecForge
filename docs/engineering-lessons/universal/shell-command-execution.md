@@ -13,6 +13,8 @@ related: [host-environment-detection, async-resource-lifecycle, kiro-execute-pws
 
 # Shell 命令执行规范（跨平台 + 安全 + 可观测）
 
+> **适用边界**：本文是通用工程经验及历史示例，不是 SpecForge 当前产品合同，也不授予执行权限。涉及 SpecForge 时，以 SPS、Authority Registry 与活动开发规则为准；D18 `sf_safe_bash` 保持只读，D23 仅由受控验证工具在批准的平台与 profile 内执行。示例中的环境、路径、依赖和命令须在目标项目重新核验。
+
 > **来源**：SpecForge V6 中 agent 调用 shell 频繁出错（cd 不被支持、命令卡死、中文乱码、找不到工具）的根因抽象。
 > **适用范围**：所有需要 AI agent 执行 shell 命令的项目，不限工具（Kiro / OpenCode / Cursor / Cline / Codex 等）。
 > 旧 Kiro 工具专属约束已归档；本文是当前通用 Shell 执行规则。

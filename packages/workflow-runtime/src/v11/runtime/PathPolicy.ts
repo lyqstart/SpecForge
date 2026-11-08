@@ -1,3 +1,4 @@
+import { SPEC_DIR_NAME } from "@specforge/types/directory-layout";
 /**
  * PathPolicy.ts — SpecForge v1.1 Path Policy validator
  *
@@ -111,7 +112,7 @@ export class PathPolicy {
 
     // Requirement 1.10: Spec files must have .specforge/ prefix
     const normalized = inputPath.replace(/\\/g, '/');
-    if (!normalized.startsWith('.specforge/') && !normalized.startsWith('.specforge\\')) {
+    if (!normalized.startsWith((`${SPEC_DIR_NAME}/` as const)) && !normalized.startsWith((`${SPEC_DIR_NAME}\\` as const))) {
       return { valid: false, reason: 'missing_specforge_prefix' };
     }
 
@@ -124,7 +125,7 @@ export class PathPolicy {
    */
   isLegacySpecPath(inputPath: string): boolean {
     const normalized = inputPath.replace(/\\/g, '/');
-    return normalized.startsWith('.specforge/specs/') || normalized === '.specforge/specs';
+    return normalized.startsWith((`${SPEC_DIR_NAME}/specs/` as const)) || normalized === (`${SPEC_DIR_NAME}/specs` as const);
   }
 
   /**
@@ -132,7 +133,7 @@ export class PathPolicy {
    */
   isProjectSpecPath(inputPath: string): boolean {
     const normalized = inputPath.replace(/\\/g, '/');
-    return normalized.startsWith('.specforge/project/') || normalized === '.specforge/project';
+    return normalized.startsWith((`${SPEC_DIR_NAME}/project/` as const)) || normalized === (`${SPEC_DIR_NAME}/project` as const);
   }
 
   /**
@@ -140,7 +141,7 @@ export class PathPolicy {
    */
   isWorkItemPath(inputPath: string): boolean {
     const normalized = inputPath.replace(/\\/g, '/');
-    return normalized.startsWith('.specforge/work-items/') || normalized === '.specforge/work-items';
+    return normalized.startsWith((`${SPEC_DIR_NAME}/work-items/` as const)) || normalized === (`${SPEC_DIR_NAME}/work-items` as const);
   }
 
   /**
@@ -158,7 +159,7 @@ export class PathPolicy {
     // Agent cannot write to protected paths
     if (caller === 'agent') {
       // .specforge/project/** — only Merge Runner can write (Requirement 3.29)
-      if (normalized.startsWith('.specforge/project/')) {
+      if (normalized.startsWith((`${SPEC_DIR_NAME}/project/` as const))) {
         return { valid: false, reason: 'agent_cannot_write_project_specs' };
       }
 
@@ -189,7 +190,7 @@ export class PathPolicy {
     }
 
     // Merge Runner can write to .specforge/project/** (Requirement 4.27)
-    if (caller === 'merge_runner' && normalized.startsWith('.specforge/project/')) {
+    if (caller === 'merge_runner' && normalized.startsWith((`${SPEC_DIR_NAME}/project/` as const))) {
       return { valid: true };
     }
 
@@ -217,9 +218,9 @@ export class PathPolicy {
 
     // Forbidden directories (Requirements 1.18, 1.19, 1.20)
     const forbiddenDirs = [
-      '.specforge/archive',
-      '.specforge/state',
-      '.specforge/gates',
+      (`${SPEC_DIR_NAME}/archive` as const),
+      (`${SPEC_DIR_NAME}/state` as const),
+      (`${SPEC_DIR_NAME}/gates` as const),
     ];
 
     for (const forbidden of forbiddenDirs) {
@@ -237,11 +238,11 @@ export class PathPolicy {
 
   /** Forbidden MVP directories that must never be created under .specforge/ */
   private static readonly FORBIDDEN_MVP_DIRS = [
-    '.specforge/archive',
-    '.specforge/standards',
-    '.specforge/state',
-    '.specforge/reports',
-    '.specforge/snapshots',
+    (`${SPEC_DIR_NAME}/archive` as const),
+    (`${SPEC_DIR_NAME}/standards` as const),
+    (`${SPEC_DIR_NAME}/state` as const),
+    (`${SPEC_DIR_NAME}/reports` as const),
+    (`${SPEC_DIR_NAME}/snapshots` as const),
   ];
 
   /** Check if an actor can read the given path */
@@ -297,7 +298,7 @@ export class PathPolicy {
     // Agent restrictions
     if (actor === 'agent') {
       // .specforge/project/** — only Merge Runner can write (Requirement 3.29)
-      if (normalized.startsWith('.specforge/project/') || normalized === '.specforge/project') {
+      if (normalized.startsWith((`${SPEC_DIR_NAME}/project/` as const)) || normalized === (`${SPEC_DIR_NAME}/project` as const)) {
         return { valid: false, reason: 'agent_cannot_write_project_specs' };
       }
 
@@ -329,7 +330,7 @@ export class PathPolicy {
 
     // Merge Runner permissions
     if (actor === 'merge_runner') {
-      if (normalized.startsWith('.specforge/project/') || normalized === '.specforge/project') {
+      if (normalized.startsWith((`${SPEC_DIR_NAME}/project/` as const)) || normalized === (`${SPEC_DIR_NAME}/project` as const)) {
         return { valid: true };
       }
     }
@@ -371,7 +372,7 @@ export class PathPolicy {
     }
 
     const normalized = path.replace(/\\/g, '/');
-    if (!normalized.startsWith('.specforge/')) {
+    if (!normalized.startsWith((`${SPEC_DIR_NAME}/` as const))) {
       return { valid: false, reason: 'missing_specforge_prefix' };
     }
 

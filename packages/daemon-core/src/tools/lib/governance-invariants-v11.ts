@@ -348,36 +348,36 @@ export function targetPathForCandidate(type: string, candidatePath: string): str
     /(?:^|\/)candidates\/project\/modules\/([^\/]+)\/requirements\.candidate\.md$/
   );
   if (moduleRequirementsCandidate)
-    return `.specforge/project/modules/${moduleRequirementsCandidate[1]}/requirements.md`;
+    return `${SPEC_DIR_NAME}/project/modules/${moduleRequirementsCandidate[1]}/requirements.md`;
   const moduleDesignCandidate = p.match(
     /(?:^|\/)candidates\/project\/modules\/([^\/]+)\/design\.candidate\.md$/
   );
   if (moduleDesignCandidate)
-    return `.specforge/project/modules/${moduleDesignCandidate[1]}/design.md`;
+    return `${SPEC_DIR_NAME}/project/modules/${moduleDesignCandidate[1]}/design.md`;
   const moduleContractsCandidate = p.match(
     /(?:^|\/)candidates\/project\/modules\/([^\/]+)\/contracts\.candidate\.json$/
   );
   if (moduleContractsCandidate)
-    return `.specforge/project/modules/${moduleContractsCandidate[1]}/contracts.json`;
+    return `${SPEC_DIR_NAME}/project/modules/${moduleContractsCandidate[1]}/contracts.json`;
   if (t === 'data_model' || p.endsWith('/data_model.md') || p === 'data_model.md')
-    return '.specforge/project/data_model.md';
+    return (`${SPEC_DIR_NAME}/project/data_model.md` as const);
   if (t === 'requirements' || p.endsWith('/requirements.md') || p === 'requirements.md')
-    return '.specforge/project/requirements_index.md';
+    return (`${SPEC_DIR_NAME}/project/requirements_index.md` as const);
   if (t === 'design' || p.endsWith('/design.md') || p === 'design.md')
-    return '.specforge/project/design_index.md';
+    return (`${SPEC_DIR_NAME}/project/design_index.md` as const);
   if (
     t === 'trace' ||
     t === 'trace_delta' ||
     p.endsWith('/trace_delta.md') ||
     p === 'trace_delta.md'
   )
-    return '.specforge/project/trace_matrix.md';
+    return (`${SPEC_DIR_NAME}/project/trace_matrix.md` as const);
   if (t === 'architecture' || p.endsWith('/architecture.md') || p === 'architecture.md')
-    return '.specforge/project/architecture.md';
+    return (`${SPEC_DIR_NAME}/project/architecture.md` as const);
   if (t === 'glossary' || p.endsWith('/glossary.md') || p === 'glossary.md')
-    return '.specforge/project/glossary.md';
+    return (`${SPEC_DIR_NAME}/project/glossary.md` as const);
   if (t === 'decisions' || p.endsWith('/decisions.md') || p === 'decisions.md')
-    return '.specforge/project/decisions.md';
+    return (`${SPEC_DIR_NAME}/project/decisions.md` as const);
   return null;
 }
 
@@ -407,7 +407,7 @@ function isUsableExplicitManifestEntryForInferenceV12(entry: any): boolean {
   return Boolean(
     normalized.candidate_path &&
     normalized.target_path &&
-    normalized.target_path.startsWith('.specforge/project/')
+    normalized.target_path.startsWith((`${SPEC_DIR_NAME}/project/` as const))
   );
 }
 
@@ -492,17 +492,17 @@ function listCanonicalCandidateFiles(workItemDir: string): Array<{
 
   append(
     'candidates/project/architecture.candidate.md',
-    '.specforge/project/architecture.md',
+    (`${SPEC_DIR_NAME}/project/architecture.md` as const),
     'architecture'
   );
   append(
     'candidates/project/data_model.candidate.md',
-    '.specforge/project/data_model.md',
+    (`${SPEC_DIR_NAME}/project/data_model.md` as const),
     'data_model'
   );
   append(
     'candidates/project/extension_registry.json',
-    '.specforge/project/extension_registry.json',
+    (`${SPEC_DIR_NAME}/project/extension_registry.json` as const),
     'extension_registry'
   );
 
@@ -515,7 +515,7 @@ function listCanonicalCandidateFiles(workItemDir: string): Array<{
       const moduleId = String(entry.name ?? '').trim();
       if (!moduleId) continue;
       const candidateRoot = `candidates/project/modules/${moduleId}`;
-      const targetRoot = `.specforge/project/modules/${moduleId}`;
+      const targetRoot = `${SPEC_DIR_NAME}/project/modules/${moduleId}`;
       append(
         `${candidateRoot}/module.candidate.json`,
         `${targetRoot}/module.json`,
@@ -553,7 +553,7 @@ function listCanonicalCandidateFiles(workItemDir: string): Array<{
 
   append(
     'candidates/trace_delta.md',
-    '.specforge/project/trace_matrix.md',
+    (`${SPEC_DIR_NAME}/project/trace_matrix.md` as const),
     'trace_delta'
   );
   return discovered;
@@ -851,7 +851,7 @@ export function inferManifestEntries(manifest: any, workItemDir: string): Manife
         if (fsSync.existsSync(moduleCandidate))
           normalized.push({
             candidate_path: normalizeSlash(path.relative(workItemDir, moduleCandidate)),
-            target_path: `.specforge/project/modules/${moduleName}/module.json`,
+            target_path: `${SPEC_DIR_NAME}/project/modules/${moduleName}/module.json`,
             operation: 'replace',
             type: 'module_definition',
             inferred: true,
@@ -860,7 +860,7 @@ export function inferManifestEntries(manifest: any, workItemDir: string): Manife
         if (fsSync.existsSync(reqCandidate))
           normalized.push({
             candidate_path: normalizeSlash(path.relative(workItemDir, reqCandidate)),
-            target_path: `.specforge/project/modules/${moduleName}/requirements.md`,
+            target_path: `${SPEC_DIR_NAME}/project/modules/${moduleName}/requirements.md`,
             operation: 'replace',
             type: 'requirements',
             inferred: true,
@@ -869,7 +869,7 @@ export function inferManifestEntries(manifest: any, workItemDir: string): Manife
         if (fsSync.existsSync(designCandidate))
           normalized.push({
             candidate_path: normalizeSlash(path.relative(workItemDir, designCandidate)),
-            target_path: `.specforge/project/modules/${moduleName}/design.md`,
+            target_path: `${SPEC_DIR_NAME}/project/modules/${moduleName}/design.md`,
             operation: 'replace',
             type: 'design',
             inferred: true,
@@ -878,7 +878,7 @@ export function inferManifestEntries(manifest: any, workItemDir: string): Manife
         if (fsSync.existsSync(contractsCandidate))
           normalized.push({
             candidate_path: normalizeSlash(path.relative(workItemDir, contractsCandidate)),
-            target_path: `.specforge/project/modules/${moduleName}/contracts.json`,
+            target_path: `${SPEC_DIR_NAME}/project/modules/${moduleName}/contracts.json`,
             operation: 'replace',
             type: 'module_contract',
             inferred: true,
@@ -887,7 +887,7 @@ export function inferManifestEntries(manifest: any, workItemDir: string): Manife
         if (fsSync.existsSync(traceCandidate))
           normalized.push({
             candidate_path: normalizeSlash(path.relative(workItemDir, traceCandidate)),
-            target_path: `.specforge/project/modules/${moduleName}/trace.md`,
+            target_path: `${SPEC_DIR_NAME}/project/modules/${moduleName}/trace.md`,
             operation: 'replace',
             type: 'module_trace',
             inferred: true,
@@ -914,7 +914,7 @@ export function inferManifestEntries(manifest: any, workItemDir: string): Manife
   ) {
     normalized.push({
       candidate_path: 'candidates/trace_delta.md',
-      target_path: '.specforge/project/trace_matrix.md',
+      target_path: (`${SPEC_DIR_NAME}/project/trace_matrix.md` as const),
       operation: 'replace',
       type: 'trace_delta',
       inferred: false,
@@ -966,7 +966,7 @@ async function readWorkItemFacts(
     path.join(workItemDir, 'candidate_manifest.json')
   );
   const runtime = await readJsonOrNull<Record<string, any>>(
-    path.join(projectRoot, '.specforge', 'runtime', 'state.json')
+    path.join(projectRoot, SPEC_DIR_NAME, 'runtime', 'state.json')
   );
   let runtimeItem: any = null;
   if (runtime?.work_item_id === workItemId) runtimeItem = runtime;
@@ -1026,7 +1026,7 @@ async function validateCandidateManifest(
       errors.push(`candidate_manifest.entries[${i}].target_path contains ..`);
     if (
       targetPath &&
-      !targetPath.startsWith('.specforge/project/') &&
+      !targetPath.startsWith((`${SPEC_DIR_NAME}/project/` as const)) &&
       !targetPath.startsWith('project/')
     ) {
       errors.push(

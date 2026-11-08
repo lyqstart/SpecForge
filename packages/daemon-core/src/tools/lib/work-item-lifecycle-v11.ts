@@ -1,3 +1,4 @@
+import { SPEC_DIR_NAME } from "@specforge/types/directory-layout";
 /**
  * work-item-lifecycle-v11.ts — v1.1 标准 Work Item 生命周期管理
  *
@@ -31,7 +32,7 @@ export interface CreateWorkItemInput {
 
 /** Allocate the next current Work Item identity inside the single Daemon owner. */
 export async function allocateNextWorkItemId(projectRoot: string): Promise<string> {
-  const workItemsRoot = path.join(projectRoot, '.specforge', 'work-items');
+  const workItemsRoot = path.join(projectRoot, SPEC_DIR_NAME, 'work-items');
   await fs.mkdir(workItemsRoot, { recursive: true });
 
   let maxSequence = 0;
@@ -47,7 +48,7 @@ export async function allocateNextWorkItemId(projectRoot: string): Promise<strin
  * 创建一个新的 Work Item 目录和初始文件（§4.2, §4.4, §4.5）。
  */
 export async function createWorkItem(input: CreateWorkItemInput): Promise<string> {
-  const wiDir = path.join(input.projectRoot, '.specforge', 'work-items', input.workItemId);
+  const wiDir = path.join(input.projectRoot, SPEC_DIR_NAME, 'work-items', input.workItemId);
 
   // The Work Item root is allocated exactly once. Reusing recursive mkdir here
   // would let a duplicate create overwrite governed metadata and intake history.
@@ -115,7 +116,7 @@ export async function readAuthoritativeProjectSpecVersion(
 ): Promise<string> {
   const manifestPath = path.join(
     projectRoot,
-    '.specforge',
+    SPEC_DIR_NAME,
     'project',
     'spec_manifest.json',
   );

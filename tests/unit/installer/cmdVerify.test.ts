@@ -11,9 +11,9 @@ vi.mock("../../../scripts/lib/paths", () => {
   return {
     resolveUserLevelDirectory: () => mockUserLevelDir,
     resolveSpecForgeInstallRoot: () => mockUserLevelDir,
-    posixToNative: (path: string) => path.replace(/\//g, "\\"),
+    posixToNative: (path: string) => process.platform === "win32" ? path.replace(/\//g, "\\") : path,
     toPosix: (path: string) => path.replace(/\\/g, "/"),
-    toNative: (path: string) => path.replace(/\//g, "\\"),
+    toNative: (path: string) => process.platform === "win32" ? path.replace(/\//g, "\\") : path,
     normalizeSeparators: (path: string) => path.replace(/\\/g, "/"),
     resolveTargetDir: () => mockUserLevelDir,
   }

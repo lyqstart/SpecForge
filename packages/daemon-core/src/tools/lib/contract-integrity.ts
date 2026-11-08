@@ -1,3 +1,4 @@
+import { SPEC_DIR_NAME } from "@specforge/types/directory-layout";
 /**
  * Pre-merge Project/Module Contract integrity validation.
  *
@@ -49,7 +50,7 @@ export type ContractIntegrityResult = {
   registryTargeted: boolean;
 };
 
-const REGISTRY_TARGET = '.specforge/project/extension_registry.json';
+const REGISTRY_TARGET = (`${SPEC_DIR_NAME}/project/extension_registry.json` as const);
 const CONTRACT_FIELDS = [
   ['shared_enum', 'shared_enums'],
   ['invariant', 'invariants'],
@@ -391,7 +392,7 @@ export async function checkContractIntegrity(input: {
     const entry = rawEntry as Record<string, unknown>;
     const target = normalize(entry.target_path);
     const moduleCode = moduleCodeFromProjectSpecPath(target);
-    if (!moduleCode || target !== `.specforge/project/modules/${moduleCode}/contracts.json`) continue;
+    if (!moduleCode || target !== `${SPEC_DIR_NAME}/project/modules/${moduleCode}/contracts.json`) continue;
 
     const prefix = `module_contract_${moduleCode.toLowerCase()}`;
     if (String(entry.operation ?? 'replace') === 'delete') {
@@ -443,7 +444,7 @@ export async function checkContractIntegrity(input: {
   let beforeRegistry: Registry = {};
   try {
     beforeRegistry = await readJson(
-      path.join(input.projectRoot, '.specforge', 'project', 'extension_registry.json'),
+      path.join(input.projectRoot, SPEC_DIR_NAME, 'project', 'extension_registry.json'),
     );
   } catch {
     // Brownfield-safe empty base.

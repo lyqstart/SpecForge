@@ -145,6 +145,12 @@ describe("sf_state_transition - project initialization guard", () => {
     await expect(fs.access(wiDirFor(tempDir, "WI-0001"))).rejects.toBeTruthy();
   });
 
+  it('returns a real current-state catalog and safe recovery advice for invalid targets', async () => {
+    const {deps,smTransition}=makeStateManagerDeps();await writeCurrentWorkItem(tempDir,'WI-0001');
+    const result=await handler({work_item_id:'WI-0001',from_state:'intake_ready',to_state:'invented-state'},{directory:tempDir},deps);
+    expect(result.code).toBe('INVALID_V11_TARGET_STATE');expect(result.valid_states).toContain('intake_ready');expect(result.valid_states).not.toContain('invented-state');expect(result.remediation).toContain('sf_state_read');expect(smTransition).not.toHaveBeenCalled();
+  });
+
   it("rejects the legacy from=''->intake transition (v1.1 uses 'created')", async () => {
     const { deps } = makeStateManagerDeps();
 
@@ -508,7 +514,7 @@ describe("sf_state_transition - spec_migration verification recovery", () => {
     return wiDir;
   }
 
-  it("allows only stale-provenance spec_migration recovery and rejects recovery while provenance is current", async () => {
+  it("rejects the unshipped spec_migration route regardless of historical provenance", async () => {
     const workItemId = "WI-9010";
     const wiDir = await writeSpecMigrationRecoveryFixture(workItemId);
     const { deps, smTransition } = makeStateManagerDeps({ currentState: "verification_done" });
@@ -525,7 +531,7 @@ describe("sf_state_transition - spec_migration verification recovery", () => {
       deps,
     );
     expect(currentResult.success).toBe(false);
-    expect(currentResult.error).toContain("provenance is current");
+    expect(currentResult.error).toBe("UNSUPPORTED_CURRENT_RELEASE_WORKFLOW");
     expect(smTransition).not.toHaveBeenCalled();
 
     await fs.writeFile(
@@ -544,11 +550,9 @@ describe("sf_state_transition - spec_migration verification recovery", () => {
       { directory: tempDir, agent: "sf-orchestrator" },
       deps,
     );
-    expect(staleResult.success).toBe(true);
-    expect(smTransition).toHaveBeenCalledTimes(1);
-    expect(smTransition.mock.calls[0]?.[1]).toBe("verification_done");
-    expect(smTransition.mock.calls[0]?.[2]).toBe("post_merge_verified");
-    expect(smTransition.mock.calls[0]?.[4]).toBe("spec_migration");
+    expect(staleResult.success).toBe(false);
+    expect(staleResult.error).toBe("UNSUPPORTED_CURRENT_RELEASE_WORKFLOW");
+    expect(smTransition).not.toHaveBeenCalled();
   });
 });
 
@@ -761,7 +765,7 @@ describe("sf_state_transition - Candidate Manifest materialization", () => {
       JSON.stringify({
         schema_version: "1.1",
         work_item_id: "WI-0004",
-        workflow_type: "architecture_change",
+        workflow_type: "feature_spec",
         workflow_path: "architecture_change_path",
       }),
     );
@@ -770,7 +774,7 @@ describe("sf_state_transition - Candidate Manifest materialization", () => {
       JSON.stringify({
         schema_version: "1.0",
         work_item_id: "WI-0004",
-        workflow_type: "architecture_change",
+        workflow_type: "feature_spec",
         workflow_path: "architecture_change_path",
         classification: {
           requirement_changed: false,
@@ -795,7 +799,7 @@ describe("sf_state_transition - Candidate Manifest materialization", () => {
       JSON.stringify({
         schema_version: "1.0",
         work_item_id: "WI-0004",
-        workflow_type: "architecture_change",
+        workflow_type: "feature_spec",
         workflow_path: "architecture_change_path",
         base_spec_version: "PSV-0001",
         merge_required: true,
@@ -844,7 +848,7 @@ describe("sf_state_transition - Candidate Manifest materialization", () => {
         work_item_id: "WI-0004",
         from_state: "candidate_preparing",
         to_state: "candidate_prepared",
-        workflow_type: "architecture_change",
+        workflow_type: "feature_spec",
         workflow_path: "architecture_change_path",
       },
       { directory: tempDir, agent: "sf-orchestrator" },
@@ -901,7 +905,7 @@ describe("sf_state_transition - Candidate Manifest materialization", () => {
         work_item_id: "WI-0004",
         from_state: "candidate_preparing",
         to_state: "candidate_prepared",
-        workflow_type: "architecture_change",
+        workflow_type: "feature_spec",
         workflow_path: "architecture_change_path",
       },
       { directory: tempDir, agent: "sf-orchestrator" },
@@ -923,7 +927,7 @@ describe("sf_state_transition - Candidate Manifest materialization", () => {
         work_item_id: "WI-0004",
         from_state: "candidate_preparing",
         to_state: "candidate_prepared",
-        workflow_type: "architecture_change",
+        workflow_type: "feature_spec",
         workflow_path: "architecture_change_path",
       },
       { directory: tempDir, agent: "sf-orchestrator" },
@@ -962,7 +966,7 @@ describe("sf_state_transition - Candidate Manifest materialization", () => {
         work_item_id: "WI-0004",
         from_state: "candidate_preparing",
         to_state: "candidate_prepared",
-        workflow_type: "architecture_change",
+        workflow_type: "feature_spec",
         workflow_path: "architecture_change_path",
       },
       { directory: tempDir, agent: "sf-orchestrator" },
@@ -992,7 +996,7 @@ describe("sf_state_transition - Candidate Manifest materialization", () => {
         work_item_id: "WI-0004",
         from_state: "candidate_preparing",
         to_state: "candidate_prepared",
-        workflow_type: "architecture_change",
+        workflow_type: "feature_spec",
         workflow_path: "architecture_change_path",
       },
       { directory: tempDir, agent: "sf-orchestrator" },
@@ -1020,7 +1024,7 @@ describe("sf_state_transition - Candidate Manifest materialization", () => {
         work_item_id: "WI-0004",
         from_state: "candidate_preparing",
         to_state: "candidate_prepared",
-        workflow_type: "architecture_change",
+        workflow_type: "feature_spec",
         workflow_path: "architecture_change_path",
       },
       { directory: tempDir, agent: "sf-orchestrator" },
@@ -1049,7 +1053,7 @@ describe("sf_state_transition - Candidate Manifest materialization", () => {
         work_item_id: "WI-0004",
         from_state: "candidate_preparing",
         to_state: "candidate_prepared",
-        workflow_type: "architecture_change",
+        workflow_type: "feature_spec",
         workflow_path: "architecture_change_path",
       },
       { directory: tempDir, agent: "sf-orchestrator" },
@@ -1074,7 +1078,7 @@ describe("sf_state_transition - Candidate Manifest materialization", () => {
         work_item_id: "WI-0004",
         from_state: "candidate_preparing",
         to_state: "candidate_prepared",
-        workflow_type: "architecture_change",
+        workflow_type: "feature_spec",
         workflow_path: "architecture_change_path",
       },
       { directory: tempDir, agent: "sf-orchestrator" },
@@ -1120,7 +1124,7 @@ describe("sf_state_transition - Candidate Manifest materialization", () => {
         work_item_id: "WI-0004",
         from_state: "candidate_preparing",
         to_state: "candidate_prepared",
-        workflow_type: "architecture_change",
+        workflow_type: "feature_spec",
         workflow_path: "architecture_change_path",
       },
       { directory: tempDir, agent: "sf-orchestrator" },
@@ -1157,7 +1161,7 @@ describe("sf_state_transition - Candidate Manifest materialization", () => {
         work_item_id: "WI-0004",
         from_state: "candidate_preparing",
         to_state: "candidate_prepared",
-        workflow_type: "architecture_change",
+        workflow_type: "feature_spec",
         workflow_path: "architecture_change_path",
       },
       { directory: tempDir, agent: "sf-orchestrator" },
@@ -1191,7 +1195,7 @@ describe("sf_state_transition - Candidate Manifest materialization", () => {
         work_item_id: "WI-0004",
         from_state: "candidate_preparing",
         to_state: "candidate_prepared",
-        workflow_type: "architecture_change",
+        workflow_type: "feature_spec",
         workflow_path: "architecture_change_path",
       },
       { directory: tempDir, agent: "sf-orchestrator" },

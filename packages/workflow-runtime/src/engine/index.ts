@@ -7,7 +7,6 @@ export { WorkflowEngine } from '../WorkflowEngine.js';
 export type { WorkflowEvent, EventHandler } from '../WorkflowEngine.js';
 
 export { WorkflowLoader } from './WorkflowLoader.js';
-export type { SchemaMigration } from './WorkflowLoader.js';
 
 export {
   WorkflowInstanceFactory,

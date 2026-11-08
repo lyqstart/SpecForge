@@ -1,5 +1,7 @@
 # Lesson 文件格式规范
 
+> **角色与适用边界**：这是通用经验文件及开发期 renderer 的元数据格式，不是 SpecForge 产品权限或当前自动注入合同。当前 SpecForge 开发门禁由活动开发规则与历史账本定向检索负责；本页不启用额外 Agent/Skill、Adapter 自动注入或 D18/D23 以外的执行路径。
+
 每个 lesson 文件 = YAML frontmatter + Markdown 正文。
 
 ---

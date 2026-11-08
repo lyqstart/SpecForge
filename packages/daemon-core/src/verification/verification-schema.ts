@@ -1,3 +1,4 @@
+import { SPEC_DIR_NAME } from "@specforge/types/directory-layout";
 /** Strict persistent schemas shared by producers and every execution-evidence consumer. */
 import path from 'node:path';
 import type { TrustedToolInvocationProof } from '@specforge/types/trusted-tool-invocation';
@@ -56,7 +57,7 @@ export function validateVerificationPlan(value: unknown): asserts value is Verif
   for (const value of s.files) {
     const f = verificationRecord(value, ['path','bytes','sha256','device','inode']);
     verificationRequire(typeof f.path === 'string', 'INPUT_PATH_INVALID'); assertVerificationRelativePath(f.path);
-    verificationRequire(!f.path.split('/').some(part => ['.git','.specforge','node_modules'].includes(part.toLowerCase())), 'PROTECTED_INPUT');
+    verificationRequire(!f.path.split('/').some(part => ['.git',SPEC_DIR_NAME,'node_modules'].includes(part.toLowerCase())), 'PROTECTED_INPUT');
     const identity = process.platform === 'win32' ? f.path.toLowerCase() : f.path;
     verificationRequire(!paths.has(identity) && Number.isSafeInteger(f.bytes) && (f.bytes as number) >= 0 && typeof f.device === 'string' && /^\d+$/.test(f.device) && typeof f.inode === 'string' && /^\d+$/.test(f.inode), 'INPUT_IDENTITY_INVALID');
     paths.add(identity); bytes += f.bytes as number; verificationHash(f.sha256);
@@ -70,7 +71,7 @@ export function validateVerificationPlan(value: unknown): asserts value is Verif
     ['unit','property','integration','e2e','regression'].includes(String(a.verificationType)) && Number.isSafeInteger(a.commandIndex) && (a.commandIndex as number) >= 0 && (a.commandIndex as number) <= 63 && typeof a.command === 'string' && typeof a.taskPath === 'string', 'AUTHORITY_SCHEMA_INVALID');
   assertVerificationRelativePath(a.taskPath);
   const files = verificationRecord(a.files); verificationRequire(Object.keys(files).length > 0 && Object.keys(files).length <= 2048, 'AUTHORITY_FILES_INVALID');
-  for (const [name, identity] of Object.entries(files)) { assertVerificationRelativePath(name); verificationRequire(name.startsWith('.specforge/'), 'AUTHORITY_PATH_INVALID'); verificationHash(identity); }
+  for (const [name, identity] of Object.entries(files)) { assertVerificationRelativePath(name); verificationRequire(name.startsWith((`${SPEC_DIR_NAME}/` as const)), 'AUTHORITY_PATH_INVALID'); verificationHash(identity); }
   for (const key of ['metadataRawSha256','metadataBasisSha256','basisIdentity','identity']) verificationHash(a[key]);
   const { identity: _id, basisIdentity: _basisId, ...body } = a;
   const { state: _state, metadataRawSha256: _raw, ...basis } = body;

@@ -1,6 +1,6 @@
 {
   "name": "@specforge/scope-gate",
-  "version": "1.0.23",
+  "version": "1.0.24",
   "description": "Current-release evidence and artifact-set validator for SpecForge",
   "type": "module",
   "main": "dist/src/index.js",
@@ -11,7 +11,7 @@
     "build:esbuild": "node esbuild.config.js",
     "build:all": "bun run build && bun run build:esbuild",
     "build:watch": "tsc --watch",
-    "clean": "rimraf dist",
+    "clean": "bun ../../scripts/clean-workspace.ts --package scope-gate",
     "lint": "eslint src/**/*.ts tests/**/*.ts",
     "lint:fix": "eslint src/**/*.ts tests/**/*.ts --fix",
     "format": "prettier --write \"src/**/*.ts\" \"tests/**/*.ts\"",
@@ -65,7 +65,11 @@
   },
   "homepage": "https://github.com/specforge/specforge#readme",
   "specforgeRelease": {
-    "packageExportIds": ["scope-gate:release-validator"],
-    "cleanBuildIds": ["scope-gate:release-validator"]
+    "packageExportIds": [
+      "scope-gate:release-validator"
+    ],
+    "cleanBuildIds": [
+      "scope-gate:release-validator"
+    ]
   }
 }

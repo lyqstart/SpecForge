@@ -1,6 +1,6 @@
 {
   "name": "specforge",
-  "version": "1.0.23",
+  "version": "1.0.24",
   "private": true,
   "workspaces": [
     "packages/*"
@@ -12,7 +12,7 @@
     "test:root:environmental": "node scripts/run-root-tests.mjs environmental",
     "test:root:registry": "node scripts/run-root-tests.mjs validate",
     "lint": "node scripts/run-root-task.mjs lint",
-    "clean": "bun run --filter './packages/*' clean",
+    "clean": "bun scripts/clean-workspace.ts",
     "render-workflows": "node scripts/run-root-task.mjs render-workflows",
     "check-workflows": "node scripts/run-root-task.mjs check-workflows",
     "lint:layout": "bun scripts/lint/check-hardcoded-paths.ts",
@@ -23,7 +23,7 @@
     "build:release-manifest": "bun scripts/build-release-manifest.ts",
     "precheck:release": "bun scripts/run-current-release-precheck.ts",
     "bootstrap:project": "node scripts/project-session-bootstrap.mjs",
-    "test:project-bootstrap": "bun --cwd packages/daemon-core run test -- tests/unit/project-session-bootstrap.test.ts"
+    "test:project-bootstrap": "bun run --cwd packages/daemon-core test -- tests/unit/project-session-bootstrap.test.ts"
   },
   "devDependencies": {
     "@types/node": "^25.6.2",
@@ -48,11 +48,28 @@
     "tagPrefix": "specforge-v",
     "versionEpoch": 1,
     "cleanBuildFiles": [
-      { "id": "runtime:specforge", "path": "release/bin/specforge.exe" },
-      { "id": "runtime:specforged", "path": "release/bin/specforged.exe" },
-      { "id": "plugin:sf_specforge", "path": "setup/userlevel-opencode/plugins/sf_specforge.ts" },
-      { "id": "release:installer", "path": "scripts/sf-installer.ts" },
-      { "id": "release:release-manifest", "path": "release/release-manifest.json" }
+      {
+        "id": "runtime:specforge",
+        "path": "release/bin/specforge",
+        "platformExecutable": true
+      },
+      {
+        "id": "runtime:specforged",
+        "path": "release/bin/specforged",
+        "platformExecutable": true
+      },
+      {
+        "id": "plugin:sf_specforge",
+        "path": "setup/userlevel-opencode/plugins/sf_specforge.ts"
+      },
+      {
+        "id": "release:installer",
+        "path": "scripts/sf-installer.ts"
+      },
+      {
+        "id": "release:release-manifest",
+        "path": "release/release-manifest.json"
+      }
     ]
   },
   "schema_version": "1.0"

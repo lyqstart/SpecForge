@@ -1,141 +1,22 @@
 # @specforge/daemon-core
 
-Daemon Core module for SpecForge - Central process and Single Source of Truth
+Current independent Daemon and owner of controlled project state, permissions, tools, Gates, audit and recovery. Authority: [Product Specification](../../docs/product-specification/specforge-product-specification.md).
 
-## Overview
-
-The Daemon Core serves as the central process and **Single Source of Truth** for the entire V6 architecture. It handles HTTP/SSE communication, Event Bus, Session Registry, and Project Manager.
-
-## Features
-
-- Single instance enforcement per machine
-- HTTP/1.1 + SSE communication protocol
-- Event Bus for cross-layer communication
-- Session Registry with pending/active/history states
-- Project isolation via path-based namespacing
-- WAL (Write-Ahead Log) for crash recovery
-- Bearer Token authentication
-
-## Installation
-
-```bash
-cd packages/daemon-core
-bun install
-```
-
-## API Documentation
-
-See the [API Documentation](./docs/README.md) for detailed information on:
-- [HTTP Endpoints](./docs/http-endpoints.md)
-- [Event Schema](./docs/event-schema.md)
-- [Error Codes](./docs/error-codes.md)
-- [Authentication](./docs/authentication.md)
-
-## Quick Start
-
-### Starting the Daemon
-
-For an installed release, use the SpecForge CLI:
+Install the prepared current native release with the [official installer](../../docs/user/install.md), then:
 
 ```bash
 specforge daemon start --detach
 specforge daemon status
+specforge daemon restart
+specforge daemon stop
 ```
 
-For repository development, run the source entry from the repository root:
+CLI and first-party global Thin Plugin are clients. Plugin/OpenCode lifecycle cannot start, stop or replace Daemon. A running process and successful health response prove process readiness, not successful WI execution.
 
-```bash
-bun run packages/daemon-core/src/index.ts
-```
+Current handshake/path contracts are shared by clients. Only `/health` and `/api/v1/healthz` are public health routes; other endpoints require authentication and controlled handler checks. Keep tokens out of logs and reports.
 
-Or from `packages/daemon-core`:
+Project Init, StateManager, Code Permission, Write Guard, Gate, Merge/Audit/Close and recovery owners retain their respective authority. Neutral diagnostics do not create another workflow WAL. Unsupported persistent schemas fail closed.
 
-```bash
-bun run src/index.ts
-```
+See [operating/API references](docs/README.md), [development](DEVELOPMENT.md), [entry](src/index.ts) and [tests](tests/). Older V6/Kiro documents remain historical evidence.
 
-The source entry runs in the foreground. Keep the terminal open and press `Ctrl+C` to stop it. The installed CLI may launch the release `specforged` runtime in the foreground or detach it with `--detach`; stop it with `specforge daemon stop`. The OpenCode Plugin never starts, stops, or replaces the daemon.
-
-A successful startup writes the handshake file and logs `Daemon Core started on port <port>`.
-
-### Connecting Clients and Health Check
-
-1. Read the handshake file at `~/.config/opencode/sf-user/runtime/handshake.json`.
-2. Use its `port` for the HTTP server.
-3. Check the public health endpoint:
-
-```bash
-curl http://127.0.0.1:<port>/api/v1/healthz
-```
-
-All non-public API requests require `Authorization: Bearer <token>` using the token from the handshake file.
-
-## Development
-
-### Build
-
-```bash
-bun run build
-```
-
-### Watch Mode
-
-```bash
-bun run watch
-```
-
-### Lint
-
-```bash
-bun run lint
-bun run lint:fix
-```
-
-### Format
-
-```bash
-bun run format
-bun run format:check
-```
-
-### Test
-
-```bash
-bun run test
-bun run test:watch
-bun run test:coverage
-```
-
-## Project Structure
-
-```
-daemon-core/
-├── src/              # Source code
-�?  ├── daemon/       # Daemon process lifecycle
-�?  ├── http/         # HTTP/SSE server
-�?  ├── event-bus/    # Event Bus implementation
-�?  ├── session/      # Session Registry
-�?  ├── project/      # Project Manager
-�?  ├── state/        # State Manager (WAL + state.json)
-�?  └── recovery/     # Recovery Subsystem
-├── tests/            # Test files
-�?  ├── unit/         # Unit tests
-�?  └── property/     # Property-based tests
-├── dist/             # Build output
-├── package.json
-├── tsconfig.json
-├── vitest.config.ts
-└── README.md
-```
-
-## Architecture
-
-See [design.md](./design.md) for detailed architecture documentation.
-
-## Requirements
-
-See [requirements.md](./requirements.md) for detailed requirements documentation.
-
-## License
-
-MIT
+For repository development, install frozen dependencies and build from the root through the current twelve-workspace entry. Source foreground launch is a development action in an explicitly owned configuration directory; it is not an alternative user installation procedure.

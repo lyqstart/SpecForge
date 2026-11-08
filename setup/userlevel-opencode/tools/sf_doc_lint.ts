@@ -6,7 +6,7 @@ export default tool({
   args: {
     work_item_id: tool.schema.string().describe("Work Item ID"),
     doc_type: tool.schema
-      .enum(["requirements", "design", "tasks", "bugfix"])
+      .enum(["requirements", "design", "tasks"])
       .describe("文档类型"),
   },
   async execute(args, context) {

@@ -61,6 +61,8 @@ AUTHORITY=SPS §9.2.3 / Registry D22
 ACCEPTANCE_STATUS=SYNTHETIC_ACCEPTED
 BUSINESS_PROFILE_REGISTERED=YES
 
+> 历史接线进度说明：下面关于 1.0.22 部署和“原 WI 仍待完成”的段落记录当时阶段，不是当前待办或当前版本声明。历史回执只证明对应执行，后续业务交付须核对其 owner 原始证据；当前执行进度唯一入口为 `docs/project-status.md`。本合同的固定隔离、共同校验和部署要求继续有效。
+
 D23生产入口、共同回执校验与Windows资产现已登记。真实安装的专业Agent/Plugin与原生执行正反例、崩溃恢复、共同消费者篡改/恢复及HardStop检查已完成；用户级1.0.22共117个受管文件和新Daemon身份已独立核验。实现与部署证据见本轮归档`2026-11-07-verification-production`的命令0213、0224、0233、0235、0239及独立对账0240。该归档仅证明对应执行事实，产品边界仍以SPS/Registry及本合同为准。合成夹具的上游审批/Gate数据不证明真实业务工作流已通过；原WI真实提供方验证、正式Gate/FV/Close与整体SPS验收仍待完成。历史D20/D21及多进程失败保持原结论。
 
 用户已选择单进程首期方案。旧多进程矩阵仍NOT_ACCEPTED，原生预算8出现9/15的事实不修改。新候选仅在自有合成环境使用固定Node24.19、恰好registryRead、LPAC有效权限、从零构造环境、只读输入/runtime/profile/私有注册表及无网络边界。DETACHED挂起创建；恢复前独立核验child policy实际flags恰为1、正确token/SID/LPAC及Job。Node禁止native addons，应用不得取得特权父进程或控制句柄；创建前子进程限制不能被可关闭的应用自报开关代替。

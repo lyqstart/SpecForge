@@ -418,10 +418,7 @@ describe('Orchestrator governance execution closure', () => {
     )) as any;
 
     expect(rejected.success).toBe(false);
-    expect(rejected.error).toBe('INVALID_ARTIFACT_JSON');
-    expect(rejected.validation_errors).toContainEqual(
-      expect.stringContaining('WORK_ITEM_STATUS_FORBIDDEN')
-    );
+    expect(rejected.error).toBe('WORK_ITEM_METADATA_OWNED_BY_RUNTIME');
     expect(JSON.parse(await readFile(workItemPath, 'utf8')).status).toBeUndefined();
 
     await writeJson(workItemPath, {
@@ -444,7 +441,7 @@ describe('Orchestrator governance execution closure', () => {
     )) as any;
 
     expect(cleaned.success).toBe(false);
-    expect(cleaned.error).toContain('WORK_ITEM_METADATA_INVALID');
+    expect(cleaned.error).toBe('WORK_ITEM_METADATA_OWNED_BY_RUNTIME');
     const unchangedInvalidWorkItem = JSON.parse(await readFile(workItemPath, 'utf8'));
     expect(unchangedInvalidWorkItem.status).toBe('created');
   });

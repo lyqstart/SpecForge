@@ -1,3 +1,4 @@
+import { SPEC_DIR_NAME } from "@specforge/types/directory-layout";
 import { ACTOR_ROLES, type ActorRole } from '@specforge/types/actor-roles';
 
 export type WriteOperation = 'create' | 'modify' | 'delete';
@@ -32,7 +33,7 @@ export const WI_ARTIFACT_WRITE_REQUIRES_CONTROLLED_TOOL =
   'WI_ARTIFACT_WRITE_REQUIRES_CONTROLLED_TOOL';
 
 export function isWorkItemArtifactReference(value: string): boolean {
-  return value.replace(/\\/g, '/').toLowerCase().includes('.specforge/work-items/');
+  return value.replace(/\\/g, '/').toLowerCase().includes((`${SPEC_DIR_NAME}/work-items/` as const));
 }
 
 export function decideWorkItemArtifactWriteBoundary(
@@ -91,7 +92,7 @@ function isAllowedDirectoryPreparation(
   allowedWriteFiles: Array<{ path: string; operation: string }>,
 ): boolean {
   const directory = normalizeScopePath(normalizedDirectory).toLowerCase();
-  if (!directory || directory === '.' || directory.startsWith('.specforge/')) return false;
+  if (!directory || directory === '.' || directory.startsWith((`${SPEC_DIR_NAME}/` as const))) return false;
 
   return allowedWriteFiles.some(file => {
     if (file.operation === 'delete') return false;
@@ -159,12 +160,12 @@ export function decideWritePermission(
   const workItemArtifactBoundary = decideWorkItemArtifactWriteBoundary(targetPath);
   if (workItemArtifactBoundary) return workItemArtifactBoundary;
 
-  if (!ctx.hasActiveWI && !normalized.startsWith('.specforge/')) {
+  if (!ctx.hasActiveWI && !normalized.startsWith((`${SPEC_DIR_NAME}/` as const))) {
     violations.push(`no active WI, cannot write code: ${targetPath}`);
     return { allowed: false, violations };
   }
 
-  if (normalized.startsWith('.specforge/project/')) {
+  if (normalized.startsWith((`${SPEC_DIR_NAME}/project/` as const))) {
     if (ctx.callerRole !== ACTOR_ROLES.mergeRunner) {
       violations.push(`only merge_runner may write .specforge/project/: ${targetPath} (actor: ${ctx.callerRole})`);
       return { allowed: false, violations };
@@ -217,12 +218,12 @@ export function decideWritePermission(
     if (violations.length > 0) return { allowed: false, violations };
   }
 
-  if (ctx.enableRBAC === true && normalized.includes('.specforge/')) {
+  if (ctx.enableRBAC === true && normalized.includes((`${SPEC_DIR_NAME}/` as const))) {
     const rbacViolation = checkRBACFileProtection(ctx, normalized, operation);
     if (rbacViolation !== null) return { allowed: false, violations: [rbacViolation] };
   }
 
-  if (ctx.workItem && !normalized.startsWith('.specforge/')) {
+  if (ctx.workItem && !normalized.startsWith((`${SPEC_DIR_NAME}/` as const))) {
     if (!ctx.workItem.status) {
       violations.push('authoritative runtime state unavailable; write denied');
       return { allowed: false, violations };

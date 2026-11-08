@@ -1,3 +1,4 @@
+import { SPEC_DIR_NAME } from "@specforge/types/directory-layout";
 /**
  * rollback-runner-v11 — §16 回滚与 superseded
  *
@@ -108,7 +109,7 @@ export async function generateRollbackPlan(params: {
   }
 
   // 读取当前 spec_manifest 获取版本号
-  const specManifestPath = join(projectRoot, '.specforge', 'project', 'spec_manifest.json');
+  const specManifestPath = join(projectRoot, SPEC_DIR_NAME, 'project', 'spec_manifest.json');
   let currentVersion = 'PSV-0001';
   if (existsSync(specManifestPath)) {
     try {

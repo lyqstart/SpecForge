@@ -71,9 +71,10 @@ export class CompositeGateSerializer {
     if (gate.type !== 'composite') {
       throw new Error('Cannot serialize non-composite gate as CompositeGate');
     }
+    if (gate.schema_version !== '1.0') throw new Error('SERIALIZED_GATE_SCHEMA_UNSUPPORTED: expected 1.0');
 
     const serialized: SerializedCompositeGate = {
-      schema_version: gate.schema_version || '1.0',
+      schema_version: gate.schema_version,
       type: 'composite',
       id: gate.id,
       name: gate.name,
@@ -100,8 +101,9 @@ export class CompositeGateSerializer {
    * Serialize a SimpleGateDefinition
    */
   static serializeSimpleGate(gate: SimpleGateDefinition): SerializedSimpleGate {
+    if (gate.type !== 'simple' || gate.schema_version !== '1.0') throw new Error('SERIALIZED_GATE_SCHEMA_UNSUPPORTED: expected simple Gate 1.0');
     return {
-      schema_version: gate.schema_version || '1.0',
+      schema_version: gate.schema_version,
       type: 'simple',
       id: gate.id,
       name: gate.name,
@@ -130,7 +132,7 @@ export class CompositeGateSerializer {
     }
 
     const compositeGate: CompositeGateDefinition = {
-      schema_version: data.schema_version || '1.0',
+      schema_version: data.schema_version,
       type: 'composite',
       id: data.id,
       name: data.name,
@@ -165,8 +167,10 @@ export class CompositeGateSerializer {
     data: SerializedSimpleGate,
     context?: { checkFnMap?: Record<string, () => Promise<any> | any> }
   ): SimpleGateDefinition {
+    const validation = this.validateSerializedGate(data);
+    if (!validation.valid || data.type !== 'simple') throw new Error('SERIALIZED_GATE_SCHEMA_INVALID');
     const gate: SimpleGateDefinition = {
-      schema_version: data.schema_version || '1.0',
+      schema_version: data.schema_version,
       type: 'simple',
       id: data.id,
       name: data.name,
@@ -267,6 +271,8 @@ export class CompositeGateSerializer {
     // Check schema_version
     if (!obj.schema_version) {
       errors.push({ field: 'schema_version', message: 'Missing schema_version' });
+    } else if (obj.schema_version !== '1.0') {
+      errors.push({ field: 'schema_version', message: 'Unsupported serialized Gate schema: expected 1.0' });
     }
 
     // Check type

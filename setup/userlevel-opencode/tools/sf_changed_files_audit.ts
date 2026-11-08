@@ -5,7 +5,7 @@ export default tool({
   description:
     "基于 Runtime 事实源对账实际文件变更与 allowed_write_files_snapshot。" +
     "支持对缺少内容哈希的旧 filesystem baseline 执行受控恢复；恢复必须由历史 Git preflight、当前同分支同 HEAD 和当前 Git-clean 共同证明。" +
-    "支持 investigation/no-code review，以及 approval_required 前 design/requirements/tasks 规格阶段的 mode=no_code_change/not_applicable 审计模式；" +
+    "当前 feature_spec 在 approval_required 前 design/requirements/tasks 无代码规格阶段支持 mode=no_code_change/not_applicable 审计模式；" +
     "该模式只允许无业务代码变更场景，不启用 code_permission，不伪造 allowed_write_files。",
   args: {
     work_item_id: tool.schema.string().describe("Work Item ID"),
@@ -29,7 +29,7 @@ export default tool({
       .string()
       .optional()
       .describe(
-        "可选审计模式。普通实现型 WI 省略；investigation/no-code review 或审批前无代码规格阶段可传 no_code_change 或 not_applicable。",
+        "可选审计模式。普通实现型 WI 省略；当前 feature_spec 审批前无代码规格阶段可传 no_code_change 或 not_applicable，不启用 investigation 工作流。",
       ),
     audit_mode: tool.schema
       .string()

@@ -1,3 +1,5 @@
+import {SEMANTIC_CLOSURE_SCHEMA_VERSION} from '../lib/semantic-closure-core.js';
+import { SPEC_DIR_NAME } from "@specforge/types/directory-layout";
 /**
  * sf-semantic-closure-run — generate and validate .semantic_closure.json.
  *
@@ -142,7 +144,7 @@ registerHandler('sf_v11_semantic_closure_run', async (args, context, deps) => {
     return { success: false, error: 'work_item_id is required' };
   }
 
-  const workItemDir = path.join(projectRoot, '.specforge', 'work-items', workItemId);
+  const workItemDir = path.join(projectRoot, SPEC_DIR_NAME, 'work-items', workItemId);
   const semanticClosurePath = path.join(workItemDir, '.semantic_closure.json');
   const reportPath = path.join(workItemDir, 'semantic_closure_report.md');
   const verificationReportPath = path.join(workItemDir, 'verification_report.md');
@@ -156,6 +158,28 @@ registerHandler('sf_v11_semantic_closure_run', async (args, context, deps) => {
       work_item_id: workItemId,
       error: error instanceof Error ? error.message : String(error),
     };
+  }
+
+  if(workItem.workflow_type!=='feature_spec')return {success:false,error:'UNSUPPORTED_CURRENT_RELEASE_WORKFLOW',semantic_closure_valid:false};
+  const currentSubject=(value:unknown)=>{
+    const parsed=parseSemanticClosureManifest(value);
+    return !parsed||((parsed.workflow_type===undefined||parsed.workflow_type==='feature_spec')&&(parsed.closure_profile===undefined||parsed.closure_profile==='feature_spec'));
+  };
+  if(suppliedSemanticClosure!==undefined&&!currentSubject(suppliedSemanticClosure))return {success:false,error:'SEMANTIC_CLOSURE_CURRENT_WORKFLOW_MISMATCH',semantic_closure_valid:false};
+
+  // force regenerates supported content; it never converts an unknown or corrupt schema.
+  let existingSemanticClosure: Record<string, any> | null = null;
+  try {
+    const value: unknown = JSON.parse(await fs.readFile(semanticClosurePath, 'utf8'));
+    if (!value || typeof value !== 'object' || Array.isArray(value) ||
+        (value as Record<string, unknown>).schema_version !== SEMANTIC_CLOSURE_SCHEMA_VERSION) {
+      return {success:false,error:'SEMANTIC_CLOSURE_SCHEMA_UNSUPPORTED',semantic_closure_valid:false};
+    }
+    existingSemanticClosure = value as Record<string, any>;
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== 'ENOENT') {
+      return {success:false,error:'SEMANTIC_CLOSURE_SCHEMA_BLOCKED',semantic_closure_valid:false};
+    }
   }
 
   const evidenceSchemaPrecheck = await precheckEvidenceManifestSchema(workItemDir, workItemId);
@@ -216,8 +240,10 @@ registerHandler('sf_v11_semantic_closure_run', async (args, context, deps) => {
   }
 
   if (!force) {
-    const existing = await readJsonIfExists<Record<string, any>>(semanticClosurePath);
+    const existing = existingSemanticClosure;
     if (existing) {
+      if(existing.schema_version!==SEMANTIC_CLOSURE_SCHEMA_VERSION)return {success:false,error:'SEMANTIC_CLOSURE_SCHEMA_UNSUPPORTED',semantic_closure_valid:false};
+      if(!currentSubject(existing))return {success:false,error:'SEMANTIC_CLOSURE_CURRENT_WORKFLOW_MISMATCH',semantic_closure_valid:false};
       const validation = validateSemanticClosure(existing);
       const provenanceValidation = await validateSemanticClosureProvenance(workItemDir, existing);
       const closureValid = validation.passed && provenanceValidation.passed;
@@ -323,6 +349,9 @@ registerHandler('sf_v11_semantic_closure_run', async (args, context, deps) => {
     evidenceManifest,
     mergeReportMd: await readTextIfExists(path.join(workItemDir, 'merge_report.md')),
   });
+
+  if(build.manifest.schema_version!==SEMANTIC_CLOSURE_SCHEMA_VERSION)return {success:false,error:'SEMANTIC_CLOSURE_SCHEMA_UNSUPPORTED',semantic_closure_valid:false};
+  if(!currentSubject(build.manifest))return {success:false,error:'SEMANTIC_CLOSURE_CURRENT_WORKFLOW_MISMATCH',semantic_closure_valid:false};
 
   const manifest = {
     ...build.manifest,

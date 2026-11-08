@@ -1,3 +1,4 @@
+import { SPEC_DIR_NAME } from "@specforge/types/directory-layout";
 /**
  * filesystem-diff.ts — Filesystem Baseline Snapshot & Diff
  *
@@ -75,23 +76,23 @@ export interface LegacyBaselineReconciliationResult {
 
 const DEFAULT_EXCLUDE_DIR_NAMES = new Set(['node_modules', '.git', 'dist']);
 const DEFAULT_IGNORED_PREFIXES = [
-  '.specforge/logs/',
-  '.specforge/runtime/',
-  '.specforge/archive/',
-  '.specforge/cas/',
-  '.specforge/tmp/',
-  '.specforge/temp/',
-  '.specforge/work-items/',
+  (`${SPEC_DIR_NAME}/logs/` as const),
+  (`${SPEC_DIR_NAME}/runtime/` as const),
+  (`${SPEC_DIR_NAME}/archive/` as const),
+  (`${SPEC_DIR_NAME}/cas/` as const),
+  (`${SPEC_DIR_NAME}/tmp/` as const),
+  (`${SPEC_DIR_NAME}/temp/` as const),
+  (`${SPEC_DIR_NAME}/work-items/` as const),
 ];
 
-const DEFAULT_IGNORED_EXACT = new Set([
-  '.specforge/logs',
-  '.specforge/runtime',
-  '.specforge/archive',
-  '.specforge/cas',
-  '.specforge/tmp',
-  '.specforge/temp',
-  '.specforge/work-items',
+const DEFAULT_IGNORED_EXACT = new Set<string>([
+  (`${SPEC_DIR_NAME}/logs` as const),
+  (`${SPEC_DIR_NAME}/runtime` as const),
+  (`${SPEC_DIR_NAME}/archive` as const),
+  (`${SPEC_DIR_NAME}/cas` as const),
+  (`${SPEC_DIR_NAME}/tmp` as const),
+  (`${SPEC_DIR_NAME}/temp` as const),
+  (`${SPEC_DIR_NAME}/work-items` as const),
 ]);
 
 export function normalizeFsPath(filePath: string): string {
@@ -358,7 +359,7 @@ function readLatestPreflightBeforeBaseline(
 } | null {
   const indexPath = path.join(
     projectRoot,
-    '.specforge',
+    SPEC_DIR_NAME,
     'logs',
     'observability',
     'userlevel',

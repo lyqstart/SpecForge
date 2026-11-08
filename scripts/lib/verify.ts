@@ -393,7 +393,7 @@ export function printVerifyReport(result: VerifyResult): number {
     result.extra.length +
     (result.schemaIssues?.length ?? 0)
   console.log(`❌ 校验失败: ${totalIssues} 个问题`)
-  console.log(`   建议: 执行 \`upgrade --force\` 恢复共享组件到预期状态`)
+  console.log(`   建议: 核对并保存需要保留的受管文件改动后，执行 \`bun scripts/sf-installer.ts upgrade --force\` 重新复制当前发布清单中的受管项，再运行 verify；不要手改 Manifest`)
 
   return 6 // EXIT_CODES.VERIFICATION_MISMATCH
 }

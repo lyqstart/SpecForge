@@ -17,9 +17,8 @@ const repoRoot = resolve(
 
 describe("installer manifest path contract", () => {
   it("uses OpenCode config root as the canonical manifest path", () => {
-    expect(getUserManifestPath("C:\\Users\\luo\\.config\\opencode")).toBe(
-      "C:\\Users\\luo\\.config\\opencode\\specforge-manifest.json"
-    )
+    const root = process.platform === "win32" ? "C:\\Users\\luo\\.config\\opencode" : "/home/luo/.config/opencode"
+    expect(getUserManifestPath(root)).toBe(join(root, "specforge-manifest.json"))
   })
 
   it("showVersion reads the canonical root manifest", async () => {

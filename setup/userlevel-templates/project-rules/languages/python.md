@@ -1,5 +1,7 @@
 # 项目工程规则 — Python
 
+> 使用边界：这是业务项目规则素材，模板值和版本示例不是已核验事实。命令仅作待批准 Task 的验收声明；D18 sf_safe_bash 保持只读。真实 sf-orchestrator 使用 sf_verification_plan，真实 sf-verifier 使用 sf_verification_run；不支持的命令保持 not_executed/blocked，不得改走 shell。模板不能扩大 D23 的 Windows x64 严格单进程只读 Node profile。
+
 <!-- 继承 _BASE.md 的 R1-R8，本文件只写 Python 特有规则 -->
 
 ---
@@ -11,9 +13,6 @@ python_target:
   min_version: "[来自 prod-environment.md 的 python_min]"
   # 为什么要配：Python 各版本语法差异大
   # 如何决策：
-  #   - Python 3.8：最低推荐，2024 年 10 月 EOL，老系统可能还在用
-  #   - Python 3.10：引入 match/case，推荐新项目最低版本
-  #   - Python 3.12：当前主流，性能提升明显，推荐新项目
 
   # ⚠️ 常见陷阱：
   # - walrus 运算符 := 是 3.8+ 才有
@@ -31,7 +30,6 @@ dependency_tool: pip              # 依赖管理工具
                                   # 可选：
                                   #   pip + requirements.txt  最简单，兼容性最好
                                   #   poetry                  现代，锁文件完整，推荐新项目
-                                  #   pipenv                  老牌，但 poetry 更流行
                                   #   conda                   科学计算项目
                                   # 如何决策：新项目用 poetry；需要兼容老环境用 pip
 

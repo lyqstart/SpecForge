@@ -30,11 +30,30 @@ async function addPackage(
   await write(root, `packages/${dir}/package.json`, `${JSON.stringify(manifest)}\n`);
 }
 
+async function addBuiltTypes(root:string):Promise<void>{
+  await addPackage(root,'types',{name:'@specforge/types',main:'dist/index.js',types:'dist/index.d.ts'});
+  await write(root,'packages/types/dist/index.js','export const marker = 1;');
+  await write(root,'packages/types/dist/index.d.ts','export declare const marker: number;');
+}
+
 afterEach(async () => {
   await Promise.all(roots.splice(0).map((root) => rm(root, { recursive: true, force: true })));
 });
 
 describe('Node release surface producers', () => {
+  it.each(['win32','linux','darwin'] as const)('resolves a platform executable declaration against the actual %s filename',async platform=>{
+    const root=await fixtureRoot(),runtime='release/bin/specforged'+(platform==='win32'?'.exe':'');
+    await addBuiltTypes(root);
+    await write(root,'package.json',JSON.stringify({specforgeRelease:{cleanBuildFiles:[{id:'runtime:specforged',path:'release/bin/specforged',platformExecutable:true}]}}));
+    await write(root,runtime,'synthetic physical runtime');
+    const result=await produceCleanBuildSurfaceReport({candidateRoot:root,releaseId:'specforge-current',candidateId:'synthetic-platform',platform});
+    expect(result.errors).toEqual([]);expect(result.report.items.find(i=>i.id==='runtime:specforged')?.path).toBe(runtime);
+  });
+  it('rejects an invalid platform marker instead of silently selecting another artifact',async()=>{
+    const root=await fixtureRoot();await addBuiltTypes(root);await write(root,'package.json',JSON.stringify({specforgeRelease:{cleanBuildFiles:[{id:'runtime:specforged',path:'release/bin/specforged',platformExecutable:'true'}]}}));await write(root,'release/bin/specforged','synthetic');
+    const result=await produceCleanBuildSurfaceReport({candidateRoot:root,releaseId:'specforge-current',candidateId:'bad-marker'});
+    expect(result.errors).toContain('clean_build:runtime:specforged:platform_executable_invalid');expect(result.report.complete).toBe(false);
+  });
   it('enumerates package exports and production workspace dependencies deterministically', async () => {
     const root = await fixtureRoot();
     await addPackage(root, 'types', {

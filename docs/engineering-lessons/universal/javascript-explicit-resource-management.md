@@ -11,6 +11,8 @@ related: [async-resource-lifecycle]
 
 # JavaScript 显式资源管理（4 层防护体系）
 
+> **适用边界**：本文是通用工程经验及历史示例，不是 SpecForge 当前产品合同，也不授予执行权限。涉及 SpecForge 时，以 SPS、Authority Registry 与活动开发规则为准；D18 `sf_safe_bash` 保持只读，D23 仅由受控验证工具在批准的平台与 profile 内执行。示例中的环境、路径、依赖和命令须在目标项目重新核验。
+
 > **来源**：SpecForge V6 scope-gate 包 e2e 测试卡死事故的根因抽象。
 > **适用范围**：所有 JavaScript / TypeScript 项目（不限运行时：Node.js / Bun / Deno / 浏览器）。
 > **与 [async-resource-lifecycle](async-resource-lifecycle.md) 关系**：互补。本文聚焦"对象/类的设计如何让资源释放可靠"和"团队流程如何兜底"，对方聚焦"具体异步代码模式（Promise.race/while/超时）的正确写法"。

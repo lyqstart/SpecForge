@@ -10,7 +10,9 @@ import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import {
   workItemRoot,
+  workItemCandidateManifest,
 } from '@specforge/types/directory-layout';
+import { validateCurrentCandidateManifestValue } from '@specforge/types';
 import type { GateResult, GateModeSpec } from './sf_gate_types';
 import {
   resolveFrozenManifestArtifacts,
@@ -537,6 +539,26 @@ export async function checkDesignGate(
       };
     }
 
+    // A design-only phase is a current Candidate contract, not another workflow
+    // identity. Read and validate the persisted subject before selecting it.
+    let designOnlyPhase = false;
+    try {
+      const manifest = JSON.parse(await readFile(workItemCandidateManifest(baseDir, workItemId), 'utf8'));
+      if (manifest.candidate_phase === 'design') {
+        const validation = validateCurrentCandidateManifestValue(manifest, workItemId);
+        if (!validation.valid) return {
+          status: 'blocked', blocking_issues: ['CANDIDATE_MANIFEST_SCHEMA_INVALID'],
+          warnings: [], next_action: 'ask_user',
+        };
+        designOnlyPhase = workflowType === 'feature_spec' && manifest.workflow_type === 'feature_spec';
+      }
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code !== 'ENOENT') return {
+        status: 'blocked', blocking_issues: ['CANDIDATE_MANIFEST_UNREADABLE'],
+        warnings: [], next_action: 'ask_user',
+      };
+    }
+
     let designArtifacts: Array<{ content: string; path: string }>;
     try {
       designArtifacts = await resolveWorkItemSpecArtifacts({
@@ -600,7 +622,7 @@ export async function checkDesignGate(
     for (const artifact of designArtifacts) {
       const content = artifact.content;
       const artifactLabel = artifact.path.replace(/\\/g, '/');
-      if (workflowType === 'feature_spec_design_first') {
+      if (designOnlyPhase) {
         const designFirstResult = checkDesignGateDesignFirst(content);
         if (designFirstResult.status !== 'pass') {
           blockingIssues.push(

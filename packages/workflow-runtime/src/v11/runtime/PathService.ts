@@ -1,3 +1,4 @@
+import { SPEC_DIR_NAME } from "@specforge/types/directory-layout";
 /**
  * PathService.ts — SpecForge v1.1 Path Service implementation
  *
@@ -8,7 +9,7 @@
  */
 
 /** The canonical SpecForge directory name */
-export const SPEC_DIR_NAME = '.specforge';
+export { SPEC_DIR_NAME };
 
 /**
  * PathService — generates all v1.1 compliant paths.
@@ -230,18 +231,18 @@ export class PathService {
   /** Check if a path targets the removed specs directory. */
   isLegacySpecPath(inputPath: string): boolean {
     const normalized = inputPath.replace(/\\/g, '/');
-    return normalized.includes('.specforge/specs/');
+    return normalized.includes((`${SPEC_DIR_NAME}/specs/` as const));
   }
 
   /** Check if a path is a project spec path */
   isProjectSpecPath(inputPath: string): boolean {
     const normalized = inputPath.replace(/\\/g, '/');
-    return normalized.includes('.specforge/project/');
+    return normalized.includes((`${SPEC_DIR_NAME}/project/` as const));
   }
 
   /** Check if a path is a work item path */
   isWorkItemPath(inputPath: string): boolean {
     const normalized = inputPath.replace(/\\/g, '/');
-    return normalized.includes('.specforge/work-items/');
+    return normalized.includes((`${SPEC_DIR_NAME}/work-items/` as const));
   }
 }

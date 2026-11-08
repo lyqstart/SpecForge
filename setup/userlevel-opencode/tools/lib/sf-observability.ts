@@ -678,7 +678,7 @@ export function recordSfObservation(
       error_file: errorFile ? path.relative(projectRoot, errorFile) : undefined,
       payload: inlinePayload,
       error: inlineError,
-      metadata: input.metadata,
+      metadata: config.redact_secrets ? redactSecrets(input.metadata) : input.metadata,
     };
 
     appendJsonl(path.join(root, categoryFileName(input.category)), record);

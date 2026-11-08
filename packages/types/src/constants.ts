@@ -17,10 +17,13 @@
 // ---------------------------------------------------------------------------
 
 /**
- * SpecForge v1.1 标准 schema 版本号。
- * 所有 v1.1 JSON 文件的 schema_version 字段使用此值。
+ * 保留的共享合同版本常量；不是所有持久化文件的统一版本。
+ * 各 file owner 使用独立 schema descriptor，不得据此覆盖其版本。
  */
 export const SCHEMA_VERSION = '1.0' as const;
+
+/** SPS current release identity. Governance routes do not activate other workflows. */
+export const CURRENT_RELEASE_WORKFLOW_TYPE = 'feature_spec' as const;
 
 // ---------------------------------------------------------------------------
 // §5 状态机 — 主状态枚举

@@ -1,84 +1,17 @@
-# SpecForge 项目配置模板库
+# SpecForge 项目配置模板
 
-## 这是什么
+本目录是已安装模板的数据来源，由正式 Installer 部署到 <OpenCode config>/sf-user/templates/。模板提供技术栈事实、规则与验收声明的起点，不授予工具权限或命令执行能力。
 
-这个目录包含 SpecForge 项目初始化时使用的配置模板。
-每个项目在首次使用 SpecForge 时，orchestrator 会引导你从这里选择合适的模板，
-复制到项目的 `.specforge/` 目录中，并根据你的具体情况填写。
+项目初始化由 sf-orchestrator 调用受控 sf_project_init 完成。项目配置文件位于 <project>/.specforge/config/，不是 .specforge 根下的任意同名文件。host-profile.json 由用户级 Host Profile owner 管理；它描述宿主事实，不是 Project Spec 或 workflow state。
 
-## 文件结构
+Orchestrator 根据真实项目与用户确认选择 project-rules/_BASE.md 及适用技术栈规则，维护 project-rules.md、prod-environment.md 等受控项目资料。缺少的信息保持未知/待填写，不把模板默认值当作已采集事实。不得让用户手工复制文件绕过项目写入 owner。
 
-```
-templates/
-├── README.md                    ← 你正在看的这个文件
-├── prod-environment.md          ← 生产环境模板
-└── project-rules/               ← 项目工程规则（按技术栈拼装）
-    ├── _BASE.md                 ← 通用基线（所有项目都用）
-    ├── languages/               ← 主语言规则
-    │   ├── nodejs.md
-    │   ├── python.md
-    │   ├── java.md
-    │   └── go.md
-    ├── frameworks/              ← 框架规则（按需选择）
-    │   ├── react.md
-    │   ├── vue.md
-    │   ├── fastapi.md
-    │   └── spring-boot.md
-    ├── databases/               ← 数据库规则（按需选择）
-    │   ├── postgresql.md
-    │   ├── mysql.md
-    │   ├── sqlite.md
-    │   ├── mongodb.md
-    │   └── redis.md
-    └── infra/                   ← 基础设施规则（按需选择）
-        ├── ci-github-actions.md
-        └── docker.md
-```
+运行环境、版本和依赖应来自实际生产约束、锁文件及可复核探测；旧模板中的版本/工具示例不代表当前维护状态或本项目的自动选型决定。数据库 schema 演进描述的是业务项目设计，不恢复 SpecForge Migration 产品模块。
 
-## 配置文件的关系
+测试命令字段只是待批准的验收声明。D18 的 sf_safe_bash 保持只读；真实 sf-orchestrator 通过 sf_verification_plan 建立计划，真实 sf-verifier 通过 sf_verification_run 执行。当前 D23 仅支持已批准的 Windows x64 严格单进程只读 Node profile。未知/不支持的 Bun、Python、Java、Go、容器或数据库检查必须保持 not_executed/blocked，不能改走普通 shell 或伪造通过。
 
-```
-host-profile.json（自动扫描，用户级）
-    ↓ 描述"这台机器有什么"
-    ↓ 存储在 <OpenCode config>/sf-user/host-profile.json
-    ↓ 由 @specforge/host-profile 包在 sf_project_init 时自动扫描
-    ↓ sf_project_init 每次启动时检查新鲜度（30 天）
+配置和模板不保存密码、Token、API Key 或完整凭据。项目事实/规则变化通过现有 owner 和冻结合同处理，不能静默改写活动 WI 的已接受输入。
 
-prod-environment.md（生产环境，项目级）
-    ↓ 描述"生产部署的事实和要求"
-    ↓ 用户在 intake 阶段填写
-
-project-rules.md（项目规则，项目级）
-    ↓ 描述"这个项目的工程纪律"
-    ↓ 由 orchestrator 从本模板库拼装后，用户确认
-```
-
-## 怎么使用
-
-### 自动方式（推荐）
-
-首次使用 SpecForge 时，orchestrator 会自动引导你完成初始化：
-1. `sf_project_init` 工具自动扫描主机环境 → 生成 `<OpenCode config>/sf-user/host-profile.json`
-2. 在 intake 阶段询问技术栈 → 拼装 `project-rules.md`
-3. 在 intake 阶段询问生产环境信息 → 生成 `prod-environment.md`
-
-### 手动方式
-
-如果需要手动创建或修改：
-1. 复制对应模板到 `.specforge/` 目录
-2. 填写所有 `[TODO-FILL]` 标记的字段
-3. 删除不适用的字段（或填 `null`）
-
-## 如何扩展模板库
-
-如果你的技术栈不在现有模板中：
-1. 在对应子目录（`languages/` / `frameworks/` / `databases/` / `infra/`）新建 `.md` 文件
-2. 参考现有模板的格式（继承 `_BASE.md` + 只写特有规则）
-3. 每个配置项按"是什么 / 为什么要配 / 如何决策 / 默认值"四要素写
-
-## 注意事项
-
-- **不要把密码写在这些文件里**——密码通过环境变量或密钥管理服务注入
-- **这些文件应该提交到 git**——它们描述的是配置结构，不是敏感值
-- **修改后通知 SpecForge**——下次启动时 orchestrator 会检测变化并提示相关 Agent 重新评估
-- **host-profile.json 是用户级的**——存储在 `<OpenCode config>/sf-user/`，不属于任何项目，不应提交到 git
+- dev-environment.md：开发环境事实模板。
+- prod-environment.md：生产约束模板。
+- project-rules/：通用、语言、框架、数据库与基础设施的派生规则素材。

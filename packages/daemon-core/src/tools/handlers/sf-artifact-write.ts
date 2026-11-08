@@ -308,8 +308,8 @@ function projectModuleTargetPath(
         : (record.design ?? record.design_file);
     if (typeof configured === 'string' && configured.trim()) {
       const normalized = configured.trim().replace(/\\/g, '/').replace(/^\.\//, '');
-      if (normalized.startsWith('.specforge/project/')) return normalized;
-      if (normalized.startsWith('project/')) return `.specforge/${normalized}`;
+      if (normalized.startsWith((`${SPEC_DIR_NAME}/project/` as const))) return normalized;
+      if (normalized.startsWith('project/')) return `${SPEC_DIR_NAME}/${normalized}`;
     }
   }
   const absolutePath =
@@ -495,7 +495,7 @@ function canonicalCandidatePathByType(
     candidateType === 'architecture' ||
     normalizedPath === 'candidates/project/architecture.candidate.md' ||
     normalizedPath.endsWith('/architecture.candidate.md') ||
-    targetPath === '.specforge/project/architecture.md'
+    targetPath === (`${SPEC_DIR_NAME}/project/architecture.md` as const)
   ) {
     return 'candidates/project/architecture.candidate.md';
   }
@@ -503,7 +503,7 @@ function canonicalCandidatePathByType(
     candidateType === 'data_model' ||
     normalizedPath === 'candidates/project/data_model.candidate.md' ||
     normalizedPath.endsWith('/data_model.candidate.md') ||
-    targetPath === '.specforge/project/data_model.md'
+    targetPath === (`${SPEC_DIR_NAME}/project/data_model.md` as const)
   ) {
     return 'candidates/project/data_model.candidate.md';
   }
@@ -565,7 +565,7 @@ function canonicalCandidatePathByType(
     candidateType === 'trace_delta' ||
     normalizedPath === 'trace_delta.md' ||
     normalizedPath.endsWith('/trace_delta.md') ||
-    targetPath === '.specforge/project/trace_matrix.md' ||
+    targetPath === (`${SPEC_DIR_NAME}/project/trace_matrix.md` as const) ||
     targetPath.endsWith('/trace_matrix.md')
   ) {
     return toWorkItemRelativePath(
@@ -638,13 +638,13 @@ function canonicalizeCandidateEntry(entry: any, baseDir: string, workItemId: str
   ).toLowerCase();
   if (candidateType) normalizedEntry.type = candidateType;
   if (candidateType === 'architecture') {
-    normalizedEntry.target_path = '.specforge/project/architecture.md';
+    normalizedEntry.target_path = (`${SPEC_DIR_NAME}/project/architecture.md` as const);
   }
   if (candidateType === 'data_model') {
-    normalizedEntry.target_path = '.specforge/project/data_model.md';
+    normalizedEntry.target_path = (`${SPEC_DIR_NAME}/project/data_model.md` as const);
   }
   if (candidateType === 'module_definition') {
-    normalizedEntry.target_path = `.specforge/project/modules/${moduleId}/module.json`;
+    normalizedEntry.target_path = `${SPEC_DIR_NAME}/project/modules/${moduleId}/module.json`;
   }
   if (candidateType === 'requirements' || candidateType === 'requirement') {
     normalizedEntry.target_path = projectModuleTargetPath(baseDir, moduleId, 'requirements');
@@ -653,10 +653,10 @@ function canonicalizeCandidateEntry(entry: any, baseDir: string, workItemId: str
     normalizedEntry.target_path = projectModuleTargetPath(baseDir, moduleId, 'design');
   }
   if (candidateType === 'module_contract') {
-    normalizedEntry.target_path = `.specforge/project/modules/${moduleId}/contracts.json`;
+    normalizedEntry.target_path = `${SPEC_DIR_NAME}/project/modules/${moduleId}/contracts.json`;
   }
   if (candidateType === 'module_trace') {
-    normalizedEntry.target_path = `.specforge/project/modules/${moduleId}/trace.md`;
+    normalizedEntry.target_path = `${SPEC_DIR_NAME}/project/modules/${moduleId}/trace.md`;
   }
   if (
     !normalizedEntry.module_id &&
@@ -704,12 +704,12 @@ function augmentGovernanceCandidateEntries(entries: any[], workItemDir: string):
 
   appendIfPresent(
     'candidates/project/architecture.candidate.md',
-    '.specforge/project/architecture.md',
+    (`${SPEC_DIR_NAME}/project/architecture.md` as const),
     'architecture'
   );
   appendIfPresent(
     'candidates/project/data_model.candidate.md',
-    '.specforge/project/data_model.md',
+    (`${SPEC_DIR_NAME}/project/data_model.md` as const),
     'data_model'
   );
 
@@ -720,7 +720,7 @@ function augmentGovernanceCandidateEntries(entries: any[], workItemDir: string):
       const moduleId = normalizeModuleId(entry.name);
       if (!moduleId) continue;
       const root = `candidates/project/modules/${moduleId}`;
-      const targetRoot = `.specforge/project/modules/${moduleId}`;
+      const targetRoot = `${SPEC_DIR_NAME}/project/modules/${moduleId}`;
       appendIfPresent(`${root}/module.candidate.json`, `${targetRoot}/module.json`, 'module_definition', moduleId);
       appendIfPresent(`${root}/requirements.candidate.md`, `${targetRoot}/requirements.md`, 'requirements', moduleId);
       appendIfPresent(`${root}/design.candidate.md`, `${targetRoot}/design.md`, 'design', moduleId);
@@ -941,6 +941,11 @@ const VERIFICATION_INPUT_ARTIFACT_TYPES = new Set(['verification_report', 'evide
 const CONTROL_TOOL_OWNED_ARTIFACT_TYPES = new Set(['merge_report']);
 
 function rejectControlToolOwnedArtifact(fileType: string): any | null {
+  if (fileType === 'work_item' || fileType === 'work_item.json') {
+    return {success:false,error:'WORK_ITEM_METADATA_OWNED_BY_RUNTIME',hard_stop:false,
+      policy_violation:true,retry_allowed:false,file_type:fileType,
+      message:'Work Item metadata is owned by Runtime control tools. Use sf_work_item_create for creation, sf_state_transition for state, and sf_code_permission for code permissions. Generic artifact writes cannot update or repair work_item.json.'};
+  }
   if (!CONTROL_TOOL_OWNED_ARTIFACT_TYPES.has(String(fileType ?? ''))) return null;
   return {
     success: false,

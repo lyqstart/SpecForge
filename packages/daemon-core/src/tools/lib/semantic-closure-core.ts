@@ -7,6 +7,8 @@
  * by verification_gate and close_gate.
  */
 
+export const SEMANTIC_CLOSURE_SCHEMA_VERSION = '1.0' as const;
+
 export type SemanticClosureSeverity = 'error' | 'warning';
 
 export type SemanticEvidenceStatus = string;
@@ -638,6 +640,10 @@ export function validateSemanticClosure(manifest: unknown): SemanticClosureValid
     return buildResult(checks);
   }
 
+  if(manifest.schema_version!==SEMANTIC_CLOSURE_SCHEMA_VERSION){
+    addCheck({check_id:'semantic_manifest_schema_version',description:'Semantic Closure requires its explicit supported schema_version=1.0',passed:false,severity:'error',details:['received='+String(manifest.schema_version??'<missing>')]});
+    return buildResult(checks);
+  }
   const typedManifest = manifest as SemanticClosureManifest;
   if (
     normalize(typedManifest.closure_profile) === 'spec_migration' ||

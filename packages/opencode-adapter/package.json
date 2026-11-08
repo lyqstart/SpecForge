@@ -1,6 +1,6 @@
 {
   "name": "@specforge/opencode-adapter",
-  "version": "1.0.23",
+  "version": "1.0.24",
   "description": "OpenCode Adapter module for SpecForge - Implements LLMKernelAdapter interface for OpenCode",
   "type": "commonjs",
   "main": "dist/index.js",
@@ -29,7 +29,7 @@
   "scripts": {
     "build": "tsc",
     "watch": "tsc --watch",
-    "clean": "rm -rf dist",
+    "clean": "bun ../../scripts/clean-workspace.ts --package opencode-adapter",
     "lint": "eslint src --ext .ts",
     "lint:fix": "eslint src --ext .ts --fix",
     "format": "prettier --write src tests",

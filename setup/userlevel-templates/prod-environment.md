@@ -1,5 +1,7 @@
 # 生产环境配置
 
+> 使用边界：这是待确认的业务项目事实模板，不是已采集结果或执行许可。未知值保持未知；凭据只填写受控引用，不填写秘密值。本文出现的未来扫描器与 [SCAN-FUTURE] 只是占位，不代表当前可调用能力。命令仅作待批准验收声明：D18 sf_safe_bash 保持只读；真实 sf-orchestrator 使用 sf_verification_plan，真实 sf-verifier 使用 sf_verification_run。不支持的命令保持 not_executed/blocked，不得 shell 回退或扩大 D23 profile。
+
 <!-- 这是什么 -->
 这份文件描述你的生产环境事实和部署要求。它有两个用途：
 1. **设计参考**：sf-design 在做架构决策时，必须保证设计在生产环境能跑通

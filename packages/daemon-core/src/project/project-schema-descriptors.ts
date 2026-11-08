@@ -1,3 +1,4 @@
+import { SPEC_DIR_NAME } from "@specforge/types/directory-layout";
 import type { PersistentFileSchemaDescriptor } from '@specforge/types/schema-contract'
 import { precheckSchemaDescriptors, type SchemaDescriptorPrecheckResult } from '@specforge/types/schema-contract'
 import { PROJECT_CONFIG_SCHEMA_DESCRIPTOR } from '@specforge/configuration'
@@ -20,7 +21,7 @@ function isCanonicalModuleCode(value: unknown): value is string {
 }
 
 function canonicalModuleRoot(moduleCode: string): string {
-  return `.specforge/project/modules/${moduleCode}`
+  return `${SPEC_DIR_NAME}/project/modules/${moduleCode}`
 }
 
 function isCanonicalModuleManifestEntry(value: unknown): value is Record<string, unknown> {
@@ -59,7 +60,7 @@ export const PROJECT_REGISTRATION_SCHEMA_DESCRIPTORS: readonly PersistentFileSch
   {
     id: 'project-spec-manifest',
     owner: '@specforge/daemon-core/project-spec',
-    relativePath: '.specforge/project/spec_manifest.json',
+    relativePath: (`${SPEC_DIR_NAME}/project/spec_manifest.json` as const),
     format: 'json',
     required: true,
     currentSchemaId: PROJECT_SPEC_MANIFEST_SCHEMA_VERSION,
@@ -70,7 +71,7 @@ export const PROJECT_REGISTRATION_SCHEMA_DESCRIPTORS: readonly PersistentFileSch
   {
     id: 'project-extension-registry',
     owner: '@specforge/daemon-core/project-spec-merge',
-    relativePath: '.specforge/project/extension_registry.json',
+    relativePath: (`${SPEC_DIR_NAME}/project/extension_registry.json` as const),
     format: 'json',
     required: true,
     currentSchemaId: PROJECT_REGISTRY_SCHEMA_VERSION,
@@ -118,7 +119,7 @@ export async function precheckProjectRegistrationSchemas(
   if (!staticResult.ok) return staticResult
 
   const manifest = JSON.parse(await readFile(
-    join(projectPath, '.specforge', 'project', 'spec_manifest.json'),
+    join(projectPath, SPEC_DIR_NAME, 'project', 'spec_manifest.json'),
     'utf8',
   )) as unknown
   const moduleResult = await precheckSchemaDescriptors(

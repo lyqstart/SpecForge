@@ -1,3 +1,4 @@
+/** Retained pure content helpers. Current Design Gate execution belongs exclusively to the authenticated Daemon sf_design_gate handler. The legacy local file runner is closed. */
 /**
  * sf_design_gate 核心逻辑
  * 检查 design.md 及既有设计类产物是否满足最低质量标准。
@@ -729,114 +730,7 @@ export async function checkDesignGate(
   workflowType: string = "feature_spec",
   options?: { workflowType?: string; mode?: DesignGateMode },
 ): Promise<GateResult> {
-  try {
-    await tryCheckCompatibility(baseDir, "sf_design_gate_core");
-
-    const mode = options?.mode;
-    if (mode !== undefined) {
-      return executeDesignGateMode(workItemId, baseDir, mode);
-    }
-
-    const specDir = join(baseDir, SPEC_DIR_NAME, "specs", workItemId);
-    const docPath = join(specDir, "design.md");
-    let content: string;
-
-    try {
-      content = await readFile(docPath, "utf-8");
-    } catch (err: unknown) {
-      const error = err as NodeJS.ErrnoException;
-      if (error.code === "ENOENT") {
-        return failResult(["design.md not found"]);
-      }
-      return {
-        status: "blocked",
-        blocking_issues: [`Failed to read design.md: ${error.message}`],
-        warnings: [],
-        next_action: "ask_user",
-      };
-    }
-
-    if (workflowType === "feature_spec_design_first") {
-      const designFirstResult = checkDesignGateDesignFirst(content);
-      return designFirstResult;
-    }
-
-    const blockingIssues: string[] = [];
-    const warnings: string[] = [];
-
-    const governanceRequirement = await resolveSystemGovernanceRequirement(
-      workItemId,
-      baseDir,
-    );
-    if (governanceRequirement.blocking_issue) {
-      return {
-        status: "blocked",
-        blocking_issues: [governanceRequirement.blocking_issue],
-        warnings: [],
-        next_action: "ask_user",
-        details: {
-          trigger_result_path: governanceRequirement.source_path,
-        },
-      };
-    }
-
-    const governanceResult = checkSystemGovernanceContent(
-      content,
-      governanceRequirement.required,
-    );
-    if (governanceResult.status !== "pass") {
-      governanceResult.details = {
-        ...governanceResult.details,
-        governance_requirement_reasons: governanceRequirement.reasons,
-        trigger_result_path: governanceRequirement.source_path,
-      };
-      return governanceResult;
-    }
-
-    if (!hasRequirementReferences(content)) {
-      blockingIssues.push(
-        '设计文档未引用需求编号（需要包含"需求 X"、"REQ-XXX"或"Requirement X"格式的引用）',
-      );
-    }
-
-    const cpTestTypes = extractCPTestTypes(content);
-    for (const { cpId, testType } of cpTestTypes) {
-      if (!isValidVerificationType(testType)) {
-        blockingIssues.push(
-          `${cpId}: test_type 值非法 "${testType}"，合法值为: unit, property, integration, e2e, regression`,
-        );
-      }
-    }
-
-    if (blockingIssues.length > 0) {
-      return {
-        status: "fail",
-        blocking_issues: blockingIssues,
-        warnings,
-        next_action: "revise",
-      };
-    }
-
-    return {
-      status: "pass",
-      blocking_issues: [],
-      warnings,
-      next_action: "continue",
-      details: {
-        ...governanceResult.details,
-        governance_requirement_reasons: governanceRequirement.reasons,
-        trigger_result_path: governanceRequirement.source_path,
-      },
-    };
-  } catch (err) {
-    await logErrorToFile(
-      baseDir,
-      "sf_design_gate_core",
-      "checkDesignGate",
-      err,
-    );
-    throw err;
-  }
+  return {status:"blocked",blocking_issues:["LOCAL_DESIGN_GATE_NOT_CURRENT_OWNER"],warnings:[],next_action:"revise",details:{required_owner:"Daemon sf_design_gate",recovery:"Use the exposed controlled sf_design_gate tool with the real caller context; do not run a local Gate or mutate project state."}};
 }
 
 /** Design-First 工作流的 design gate 检查。 */

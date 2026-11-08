@@ -1,3 +1,4 @@
+import { SPEC_DIR_NAME } from "@specforge/types/directory-layout";
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 import { createHash, randomUUID } from 'node:crypto';
@@ -129,7 +130,7 @@ export async function proveInvalidMergedSpecClosure(input: {
     );
   }
 
-  const manifestPath = path.join(input.projectRoot, '.specforge', 'project', 'spec_manifest.json');
+  const manifestPath = path.join(input.projectRoot, SPEC_DIR_NAME, 'project', 'spec_manifest.json');
   const manifest = await readJson(manifestPath).catch(() => null);
   const currentVersion = String(manifest?.project_spec_version ?? '');
   const lastMergedWorkItem = String(manifest?.last_merged_work_item ?? '');
@@ -479,7 +480,7 @@ export async function verifyInvalidMergedSpecRecoveryAuthorization(input: {
   }
 
   const manifest = await readJson(
-    path.join(input.projectRoot, '.specforge', 'project', 'spec_manifest.json'),
+    path.join(input.projectRoot, SPEC_DIR_NAME, 'project', 'spec_manifest.json'),
   );
   if (
     String(manifest.last_merged_work_item ?? '') !== input.workItemId ||

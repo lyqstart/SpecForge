@@ -1,3 +1,4 @@
+import { SPEC_DIR_NAME } from "@specforge/types/directory-layout";
 /**
  * artifact-schema-validation.ts — v1.1 JSON Artifact Schema Validation
  *
@@ -385,7 +386,7 @@ if (Object.prototype.hasOwnProperty.call(parsed, 'contract_promotions')) {
         }
         for (const [index, entry] of parsed.entries.entries()) {
           const target = String(entry?.target_path ?? '').replace(/\\/g, '/');
-          if (target !== '.specforge/project/extension_registry.json') {
+          if (target !== (`${SPEC_DIR_NAME}/project/extension_registry.json` as const)) {
             errors.push(
               `CONTRACT_CHANGE_TARGET_FORBIDDEN: entries[${index}] must target only .specforge/project/extension_registry.json`
             );

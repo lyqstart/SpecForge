@@ -1,3 +1,4 @@
+import { SPEC_DIR_NAME } from "@specforge/types/directory-layout";
 import { readdir } from 'node:fs/promises';
 import { join } from 'node:path';
 /** Read through the project owner; never infer state from the projection file. */
@@ -14,7 +15,7 @@ export async function readAuthoritativeWorkItems(deps: any, projectRoot: string)
   if (typeof manager.getState === 'function') {
     // Metadata directory names identify candidates only; states still come
     // exclusively from the owner. This supports owners exposing point reads.
-    const ids = await readdir(join(projectRoot, '.specforge', 'work-items')).catch(error => {
+    const ids = await readdir(join(projectRoot, SPEC_DIR_NAME, 'work-items')).catch(error => {
       if (error.code === 'ENOENT') return [] as string[];
       throw error;
     });

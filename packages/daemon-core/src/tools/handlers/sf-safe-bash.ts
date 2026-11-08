@@ -95,7 +95,7 @@ function appendGovernanceBlockedWrite(
 ): void {
   appendWriteGuardLog(workItemRoot(projectRoot, workItemId), {
     timestamp: new Date().toISOString(),
-    path: '.specforge/**',
+    path: (`${SPEC_DIR_NAME}/**` as const),
     operation: 'modify',
     actor: 'agent',
     allowed: false,
@@ -146,7 +146,7 @@ function sortByFreshest(a: any, b: any): number {
 
 function isParentDirectoryOfAnyTarget(directoryTarget: string, targets: string[]): boolean {
   const directory = normalizePathForCompare(directoryTarget).replace(/\/+$/, '');
-  if (!directory || directory === '.' || directory.startsWith('.specforge/')) return false;
+  if (!directory || directory === '.' || directory.startsWith((`${SPEC_DIR_NAME}/` as const))) return false;
 
   return targets.some(target => {
     const normalized = normalizePathForCompare(target).replace(/\/+$/, '');
@@ -206,20 +206,20 @@ export function findActiveWorkItemIdForWrite(
 function commandMentionsProtectedSpecForgePath(command: string): boolean {
   const text = normalizePathForCompare(command);
   return (
-    text.includes('.specforge/project/') ||
-    text.includes('.specforge/config/') ||
-    text.includes('.specforge/runtime/') ||
-    text.includes('.specforge/work-items/') ||
-    text.includes('.specforge/logs/') ||
-    text.includes('.specforge/specs/') ||
-    text.includes('.specforge/cas/')
+    text.includes((`${SPEC_DIR_NAME}/project/` as const)) ||
+    text.includes((`${SPEC_DIR_NAME}/config/` as const)) ||
+    text.includes((`${SPEC_DIR_NAME}/runtime/` as const)) ||
+    text.includes((`${SPEC_DIR_NAME}/work-items/` as const)) ||
+    text.includes((`${SPEC_DIR_NAME}/logs/` as const)) ||
+    text.includes((`${SPEC_DIR_NAME}/specs/` as const)) ||
+    text.includes((`${SPEC_DIR_NAME}/cas/` as const))
   );
 }
 
 function commandMentionsSensitiveSpecForgeRuntimeSecret(command: string): boolean {
   const text = normalizePathForCompare(command).replace(/\s+/g, '');
   const mentionsRuntime =
-    text.includes('.specforge/runtime/') || text.includes('/sf-user/runtime/');
+    text.includes((`${SPEC_DIR_NAME}/runtime/` as const)) || text.includes('/sf-user/runtime/');
   if (!mentionsRuntime) return false;
   return (
     text.includes('handshake.json') ||
@@ -256,7 +256,7 @@ function commandWritesOnlyReportPaths(projectRoot: string, command: string, cwd?
     const rel = toProjectRelative(projectRoot, cwd, target.path);
     if (!rel) return false;
     const normalized = normalizePathForCompare(rel);
-    return normalized === '.specforge/reports' || normalized.startsWith('.specforge/reports/');
+    return normalized === (`${SPEC_DIR_NAME}/reports` as const) || normalized.startsWith((`${SPEC_DIR_NAME}/reports/` as const));
   });
 }
 
@@ -315,7 +315,7 @@ registerHandler('sf_safe_bash', async (args, context, _deps) => {
       ? setHardStop(baseDir, activeWiId, reason, 'sf_safe_bash', 'work_item', {
           triggering_agent: callerRole ?? String(context?.agent ?? 'unknown'),
           blocked_action: command.slice(0, 500),
-          blocked_target: '.specforge/**',
+          blocked_target: (`${SPEC_DIR_NAME}/**` as const),
           policy_code: reason,
           blocked_step: String(args['blocked_step'] ?? 'protected_path_shell_access'),
           last_successful_step:

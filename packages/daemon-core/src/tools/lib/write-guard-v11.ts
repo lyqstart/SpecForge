@@ -1,3 +1,4 @@
+import { SPEC_DIR_NAME } from "@specforge/types/directory-layout";
 /**
  * write-guard-v11.ts — v1.1 标准 Write Guard（§12.5-§12.6）
  *
@@ -116,7 +117,7 @@ export function performChangedFilesAudit(
       const opMatch = allowedOp === file.operation || allowedOp === 'any';
       return pathMatch && opMatch;
     });
-    let isSpecWrite = normalized.startsWith('.specforge/project/');
+    let isSpecWrite = normalized.startsWith((`${SPEC_DIR_NAME}/project/` as const));
     const isSideEffect = !inScope && !isSpecWrite;
 
     if (isSpecWrite) {

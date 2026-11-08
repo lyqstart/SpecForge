@@ -1,3 +1,4 @@
+import { SPEC_DIR_NAME } from "@specforge/types/directory-layout";
 /**
  * sf-v11-decision — v1.1 User Decision Recorder handler
  *
@@ -270,7 +271,7 @@ registerHandler('sf_v11_decision', async (args, context, deps) => {
     return { success: false, error: 'work_item_id is required' };
   }
 
-  const workItemDir = path.join(projectRoot, '.specforge', 'work-items', workItemId);
+  const workItemDir = path.join(projectRoot, SPEC_DIR_NAME, 'work-items', workItemId);
 
   try {
     await readWorkItemMetadata(workItemDir, workItemId);

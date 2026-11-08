@@ -10,7 +10,11 @@ describe('D18 verification guidance consumers', () => {
     const executor = read('setup/userlevel-opencode/agents/sf-executor.md');
     const tdd = read('setup/userlevel-opencode/skills/superpowers-tdd/SKILL.md');
     expect(executor).toMatch(/permission:[\s\S]*?bash:\s*deny/);
-    expect(executor).toContain('命令状态只能记录为 `not_executed` 或 `blocked`');
+    expect(executor).toContain('`not_executed`');
+    expect(executor).toContain('`blocked`');
+    expect(executor).toContain('D23');
+    expect(executor).toContain('sf_verification_plan');
+    expect(executor).toContain('sf_verification_run');
     expect(executor).toContain('不得在终端运行 verification_command');
     expect(tdd).toContain('当前 SpecForge D18 禁止 Agent');
     expect(tdd).toContain('`not_executed`');

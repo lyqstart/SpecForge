@@ -227,7 +227,7 @@ function isGovernanceArtifactPath(filePath: string, workItemId: string): boolean
     .replace(/^\.\//, '');
   return (
     p.startsWith(`${SPEC_DIR_NAME}/work-items/${workItemId}/`) ||
-    p.startsWith(`.specforge/work-items/${workItemId}/`)
+    p.startsWith(`${SPEC_DIR_NAME}/work-items/${workItemId}/`)
   );
 }
 
@@ -669,7 +669,7 @@ registerHandler('sf_changed_files_audit', async (args, context, deps) => {
         'CODE_PERMISSION_NOT_ENABLED: code_permission was never enabled for this WI.\nCannot audit without prior permission grant.',
       hard_stop: true,
       remediation:
-        'For investigation/review/spec_migration no-code Work Items, call sf_changed_files_audit with mode="no_code_change". ' +
+        'For the current feature_spec pre-approval specification-only phase, call sf_changed_files_audit with mode="no_code_change" only when no business code changed. ' +
         'For implementation Work Items, enable sf_code_permission before code changes.',
     };
   }

@@ -294,6 +294,7 @@ export {
 export {
   // 版本常量
   SCHEMA_VERSION,
+  CURRENT_RELEASE_WORKFLOW_TYPE,
   // §5 状态机
   WI_STATUSES as ConstWIStatuses,
   FORBIDDEN_TRANSITIONS as ConstForbiddenTransitions,

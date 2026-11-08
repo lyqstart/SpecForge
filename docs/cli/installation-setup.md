@@ -5,9 +5,13 @@
 CLI 与 daemon 由 SpecForge user-level installer 从当前仓库发布资产安装：
 
 ```bash
+bun install --frozen-lockfile
+bun scripts/prepare-current-release.ts
 bun scripts/sf-installer.ts install
 bun scripts/sf-installer.ts verify
 ```
+
+源码安装必须先执行准备脚本；它构建当前 workspace、本机运行文件和正式 Manifest，并通过发布预检。Windows D23 资产需要 Node 24.19.0 x64 与 .NET Framework C# 编译器；指定 Node 资产源可使用 `SPECFORGE_VERIFICATION_NODE_SOURCE`。详见[安装前提与平台边界](../user/install.md)。完整且已核验的同平台发布资产无需重新构建。
 
 安装位置：
 

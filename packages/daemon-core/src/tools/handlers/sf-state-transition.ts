@@ -1,3 +1,4 @@
+import {CURRENT_RELEASE_WORKFLOW_TYPE} from '@specforge/types';
 import { access, readFile, rename, rm, writeFile } from "node:fs/promises";
 import { createHash } from "node:crypto";
 import { registerHandler } from "../ToolDispatcher";
@@ -372,6 +373,8 @@ registerHandler("sf_state_transition", async (args, context, deps) => {
     };
   }
 
+  if(args["workflow_type"]!==undefined&&args["workflow_type"]!==CURRENT_RELEASE_WORKFLOW_TYPE)return {success:false,error:"UNSUPPORTED_CURRENT_RELEASE_WORKFLOW",code:"UNSUPPORTED_CURRENT_RELEASE_WORKFLOW"};
+
   if (!workItemId) {
     return {
       success: false,
@@ -434,9 +437,11 @@ registerHandler("sf_state_transition", async (args, context, deps) => {
     };
   }
 
+  if(metadata.workflow_type!==CURRENT_RELEASE_WORKFLOW_TYPE)return {success:false,error:"UNSUPPORTED_CURRENT_RELEASE_WORKFLOW",code:"UNSUPPORTED_CURRENT_RELEASE_WORKFLOW"};
   const rawWorkflowPath = args["workflow_path"] as string | undefined;
   const rawWorkflowType = args["workflow_type"] as string | undefined;
   const existingWorkflowFacts = await readExistingWorkflowFacts(baseDir, workItemId, metadata);
+  if(existingWorkflowFacts.workflowType!==undefined&&existingWorkflowFacts.workflowType!==CURRENT_RELEASE_WORKFLOW_TYPE)return {success:false,error:"CURRENT_WORKFLOW_IDENTITY_CONFLICT",code:"CURRENT_WORKFLOW_IDENTITY_CONFLICT"};
   const inheritedWorkflowPath = rawWorkflowPath ?? existingWorkflowFacts.workflowPath;
 
   const resolvedWorkflow = resolveWorkflowTypeForTransition({
@@ -469,11 +474,12 @@ registerHandler("sf_state_transition", async (args, context, deps) => {
         success: false,
         error: `Invalid v1.1 target state "${toState}". Valid states: ${(WI_STATUSES_V11 as readonly string[]).join(", ")}`,
         code: "INVALID_V11_TARGET_STATE",
+        valid_states: [...WI_STATUSES_V11],
         retry_allowed: true,
         remediation:
           toState === "intake"
-            ? "Use to_state='created' for new WI creation, then created -> intake_ready after intake.md is written."
-            : "Use the v1.1 state list returned in valid_states.",
+            ? "Create new Work Items through sf_work_item_create with the original user_request; this tool only advances an existing Work Item."
+            : "Use the current state list returned in valid_states and re-read sf_state_read; only a legal transition with its required evidence may proceed.",
       };
     }
 
@@ -566,7 +572,7 @@ registerHandler("sf_state_transition", async (args, context, deps) => {
       return {
         success: false,
         error: "PROJECT_NOT_INITIALIZED",
-        hint: `项目尚未初始化，请在项目根目录运行 SpecForge 初始化流程以创建 ${SPEC_DIR_NAME}/project/spec_manifest.json`,
+        hint: "项目尚未初始化；请由 sf-orchestrator 调用受控 sf_project_init。不要手工创建或修复 Project Spec、Manifest 或 Runtime 状态。",
         recovery_action: "execute_startup_flow",
       };
     }

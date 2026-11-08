@@ -1,3 +1,4 @@
+import { SPEC_DIR_NAME } from "@specforge/types/directory-layout";
 /**
  * merge-runner-v11.ts - v1.1 Spec Merge Runner
  *
@@ -108,7 +109,7 @@ async function readJsonFile(filePath: string): Promise<any> {
 async function readCurrentProjectSpecVersion(projectRoot: string): Promise<string> {
   const projectSpecManifestPath = path.join(
     projectRoot,
-    '.specforge',
+    SPEC_DIR_NAME,
     'project',
     'spec_manifest.json'
   );
@@ -174,7 +175,7 @@ async function registerMergedProjectModules(
           const moduleCode = inferModuleCodeFromProjectTarget(target);
           const normalizedTarget = normalizeProjectTargetPathV12(target);
           return moduleCode &&
-            normalizedTarget.startsWith(`.specforge/project/modules/${moduleCode}/`)
+            normalizedTarget.startsWith(`${SPEC_DIR_NAME}/project/modules/${moduleCode}/`)
             ? moduleCode
             : null;
         })
@@ -200,7 +201,7 @@ async function registerMergedProjectModules(
 
     const moduleRoot = path.join(
       projectRoot,
-      '.specforge',
+      SPEC_DIR_NAME,
       'project',
       'modules',
       moduleCode
@@ -251,7 +252,7 @@ async function registerMergedProjectModules(
       : { ...existing, ...canonicalEntry };
     if (governanceReady) {
       (mergedEntry as any).contracts =
-        `.specforge/project/modules/${moduleCode}/contracts.json`;
+        `${SPEC_DIR_NAME}/project/modules/${moduleCode}/contracts.json`;
       (mergedEntry as any).code_paths = codePaths;
     }
 
@@ -319,7 +320,7 @@ async function validateGovernedNewModuleTargets(input: {
 
   const specManifestPath = path.join(
     input.projectRoot,
-    '.specforge',
+    SPEC_DIR_NAME,
     'project',
     'spec_manifest.json'
   );
@@ -345,7 +346,7 @@ async function validateGovernedNewModuleTargets(input: {
     const moduleCode = moduleCodeFromProjectSpecPath(target);
     if (!moduleCode) continue;
 
-    const canonicalRoot = `.specforge/project/modules/${moduleCode}/`;
+    const canonicalRoot = `${SPEC_DIR_NAME}/project/modules/${moduleCode}/`;
     if (!target.startsWith(canonicalRoot)) {
       errors.push(
         `New module target must use canonical MODULE_CODE directory ${canonicalRoot}: ${target}`
@@ -423,7 +424,7 @@ async function validateGovernedNewModuleTargets(input: {
 
     if (projectSpecRepair) {
       for (const filename of PROJECT_SPEC_REPAIR_REQUIRED_FILES) {
-        allowedTargets.add(`.specforge/project/modules/${moduleCode}/${filename}`);
+        allowedTargets.add(`${SPEC_DIR_NAME}/project/modules/${moduleCode}/${filename}`);
       }
       continue;
     }
@@ -466,7 +467,7 @@ async function validateGovernedNewModuleTargets(input: {
     }
 
     for (const filename of NEW_MODULE_REQUIRED_FILES) {
-      allowedTargets.add(`.specforge/project/modules/${moduleCode}/${filename}`);
+      allowedTargets.add(`${SPEC_DIR_NAME}/project/modules/${moduleCode}/${filename}`);
     }
   }
 
@@ -510,13 +511,13 @@ async function restoreSnapshots(snapshots: MergeFileSnapshot[]): Promise<string[
 }
 
 function isProjectTraceTarget(targetPath: string): boolean {
-  return normalizeProjectSpecTargetPath(targetPath) === '.specforge/project/trace_matrix.md';
+  return normalizeProjectSpecTargetPath(targetPath) === (`${SPEC_DIR_NAME}/project/trace_matrix.md` as const);
 }
 
 function targetModuleTrace(targetPath: string): string | null {
   const normalized = normalizeProjectSpecTargetPath(targetPath);
   const moduleCode = moduleCodeFromProjectSpecPath(normalized);
-  return moduleCode && normalized === `.specforge/project/modules/${moduleCode}/trace.md`
+  return moduleCode && normalized === `${SPEC_DIR_NAME}/project/modules/${moduleCode}/trace.md`
     ? moduleCode
     : null;
 }
@@ -536,7 +537,7 @@ async function governedModuleCodes(projectRoot: string, entries: ManifestEntry[]
   const result = new Set<string>();
   try {
     const manifest = await readJsonFile(
-      path.join(projectRoot, '.specforge', 'project', 'spec_manifest.json'),
+      path.join(projectRoot, SPEC_DIR_NAME, 'project', 'spec_manifest.json'),
     );
     for (const raw of Array.isArray(manifest?.modules) ? manifest.modules : []) {
       const moduleCode = String(raw?.module_code ?? raw?.module ?? '').trim().toUpperCase();
@@ -569,7 +570,7 @@ async function projectTraceProjection(input: {
   const traceEntry = input.entries.find(entry => isProjectTraceTarget(entry.target_path));
   const currentPath = path.join(
     input.projectRoot,
-    '.specforge',
+    SPEC_DIR_NAME,
     'project',
     'trace_matrix.md',
   );
@@ -778,7 +779,7 @@ export async function executeMerge(input: MergeInput): Promise<MergeResult> {
   if (manifest.project_spec_precondition_sha256) {
     const currentManifestPath = path.join(
       input.projectRoot,
-      '.specforge',
+      SPEC_DIR_NAME,
       'project',
       'spec_manifest.json'
     );
@@ -828,7 +829,7 @@ export async function executeMerge(input: MergeInput): Promise<MergeResult> {
   }
 
   const workItemRoot = path.resolve(input.workItemDir);
-  const projectSpecRoot = path.resolve(input.projectRoot, '.specforge', 'project');
+  const projectSpecRoot = path.resolve(input.projectRoot, SPEC_DIR_NAME, 'project');
 
   for (const entry of entries) {
     const candidateFullPath = path.resolve(input.workItemDir, entry.candidate_path);
@@ -882,13 +883,13 @@ export async function executeMerge(input: MergeInput): Promise<MergeResult> {
 
   const projectSpecManifestPath = path.join(
     input.projectRoot,
-    '.specforge',
+    SPEC_DIR_NAME,
     'project',
     'spec_manifest.json',
   );
   const extensionRegistryPath = path.join(
     input.projectRoot,
-    '.specforge',
+    SPEC_DIR_NAME,
     'project',
     'extension_registry.json',
   );
@@ -900,7 +901,7 @@ export async function executeMerge(input: MergeInput): Promise<MergeResult> {
     ...moduleCodes.map(moduleCode =>
       path.join(
         input.projectRoot,
-        '.specforge',
+        SPEC_DIR_NAME,
         'project',
         'modules',
         moduleCode,
@@ -1026,7 +1027,7 @@ export async function executeMerge(input: MergeInput): Promise<MergeResult> {
       );
       const finalModuleCodes = await governedModuleCodes(input.projectRoot, entries);
       for (const moduleCode of finalModuleCodes) {
-        const targetPath = `.specforge/project/modules/${moduleCode}/trace.md`;
+        const targetPath = `${SPEC_DIR_NAME}/project/modules/${moduleCode}/trace.md`;
         const targetFullPath = path.join(input.projectRoot, ...targetPath.split('/'));
         const content = renderGovernanceModuleTrace({
           edges: traceProjection.edges,
@@ -1071,8 +1072,8 @@ export async function executeMerge(input: MergeInput): Promise<MergeResult> {
         workItemId: input.workItemId,
         projectSpecVersion: result.project_spec_version,
         relativePaths: [
-          '.specforge/project/spec_manifest.json',
-          '.specforge/project/extension_registry.json',
+          (`${SPEC_DIR_NAME}/project/spec_manifest.json` as const),
+          (`${SPEC_DIR_NAME}/project/extension_registry.json` as const),
           ...result.merged_files
             .filter(entry => entry.status === 'success' && entry.operation !== 'delete')
             .map(entry => entry.target_path),

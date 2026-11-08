@@ -24,6 +24,17 @@ afterEach(() => {
 });
 
 describe('current diagnostic observability persistent owner', () => {
+  it('redacts credential metadata in both actual diagnostic recorders', () => {
+    const projectRoot = createProjectRoot();
+    const metadata = { authorization: 'Bearer SYNTHETIC_OBSERVATION_CREDENTIAL', nested: { apiKey: 'SYNTHETIC_OBSERVATION_CREDENTIAL' }, count: 2 };
+    recordDaemonObservation({ projectRoot, category: 'dispatcher', phase: 'metadata-redaction', metadata, force: true });
+    recordSfObservation({ projectRoot, category: 'rpc', phase: 'metadata-redaction', metadata, force: true });
+    for (const [owner, category] of [['daemon', 'dispatcher'], ['userlevel', 'rpc']]) {
+      const text = readFileSync(join(projectRoot, '.specforge/logs/observability', owner!, category! + '.jsonl'), 'utf8');
+      expect(text).not.toContain('SYNTHETIC_OBSERVATION_CREDENTIAL');
+      expect(JSON.parse(text.trim()).metadata.count).toBe(2);
+    }
+  });
   it('does not publish inactive duplicate runtime implementations', () => {
     const runtimeExports = currentObservability as Record<string, unknown>;
     expect(runtimeExports.EventLogger).toBeUndefined();

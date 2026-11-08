@@ -208,7 +208,8 @@ describe('ERR-157 and ERR-158 installed-source contracts', () => {
         'utf-8',
       ),
     ]);
-    expect(handler).toContain("['add', 'update', 'promote', 'repair_relocate_to_module', 'reset']");
-    expect(userTool).toContain('["add", "update", "promote", "repair_relocate_to_module", "reset"]');
+    expect(handler).toContain("['add','update','reset']");
+    expect(userTool).toContain("['add', 'update', 'reset']");
+    expect(handler).toContain('UNSUPPORTED_CURRENT_RELEASE_CONTRACT_ACTION');
   });
 });

@@ -10,12 +10,12 @@
 | `sf-analyst` | 系统治理和解决方案分析 |
 | `sf-requirements` | 需求与验收标准 |
 | `sf-design` | 架构、设计、模块边界与 Contract |
-| `sf-task-planner` | 从已批准 Candidate 形成任务计划 |
+| `sf-task-planner` | 在 Candidate 审批前形成受审任务计划，按合法修订链维护 |
 | `sf-executor` | 在 Code Permission 范围内实施 |
 | `sf-verifier` | 独立验证需求、测试和证据 |
 | `sf-reviewer` | 代码与治理产物审查 |
 | `sf-debugger` | 对已证实缺陷执行受控调试 |
-| `sf-knowledge` | 维护经治理允许的项目知识投影 |
+| `sf-knowledge` | 通过受控知识工具维护全局知识库及适用投影 |
 
 仓库还保留 `sf-investigator`、`sf-evidence-collector`、`sf-extension` 的 BUILT_NOT_ENABLED 源文件，但它们不进入当前安装 Manifest、动态 Registry 或产品正向流程。
 

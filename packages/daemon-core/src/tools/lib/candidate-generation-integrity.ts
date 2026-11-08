@@ -1,3 +1,4 @@
+import { SPEC_DIR_NAME } from "@specforge/types/directory-layout";
 import { createHash } from 'node:crypto';
 import type { Dirent } from 'node:fs';
 import * as fs from 'node:fs/promises';
@@ -30,7 +31,7 @@ export async function readCurrentProjectSpecBinding(
 ): Promise<CurrentProjectSpecBinding> {
   const manifestPath = path.join(
     projectRoot,
-    '.specforge',
+    SPEC_DIR_NAME,
     'project',
     'spec_manifest.json',
   );

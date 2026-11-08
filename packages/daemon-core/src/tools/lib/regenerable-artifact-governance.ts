@@ -19,7 +19,7 @@ export interface GovernedRegenerableArtifact {
   artifact_class: RegenerableArtifactClass;
   decision: 'ignore';
   reason: string;
-  policy_source: '.specforge/project/git_ignore_decisions.json';
+  policy_source: `${typeof SPEC_DIR_NAME}/project/git_ignore_decisions.json`;
   enforcement_source: '.gitignore';
 }
 
@@ -55,7 +55,7 @@ export async function readGovernedRegenerableArtifacts(
     readTrustedGitGovernanceProjectWrites(projectRoot).map(entry => entry.path),
   );
   if (
-    !trustedPaths.has('.specforge/project/git_ignore_decisions.json') ||
+    !trustedPaths.has((`${SPEC_DIR_NAME}/project/git_ignore_decisions.json` as const)) ||
     !trustedPaths.has('.gitignore')
   ) {
     return [];
@@ -105,7 +105,7 @@ export async function readGovernedRegenerableArtifacts(
       artifact_class: artifactClass,
       decision: 'ignore',
       reason: decision.reason,
-      policy_source: '.specforge/project/git_ignore_decisions.json',
+      policy_source: (`${SPEC_DIR_NAME}/project/git_ignore_decisions.json` as const),
       enforcement_source: '.gitignore',
     });
   }

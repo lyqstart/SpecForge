@@ -32883,3 +32883,97 @@ Candidate 字节完整性不能替代内容事实完整性。进入候选编制�
 ### 本轮D18/D23角色统一与有界复评完成
 
 - 最终维护22项、相关9文件83项、Root51文件748项与正式precheck通过；真实红例和观察器/顺序失败保留。正式升级15+1 Markdown、verify117，原生5身份及owner/原项目安装区间保持。fresh-loader03实际10Agent/8Skill身份通过，自有Kernel退出、Daemon独立健康；sf_state_read从events重放原WI仍closed。37责任源码与10类历史原始回执逐封存SHA重新核验；SPS19逐项列事实/有限推断/未证明范围，不复用旧汇总PASS。当前修复闭合，整体无保留全规格结论仍INSUFFICIENT_EVIDENCE。
+
+### ERR-2025：跨平台CI仍使用退役部署模型且Windows检出长路径失败
+
+- bb0f172a真实push CI原始job日志已封存：Windows checkout退出128/历史长路径，macOS在未安装依赖时tsc不存在127，Ubuntu整目录模块测试缺workspace构建；distribution还引用不存在的smoke-runner和旧CLI tarball模型。首次偏离为CI/Release消费者，非当前业务失败。新CI走正式平台发布、隔离安装和生命周期验收；checkout只用进程级core.longpaths，不改全局Git配置；当前包从已有12包owner按顺序构建/测试，不以全目录循环启用禁用模块。0012三项红例，0028三项对应静态检查通过；真实Mac/Windows新CI仍待源提交与远端运行。
+
+### ERR-2026：Linux取证环境混入Windows Bun与不完整夹具
+
+- WSL Ubuntu24.04.4、UID1000和真实systemd用户服务running已确认。官方bun1.3.14 Linux ZIP按release digest校验，ELF指纹和实际Linux版本封存。0017外层ELF正确但嵌套bun脚本从继承PATH调用Windows npm shim，不能作为Linux构建通过；0019仅为自有子进程设置Linux工具PATH后12包真实构建通过。
+- 一次依赖准备在源复制完成marker前启动，不作为有序通过；0015在0011完整numeric0及manifest存在后重新核验依赖。run-linux以后消费完成receipt和固定target，后续同时把OPENCODE_CONFIG_DIR定向自有fixture。未把系统路径/全局Bun改成测试配置。初版Linux导出明确排除档案，0027因此有历史保留测试缺输入；0038/39仅补141份已逐SHA核验的历史证明文件，不恢复历史为产品权威。
+
+### ERR-2027：跨平台测试夹具和旧消费者被误当当前验收依据
+
+- 0021真实Linux Root741通过/7失败：Windows路径夹具未声明平台，cmdVerify mock强制反斜杠；修正host/explicit平台模型后0026全部748通过。0022系统d八步6失败，afterEach在install后提前卸载后续需用的unit；改为整链结束再清理，并核验inactive退出3/disabled退出1而非catch后伪造成功，0025真实8项通过。
+- 0027全12包实际运行还发现静态49角色数量过期、Help/Observability写死1.0.21、D18逐字旧断言、仓库自身V6 manifest依赖和缺失发布构建前置。这些与实际runtime缺陷分别归类，不能反向修改规格迎合旧测试。历史缺输入通过精确封存文件补齐，当前fixture/语义消费者应按真实责任修正。Design两项在整套首轮失败但0043独立Linux通过，根因尚不能断为Runtime；须后续完整重验确认。
+
+### ERR-2028：实际健康请求的失败/成功路径遗留超时器
+
+- ServiceHealthChecker把清理挂在timeoutPromise.finally，fetch先结束时计时器不被清理；0016四个真实方法/fake-timer计数反例均1而非0。将清理交回Promise.race的owner finally后0018四项通过，错误语义保持。该修复需要新原生补丁版本，不把静态邻近文本扫描当充分运行证据。
+
+### ERR-2029：Bun锁定元数据未随产品补丁身份自动更新
+
+- 按SPS0.1根/12workspace/SPS release header推进1.0.24，技术schema与产品边界未变、旧1.0.23标签不动。0030 bun install --lockfile-only数字0却保留12个workspace的1.0.23字段，0035新增当前身份回归真实1失败/748通过。0036用正式JSONC parser证明仅12个workspace版本字段改变、依赖解析无变化；后续仍需frozen-lockfile与完整Root重验。
+
+### ERR-2030：真实Linux发布预检只接受Windows后缀
+
+- 0044已真实完成Linux12包/原生构建，却由正式precheck拒绝release/bin/specforge.exe和specforged.exe缺失；根元数据写死.exe是首次偏离。新增platformExecutable布尔合同和有限平台路径投影，声明本身不授予应用执行能力；保留非法标记/空路径拒绝。0045红例，0046/47还暴露新增夹具缺packages/有效构建包，未放宽生产集合；补完整夹具后0048全部13项通过。真实Linux发布重验及Mac/Windows实际运行仍待完成。
+
+### 当前帮助消费者修复取证
+
+- config被写成可修改、Daemon以固定3847诊断、当前services/OpenCodeServer帮助仅有空组。以真实HelpSystem与yargs注册AST为源，修正只读配置/动态handshake/bind边界，补齐6+6服务子命令及选项。旧版本测试预期分别修正，0031/33失败保留、0034帮助28项通过；0049服务帮助红例，0050两文件29项通过。正式平台脚本现检查23帮助入口，尚未据此声称已实机通过。
+
+### ERR-2031：Bun usage-only 输出被误计为测试通过
+
+- 实际回执0043/0053只有 Bun usage，虽然数字退出0，却未执行目标测试。0103的完整命令回执扫描明确撤销这两项通过结论；旧字节保留。ERR-2027中“0043独立Linux通过”的旧句被本条纠正，不能继续引用为覆盖证据。后续使用真实package cwd的 run test，或已核验的 run --cwd 形式，并要求实际测试/构建结果标记与退出码同时成立；根 test:project-bootstrap 也修正相同错误顺序。
+
+### ERR-2032：实际 Linux 帮助输出被诊断日志污染
+
+- 0063真实安装生命周期失败于 help JSON stdout，configuration logger把正常诊断写入stdout。保留红例并将诊断统一送stderr；0069及后续实际Linux0081/Windows0119平台通过。HTTP race及ingest全局timer、重连timer所有权也有独立计数/settlement红绿回归，见0067—0080；不以源码邻近文本或消失的日志代替运行证据。
+
+### ERR-2033：当前 Design Gate 与定义 Loader 仍消费退役契约
+
+- 当前 feature_spec 的 design-phase Candidate被按完整REQ阶段检查，旧feature_spec_design_first字符串才选正确策略；Linux大小写敏感又暴露了夹具使用core而正式MODULE_CODE为CORE。当前fixture由真实Init建立，Gate读取严格validated Candidate phase并拒绝注册入口mode覆盖；0104/0108/0109及当前全套证据分别记录覆盖。Workflow Loader另有注册迁移钩子、缺schema自动补值和无效目录跳过；当前严格已知1.0/2.0定义不做转换，独立Gate wire仍1.0，0112/0117/0118证明测试与构建。
+
+### ERR-2034：文档与遗留工具库提供不符合当前产品的指导
+
+- 当前配置/Observability文档虚构构造器或安装方式、Daemon文档旧生命周期/字段/路由、Job私有库冒充公开入口、ADR旧兼容段落与模板权限暗示均已逐owner重核。原始文档完整保留，不通过删除历史消除冲突。D18遗留规则虽不参与真实只读执行，仍建议临时bash/python脚本；现改为当前parser只读语法query，去掉不被调用的HostProfile合成，旧本地Design Gate执行明确blocked。0140及后续原始回执证明当前与安装副本拒绝。语法清单和零keyword命中均不能自动作为全量语义PASS。
+
+### ERR-2035：边运行全套边改输入、未先重建发布清单
+
+- 0145/0146实际全套失败必须保留：模板/Tool编辑后未重新生成发布集合，scope-gate的真实仓库安装集测试正确拒绝hash_mismatch；Windows全套还读到了不同时间的handler/test输入，不能算某个固定版本通过。后续必须先冻结source哈希、再生成清单、再执行完整回归；运行期间不得继续修改被测源码/测试。一次注册fetch报告bad port却未记录实际端口，不能凭经验断为并发或特定端口原因，明确INSUFFICIENT_EVIDENCE，先补取证诊断。失败不可以只重跑到绿后删除。
+
+### ERR-2036：公开契约登记会切换到未启用工作流
+
+- 当前Agent指令使用 feature_spec/contract_change_path，但原登记库会强制workflow_type=contract_change；公开Handler缺自身角色、StateManager冻结及当前主体边界。现由真实sf-orchestrator在可变Candidate状态调用，严格读取当前WI/路径、HardStop和Registry Schema，拒绝链接/硬链接、未知参数及未启用动作；当前Subject不转换已有非当前Candidate。0156、0158和后续记录当前正例、拒绝及历史库算法回归。历史算法存在不等于其workflow获发布授权。
+
+### ERR-2037：语义关闭允许输入选择历史验收profile
+
+- 公开metadata推荐Investigation profile，producer可由参数、现有文件或Verification Report中的profile选择历史validator，与当前唯一feature_spec工作流冲突。现公开metadata和producer都拒绝非当前workflow/profile，不把历史纯库测试当公开能力。0157/0158含三种输入来源拒绝及当前feature正例；旧quick_change正例fixture同步到当前workflow，spec_migration公共调用测试改为真实拒绝。仍须冻结后全量与部署验收，不在此提前宣称完成。
+
+### ERR-2038：完整lint入口存在配置/依赖及诊断失败，不能称全检查通过
+
+- 0136完整当前包lint数字1。第一次A/B夹具遗漏根tsconfig导致baseline build失败（0147），补齐固定输入后0150在同一自有worktree、同一冻结外部依赖和Bun/命令下证明baseline/current build都0、lint都1；完整raw输出保留于lint-ab-02。具体错误归因须按稳定诊断键比较，不能笼统声称全部都是历史债务，更不能静默取消检查或篡改规格。该检查与当前release CI中明确的path/async/typecheck/回归覆盖分别陈述。
+
+### ERR-2039：正式源码准备在依赖构建前加载运行图
+
+- 0165/0166原始入口均早于构建报 require async module；不能仅据此断言顶层await是根因。0167/0168导入对照均成功，0169无顶层await调用和0171原入口重跑也成功，故顶层await解释未获证明，未据此改入口。0172在自有夹具经受限clean owner删除dist、按Bun官方环境变量仅本轮关闭转译缓存后，公开prepare在任何workspace构建marker前因@specforge/types/directory-layout缺失而退出1，直接证明预检静态加载真实Tool图早于dependency build。修复为先构建当前12包并生成发布资产，再完成共享types ESM初始化、延迟加载真实precheck；0177/0178暴露根workspace不直接依赖裸@specforge/types，改用已构建的真实相对owner入口，未增加依赖提升假设。再次完整clean、禁用本轮缓存后Windows 0184.result.json 与Linux 0183.result.json均退出0、12build/native assets/formal precheck通过。旧失败保留，后续仍需冻结全套、真实macOS与最终提交部署；Bun内部间歇错误根因仍不冒充已证明。
+
+### ERR-2040：参数与历史入口仍能选择未发布治理策略
+
+- 公开 Requirements/Verification Gate、State/Gate Run 的参数仍宣传或接受旧模式及未发布 workflow；当前 SPS 仅启用 feature_spec。已按同一共享常量限制参数、既有 metadata 和已推导事实，拒绝覆盖 Task 验证集合；保留私有历史算法，不将其算作当前能力。0214 的新边界检查通过但旧正向状态夹具仍用 architecture_change，随后仅将当前正向夹具改回当前身份，原 spec_migration 正向恢复改为明确拒绝。0219 实际八文件91测试退出0。部分补丁执行曾重复插入已应用片段；0211 回采并逐文件匹配 freeze02 原始字节，0212 先构造完整计划并通过语法及前置哈希核对后一次重建，未将部分补丁当作原子操作。
+
+### ERR-2041：通用产物写入可以覆盖 Runtime 元数据
+
+- 0217 实际注册 handler 合成夹具直接证明 sf-orchestrator/sf-verifier 可以经 sf_artifact_write 改写权限与 workflow 字段，Executor 仅被其角色限制拒绝。没有在原业务项目尝试。现有元数据合同禁止 Agent 构造或修补 work_item.json，因此关闭全部角色的通用 work_item/work_item.json 写入，改由既有创建、状态和 Code Permission owner；不新增并发写入器，不使用读后覆写修补权限。安装 Tool Schema/帮助同步去掉 work_item、Merge Runner 专属 merge_report；0219 包含真实不写入回归及原编排闭环，退出0。
+
+### ERR-2042：Semantic Closure 未严格拒绝独立 Schema
+
+- 当前核心验证未检查自身独立 schema_version，生产者可保存未知版本，持久文件损坏会被读作缺失。按 SPS Schema 合同显式支持1.0；未知/缺失/非字符串版本、损坏JSON或非对象持久数据均 fail closed，force 仅重建已支持版本内容，不能转换未知格式。新产物由自身 owner 标记1.0，不复制 Evidence Manifest 的独立版本。0219 与0220 包含核心、生产者、来源、防覆盖、force、Close 等实际回归通过；旧文件不自动迁移。
+
+### ERR-2043：保留的本地 Gate 与历史产品 Lint 被当作当前能力
+
+- 0221 合成业务文档直接复现特定 V6 标题触发硬编码 SpecForge 历史发布清单。移除当前 lint 的该自动分派，历史纯内容函数及证据仍保留。公开 doc_type 仅 requirements/design/tasks；安装副本 Requirements/Bugfix/Tasks/Verification 文件系统 Gate 入口与已关闭 Design 一致，仅返回受控 Daemon owner，不执行旧 specs 路径/兼容检查。0223 实际文档、全部本地 Gate 拒绝及权威消费者回归通过。
+
+### ERR-2044：知识库存储独立版本未在 owner 读写入口执行校验
+
+- 0240 在独立临时目录分别调用真实源码和安装副本存储 owner，直接证明未知或缺失 version 被读入并可保存；没有访问用户真实知识库。沿用既有独立 version=1.0 格式与字段模型，在读写前校验版本、顶层结构和条目字段；有效新对象也不能覆盖未知或损坏的既有格式。新文件独占创建；损坏JSON返回固定可诊断错误，避免把解析片段带入日志。不恢复 Migration，不转换用户数据。0245 同一探测8项读写拒绝全部通过。0243 新正向测试错误地把 remove 归档行为当成物理删除；源码证实原行为是 archived，修正测试并同步帮助，未改业务语义；0244 五文件115测试通过。
+
+### ERR-2045：严格工作流入口暴露旧夹具与错误优先级
+
+- freeze03 Windows0235与Linux0238全量均为相同8失败：7项关闭边界测试夹具未声明 workflow_type；1项创建所有权错误被新工作流参数拒绝提前覆盖。0241逐字核验冻结输入未漂移后，补齐夹具当前身份，并恢复“状态工具不能创建WI”的稳定错误优先级；其他入口依然拒绝未发布workflow。0244包含所有失败及工作流边界115项回归通过。旧失败保留，最新源码尚须完整提交/CI及部署验收。两平台其他10个实际有测试包均通过，types无测试脚本不伪称通过。
+
+### ERR-2046：最后一轮恢复提示仍残留旧工作流与手工清理暗示
+
+- 从全量语法消息清单回到真实owner逐项核对，changed_files_audit仍以未发布investigation/review/spec_migration说明无代码模式，systemd回滚仍暗示manual cleanup，状态入口初始化提示未点名受控owner。已分别改为当前feature_spec审批前规格阶段、保留失败日志并检查owner恢复、sf-orchestrator调用sf_project_init；Semantic Closure帮助补显式1.0及force不能转换。源/部署副本知识库帮助明确remove归档和版本拒绝。不得把语法清单的待审标签整体改成动态分支PASS；实际覆盖由对应owner回归与真实平台报告证明。

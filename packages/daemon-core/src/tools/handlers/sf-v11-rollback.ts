@@ -1,3 +1,4 @@
+import { SPEC_DIR_NAME } from "@specforge/types/directory-layout";
 /**
  * sf-v11-rollback — §16 回滚与 superseded handler
  */
@@ -26,7 +27,7 @@ registerHandler('sf_v11_rollback', async (args, context, deps) => {
         return { success: false, error: 'rollback_work_item_id and original_work_item_id are required' };
       }
 
-      const workItemsRoot = path.join(projectRoot, '.specforge', 'work-items');
+      const workItemsRoot = path.join(projectRoot, SPEC_DIR_NAME, 'work-items');
       const plan = await generateRollbackPlan({
         rollbackWorkItemId: rollbackWiId,
         originalWorkItemId: originalWiId,
@@ -63,7 +64,7 @@ registerHandler('sf_v11_rollback', async (args, context, deps) => {
         rollbackPlan: planJson,
       });
 
-      const workItemsRoot = path.join(projectRoot, '.specforge', 'work-items');
+      const workItemsRoot = path.join(projectRoot, SPEC_DIR_NAME, 'work-items');
       const rollbackWiDir = path.join(workItemsRoot, rollbackWiId);
       const deltaPath = await writeRollbackDelta(rollbackWiDir, delta);
 
@@ -77,7 +78,7 @@ registerHandler('sf_v11_rollback', async (args, context, deps) => {
         return { success: false, error: 'original_work_item_id and superseded_by_work_item_id are required' };
       }
 
-      const workItemsRoot = path.join(projectRoot, '.specforge', 'work-items');
+      const workItemsRoot = path.join(projectRoot, SPEC_DIR_NAME, 'work-items');
       const originalWiDir = path.join(workItemsRoot, originalWiId);
       const metadata = await readWorkItemMetadata(originalWiDir, originalWiId);
       const authoritativeState = await readAuthoritativeState({

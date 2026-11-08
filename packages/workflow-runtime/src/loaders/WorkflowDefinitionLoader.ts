@@ -5,7 +5,10 @@
 
 import * as fs from 'fs/promises';
 import * as path from 'path';
-import { WorkflowDefinition, StateMachine } from '../types.js';
+import { WorkflowDefinition, StateMachine, SUPPORTED_WORKFLOW_DEFINITION_SCHEMAS } from '../types.js';
+
+const supportsDefinitionSchema = (value: unknown): boolean =>
+  typeof value === 'string' && SUPPORTED_WORKFLOW_DEFINITION_SCHEMAS.some(version => version === value);
 
 /**
  * Validation error details
@@ -122,7 +125,7 @@ export class WorkflowDefinitionLoader {
         field: 'schema_version',
         message: 'schema_version is required',
       });
-    } else if (String(def.schema_version) !== '1.0' && String(def.schema_version) !== '2.0') {
+    } else if (!supportsDefinitionSchema(def.schema_version)) {
       errors.push({
         field: 'schema_version',
         message: `Unsupported schema version: ${def.schema_version}. Expected: 1.0 or 2.0`,
@@ -222,7 +225,7 @@ export class WorkflowDefinitionLoader {
         field: 'stateMachine.schema_version',
         message: 'schema_version is required',
       });
-    } else if (String(stateMachine.schema_version) !== '1.0' && String(stateMachine.schema_version) !== '2.0') {
+    } else if (!supportsDefinitionSchema(stateMachine.schema_version)) {
       errors.push({
         field: 'stateMachine.schema_version',
         message: `Unsupported schema version: ${stateMachine.schema_version}. Expected: 1.0 or 2.0`,
@@ -303,7 +306,7 @@ export class WorkflowDefinitionLoader {
         field: `${prefix}.schema_version`,
         message: 'schema_version is required',
       });
-    } else if (String(stateObj.schema_version) !== '1.0' && String(stateObj.schema_version) !== '2.0') {
+    } else if (!supportsDefinitionSchema(stateObj.schema_version)) {
       errors.push({
         field: `${prefix}.schema_version`,
         message: `Unsupported schema version: ${stateObj.schema_version}. Expected: 1.0 or 2.0`,
@@ -438,7 +441,7 @@ export class WorkflowDefinitionLoader {
         field: `${prefix}.schema_version`,
         message: 'schema_version is required',
       });
-    } else if (String(gateObj.schema_version) !== '1.0' && String(gateObj.schema_version) !== '2.0') {
+    } else if (!supportsDefinitionSchema(gateObj.schema_version)) {
       errors.push({
         field: `${prefix}.schema_version`,
         message: `Unsupported schema version: ${gateObj.schema_version}. Expected: 1.0 or 2.0`,
@@ -549,11 +552,6 @@ export class WorkflowDefinitionLoader {
     }
 
     const definition = obj as Record<string, unknown>;
-
-    // Ensure schema_version
-    if (!definition.schema_version) {
-      definition.schema_version = '1.0';
-    }
 
     // Validate
     const result = this.validate(definition as unknown as WorkflowDefinition);

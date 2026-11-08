@@ -1,3 +1,4 @@
+import { SPEC_DIR_NAME } from "@specforge/types/directory-layout";
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 import { getHandler } from '../ToolDispatcher';
@@ -17,7 +18,7 @@ export async function checkNativeTool(deps: any, projectRoot: string, tool: stri
   // An arbitrary program can write anywhere; a declared file list is not proof.
   // Route shells/patches/unknown tools through controlled execution, never guess.
   if (!['edit', 'write'].includes(tool)) {
-    return { allowed: false, reason: 'NATIVE_TOOL_REQUIRES_CONTROLLED_EXECUTION: use sf_safe_bash or an approved SpecForge tool' };
+    return { allowed: false, reason: 'NATIVE_TOOL_REQUIRES_CONTROLLED_EXECUTION: sf_safe_bash supports internal reads only; verification requires the approved sf_verification_plan / sf_verification_run path and platform/profile. Scripts, builds and tests were not executed; do not retry through a shell or helper.' };
   }
   if (!path.isAbsolute(projectRoot) || typeof args.filePath !== 'string' || !args.filePath) {
     return { allowed: false, reason: 'WRITE_TARGET_REQUIRED' };
@@ -40,7 +41,7 @@ export async function checkNativeTool(deps: any, projectRoot: string, tool: stri
     .filter(item => !['closed', 'rejected', 'superseded'].includes(item.current_state));
   if (active.length !== 1) return { allowed: false, reason: 'UNAMBIGUOUS_ACTIVE_WORK_ITEM_REQUIRED' };
   const state = active[0];
-  const wiDir = path.join(projectRoot, '.specforge', 'work-items', state.work_item_id);
+  const wiDir = path.join(projectRoot, SPEC_DIR_NAME, 'work-items', state.work_item_id);
   if (checkHardStop(projectRoot, state.work_item_id).blocked) return { allowed: false, reason: 'HARD_STOP_ACTIVE' };
   const wi = await readWorkItemMetadata(wiDir, state.work_item_id);
   const targetStat = await fs.lstat(absolute).catch(error => {

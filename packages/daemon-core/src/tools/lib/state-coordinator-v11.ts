@@ -1,3 +1,4 @@
+import { SPEC_DIR_NAME } from "@specforge/types/directory-layout";
 /**
  * state-coordinator-v11.ts — SpecForge v1.1.3 state authority coordinator
  *
@@ -99,7 +100,7 @@ export function isCanonicalNoCodeVerificationCandidateManifest(input: {
       entries.length > 0 &&
       entries.every(entry => entry && typeof entry === 'object' &&
         String((entry as Record<string, unknown>).target_path ?? '').replace(/\\/g, '/')
-          .endsWith('.specforge/project/extension_registry.json'));
+          .endsWith((`${SPEC_DIR_NAME}/project/extension_registry.json` as const)));
   }
   if (input.workflowType === 'spec_migration') {
     const baseSpecVersion = manifest.base_spec_version;
@@ -116,7 +117,7 @@ export function isCanonicalNoCodeVerificationCandidateManifest(input: {
       repairEvidencePaths.length > 0 &&
       repairEvidencePaths.every(value =>
         typeof value === 'string' &&
-        value.startsWith('.specforge/project/') &&
+        value.startsWith((`${SPEC_DIR_NAME}/project/` as const)) &&
         !value.split('/').includes('..')
       ) &&
       manifest.merge_required === true &&
@@ -130,7 +131,7 @@ export function isCanonicalNoCodeVerificationCandidateManifest(input: {
         return record.operation === 'replace' &&
           candidatePath.startsWith('candidates/') &&
           !candidatePath.split('/').includes('..') &&
-          targetPath.startsWith('.specforge/project/') &&
+          targetPath.startsWith((`${SPEC_DIR_NAME}/project/` as const)) &&
           !targetPath.split('/').includes('..');
       });
   }

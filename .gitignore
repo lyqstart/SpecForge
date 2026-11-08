@@ -92,3 +92,5 @@ packages/observability/test-data/observability-req-[0-9]*/
 # Same-run post-seal publication receipts have independent local seals.
 /docs/archive/2026-11-07-consumer-conformance/publication-live/
 /docs/archive/2026-11-08-role-alignment/publication-live/
+/docs/archive/2026-11-08-crossplatform-consumer-audit/local-assets/
+/docs/archive/2026-11-08-crossplatform-consumer-audit/publication-live/

@@ -1,3 +1,4 @@
+import { SPEC_DIR_NAME } from "@specforge/types/directory-layout";
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { resolveSpecForgeUserRoot } from '@specforge/types/user-level-paths';
@@ -38,7 +39,7 @@ export function loadAcceptedConfigSync(options: {
   const layers: ConfigLayer[] = [
     { type: 'builtin', data: structuredClone(DEFAULT_CONFIG), timestamp: 0, schemaVersion: CONFIG_SCHEMA_VERSION },
     { type: 'user', data: readObject(join(userRoot, 'config', 'config.json'), true), timestamp: 0, schemaVersion: CONFIG_SCHEMA_VERSION },
-    { type: 'project', data: options.projectData ?? (options.projectPath ? readObject(join(options.projectPath, '.specforge', 'config', 'project.json'), false) : {}), timestamp: 0, schemaVersion: CONFIG_SCHEMA_VERSION },
+    { type: 'project', data: options.projectData ?? (options.projectPath ? readObject(join(options.projectPath, SPEC_DIR_NAME, 'config', 'project.json'), false) : {}), timestamp: 0, schemaVersion: CONFIG_SCHEMA_VERSION },
     { type: 'runtime', data: runtime, timestamp: 0, schemaVersion: CONFIG_SCHEMA_VERSION },
   ];
   for (const layer of layers) {

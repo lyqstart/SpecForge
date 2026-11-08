@@ -1,6 +1,6 @@
 {
   "name": "@specforge/cli",
-  "version": "1.0.23",
+  "version": "1.0.24",
   "description": "Command Line Interface for SpecForge",
   "main": "dist/cli.js",
   "types": "dist/cli.d.ts",
@@ -10,7 +10,7 @@
   "scripts": {
     "build": "tsc",
     "watch": "tsc --watch",
-    "clean": "Remove-Item -Recurse -Force dist -ErrorAction SilentlyContinue",
+    "clean": "bun ../../scripts/clean-workspace.ts --package cli",
     "lint": "eslint src --ext .ts",
     "lint:fix": "eslint src --ext .ts --fix",
     "format": "prettier --write src tests",

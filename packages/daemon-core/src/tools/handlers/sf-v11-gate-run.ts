@@ -1,3 +1,4 @@
+import {CURRENT_RELEASE_WORKFLOW_TYPE} from '@specforge/types';
 /**
  * sf-v11-gate-run — v1.1 Gate Runner handler
  *
@@ -168,24 +169,7 @@ function dedupe<T>(items: T[]): T[] {
   return Array.from(new Set(items));
 }
 
-function workflowTypeFromPath(workflowPath: string): string {
-  switch (workflowPath) {
-    case 'requirement_change_path':
-      return 'feature_spec';
-    case 'design_change_path':
-    case 'architecture_change_path':
-    case 'task_change_path':
-    case 'code_only_fast_path':
-    case 'contract_change_path':
-      return 'feature_spec';
-    case 'spec_migration_path':
-      return 'spec_migration';
-    case 'rollback_path':
-      return 'rollback';
-    default:
-      return 'feature_spec';
-  }
-}
+
 
 function gateStatusCountsAsPassed(report: Pick<GateReportV11, 'status'> | undefined): boolean {
   if (!report) return false;
@@ -1083,6 +1067,7 @@ export async function inspectCandidateGateAttemptForReconciliation(input: {
 }
 
 registerHandler('sf_v11_gate_run', async (args, context, deps) => {
+  if(args['workflow_type']!==undefined&&args['workflow_type']!==CURRENT_RELEASE_WORKFLOW_TYPE)return {success:false,error:'UNSUPPORTED_CURRENT_RELEASE_WORKFLOW'};
   const projectRoot =
     (context?.directory as string) || (context?.worktree as string) || process.cwd();
   const workItemId = args['work_item_id'] as string;
@@ -1100,7 +1085,8 @@ registerHandler('sf_v11_gate_run', async (args, context, deps) => {
   }
 
   try {
-    await readWorkItemMetadata(workItemDir, workItemId);
+    const metadata=await readWorkItemMetadata(workItemDir, workItemId);
+    if(metadata.workflow_type!==CURRENT_RELEASE_WORKFLOW_TYPE)return {success:false,error:'UNSUPPORTED_CURRENT_RELEASE_WORKFLOW'};
   } catch (error) {
     return {
       success: false,
@@ -1111,6 +1097,7 @@ registerHandler('sf_v11_gate_run', async (args, context, deps) => {
 
   try {
     const workflowFacts = await readWorkflowFacts(projectRoot, workItemId);
+    if(workflowFacts.workflowType!==undefined&&workflowFacts.workflowType!==null&&workflowFacts.workflowType!==CURRENT_RELEASE_WORKFLOW_TYPE)return {success:false,error:'CURRENT_WORKFLOW_IDENTITY_CONFLICT'};
     if (!workflowFacts.workflowPath) {
       return {
         success: false,
@@ -1135,10 +1122,7 @@ registerHandler('sf_v11_gate_run', async (args, context, deps) => {
     const gateTypePhase = normalizeCandidatePhase(args['gate_type']);
     const candidatePhase =
       requestedPhase ?? gateTypePhase ?? workflowFacts.candidatePhase ?? 'full';
-    const workflowType =
-      (typeof args['workflow_type'] === 'string' && args['workflow_type']) ||
-      workflowFacts.workflowType ||
-      workflowTypeFromPath(workflowPath);
+    const workflowType = CURRENT_RELEASE_WORKFLOW_TYPE;
     const reconcileAttemptId = normalizeReconcileAttemptId(args['reconcile_attempt_id']);
     if (reconcileAttemptId) {
       if (!isVerificationRecoverableState(currentState, workflowType)) {

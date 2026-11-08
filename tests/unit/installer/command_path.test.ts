@@ -7,7 +7,7 @@ import {
 
 describe("installed CLI PATH guidance", () => {
   it("resolves the CLI directory below the canonical user-level root", () => {
-    expect(resolveInstalledCliBinDirectory("C:\\Users\\test\\.config\\opencode"))
+    expect(resolveInstalledCliBinDirectory("C:\\Users\\test\\.config\\opencode", "win32"))
       .toBe("C:\\Users\\test\\.config\\opencode\\sf-user\\bin")
   })
 
@@ -19,7 +19,7 @@ describe("installed CLI PATH guidance", () => {
 
   it("reports a directly usable short command when PATH is ready", () => {
     const root = "C:\\Users\\test\\.config\\opencode"
-    const bin = resolveInstalledCliBinDirectory(root)
+    const bin = resolveInstalledCliBinDirectory(root, "win32")
     expect(buildCommandPathGuidance(root, { platform: "win32", pathValue: bin }).join("\n"))
       .toContain("当前 shell 可直接运行 specforge")
   })

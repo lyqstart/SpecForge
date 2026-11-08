@@ -1,6 +1,6 @@
 # Work Item 生命周期约定
 
-> Role: DERIVED REFERENCE。稳定产品语义来自 SPS §6；精确可执行状态与跳转来自 Workflow Runtime state machine。
+> Role: DERIVED REFERENCE。稳定产品语义来自 SPS §6；业务权威状态与跳转由 Daemon StateManager 及共享状态合同维护。Workflow Runtime 不能替代该真相源。
 
 当前主链：
 
@@ -23,5 +23,5 @@ created → intake_ready
 2. `events.jsonl` 是状态事实源，`state.json` 可重建。
 3. Candidate 必须先过 Gate，再绑定 User Decision。
 4. Git 模式需要真实分支和基线；filesystem 模式不伪造 Git 提交。
-5. 实施需要有效 Code Permission；验证前后必须撤销权限并执行 Close Gate。
+5. 实施需要有效 Code Permission；正式验证计划前必须撤销代码权限。D23 使用独立 verification grant，不能恢复代码权限；关闭执行相应证据核验及 Close Gate。
 6. 失败恢复继续同一 Work Item，保留失败事件与 HardStop，不创建替代 Work Item。

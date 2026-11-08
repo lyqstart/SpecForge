@@ -1,6 +1,6 @@
 {
   "name": "@specforge/host-profile",
-  "version": "1.0.23",
+  "version": "1.0.24",
   "private": true,
   "type": "module",
   "main": "dist/index.js",
@@ -14,7 +14,7 @@
   "scripts": {
     "build": "tsc",
     "test": "vitest run",
-    "clean": "rm -rf dist"
+    "clean": "bun ../../scripts/clean-workspace.ts --package host-profile"
   },
   "dependencies": {
     "@specforge/types": "workspace:*",

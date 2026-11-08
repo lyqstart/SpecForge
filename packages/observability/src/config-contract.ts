@@ -1,3 +1,4 @@
+import { SPEC_DIR_NAME } from "@specforge/types/directory-layout";
 import type { ObservabilityMode } from './types/index.js';
 import type { PersistentFileSchemaDescriptor } from '@specforge/types/schema-contract';
 
@@ -43,7 +44,7 @@ export function serializeObservabilityConfigDocument(
 export const OBSERVABILITY_CONFIG_SCHEMA_DESCRIPTOR: PersistentFileSchemaDescriptor = {
   id: 'project-observability-config',
   owner: '@specforge/observability/config',
-  relativePath: '.specforge/config/observability.json',
+  relativePath: (`${SPEC_DIR_NAME}/config/observability.json` as const),
   format: 'json',
   required: true,
   currentSchemaId: OBSERVABILITY_CONFIG_SCHEMA_VERSION,

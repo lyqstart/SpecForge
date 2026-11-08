@@ -1,3 +1,4 @@
+import { SPEC_DIR_NAME } from "@specforge/types/directory-layout";
 /**
  * changed-files-audit.ts - ChangedFilesAuditResult & runChangedFilesAudit
  *
@@ -43,7 +44,7 @@ export interface ChangedFilesAuditResult {
 }
 
 function isProtectedSpecWrite(normalizedPath: string): boolean {
-  return normalizedPath.startsWith('.specforge/project/');
+  return normalizedPath.startsWith((`${SPEC_DIR_NAME}/project/` as const));
 }
 
 export function normalizeAuditPath(value: string): string {

@@ -13,11 +13,13 @@ import {
 import '../src/tools/handlers/sf-artifact-write.js';
 import '../src/tools/handlers/sf-v11-gate-run.js';
 import '../src/tools/handlers/sf-changed-files-audit.js';
+import '../src/tools/handlers/sf-design-gate.js';
 import { getHandler } from '../src/tools/ToolDispatcher.js';
 import { getRequiredGates } from '../src/tools/lib/required-gates.js';
 import { ensureProjectInit } from '../src/tools/lib/sf_project_init_core.js';
 import { readCurrentProjectSpecBinding } from '../src/tools/lib/candidate-generation-integrity.js';
 import { materializeImplementationBaseline } from '../src/tools/lib/implementation-baseline.js';
+import { checkDesignGate } from '../src/tools/lib/sf_design_gate_core.js';
 
 function completeClassification(overrides: Record<string, unknown> = {}): Record<string, unknown> {
   return {
@@ -42,7 +44,7 @@ function completeClassification(overrides: Record<string, unknown> = {}): Record
 
 function designCandidate(): string {
   return `---
-module_id: core
+module_code: CORE
 analysis_scope: system_governance
 capability_verdict: reuse_existing
 ---
@@ -90,40 +92,8 @@ Standard、Contract、Workflow Skill、Agent、Tool、Runtime 与 Audit 已能�
 }
 
 async function writeDeclaredCoreManifest(projectRoot: string): Promise<void> {
-  const manifestPath = projectSpecManifest(projectRoot);
-  await mkdir(path.dirname(manifestPath), { recursive: true });
-  await writeFile(
-    manifestPath,
-    JSON.stringify(
-      {
-        schema_version: '1.0',
-        project_spec_version: 'PSV-0001',
-        project_name: 'live-closure-fixture',
-        project: {
-          extension_registry: '.specforge/project/extension_registry.json',
-          requirements_index: '.specforge/project/requirements_index.md',
-          design_index: '.specforge/project/design_index.md',
-          architecture: '.specforge/project/architecture.md',
-          glossary: '.specforge/project/glossary.md',
-          decisions: '.specforge/project/decisions.md',
-          trace_matrix: '.specforge/project/trace_matrix.md',
-        },
-        default_module: 'core',
-        modules: [
-          {
-            name: 'CORE',
-            path: 'project/modules/core',
-            module_file: 'project/modules/core/module.md',
-            requirements: 'project/modules/core/requirements.md',
-            design: 'project/modules/core/design.md',
-            trace: 'project/trace_matrix.md',
-          },
-        ],
-      },
-      null,
-      2
-    )
-  );
+  const result = await ensureProjectInit(projectRoot, 'live-closure-fixture', { ensureHostProfile: async () => {} });
+  expect(result.success, JSON.stringify(result.errors)).toBe(true);
 }
 
 async function writeBaseWorkItem(projectRoot: string, workItemId: string): Promise<void> {
@@ -137,7 +107,7 @@ async function writeBaseWorkItem(projectRoot: string, workItemId: string): Promi
       {
         schema_version: '1.1',
         work_item_id: workItemId,
-        workflow_type: 'feature_spec_design_first',
+        workflow_type: 'feature_spec',
         workflow_path: 'design_change_path',
         code_change_allowed: false,
         allowed_write_files: [],
@@ -162,7 +132,7 @@ async function writeBaseWorkItem(projectRoot: string, workItemId: string): Promi
         schema_version: '1.1',
         work_item_id: workItemId,
         status: 'triggered',
-        workflow_type: 'feature_spec_design_first',
+        workflow_type: 'feature_spec',
         workflow_path: 'design_change_path',
         classification: completeClassification(),
         impact_scope: {
@@ -184,7 +154,7 @@ async function writeBaseWorkItem(projectRoot: string, workItemId: string): Promi
     JSON.stringify({
       schema_version: '1.0',
       work_item_id: workItemId,
-      workflow_type: 'feature_spec_design_first',
+      workflow_type: 'feature_spec',
       workflow_path: 'design_change_path',
       base_spec_version: 'PSV-0001',
       project_spec_precondition_sha256: projectSpecBinding.sha256,
@@ -235,6 +205,38 @@ describe('Design Governance live closure', () => {
     await rm(projectRoot, { recursive: true, force: true });
   });
 
+  it('requires a valid current design-phase subject and retains full-phase requirement checks', async () => {
+    const workItemId = 'WI-0001';
+    await writeBaseWorkItem(projectRoot, workItemId);
+    const candidatePath = workItemCandidateDesign(projectRoot, workItemId, 'CORE');
+    await mkdir(path.dirname(candidatePath), { recursive: true });
+    await writeFile(candidatePath, designCandidate());
+    const manifest = {
+      schema_version: '1.0', work_item_id: workItemId, workflow_type: 'feature_spec',
+      workflow_path: 'design_change_path', candidate_phase: 'design',
+      base_spec_version: 'PSV-0001', merge_required: true,
+      project_spec_precondition_sha256: (await readCurrentProjectSpecBinding(projectRoot)).sha256,
+      entries: [{ candidate_path: 'candidates/project/modules/CORE/design.candidate.md',
+        target_path: '.specforge/project/modules/CORE/design.md', operation: 'replace', type: 'design', module_id: 'CORE' }],
+    };
+    const save = (value: unknown) => writeFile(workItemCandidateManifest(projectRoot, workItemId), JSON.stringify(value));
+    await save(manifest);
+    expect((await checkDesignGate(workItemId, projectRoot, 'feature_spec')).status).toBe('pass');
+    await save({ ...manifest, candidate_phase: 'full' });
+    expect((await checkDesignGate(workItemId, projectRoot, 'feature_spec')).status).toBe('fail');
+    await save({ ...manifest, unsupported_shadow: true });
+    expect((await checkDesignGate(workItemId, projectRoot, 'feature_spec')).status).toBe('blocked');
+    await save({ ...manifest, work_item_id: 'WI-9999' });
+    expect((await checkDesignGate(workItemId, projectRoot, 'feature_spec')).status).toBe('blocked');
+  });
+
+  it('rejects retired workflow identities and mode overrides through the registered tool', async () => {
+    const handler = getHandler('sf_design_gate')!;
+    const context = { directory: projectRoot, agent: 'sf-orchestrator' };
+    expect(await handler({ work_item_id: 'WI-0001', workflow_type: 'feature_spec_design_first' }, context, {} as any)).toMatchObject({ success: false, error: 'UNSUPPORTED_CURRENT_RELEASE_WORKFLOW' });
+    for (const key of ['mode', 'gate_mode']) expect(await handler({ work_item_id: 'WI-0001', [key]: 'investigation' }, context, {} as any)).toMatchObject({ success: false, error: 'DESIGN_GATE_MODE_NOT_CURRENT' });
+  });
+
   it('writes design once to the canonical Candidate path and never mirrors work-item design.md', async () => {
     const workItemId = 'WI-0001';
     await writeBaseWorkItem(projectRoot, workItemId);
@@ -252,11 +254,11 @@ describe('Design Governance live closure', () => {
       state.deps
     );
 
-    expect((result as any).success).toBe(true);
+    expect((result as any).success, JSON.stringify(result)).toBe(true);
     expect((result as any).path.replace(/\\/g, '/')).toContain(
       '.specforge/work-items/WI-0001/candidates/project/modules/CORE/design.candidate.md'
     );
-    expect(existsSync(workItemCandidateDesign(projectRoot, workItemId, 'core'))).toBe(true);
+    expect(existsSync(workItemCandidateDesign(projectRoot, workItemId, 'CORE'))).toBe(true);
     expect(existsSync(workItemDesign(projectRoot, workItemId))).toBe(false);
 
     const manifestResult = await handler!(
@@ -266,7 +268,7 @@ describe('Design Governance live closure', () => {
         content: JSON.stringify({
           schema_version: '1.0',
           work_item_id: workItemId,
-          workflow_type: 'feature_spec_design_first',
+          workflow_type: 'feature_spec',
           workflow_path: 'design_change_path',
           candidate_phase: 'design',
           base_spec_version: 'PSV-0001',
@@ -274,11 +276,11 @@ describe('Design Governance live closure', () => {
           merge_required: true,
           entries: [
             {
-              path: 'design.md',
-              target_path: '.specforge/project/modules/core/design.md',
+              candidate_path: 'candidates/project/modules/CORE/design.candidate.md',
+              target_path: '.specforge/project/modules/CORE/design.md',
               operation: 'replace',
               type: 'design',
-              module_id: 'core',
+              module_id: 'CORE',
             },
           ],
         }),
@@ -287,7 +289,7 @@ describe('Design Governance live closure', () => {
       state.deps
     );
 
-    expect((manifestResult as any).success).toBe(true);
+    expect((manifestResult as any).success, JSON.stringify(manifestResult)).toBe(true);
     const manifest = JSON.parse(
       await readFile(workItemCandidateManifest(projectRoot, workItemId), 'utf8')
     );
@@ -320,7 +322,7 @@ describe('Design Governance live closure', () => {
     expect(result.success).toBe(false);
     expect(result.error).toBe('DESIGN_SCOPE_CONTRACT_MISMATCH');
     expect(result.required_analysis_scope).toBe('system_governance');
-    expect(existsSync(workItemCandidateDesign(projectRoot, workItemId, 'core'))).toBe(false);
+    expect(existsSync(workItemCandidateDesign(projectRoot, workItemId, 'CORE'))).toBe(false);
   });
 
   it('blocks module-scoped Candidates when an existing manifest declares no modules', async () => {
@@ -350,7 +352,7 @@ describe('Design Governance live closure', () => {
 
     expect((result as any).success).toBe(false);
     expect((result as any).error).toContain('MODULE_OWNERSHIP_UNRESOLVED');
-    expect(existsSync(workItemCandidateDesign(projectRoot, workItemId, 'core'))).toBe(false);
+    expect(existsSync(workItemCandidateDesign(projectRoot, workItemId, 'CORE'))).toBe(false);
   });
 
   it('recovers an empty module registry through governed init and then writes a CORE Candidate', async () => {
@@ -358,7 +360,7 @@ describe('Design Governance live closure', () => {
 
     // Bootstrap a canonical project so the authoritative modules/CORE/module.json
     // exists on disk, then reproduce the legacy deadlock precondition.
-    await ensureProjectInit(projectRoot, 'legacy-recovery-fixture');
+    await ensureProjectInit(projectRoot, 'legacy-recovery-fixture', { ensureHostProfile: async () => {} });
     await writeBaseWorkItem(projectRoot, workItemId);
 
     const mp = projectSpecManifest(projectRoot);
@@ -378,7 +380,7 @@ describe('Design Governance live closure', () => {
     expect((blocked as any).error).toContain('MODULE_OWNERSHIP_UNRESOLVED');
 
     // Governed repair: init re-establishes the canonical CORE declaration.
-    const repaired = await ensureProjectInit(projectRoot, 'legacy-recovery-fixture');
+    const repaired = await ensureProjectInit(projectRoot, 'legacy-recovery-fixture', { ensureHostProfile: async () => {} });
     expect(repaired.moduleRegistry.status).toBe('normalized');
 
     // Deadlock resolved: the same CORE-scoped design Candidate now writes.
@@ -388,14 +390,14 @@ describe('Design Governance live closure', () => {
       mockDeps('candidate_preparing').deps
     );
     expect((result as any).error ?? '').not.toContain('MODULE_OWNERSHIP_UNRESOLVED');
-    expect((result as any).success).toBe(true);
-    expect(existsSync(workItemCandidateDesign(projectRoot, workItemId, 'core'))).toBe(true);
+    expect((result as any).success, JSON.stringify(result)).toBe(true);
+    expect(existsSync(workItemCandidateDesign(projectRoot, workItemId, 'CORE'))).toBe(true);
   }, 30000);
 
   it('runs the real Design Gate through sf_gate_run, uses the design phase profile, and stops at approval_required', async () => {
     const workItemId = 'WI-0001';
     await writeBaseWorkItem(projectRoot, workItemId);
-    const designPath = workItemCandidateDesign(projectRoot, workItemId, 'core');
+    const designPath = workItemCandidateDesign(projectRoot, workItemId, 'CORE');
     await mkdir(path.dirname(designPath), { recursive: true });
     await writeFile(designPath, designCandidate());
     await writeFile(
@@ -405,18 +407,18 @@ describe('Design Governance live closure', () => {
           schema_version: '1.0',
           work_item_id: workItemId,
           workflow_path: 'design_change_path',
-          workflow_type: 'feature_spec_design_first',
+          workflow_type: 'feature_spec',
           candidate_phase: 'design',
           base_spec_version: 'PSV-0001',
           project_spec_precondition_sha256: (await readCurrentProjectSpecBinding(projectRoot)).sha256,
           merge_required: true,
           entries: [
             {
-              candidate_path: 'candidates/project/modules/core/design.candidate.md',
-              target_path: '.specforge/project/modules/core/design.md',
+              candidate_path: 'candidates/project/modules/CORE/design.candidate.md',
+              target_path: '.specforge/project/modules/CORE/design.md',
               operation: 'replace',
               type: 'design',
-              module_id: 'core',
+              module_id: 'CORE',
             },
           ],
         },
@@ -449,6 +451,7 @@ describe('Design Governance live closure', () => {
       state.deps
     );
 
+    expect((result as any).success, JSON.stringify(result)).toBe(true);
     const candidateManifestReport = JSON.parse(
       await readFile(
         path.join(workItemRoot(projectRoot, workItemId), 'gates', 'candidate_manifest_gate.json'),
@@ -517,7 +520,7 @@ describe('Design Governance live closure', () => {
       })
     );
 
-    const designPath = workItemCandidateDesign(projectRoot, workItemId, 'core');
+    const designPath = workItemCandidateDesign(projectRoot, workItemId, 'CORE');
     await mkdir(path.dirname(designPath), { recursive: true });
     await writeFile(designPath, designCandidate());
     await writeFile(
@@ -526,15 +529,15 @@ describe('Design Governance live closure', () => {
         schema_version: '1.0',
         work_item_id: workItemId,
         workflow_path: 'design_change_path',
-        workflow_type: 'feature_spec_design_first',
+        workflow_type: 'feature_spec',
         candidate_phase: 'design',
         merge_required: true,
         base_spec_version: 'PSV-0001',
         project_spec_precondition_sha256: (await readCurrentProjectSpecBinding(projectRoot)).sha256,
         entries: [
           {
-            candidate_path: 'candidates/project/modules/core/design.candidate.md',
-            target_path: '.specforge/project/modules/core/design.md',
+            candidate_path: 'candidates/project/modules/CORE/design.candidate.md',
+            target_path: '.specforge/project/modules/CORE/design.md',
             operation: 'replace',
             type: 'design',
           },
@@ -577,13 +580,13 @@ describe('Design Governance live closure', () => {
         schema_version: '1.1',
         work_item_id: workItemId,
         status: 'triggered',
-        workflow_type: 'feature_spec_design_first',
+        workflow_type: 'feature_spec',
         workflow_path: 'design_change_path',
         classification: 'architecture_change',
         impact_scope: { planned_code_paths: [] },
       })
     );
-    const designPath = workItemCandidateDesign(projectRoot, workItemId, 'core');
+    const designPath = workItemCandidateDesign(projectRoot, workItemId, 'CORE');
     await mkdir(path.dirname(designPath), { recursive: true });
     await writeFile(designPath, designCandidate());
     await writeFile(
@@ -592,15 +595,15 @@ describe('Design Governance live closure', () => {
         schema_version: '1.0',
         work_item_id: workItemId,
         workflow_path: 'design_change_path',
-        workflow_type: 'feature_spec_design_first',
+        workflow_type: 'feature_spec',
         candidate_phase: 'design',
         merge_required: true,
         base_spec_version: 'PSV-0001',
         project_spec_precondition_sha256: (await readCurrentProjectSpecBinding(projectRoot)).sha256,
         entries: [
           {
-            candidate_path: 'candidates/project/modules/core/design.candidate.md',
-            target_path: '.specforge/project/modules/core/design.md',
+            candidate_path: 'candidates/project/modules/CORE/design.candidate.md',
+            target_path: '.specforge/project/modules/CORE/design.md',
             operation: 'replace',
             type: 'design',
           },
@@ -634,7 +637,7 @@ describe('Design Governance live closure', () => {
         schema_version: '1.1',
         work_item_id: workItemId,
         workflow_path: 'design_change_path',
-        workflow_type: 'feature_spec_design_first',
+        workflow_type: 'feature_spec',
         candidate_phase: 'design',
         entries: [],
       })
@@ -666,7 +669,7 @@ describe('Design Governance live closure', () => {
         schema_version: '1.1',
         work_item_id: workItemId,
         workflow_path: 'design_change_path',
-        workflow_type: 'feature_spec_design_first',
+        workflow_type: 'feature_spec',
         candidate_phase: 'design',
         entries: [],
       })

@@ -1,3 +1,4 @@
+import { SPEC_DIR_NAME } from "@specforge/types/directory-layout";
 /** Finite Task command grammar and conservative proof for single-file isolation normalization. */
 import path from 'node:path';
 import { createHash } from 'node:crypto';
@@ -174,7 +175,7 @@ export async function collectNodeCommandInputs(projectRoot: string, original: st
     let text = inline;
     if (inline === undefined) {
       sourcePath(name);
-      if (name.split('/').some(p => ['.git', '.specforge', 'node_modules'].includes(p.toLowerCase())) || !tracked.has(name)) fail('INPUT_NOT_TRACKED_CODE');
+      if (name.split('/').some(p => ['.git', SPEC_DIR_NAME, 'node_modules'].includes(p.toLowerCase())) || !tracked.has(name)) fail('INPUT_NOT_TRACKED_CODE');
       const raw = await readVerificationFile(path.join(projectRoot, name));
       text = raw.toString('utf8');
       if (!Buffer.from(text).equals(raw)) fail('SOURCE_ENCODING');

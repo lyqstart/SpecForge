@@ -32,9 +32,13 @@ README 是导航与使用说明，不定义产品范围。旧规格、设计、�
 在 SpecForge 仓库根执行：
 
 ```bash
+bun install --frozen-lockfile
+bun scripts/prepare-current-release.ts
 bun scripts/sf-installer.ts install
 bun scripts/sf-installer.ts verify
 ```
+
+源码检出必须先构建并通过正式发布预检。已备妥且核验的同平台发布资产可直接安装；Windows 固定验证资产的 Node/C# 前提及 D23 平台边界见[安装说明](docs/user/install.md)。
 
 升级与卸载：
 
@@ -203,10 +207,13 @@ SPEC_DIR_NAME = '.specforge'
 ```text
 Intake → Impact Analysis → Candidate → Gates → User Decision
 → Project Spec Merge（适用时）→ Code Permission → Implementation
-→ Verification / Formal Version → Permission Revoke → Close
+→ Code Permission Revoke → Verification Plan → Controlled Verification Run
+→ Verification Evidence / Formal Version → Close
 ```
 
 `blocked` 与 HardStop 是受控停点，不等于丢弃工作。恢复时必须读取 Runtime 权威状态并继续同一个 Work Item。
+
+D18 的 `sf_safe_bash` 保持只读。D23 由真实 `sf-orchestrator` 调用 `sf_verification_plan`，真实 `sf-verifier` 调用 `sf_verification_run`；独立验证 grant 不恢复代码写权限。未知/不支持命令不得 shell 回退或伪造通过。
 
 ## 开发 SpecForge
 

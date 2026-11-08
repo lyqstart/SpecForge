@@ -13,12 +13,13 @@ describe('root test role registry', () => {
     const registry = loadRootTestRoleRegistry();
     const tracked = listTrackedRootTests();
 
-    expect(validateRootTestRoleRegistry(registry, tracked)).toEqual({
-      CURRENT_HERMETIC: 49,
-      CURRENT_ENVIRONMENTAL: 1,
-      MIGRATED_DUPLICATE: 14,
-      HISTORICAL_EVIDENCE: 122,
-    });
+    const roles=flattenRootTestRoleRegistry(registry);
+    const classified=Object.values(roles).flat();
+    expect(new Set(classified).size).toBe(classified.length);
+    expect(new Set(classified)).toEqual(new Set(tracked));
+    expect(validateRootTestRoleRegistry(registry, tracked)).toEqual(
+      Object.fromEntries(Object.entries(roles).map(([role,paths])=>[role,paths.length]))
+    );
   });
 
   it('keeps the default selection separate from environment and evidence roles', () => {

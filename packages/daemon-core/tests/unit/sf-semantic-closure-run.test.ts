@@ -51,7 +51,7 @@ async function createWorkItem(
     JSON.stringify({
       schema_version: '1.1',
       work_item_id: workItemId,
-      workflow_type: 'quick_change',
+      workflow_type: 'feature_spec',
       workflow_path: 'code_only_fast_path',
     }, null, 2) +
       '\n'
@@ -97,6 +97,51 @@ describe('sf_semantic_closure_run handler', () => {
 
   afterEach(async () => {
     await fs.rm(tmpDir, { recursive: true, force: true });
+  });
+
+  it.each(['tool_argument','existing','verification_report'])('refuses unknown or missing schema from %s without replacing evidence',async source=>{
+    for(const schema_version of [undefined, '9.0', 1]){
+      const workItemId='WI-9119',wiDir=await createWorkItem(tmpDir,workItemId,'# Trace\nNo chain.');
+      const manifest={schema_version,work_item_id:workItemId,closure_profile:'feature_spec',outcomes:[]};
+      const input:Record<string,unknown>={work_item_id:workItemId};
+      const target=path.join(wiDir,'.semantic_closure.json');
+      await fs.rm(target,{force:true});
+      if(source==='tool_argument')input.semantic_closure=manifest;
+      if(source==='existing')await fs.writeFile(target,JSON.stringify(manifest));
+      if(source==='verification_report')await fs.writeFile(path.join(wiDir,'verification_report.md'),renderVerificationReport(JSON.stringify({...verificationPayload(),semantic_closure:manifest}))!);
+      const before=await fs.readFile(target).catch(()=>null);
+      const result:any=await getHandler('sf_v11_semantic_closure_run')!(input,{directory:tmpDir},{} as any);
+      expect(result.error).toBe('SEMANTIC_CLOSURE_SCHEMA_UNSUPPORTED');
+      expect(result.semantic_closure_valid).toBe(false);
+      expect(await fs.readFile(target).catch(()=>null)).toEqual(before);
+      await expect(fs.access(path.join(wiDir,'semantic_closure_report.md'))).rejects.toThrow();
+    }
+  });
+
+  it.each([false,true])('preserves corrupt or unsupported persisted closure even with force=%s',async force=>{
+    const workItemId='WI-9120',wiDir=await createWorkItem(tmpDir,workItemId,'# Trace\nNo chain.');
+    const target=path.join(wiDir,'.semantic_closure.json');
+    for(const bytes of ['{broken','null','[]','{"schema_version":"9.0"}']){
+      await fs.writeFile(target,bytes);
+      const result:any=await getHandler('sf_v11_semantic_closure_run')!({work_item_id:workItemId,force},{directory:tmpDir},{} as any);
+      expect(result.error).toMatch(/^SEMANTIC_CLOSURE_SCHEMA_(?:BLOCKED|UNSUPPORTED)$/);
+      expect(await fs.readFile(target,'utf8')).toBe(bytes);
+      await expect(fs.access(path.join(wiDir,'semantic_closure_report.md'))).rejects.toThrow();
+    }
+  });
+
+  it.each(['tool_argument','existing','verification_report'])('rejects a retired profile from %s without writing closure or report',async source=>{
+    const workItemId='WI-9108',wiDir=await createWorkItem(tmpDir,workItemId,'# Trace\nNo chain.');
+    const retired={schema_version:'1.0',work_item_id:workItemId,closure_profile:'investigation',workflow_type:'investigation',outcomes:[]};
+    const input:Record<string,unknown>={work_item_id:workItemId};
+    if(source==='tool_argument')input.semantic_closure=retired;
+    if(source==='existing')await fs.writeFile(path.join(wiDir,'.semantic_closure.json'),JSON.stringify(retired));
+    if(source==='verification_report')await fs.writeFile(path.join(wiDir,'verification_report.md'),renderVerificationReport(JSON.stringify({...verificationPayload(),semantic_closure:retired}))!);
+    const before=await fs.readFile(path.join(wiDir,'.semantic_closure.json')).catch(()=>null);
+    const result:any=await getHandler('sf_v11_semantic_closure_run')!(input,{directory:tmpDir},{} as any);
+    expect(result.error).toBe('SEMANTIC_CLOSURE_CURRENT_WORKFLOW_MISMATCH');expect(result.semantic_closure_valid).toBe(false);
+    expect(await fs.readFile(path.join(wiDir,'.semantic_closure.json')).catch(()=>null)).toEqual(before);
+    await expect(fs.access(path.join(wiDir,'semantic_closure_report.md'))).rejects.toThrow();
   });
 
   it('registers the internal handler and writes a passing .semantic_closure.json from explicit trace', async () => {
@@ -321,7 +366,7 @@ describe('sf_semantic_closure_run handler', () => {
     await expect(fs.readFile(manifestPath, 'utf8')).resolves.toBe(original);
   });
 
-  it('refuses to regenerate closure after verification inputs are frozen', async () => {
+  it('does not activate a retired spec-migration workflow through the registered closure owner', async () => {
     const workItemId = 'WI-9105';
     const wiDir = await createWorkItem(tmpDir, workItemId, '# Trace\nNo chain.');
     await fs.writeFile(
@@ -356,9 +401,7 @@ describe('sf_semantic_closure_run handler', () => {
     );
 
     expect((result as any).success).toBe(false);
-    expect((result as any).error).toBe('SEMANTIC_CLOSURE_INPUTS_FROZEN');
-    expect((result as any).recovery).toContain('post_merge_verified');
-    expect((result as any).recovery).not.toContain('implementation_ready');
+    expect((result as any).error).toBe('UNSUPPORTED_CURRENT_RELEASE_WORKFLOW');
 
     const inferredResult = await getHandler('sf_v11_semantic_closure_run')!(
       { work_item_id: workItemId },
@@ -366,8 +409,7 @@ describe('sf_semantic_closure_run handler', () => {
       deps as any
     );
     expect((inferredResult as any).success).toBe(false);
-    expect((inferredResult as any).error).toBe('SEMANTIC_CLOSURE_INPUTS_FROZEN');
-    expect((inferredResult as any).recovery).toContain('post_merge_verified');
+    expect((inferredResult as any).error).toBe('UNSUPPORTED_CURRENT_RELEASE_WORKFLOW');
     await expect(
       fs.access(path.join(tmpDir, '.specforge', 'work-items', workItemId, '.semantic_closure.json'))
     ).rejects.toThrow();

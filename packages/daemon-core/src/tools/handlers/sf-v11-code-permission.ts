@@ -1,3 +1,4 @@
+import { SPEC_DIR_NAME } from "@specforge/types/directory-layout";
 /**
  * sf-v11-code-permission — v1.2.2 hotfix
  *
@@ -187,7 +188,7 @@ function normalizeAllowedForPolicy(
 function findForbiddenGovernanceTargets(allowedWriteFiles: any[]): string[] {
   return normalizeAllowedForPolicy(allowedWriteFiles)
     .map((file) => file.path.replace(/\\/g, '/'))
-    .filter((p) => p === '.specforge' || p.startsWith('.specforge/') || p.includes('/.specforge/'));
+    .filter((p) => p === SPEC_DIR_NAME || p.startsWith((`${SPEC_DIR_NAME}/` as const)) || p.includes('/.specforge/'));
 }
 
 function isReleaseLikeAction(action: string): boolean {
@@ -212,7 +213,7 @@ registerHandler('sf_v11_code_permission', async (args, context, deps) => {
   const idError = validateWorkItemId(workItemId);
   if (idError) return { success: false, error: idError };
 
-  const workItemDir = path.join(projectRoot, '.specforge', 'work-items', workItemId);
+  const workItemDir = path.join(projectRoot, SPEC_DIR_NAME, 'work-items', workItemId);
   let workItem: Record<string, unknown>;
   try {
     workItem = await readWorkItemMetadata(workItemDir, workItemId);

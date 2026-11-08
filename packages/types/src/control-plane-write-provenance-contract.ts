@@ -1,3 +1,4 @@
+import { SPEC_DIR_NAME } from "./directory-layout";
 import { z } from 'zod';
 
 export const ATOMIC_SPEC_MERGE_WRITE_PROVENANCE_SCHEMA_VERSION =
@@ -24,9 +25,9 @@ export const AtomicSpecMergeWriteProvenanceSchema = z.object({
 
 export const GitGovernanceProjectMetadataPathSchema = z.enum([
   '.gitignore',
-  '.specforge/project/git_policy.json',
-  '.specforge/project/git_ignore_decisions.json',
-  '.specforge/project/git_adoption_report.md',
+  (`${SPEC_DIR_NAME}/project/git_policy.json` as const),
+  (`${SPEC_DIR_NAME}/project/git_ignore_decisions.json` as const),
+  (`${SPEC_DIR_NAME}/project/git_adoption_report.md` as const),
 ]);
 
 export const GitGovernanceTrustedWriteSchema = z.object({

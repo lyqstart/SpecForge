@@ -52,6 +52,7 @@ async function createFullWorkItem(
   const workItem: Record<string, unknown> = {
     schema_version: '1.1',
     work_item_id: workItemId,
+    workflow_type: 'feature_spec',
     code_change_allowed: opts?.codeChangeAllowed ?? false,
     allowed_write_files: opts?.allowedWriteFiles ?? [],
     workflow_path: opts?.workflowPath ?? 'code_only_fast_path',

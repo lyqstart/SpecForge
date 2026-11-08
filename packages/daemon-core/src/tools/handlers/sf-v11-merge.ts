@@ -1,3 +1,4 @@
+import { SPEC_DIR_NAME } from "@specforge/types/directory-layout";
 /**
  * sf-v11-merge — v1.1 Merge Runner handler
  *
@@ -246,7 +247,7 @@ registerHandler('sf_v11_merge', async (args, context, deps) => {
 
   if (!workItemId) return { success: false, error: 'work_item_id is required' };
 
-  const workItemDir = path.join(projectRoot, '.specforge', 'work-items', workItemId);
+  const workItemDir = path.join(projectRoot, SPEC_DIR_NAME, 'work-items', workItemId);
 
   try {
     await readWorkItemMetadata(workItemDir, workItemId);
