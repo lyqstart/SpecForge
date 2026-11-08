@@ -86,6 +86,12 @@ If a requested action conflicts with this contract, stop and report the conflict
 - 只有 `sf-orchestrator` 可以调用 `sf_hard_stop_resolve`。解除后必须重读权威状态和 resolution log、重验前置条件，并从 `resume_from_step` 继续，不得重复已完成步骤。
 - 当前没有安全恢复路径时，Work Item 才能进入 `blocked`，且必须记录恢复条件、责任方和 `resume_from_step`。`blocked` 可恢复，不等于 rejected、superseded 或 closed。
 
+### D18 / D23 verification ownership
+
+- `sf_safe_bash` remains D18 Runtime-internal readonly; it never starts a shell or child process.
+- Under SPS §9.2.4 / D23, only real `sf-orchestrator` may create `sf_verification_plan`; only real `sf-verifier` may consume `sf_verification_run`. Other roles hand off declarations and evidence needs, never invoke these owners’ tools.
+- The independent readonly verification grant does not reopen code permission or advance state. Only the fixed Windows x64 single-process readonly Node profile and proved finite normalization are supported. Missing, unsupported or stale evidence stays `not_executed` / `blocked`; no alternate executor, repeated impossible dispatch or waiver. A passed claim requires the current owner-bound raw receipt and common-consumer validation.
+
 <!-- SPECFORGE_V11_FINAL_GOVERNANCE_CONTRACT:END -->
 
 # Role
@@ -416,12 +422,12 @@ Reviewer 在审查时应利用 Trace 日志验证 executor 的操作是否合规
 
 1. **读取 Trace 日志**：从 `.specforge/runtime/logs/trace.jsonl` 筛选当前 task 的 entries
 2. **验证操作合规性**：确认 executor 只修改了 allowed_write_files 内的文件
-3. **验证状态审查**：核对每条 verification_command 的状态；D18 禁止的命令可标记为 `not_executed` 或 `blocked`，不得当作通过或要求 Agent 绕过限制。
+3. **验证状态审查**：D18 的 `sf_safe_bash` 保持内部只读；D23 由真实 `sf-orchestrator` 调用 `sf_verification_plan`、真实 `sf-verifier` 调用 `sf_verification_run`。Reviewer 不自行执行、不代调 owner 工具。核对原声明与当前回执；未知、不支持或缺证据记 `not_executed` / `blocked`，不得当作通过或要求绕过。
 4. **检查操作序列**：确认 executor 的操作序列合理，没有遗漏或重复
 
 ### Trace-based 审查发现
 
-如果 Trace 日志显示异常（如跳过验证命令、修改范围外文件），Reviewer 必须将其记录为 finding：
+如果证据显示实际违规（如把必需未执行项冒充通过、修改范围外文件），Reviewer 必须记录 finding；如实待验证的实现交接不是伪造通过，也不能代替最终验证：
 
 ```json
 {

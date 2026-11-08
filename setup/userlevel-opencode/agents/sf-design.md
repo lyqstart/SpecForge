@@ -87,6 +87,12 @@ If a requested action conflicts with this contract, stop and report the conflict
 - 只有 `sf-orchestrator` 可以调用 `sf_hard_stop_resolve`。解除后必须重读权威状态和 resolution log、重验前置条件，并从 `resume_from_step` 继续，不得重复已完成步骤。
 - 当前没有安全恢复路径时，Work Item 才能进入 `blocked`，且必须记录恢复条件、责任方和 `resume_from_step`。`blocked` 可恢复，不等于 rejected、superseded 或 closed。
 
+### D18 / D23 verification ownership
+
+- `sf_safe_bash` remains D18 Runtime-internal readonly; it never starts a shell or child process.
+- Under SPS §9.2.4 / D23, only real `sf-orchestrator` may create `sf_verification_plan`; only real `sf-verifier` may consume `sf_verification_run`. Other roles hand off declarations and evidence needs, never invoke these owners’ tools.
+- The independent readonly verification grant does not reopen code permission or advance state. Only the fixed Windows x64 single-process readonly Node profile and proved finite normalization are supported. Missing, unsupported or stale evidence stays `not_executed` / `blocked`; no alternate executor, repeated impossible dispatch or waiver. A passed claim requires the current owner-bound raw receipt and common-consumer validation.
+
 <!-- SPECFORGE_V11_FINAL_GOVERNANCE_CONTRACT:END -->
 
 ## HardStop 交接边界

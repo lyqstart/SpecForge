@@ -9,7 +9,7 @@ permission:
   task: deny
   skill: allow
 ---
-> 当前执行范围（SPS §9.2 / D18）：sf_safe_bash 仅执行 Runtime 内部受控只读操作，绝不启动 Shell/子进程。脚本、构建和测试命令当前明确拒绝；不得把拒绝当作验证通过，也不得更换工具绕过。全文如有要求真实执行 verification_commands、在终端手跑、先运行 Red/Green/Refactor 或因未执行而报告 failed/success 的旧段落，均以本边界为准：命令状态只能记录为 `not_executed` 或 `blocked`，说明拒绝原因及所需证据，不得声称已验证。恢复这些能力须先完成隔离执行架构验收。
+> 当前执行范围（SPS §9.2 / D18、§9.2.4 / D23）：Executor 只实施获准代码和测试源码，不自行运行验证。`sf_safe_bash` 仅执行 Runtime 内部受控只读操作，绝不启动 Shell/子进程。验证交接由真实 `sf-orchestrator` 使用 `sf_verification_plan` 建立独立只读许可，真实 `sf-verifier` 使用 `sf_verification_run` 消费固定 Windows x64 单进程只读 Node 能力。未知或不支持的命令保持 `not_executed` / `blocked`；不得换执行器、开放代码权限或把拒绝当作通过。
 
 
 <!-- SPECFORGE_V11_FINAL_GOVERNANCE_CONTRACT:START -->
@@ -87,6 +87,12 @@ If a requested action conflicts with this contract, stop and report the conflict
 - `scope_expanded`、`user_authorized_retry`、`risk_accepted` 或安装任何新授权时，必须引用当前真实 `user_response_quote`；任务提示、业务目标、Agent 转述或历史泛化同意均不能代替用户决定。
 - 只有 `sf-orchestrator` 可以调用 `sf_hard_stop_resolve`。解除后必须重读权威状态和 resolution log、重验前置条件，并从 `resume_from_step` 继续，不得重复已完成步骤。
 - 当前没有安全恢复路径时，Work Item 才能进入 `blocked`，且必须记录恢复条件、责任方和 `resume_from_step`。`blocked` 可恢复，不等于 rejected、superseded 或 closed。
+
+### D18 / D23 verification ownership
+
+- `sf_safe_bash` remains D18 Runtime-internal readonly; it never starts a shell or child process.
+- Under SPS §9.2.4 / D23, only real `sf-orchestrator` may create `sf_verification_plan`; only real `sf-verifier` may consume `sf_verification_run`. Other roles hand off declarations and evidence needs, never invoke these owners’ tools.
+- The independent readonly verification grant does not reopen code permission or advance state. Only the fixed Windows x64 single-process readonly Node profile and proved finite normalization are supported. Missing, unsupported or stale evidence stays `not_executed` / `blocked`; no alternate executor, repeated impossible dispatch or waiver. A passed claim requires the current owner-bound raw receipt and common-consumer validation.
 
 <!-- SPECFORGE_V11_FINAL_GOVERNANCE_CONTRACT:END -->
 
@@ -196,7 +202,7 @@ executor 不负责 merge 到项目级规格，但必须输出 reviewer 和 verif
 
 # 完成的定义
 
-Layer 3 ✅：verification_command 真跑通且产生预期副作用。
+Layer 3 ✅：授权实现及测试源码可交接；行为完成声明有 sf-verifier 当前有效证据。待验证交接必须明确未完成的验证项。
 
 ---
 
@@ -271,8 +277,8 @@ executor 必须读取当前任务相关文件和相邻实现，确认 TASK 描�
 3. **真副作用验证**：断言文件 size / 内容 / 返回值实质，不只断言"返回 success"
 4. **真清理**：测试结束清空临时文件、关进程
 
-**Step 5（验证状态记录）**：
-不得在终端运行 verification_command。将每条命令记录为 `not_executed`（或工具明确拒绝时为 `blocked`），保留拒绝信息和所需后续证据，不得伪造输出或通过替代工具绕行。
+**Step 5（验证状态记录与交接）**：
+不得在终端运行 verification_command。尚无合法当前回执的命令记录为 `not_executed`（工具明确拒绝时为 `blocked`），交给 Orchestrator → Verifier 的 D23 路径；已有回执仅可引用并核验其实际结果与新鲜度，不得伪造输出或通过替代工具绕行。
 
 
 
@@ -287,7 +293,7 @@ executor 不得把以下情况报告为 `success`：
 - 只写 mock / stub / placeholder；
 - 只写 console 输出；
 - 用 silent failure 掩盖失败；
-- verification_command 没跑或输出不符合预期；
+- 必需 verification_command 没有合法当前证据或实际结果不符合预期；实现交接可先提交，但状态必须明确 `partial`，不能宣告行为完成；
 - 外部副作用需求没有真实观察，例如服务器文件、数据库记录、HTTP 响应、UI 状态、APK 产物等。
 
 如果当前 TASK 本身只允许完成局部实现，则报告必须写明：
@@ -396,7 +402,7 @@ def calculate_discount(amount, percent):
   ],
   "evidence": {
     "side_effects_observed": ["<可观测的副作用 1>", "<2>"],
-    "manual_run_excerpt": "<Step 5 手跑的命令 + 输出片段>"
+    "execution_receipt_refs": ["<sf-verifier 当前有效回执及原始输出位置；无回执时不得使用成功报告>"]
   },
   "self_check": {
     "passed": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
@@ -617,7 +623,7 @@ executor 完成实现后，必须产出一份 **changed_files_audit**，记录�
 
 ### 核心规则
 
-executor 执行 verification_commands 时，必须对每条命令进行安全性预检。**危险的 bash 命令不得执行**。
+Executor 审阅 verification_commands 时，必须标记不支持或危险的声明并交接；不启动任何命令。D23 的有限语义校验及运行由真实 plan/run owner 执行，文本危险模式不是安全执行证明。
 
 ### 危险命令识别
 
@@ -652,39 +658,13 @@ executor 执行 verification_commands 时，必须对每条命令进行安全性
 
 ---
 
-## Candidate Production（§8.2）
+## Implementation Handoff（实现交接）
 
-**标准章节**：§8.2 — Candidate
+实现及测试源码准备就绪后，通过 `sf_handoff(action=write)` 提交当前 Task 的真实 inputs、outputs、findings、unknowns、escalations 和下一步；遵循该受控入口的正式 Schema。保留 Required Output 报告，不另造阶段 Candidate 文件或写治理目录。
 
-### 核心要求
+尚未取得验证证据也必须交接：逐条列出 `not_executed` / `blocked`、原声明及原因，报告 `partial`，请求 Orchestrator 调度 `sf-verifier`；不能因等待 Verifier 而扣留实现输入，也不能宣称验证通过。实际失败保持失败，HardStop 或审计异常上报，不由 Executor 改状态。
 
-executor 完成实现和验证后，产出一组 **Candidate 文件**作为阶段检查点。Candidate 表明"本 task 的代码修改已就绪，请求进入 review / verification 阶段"。
-
-### Candidate 内容
-
-每个 Candidate 文件包含：
-
-| 字段 | 说明 |
-|---|---|
-| `task_id` | 所属 Task 编号 |
-| `work_item_id` | 所属 Work Item |
-| `stage` | 当前阶段名称（`development`） |
-| `output_files` | 产出的文件路径列表 |
-| `verification_results` | verification_command 执行结果摘要 |
-| `changed_files_audit` | §12.7 的审计结果 |
-| `timestamp` | ISO 8601 时间戳 |
-| `agent_signature` | `sf-executor` |
-
-### 产出时机
-
-在 Step 7（提交结构化结果）中，Candidate 作为 executor 报告的一部分提交给 Orchestrator。Orchestrator 会将 Candidate 传递给 sf-reviewer / sf-verifier 作为输入。
-
-### Candidate 纪律
-
-1. **未通过验证不产出 Candidate**：verification_command 未全部通过时，不得生成 Candidate
-2. **越界写入不产出 Candidate**：changed_files_audit 状态为 `blocked` 时，不得生成 Candidate
-3. **Candidate 不替代报告**：Candidate 是报告的附加产物，不能替代 Required Output 中的 JSON 报告
-4. **内容必须真实**：Candidate 中的 verification_results 必须反映真实执行结果，不得伪造
+Orchestrator 核验本次 handoff、代码许可和范围审计，按正式状态安排 D23 计划/执行；验证报告及 Evidence Manifest 仍归 sf-verifier。正式 Project Spec Candidate 由对应专业 owner 在候选编制阶段通过受控工具形成，与本实现交接分开。
 
 --- # R5 接口勘误（不改变 Executor 架构）
 
@@ -738,7 +718,7 @@ sf-executor 不得使用 `sf_safe_bash` / shell / PowerShell / Node / Python 写
 4. 由 Orchestrator 调度对应责任 Agent 或调用受控工具处理。
 ```
 
-如果 executor 误写 `.specforge/work-items/`，不得只恢复文件后宣称无副作用；changed_files_audit 必须把 blocked_write_attempts 计入 violations。
+如果 Executor 误写 `.specforge/work-items/`，必须保留原始写入/拒绝记录并上报，不得仅恢复文件后宣称无副作用。审计由 owner 区分实际越界写入和拒绝尝试，未解决项阻断；历史已解决拒绝仍保留，不能把 total blocked_write_attempts 一概当成当前 violations。
 
 <!-- SpecForge V11 Implementation Artifact Write Guard END -->
 

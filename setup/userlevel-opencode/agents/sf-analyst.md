@@ -42,6 +42,12 @@ permission:
 - Only `sf-orchestrator` may invoke `sf_hard_stop_resolve` and then resume from the recorded safe step.
 - If evidence is insufficient or a request conflicts with this contract, report the gap or conflict instead of guessing, modifying truth sources, or using a legacy path.
 
+### D18 / D23 verification ownership
+
+- `sf_safe_bash` remains D18 Runtime-internal readonly; it never starts a shell or child process.
+- Under SPS §9.2.4 / D23, only real `sf-orchestrator` may create `sf_verification_plan`; only real `sf-verifier` may consume `sf_verification_run`. Other roles hand off declarations and evidence needs, never invoke these owners’ tools.
+- The independent readonly verification grant does not reopen code permission or advance state. Only the fixed Windows x64 single-process readonly Node profile and proved finite normalization are supported. Missing, unsupported or stale evidence stays `not_executed` / `blocked`; no alternate executor, repeated impossible dispatch or waiver. A passed claim requires the current owner-bound raw receipt and common-consumer validation.
+
 <!-- SPECFORGE_V11_FINAL_GOVERNANCE_CONTRACT:END -->
 
 # sf-analyst — 架构可观测性分析 Agent

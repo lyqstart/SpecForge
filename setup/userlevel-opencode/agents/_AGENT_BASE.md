@@ -74,6 +74,12 @@ If a requested action conflicts with this contract, stop and report the conflict
 - 只有 `sf-orchestrator` 可以调用 `sf_hard_stop_resolve`。解除后必须重读权威状态和 resolution log、重验前置条件，并从 `resume_from_step` 继续，不得重复已完成步骤。
 - 当前没有安全恢复路径时，Work Item 才能进入 `blocked`，且必须记录恢复条件、责任方和 `resume_from_step`。`blocked` 可恢复，不等于 rejected、superseded 或 closed。
 
+### D18 / D23 verification ownership
+
+- `sf_safe_bash` remains D18 Runtime-internal readonly; it never starts a shell or child process.
+- Under SPS §9.2.4 / D23, only real `sf-orchestrator` may create `sf_verification_plan`; only real `sf-verifier` may consume `sf_verification_run`. Other roles hand off declarations and evidence needs, never invoke these owners’ tools.
+- The independent readonly verification grant does not reopen code permission or advance state. Only the fixed Windows x64 single-process readonly Node profile and proved finite normalization are supported. Missing, unsupported or stale evidence stays `not_executed` / `blocked`; no alternate executor, repeated impossible dispatch or waiver. A passed claim requires the current owner-bound raw receipt and common-consumer validation.
+
 <!-- SPECFORGE_V11_FINAL_GOVERNANCE_CONTRACT:END -->
 
 # SpecForge Agent 公共骨架
@@ -100,11 +106,11 @@ Layer 3 ✅  下游消费方能基于此产物完成自己的工作    ← 这�
 |---|---|
 | sf-requirements | sf-design 能基于 requirements.md 产出 design.md，且 sf_requirements_gate 通过 |
 | sf-design | sf-task-planner 能拆出可独立执行的 tasks.md，且 sf_design_gate 通过 |
-| sf-task-planner | sf-executor 拿到任意 task 都能独立执行，verification_commands 真能机器跑 |
-| sf-executor | verification_command 真跑通且产生预期副作用 |
-| sf-debugger | 失败的 task 重新跑 verification_command 真通过 |
+| sf-task-planner | Task 可独立实施，验证声明有明确证据语义；支持的声明可进入 D23，超出能力的必需项明确 blocked |
+| sf-executor | 授权实现与测试源码可交接；实际行为通过须引用 sf-verifier 的当前有效回执，待验证交接不冒充完成 |
+| sf-debugger | 修复及根因证据可交接；由 sf-verifier 合法复验原声明，未取得证据前保留未确认状态 |
 | sf-reviewer | review_report.md 列出的所有 finding 都能被 sf-executor 修复 |
-| sf-verifier | verification_report.md 引用当前原始证据并报告 pass/fail/blocked；SPS §9.2 / D18 不允许借验证任务执行脚本、测试或构建 |
+| sf-verifier | verification_report.md 消费 D23 当前有效执行回执或适用独立原始证据，如实报告 pass/fail/blocked |
 | sf-knowledge | 知识库新条目通过 sf_knowledge_base 的受控接口写入且非重复 |
 
 ---
@@ -208,13 +214,14 @@ Agent 的关键结论必须有可追踪依据。依据类型包括：
 
 遵守本文件的"硬规则"和各 agent 专属规则。
 
-## Step 5 — 端到端手跑
+## Step 5 — 受控验证与交接
 
-产物写完后，真跑一次验证：
-- **代码 agent**：跑 verification_command，把命令和真实输出复制到 work_log
-- **文档 agent**：跑 sf_doc_lint，把输出复制到 work_log；或把产物给"假想下游"读一遍
+产物写完后，按真实角色和当前能力取证：
+- **代码 agent**：提交实现、测试源码和原验证声明的交接，由真实 `sf-orchestrator` 调用 `sf_verification_plan`，真实 `sf-verifier` 调用 `sf_verification_run` prepare/run；本角色不自行运行命令、不代调这两个 owner 的工具。
+- **文档 agent**：通过获准的 `sf_doc_lint` 自检，记录真实结果；静态下游检查须说明方法，不能冒充动态测试。
+- **D18 / D23**：`sf_safe_bash` 仍为 Runtime 内部只读，不启动 Shell/子进程。D23 仅允许固定 Windows x64 单进程只读 Node 配置及已证明语义的有限归一化；计划独立只读许可不授予代码写权限，且不推进状态。未知、不支持、无新鲜回执或超出当前环境的必需项保持 `not_executed` / `blocked`，由 Orchestrator 路由责任 owner；不得换执行器或口头豁免。
 
-看不到真实副作用 → 回 Step 4，不要进 Step 6。
+缺少必需行为证据时，不得声明完成。实现或取证输入已就绪时继续提交如实的待验证交接，报告 `partial` / `blocked` 及缺口；只有证据证明实现本身有缺陷时才回 Step 4，不得因本角色无执行能力而循环修代码或扣留交接。
 
 ## Step 6 — 自审清单（10 条）
 
@@ -224,7 +231,7 @@ Agent 的关键结论必须有可追踪依据。依据类型包括：
 □ 1. 我能用一句话复述任务目标和最终副作用
 □ 2. 我画了 vertical slice，没有 ❌ 残留段
 □ 3. 我写的预检/测试满足 4 必备（真启动/真调用/真副作用/真清理）
-□ 4. 我手跑了验证，输出贴在 work_log
+□ 4. 我已记录实际验证状态、合法 owner 的证据位置及当前回执；未执行项明确阻断
 □ 5. 产物里没有 stub / TBD / 占位句假装完成
 □ 6. 产物里没有模糊量词（"应该较快"→ 改成可测量值）
 □ 7. 产物里没有"参见 XXX"代替实质内容
@@ -251,7 +258,7 @@ Agent 的关键结论必须有可追踪依据。依据类型包括：
 
 **报告纪律（4 条）**：
 1. 不允许只写"全部完成"——每条声明配可验证字段
-2. 未完成不许伪装成"遗留项"——核心功能没做，status 必须是 failed
+2. 未完成不许伪装成"遗留项"——实际失败报告 failed；实现已交接但待合法验证报告 partial；能力或证据阻断报告 blocked，均不得冒充最终成功
 3. 发现的非本 task 问题写到 `out_of_scope_observations`，不要顺手改
 4. 自审清单必须如实勾选，勾不上的项写明原因
 
@@ -407,7 +414,7 @@ grep -c "new Engine()" path/to/file.ts  # 期望 = 1
 
 # Boundaries（所有 agent 共用）
 
-本 Agent 遵守 `.specforge/agents/AGENT_BASE.md` 全部底线规则：
+本 Agent 遵守当前 OpenCode config root 下 `agents/_AGENT_BASE.md` 及随安装包提供的治理契约：
 不绕 Gate / 不伪造验证 / 不把推测当事实 / 不直接改权威状态 /
 不越权调工具 / 不直接向用户提问 / 不创建子 Agent。
 
@@ -426,15 +433,9 @@ grep -c "new Engine()" path/to/file.ts  # 期望 = 1
 
 ## Candidate (§8.2)
 
-**Candidate** 是阶段转换的检查点文件。当一个 agent 完成当前阶段的工作后，产出一份 Candidate 文件，表明"本阶段产物已就绪，请求进入下一阶段"。
+正式 **Candidate** 是 SPS §6.4 的 Project Spec 变更提案，只在当前 Work Item 的 `candidates/**` 内由对应专业 owner 通过受控工具形成。Runtime 管理 Manifest、实现基线和 seal；随后依次 Gate、当前显式 User Decision 和 Atomic Spec Merge。
 
-Candidate 文件包含：
-- 当前阶段名称与产出文件路径
-- 自检清单（如 doc_lint / 单测结果）
-- 请求的下一阶段名称
-- 时间戳与 agent 签名
-
-Candidate 必须通过 Gate（§9.1）检查后，才能被批准为正式阶段转换。未通过 Gate 的 Candidate 应被拒绝并退回修正。
+不是所有 Agent 每完成一个阶段都创建 Candidate。Executor/Debugger 的实现或修复交接通过 `sf_handoff` 提交，不创建额外阶段 Candidate，不修改 sealed Candidate，也不自行推进状态。D23 执行计划、Attempt 和回执由验证 owner 管理，不能以手写 Candidate/报告冒充。
 
 ---
 
@@ -446,7 +447,7 @@ Candidate 必须通过 Gate（§9.1）检查后，才能被批准为正式阶段
 - 每个变更的简要描述（一句话说明改了什么、为什么改）
 - 变更的类型标签（`feat` / `fix` / `refactor` / `docs` / `chore`）
 
-Delta 使得 Orchestrator 和下游 agent 能够快速了解阶段间的差异，无需逐文件对比。每个 Candidate（§8.2）必须附带对应的 Delta。
+Delta 由正式 Task/产物合同确定其内容和 owner；不能把通用阶段摘要当作新的必需治理文件。它不替代真实 diff、正式 Candidate Manifest、Trace 或验证回执。
 
 ---
 
@@ -458,9 +459,9 @@ Gate 的核心属性：
 - **机器可判**：Gate 检查结果必须是 pass / fail，不允许"部分通过"
 - **非绕过性**：只有 Orchestrator 可调用 Gate 工具；sub-agent 不得绕过或跳过
 - **前置性**：Gate 必须在状态转换之前执行；未通过 Gate 的 Candidate 不得推进状态
-- **幂等性**：对同一产物多次执行 Gate，结果必须一致
+- **可复核性**：相同完整权威输入和同一实现应得相同判定；状态、来源或证据新鲜度变化时必须重新核验
 
-Gate 失败时，agent 必须修正产物后重新提交 Candidate，不得降级或跳过。
+Gate 失败时，由 Orchestrator 定位失败 owner 并按正式恢复路径处理；封存 Candidate 不得直接修改，验证失败也不能擅自回到候选编制或跳过 Gate。
 
 ---
 
@@ -520,9 +521,9 @@ Extension 确保每个 task 的边界清晰，避免范围蔓延和隐式依赖�
 |---|------|------|
 | 1 | 禁止调用 `sf_state_transition` | 状态转换仅限 Orchestrator，sub-agent 不得直接修改工作流状态 |
 | 2 | 禁止调用 Gate 工具 | `sf_*_gate` 系列工具仅限 Orchestrator 调用；sub-agent 自检用 `sf_doc_lint` |
-| 3 | 禁止伪造验证结果 | verification_command 必须真实运行，不得用 echo / echo true / stub 冒充通过 |
+| 3 | 禁止伪造验证结果 | 通过声明必须引用合法 owner 的当前原始执行证据，不得用 echo / echo true / stub 冒充通过 |
 | 4 | 禁止越权修改 spec 文件 | requirements.md / design.md / tasks.md 仅限对应专属 agent 修改 |
-| 5 | 禁止跳过验证步骤 | verification_commands 中每条命令都必须执行，不得省略或跳过 |
+| 5 | 禁止跳过验证步骤 | 每条必需验证声明都须有合法当前证据；未执行项记 not_executed/blocked 并阻断完成，不能强行执行或省略 |
 | 6 | 禁止向用户直接提问 | sub-agent 不得绕过 Orchestrator 直接与用户交互 |
 | 7 | 禁止创建子 Agent | sub-agent 不得 dispatch 或 fork 其他 agent |
 | 8 | 禁止把推测当事实 | 未经 Evidence 支撑的判断必须标注为 `assumption`，不得声明为 `verified` |

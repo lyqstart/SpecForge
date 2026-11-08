@@ -84,6 +84,21 @@ describe('verification Runtime plan/permission owner (unit dependencies)',()=>{
     await fs.appendFile(path.join(f.wiRoot,'candidates','tasks.md'),'\nchanged approved task\n');
     await expect(f.service.plan(f.args,f.context('changedTask'))).rejects.toThrow('APPROVED_CANDIDATE_CONTENT_CHANGED');
   });
+  it('rejects orchestrator run ownership even with a verifier self-claim and preserves code permission',async()=>{
+    const f=await fixture(),plan=await f.service.plan(f.args,f.context('ownerPlan'));
+    const metadata=await fs.readFile(path.join(f.wiRoot,'work_item.json'));
+    const native=vi.spyOn(f.service.native,'execute').mockRejectedValue(Error('UNEXPECTED_NATIVE_START'));
+    f.setRole('sf-orchestrator');
+    await expect(f.service.run({action:'prepare',work_item_id:wi,plan_id:plan.plan_id},
+      {...f.context('wrongRunOwner'),agent:'sf-verifier'})).rejects.toThrow('OWNER_PROOF_INVALID');
+    expect(native).not.toHaveBeenCalled();
+    expect(await fs.readFile(path.join(f.wiRoot,'work_item.json'))).toEqual(metadata);
+    f.setRole('sf-verifier');
+    const prepared=await f.service.run({action:'prepare',work_item_id:wi,plan_id:plan.plan_id},f.context('actualVerifier'));
+    expect(prepared.application_started).toBe(false);
+    expect(await fs.readFile(path.join(f.wiRoot,'work_item.json'))).toEqual(metadata);
+    expect(native).not.toHaveBeenCalled();
+  });
   it('revokes only the independent verification grant and blocks a new Attempt',async()=>{
     const f=await fixture(), before=await fs.readFile(path.join(f.wiRoot,'work_item.json')), result=await f.service.plan(f.args,f.context('grant'));
     await f.service.plan({action:'revoke',work_item_id:wi,plan_id:result.plan_id},f.context('revoke'));

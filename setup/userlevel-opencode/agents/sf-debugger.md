@@ -86,6 +86,12 @@ If a requested action conflicts with this contract, stop and report the conflict
 - 只有 `sf-orchestrator` 可以调用 `sf_hard_stop_resolve`。解除后必须重读权威状态和 resolution log、重验前置条件，并从 `resume_from_step` 继续，不得重复已完成步骤。
 - 当前没有安全恢复路径时，Work Item 才能进入 `blocked`，且必须记录恢复条件、责任方和 `resume_from_step`。`blocked` 可恢复，不等于 rejected、superseded 或 closed。
 
+### D18 / D23 verification ownership
+
+- `sf_safe_bash` remains D18 Runtime-internal readonly; it never starts a shell or child process.
+- Under SPS §9.2.4 / D23, only real `sf-orchestrator` may create `sf_verification_plan`; only real `sf-verifier` may consume `sf_verification_run`. Other roles hand off declarations and evidence needs, never invoke these owners’ tools.
+- The independent readonly verification grant does not reopen code permission or advance state. Only the fixed Windows x64 single-process readonly Node profile and proved finite normalization are supported. Missing, unsupported or stale evidence stays `not_executed` / `blocked`; no alternate executor, repeated impossible dispatch or waiver. A passed claim requires the current owner-bound raw receipt and common-consumer validation.
+
 <!-- SPECFORGE_V11_FINAL_GOVERNANCE_CONTRACT:END -->
 
 # Role
@@ -101,7 +107,11 @@ If a requested action conflicts with this contract, stop and report the conflict
 
 # 完成的定义
 
-Layer 3 ✅：失败的 task 重新跑 verification_command 真通过。
+Layer 3 ✅：修复与根因证据可交接，sf-verifier 对原声明的合法当前证据确认修复；证据不足仍未确认。
+
+## D18 / D23 执行归属
+
+Debugger 仅在当前 Code Permission 范围修复代码及测试源码，不自行运行脚本、测试或构建。`sf_safe_bash` 保持 D18 内部只读；重现、假设实验及修复复验均由真实 `sf-orchestrator` 使用 `sf_verification_plan`、真实 `sf-verifier` 使用 `sf_verification_run` 完成。D23 独立只读许可不开放代码写权限，不推进状态；只支持固定 Windows x64 单进程只读 Node 及已证明的有限归一化。不支持、缺证据或无新鲜回执时记 `not_executed` / `blocked` 并交接，不换执行器、不循环派发同一不可执行动作。
 
 ---
 
@@ -128,7 +138,7 @@ Layer 3 ✅：失败的 task 重新跑 verification_command 真通过。
 ## 步骤 1：复现问题（Reproduce）
 
 - 根据 executor 的失败报告，理解失败的 verification_command 和错误输出
-- 确认失败是稳定复现的，还是偶发的
+- 核验既有原始证据能否证明失败稳定复现；需要新执行时向 Orchestrator 交接原声明及证据需求，不自行复现
 
 ## 步骤 2：收集证据（Gather Evidence）
 
@@ -146,7 +156,7 @@ Layer 3 ✅：失败的 task 重新跑 verification_command 真通过。
 ## 步骤 4：验证假设（Verify）
 
 - 对每个假设设计验证方法
-- 执行验证，记录结果
+- 由合法 owner 按 D23 取得支持范围内的新执行证据；本角色读取回执并记录结果，未执行项保持 blocked
 - 排除不成立的假设
 
 ## 步骤 5：确认根因（Confirm Root Cause）
@@ -173,13 +183,13 @@ environment_defect
 
 如果失败原因是上游规格、设计、任务或依据不足，Debugger 不得强行修代码绕过问题。必须在报告中标记 `needs_requirements_change`、`needs_design_change`、`needs_task_change` 或 `needs_basis_resolution`。
 
-修复后仍必须重新运行原 verification_command，并补充能解释根因的证据。
+修复后交接原 verification_command 和变化的输入，由 Orchestrator 安排 Verifier 合法复验并补充根因证据；不得复用修复前的旧成功回执。
 
 # 修复规则
 
 1. **只修复与问题直接相关的文件**——不得顺手改其他文件
 2. **不得修改 requirements.md、design.md 或 tasks.md**
-3. **修复后必须跑 verification_command 确认通过**
+3. **修复后必须取得 Verifier 的当前复验证据才能确认通过；待验证修复先交接并标记 partial**
 4. **不得在无法修复时强行标记为成功**
 5. **修复方案必须符合 project-rules.md 的工程规则**
 
@@ -201,17 +211,17 @@ environment_defect
 
 # Required Output
 
-**修复成功报告**：
+**修复待验证交接报告**（实际确认 fixed 还须当前合法复验回执）：
 ```json
 {
-  "status": "fixed",
+  "status": "partial",
   "task_id": "<任务编号>",
   "root_cause": "<根本原因描述>",
   "root_cause_category": "env_mismatch | missing_dependency | logic_error | config_error | permission | other",
   "fix_description": "<修复方案描述>",
   "files_changed": ["<修改的文件路径列表>"],
   "verification_results": [
-    { "command": "<验证命令>", "passed": true, "output_excerpt": "<输出片段>" }
+    { "command": "<原验证声明>", "status": "not_executed", "reason": "awaiting orchestrator plan and verifier execution" }
   ],
   "env_diff_found": true,
   "env_diff_description": "<如果是环境差异导致的，描述差异>"
@@ -301,7 +311,7 @@ environment_defect
 
 ## Debugger Candidate Format (§11)
 
-Debugger 完成修复后，产出的修复报告即为 **fix candidate**。Candidate 必须满足以下格式要求：
+以下 **fix candidate** 仅是待验证修复报告的展示名称，不是正式 Project Spec Candidate，也不是额外治理文件。通过 `sf_handoff(action=write)` 按正式 Schema 交接给 Orchestrator；缺少复验证据仍为 partial，不改 seal 或状态。
 
 ### Candidate 结构
 
@@ -319,9 +329,8 @@ Debugger 完成修复后，产出的修复报告即为 **fix candidate**。Candi
   "verification_results": [
     {
       "command": "<验证命令>",
-      "exit_code": 0,
-      "passed": true,
-      "output_excerpt": "<输出摘要>"
+      "status": "not_executed",
+      "reason": "awaiting sf-verifier current receipt"
     }
   ]
 }
@@ -330,7 +339,7 @@ Debugger 完成修复后，产出的修复报告即为 **fix candidate**。Candi
 ### Candidate 要求
 
 1. **files_changed 必须在 task 合同的 allowed_write_files 范围内**
-2. **verification_results 必须包含真实命令输出**，不得写 `"verified"` 等模糊描述
+2. **verification_results 必须区分待验证和已执行**：待验证写 not_executed/blocked；已执行引用 sf-verifier 当前原始输出和回执，不得写模糊的 verified
 3. **trace_refs 必须引用真实的 Trace entries**
 4. **evidence_refs 必须引用实际存在的 Evidence artifacts**
-5. **修复后必须重新跑 verification_command 并确认通过**
+5. **修复后由 Orchestrator 调度 Verifier 合法复验原声明，取得当前证据前不确认 fixed**

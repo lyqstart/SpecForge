@@ -32861,3 +32861,8 @@ Candidate 字节完整性不能替代内容事实完整性。进入候选编制�
 
 - 维护回归16项、相关7文件89项、Root51文件748项及生成器检查通过；0004真实红例3失败/13通过和观察器失败原件保留。正式安装13份Markdown、跳过104、verify117；五个合格原生资产未变。真实fresh-loader-02返回8个更新Agent与3份Skill，三份正文按实际raw/frontmatter域逐字核验，自有Kernel结束、独立Daemon健康，无模型提示/业务工具。
 - 0031通过正式validation-contract-kernel冻结12条独立断言，逐项audit/planning/status均CLOSED；zero-total变异被拒绝，缺status证据为INSUFFICIENT_EVIDENCE。独立当前owner非秘密哈希及敏感文件仅元数据保持，原业务main28c8e3d、5实现/9验收成员保持，未重开或重跑原WI。ERR2019/2020的加载检查域与依赖步骤问题已按真实原件修正，未改安装文件以迎合观察器。旧20行aggregatePASS作为历史保留，不作为本轮全产品验收。
+
+### ERR-2021：基础角色完成条件与D18/D23执行归属不一致
+
+- 当前main c641a8d4的已安装_AGENT_BASE仍全面禁止Verifier测试，并要求Executor/Debugger自行手跑命令；Executor正向检查点又要求先全部验证通过。SPS §9.2.4及真实plan/run路径只允许实际Orchestrator建计划、Verifier受独立许可消费。责任为下游角色/模板/Skills指令消费者，不能靠顶部免责声明覆盖相反正文。保持Runtime权限和产品范围，补完整角色矩阵及真实拒绝回归。原业务关闭/合并有效，不重开、不重跑。EXP-004/022/025/026/036/251/276/287。
+- 本轮初始化在只读ls-remote时受限网络DNS失败，发生于gate写入前；冻结baseline和已创建载体保持。0001同一远端只读宿主核验成功，才恢复gate与产品修复。大段显示截断不作为完整读取，补读缺口；一次literal manifest*的rg路径错误未作为产品证据。

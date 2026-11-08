@@ -92,6 +92,76 @@ function withoutContract(text: string): string {
 }
 
 describe('v1.1.5 Agent/Skill final governance contract alignment', () => {
+  it('keeps the base completion workflow on independent D23 owners without role-local shell execution', () => {
+    const base = read('setup/userlevel-opencode/agents/_AGENT_BASE.md');
+    const workflow = base.split('# 执行流程')[1]?.split('# 文档硬规则')[0] ?? '';
+    for (const token of ['D18', 'D23', 'sf_verification_plan', 'sf_verification_run', 'sf-orchestrator', 'sf-verifier', 'not_executed', 'blocked']) {
+      expect(base, token).toContain(token);
+    }
+    expect(workflow).not.toContain('代码 agent**：跑 verification_command');
+    expect(workflow).not.toContain('我手跑了验证');
+    expect(workflow).not.toContain('看不到真实副作用 → 回 Step 4');
+    expect(workflow).toContain('partial');
+    expect(base).not.toContain('D18 不允许借验证任务执行脚本、测试或构建');
+    expect(base).not.toContain('verification_commands 中每条命令都必须执行');
+    expect(base).not.toContain('.specforge/agents/AGENT_BASE.md');
+    expect(base).not.toContain('当一个 agent 完成当前阶段的工作后，产出一份 Candidate');
+    expect(base).toContain('Executor/Debugger');
+  });
+
+  it('aligns all current verification participants and their loaded debugging skill with the same owners', () => {
+    const participants = ['agents/_AGENT_BASE.md', 'AGENTS.md', 'agents/sf-executor.md',
+      'agents/sf-debugger.md', 'agents/sf-reviewer.md', 'agents/sf-task-planner.md',
+      'agents/sf-orchestrator.md', 'agents/sf-verifier.md',
+      'skills/superpowers-systematic-debugging/SKILL.md',
+      'skills/superpowers-writing-plans/SKILL.md',
+      'skills/superpowers-verification-before-completion/SKILL.md',
+      'skills/sf-workflow-feature-spec/SKILL.md'];
+    for (const file of participants) {
+      const text = read('setup/userlevel-opencode/' + file);
+      for (const token of ['D23', 'sf_verification_plan', 'sf_verification_run', 'sf-orchestrator', 'sf-verifier', 'blocked']) {
+        expect(text, file + ' / ' + token).toContain(token);
+      }
+    }
+  });
+
+  it('covers the SPS current role inventory and informational shared boundaries without enabling future roles', () => {
+    const sps = readFileSync(path.join(REPO_ROOT, 'docs/product-specification/specforge-product-specification.md'), 'utf8');
+    const projection = JSON.parse(sps.split('<!-- SPECFORGE_RELEASE_AUTHORITY_ITEMS:START -->')[1]!.split('```json')[1]!.split('```')[0]!);
+    const current: string[] = projection.itemGroups.filter((g: {classification: string}) => g.classification.startsWith('CURRENT_RELEASE'))
+      .flatMap((g: {ids: string[]}) => g.ids).filter((id: string) => id.startsWith('agent:') || id.startsWith('agent-template:'));
+    expect(current.length).toBeGreaterThan(0);
+    for (const id of current) {
+      const text = readFileSync(path.join(USERLEVEL_ROOT, 'agents', id.split(':')[1] + '.md'), 'utf8');
+      const body = contractBody(text);
+      expect(body, id).toContain('D18 / D23 verification ownership');
+      expect(body, id).toContain('Other roles hand off');
+      expect(body, id).toContain('does not reopen code permission or advance state');
+    }
+  });
+
+  it('allows implementation handoff before verifier-owned evidence without claiming verified completion', () => {
+    const executor = read('setup/userlevel-opencode/agents/sf-executor.md');
+    const handoff = executor.split('## Implementation Handoff')[1]?.split('---')[0] ?? '';
+    expect(handoff).toContain('sf_handoff');
+    expect(handoff).toContain('not_executed');
+    expect(handoff).toContain('sf-verifier');
+    expect(executor).not.toContain('未通过验证不产出 Candidate');
+    expect(executor).not.toContain('verification_command 真跑通且产生预期副作用');
+    expect(executor).not.toContain('blocked_write_attempts 必须计入 violations');
+  });
+
+  it('keeps debugger reproduction, repair confirmation and examples from impersonating verifier execution', () => {
+    const debuggerText = read('setup/userlevel-opencode/agents/sf-debugger.md');
+    expect(debuggerText).not.toContain('修复后必须跑 verification_command');
+    expect(debuggerText).not.toContain('修复后必须重新跑 verification_command');
+    expect(debuggerText).not.toContain('失败的 task 重新跑 verification_command 真通过');
+    const report = debuggerText.split('## Debugger Candidate Format')[1] ?? '';
+    expect(report).toContain('not_executed');
+    expect(report).not.toMatch(/"exit_code"\s*:\s*0/);
+    expect(report).not.toMatch(/"passed"\s*:\s*true/);
+  });
+
   it('keeps every shared audit paragraph consistent with resolved-history Runtime verdicts', () => {
     const audit = [
       '# Changed Files Audit', 'Contract: changed-files-audit/v1', 'Work Item: WI-0001',
