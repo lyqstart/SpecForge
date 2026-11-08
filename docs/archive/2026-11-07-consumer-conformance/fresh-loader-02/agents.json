@@ -1,0 +1,50 @@
+[
+  {
+    "name": "sf-debugger",
+    "prompt_sha256": "2b308e7c33ccfdc83d9396c0978c1a5e9d81da4f66f15babe33c6bd513541e74",
+    "current_audit_guidance": true,
+    "installed_sha256": "fa0292f05a52bb08b8ceb7f489cb5a60d0da5fbb22e8a69137efe1d5656d1232"
+  },
+  {
+    "name": "sf-design",
+    "prompt_sha256": "9a0d83ffaf71d66f60190bab14dee2efc511f399421cd17aaeeca96f88290e74",
+    "current_audit_guidance": true,
+    "installed_sha256": "b7303de0a9e5e2e55ee5620898a422c5499099a3a43f375d6e4e9c5adf9dc266"
+  },
+  {
+    "name": "sf-executor",
+    "prompt_sha256": "46cedc022b0b89de4c54c9864c789c15e49ac430f451f217db593a09c4a290f2",
+    "current_audit_guidance": true,
+    "installed_sha256": "063bf8f19eb26eb0c3b6254eef8c0d039d50dd609d85e9746500c0601fb72dd2"
+  },
+  {
+    "name": "sf-knowledge",
+    "prompt_sha256": "e67ae476c0483d23a5b21a5e0c72b51128ea2932d83b768ee4359cd4c1b0b066",
+    "current_audit_guidance": true,
+    "installed_sha256": "905e505ff81541ad4a5ff04c546f8f76f0c6ff05953861ff239a70d94e1616aa"
+  },
+  {
+    "name": "sf-requirements",
+    "prompt_sha256": "66f6b9b5749c0b34539932772676a5c5ab2fcb7df720eea2e5b18af9553de00b",
+    "current_audit_guidance": true,
+    "installed_sha256": "ee9d20936eda4d46ab7756687ce9b36d9f7216d1bc73f362c59f3603fd05086e"
+  },
+  {
+    "name": "sf-reviewer",
+    "prompt_sha256": "f3a2d68dbb483deb7c0f292704f9edecc8cfb922f50287d6a7cfe17c55a6ae3e",
+    "current_audit_guidance": true,
+    "installed_sha256": "e933fddc09d32a29ee21d031c926535c60b530fc5ae6be858b56c4cc78a6750b"
+  },
+  {
+    "name": "sf-task-planner",
+    "prompt_sha256": "c718201e53386bf994406ab34a11e58346591c4f7bde66e330aa3bb756de4bbd",
+    "current_audit_guidance": true,
+    "installed_sha256": "3e7b79216bff998b2efb8a3fddfd0f74a7a64281f43fec312ba5122953ceda94"
+  },
+  {
+    "name": "sf-verifier",
+    "prompt_sha256": "a9d728b649e72f5ee175a72b36b36f88d7855394857d7716ac981341eef1e075",
+    "current_audit_guidance": true,
+    "installed_sha256": "87dfe943573df61f64240f11fea3240443d865d4580a7ea4c06f9db8723a2bff"
+  }
+]

@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261107-CONSUMER-CONFORMANCE-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-consumer-conformance/verify-fresh-loader-02.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Verify actual fresh Agents andSkills with proven rawbody identity andindependent ownedKernel cleanup",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=ownedKernel plugin observability only,no modelprompt;EXTERNAL_EVIDENCE_WRITES=actual current loader acceptance andcleanup",
+  "started_utc": "2026-11-08T01:02:15.521Z",
+  "carrier_source_sha256": "7fc6b23e47031e861c544f4a1c8818eec297d371a209ccd82f62c247c9e5e5cc",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-consumer-conformance\\verify-fresh-loader-02.cjs",
+      "sha256": "92a9c3a384a67157b6f614223c0f977db1aa3173fd9f4c9f8f841a900c0c4f75",
+      "size": 6800,
+      "extension": ".cjs"
+    }
+  ]
+}

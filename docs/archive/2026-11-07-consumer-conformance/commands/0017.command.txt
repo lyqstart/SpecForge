@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261107-CONSUMER-CONFORMANCE-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-consumer-conformance/prepare-deployment.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Prepare qualified official guidance-only deployment with exact13 Markdown delta andfive unchanged native identities",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=read-only installed manifest payload identities;EXTERNAL_EVIDENCE_WRITES=deployment readiness andqualified driver provenance",
+  "started_utc": "2026-11-07T13:29:03.673Z",
+  "carrier_source_sha256": "7fc6b23e47031e861c544f4a1c8818eec297d371a209ccd82f62c247c9e5e5cc",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-consumer-conformance\\prepare-deployment.cjs",
+      "sha256": "e44746accab9d172f2a4d4117cbf26f8a73ceb70916ba62d5a077d19c8d998a3",
+      "size": 3745,
+      "extension": ".cjs"
+    }
+  ]
+}

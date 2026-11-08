@@ -1,0 +1,16 @@
+{
+  "run_id": "CODEX-SF-20261107-CONSUMER-CONFORMANCE-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "git",
+  "args": [
+    "commit",
+    "-m",
+    "Align audit recovery and task planning consumers with current authority"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Commit reviewed consumer corrections andindependently hash-bound raw baselines",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=exact reviewedlocal branch commit;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=source commit receipt",
+  "started_utc": "2026-11-07T13:27:25.521Z",
+  "carrier_source_sha256": "7fc6b23e47031e861c544f4a1c8818eec297d371a209ccd82f62c247c9e5e5cc",
+  "entry_sources": []
+}

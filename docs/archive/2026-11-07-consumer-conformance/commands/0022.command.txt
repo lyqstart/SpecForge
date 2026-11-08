@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261107-CONSUMER-CONFORMANCE-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-consumer-conformance/verify-fresh-loader.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Verify genuine fresh OpenCode loads allchanged current Agents andSkills thenends onlyownedKernel whileDaemon stayshealthy",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=owned localOpenCode loader caches/plugin observability only,no modelprompt orbusiness tools;EXTERNAL_EVIDENCE_WRITES=actual loader identities andcleanup evidence",
+  "started_utc": "2026-11-07T13:31:21.670Z",
+  "carrier_source_sha256": "7fc6b23e47031e861c544f4a1c8818eec297d371a209ccd82f62c247c9e5e5cc",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-consumer-conformance\\verify-fresh-loader.cjs",
+      "sha256": "cc71a3af61dd71ac196d2bfb8c82f9d8f3fbe8bd00871dbd8c1dbc8076888fd4",
+      "size": 6751,
+      "extension": ".cjs"
+    }
+  ]
+}

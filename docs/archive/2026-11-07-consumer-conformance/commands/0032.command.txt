@@ -1,0 +1,23 @@
+{
+  "run_id": "CODEX-SF-20261107-CONSUMER-CONFORMANCE-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-consumer-conformance/inventory-publication.cjs",
+    "01"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Scan completed repair evidence for credential filenames,token patterns andraw model reasoning before publication",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=complete bounded publication privacy inventory",
+  "started_utc": "2026-11-08T01:06:56.117Z",
+  "carrier_source_sha256": "7fc6b23e47031e861c544f4a1c8818eec297d371a209ccd82f62c247c9e5e5cc",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-consumer-conformance\\inventory-publication.cjs",
+      "sha256": "b37042e9d5da1ccaeafc4aaf8aaf4b5941a8749bb2822f07d358c54877caa1c6",
+      "size": 3509,
+      "extension": ".cjs"
+    }
+  ]
+}

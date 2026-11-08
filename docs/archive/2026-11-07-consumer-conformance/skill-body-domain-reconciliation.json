@@ -1,0 +1,31 @@
+{
+  "utc": "2026-11-08T01:01:54.090Z",
+  "proof": [
+    {
+      "name": "sf-intake",
+      "location": "C:\\Users\\lyq\\.config\\opencode\\skills\\sf-intake\\SKILL.md",
+      "raw_body_sha256": "012785f9cd965c409bc59228daca919ba303ff06ba9685ddade68d904fe5d82f",
+      "actual_sha256": "012785f9cd965c409bc59228daca919ba303ff06ba9685ddade68d904fe5d82f",
+      "raw_body_exact": true,
+      "changed_body_rejected": true
+    },
+    {
+      "name": "sf-workflow-feature-spec",
+      "location": "C:\\Users\\lyq\\.config\\opencode\\skills\\sf-workflow-feature-spec\\SKILL.md",
+      "raw_body_sha256": "2bf6441c16c27b84f8df499662127fa9bf5964d9f33f55bd362a38abaecb0ab5",
+      "actual_sha256": "2bf6441c16c27b84f8df499662127fa9bf5964d9f33f55bd362a38abaecb0ab5",
+      "raw_body_exact": true,
+      "changed_body_rejected": true
+    },
+    {
+      "name": "superpowers-writing-plans",
+      "location": "C:\\Users\\lyq\\.config\\opencode\\skills\\superpowers-writing-plans\\SKILL.md",
+      "raw_body_sha256": "24611db52bc70101e767ebbe5fe9d3a6bdb5b8b969ebbce77ae9da4aa57b192c",
+      "actual_sha256": "24611db52bc70101e767ebbe5fe9d3a6bdb5b8b969ebbce77ae9da4aa57b192c",
+      "raw_body_exact": true,
+      "changed_body_rejected": true
+    }
+  ],
+  "diagnosis": "Actual OpenCode Skill content is exactly raw frontmatter-excluded body, preserving leading/trailing newlines and CRLF. Initial observer only constructed LF body; no installed payload change needed.",
+  "observer_sha256": "92a9c3a384a67157b6f614223c0f977db1aa3173fd9f4c9f8f841a900c0c4f75"
+}

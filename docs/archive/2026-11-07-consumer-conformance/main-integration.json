@@ -1,0 +1,146 @@
+{
+  "utc": "2026-11-07T13:27:45.757Z",
+  "baseline": "0995f0c5e5bf2192aa38ee9b874f6decbe4e0ed3",
+  "remote": "0995f0c5e5bf2192aa38ee9b874f6decbe4e0ed3",
+  "candidate": "24f6b0c7f8dcfca3b514b7c74eee1e9b3d09e8c5",
+  "source_blobs": 21,
+  "raw_eol_transformations": [
+    {
+      "path": ".gitattributes",
+      "before": "50aba6d9a0913f7a48b3f444564b6d3a47af07fbb6bd6a7bb337e1ae14838717",
+      "after": "73d3df960087d2c569473923335f8781ad9ba18ab69476c9224874d2af5311aa",
+      "classification": "EOL_ONLY_SAME_CANONICAL_BLOB"
+    },
+    {
+      "path": ".gitignore",
+      "before": "8f3743bdaf6a60c3544f251923e7977926bcf47bb6362543e7e9eea1c2a40dcc",
+      "after": "d8179221c6308583eb00000f1825bd17125704bdf77be0d89d2f35542840d09a",
+      "classification": "EOL_ONLY_SAME_CANONICAL_BLOB"
+    },
+    {
+      "path": "docs/project-status.md",
+      "before": "7421f7bef4221e072dde7256a3097aff762872dc06acad91a65d8971d32d54d5",
+      "after": "d5a1f8a73262f5b0d193a1f3cff3a2b61072a658c54a28b3c7223c94a99bc27b",
+      "classification": "EOL_ONLY_SAME_CANONICAL_BLOB"
+    },
+    {
+      "path": "docs/rule/specforge-development-error-ledger-and-experience.md",
+      "before": "74d89e84bf959b85285080bd259884475b3966e9ab16973ad7688f3532f222cc",
+      "after": "a55149a4261e3feafdf37de96872fe378ee39031dae9ee1d1ed3626d3d3644dd",
+      "classification": "EOL_ONLY_SAME_CANONICAL_BLOB"
+    },
+    {
+      "path": "setup/userlevel-opencode/AGENTS.md",
+      "before": "3c08cee9ecb1c2408c482463e1c77193a37f1855725de01b8bcebab2bd3d18e4",
+      "after": "6863f85a6d50503030abc7e0205eb1125f032cbb2df95d368a60a5c93d4dc68e",
+      "classification": "EOL_ONLY_SAME_CANONICAL_BLOB"
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/_AGENT_BASE.md",
+      "before": "f54949a123c3bba25bf041f7b2be6677864361caa6f87e40c1a1eaff5a7c6665",
+      "after": "40e1ff844a8314791a116839284fe6ee13894cee50d1b8a519e28007e575f4a6",
+      "classification": "EOL_ONLY_SAME_CANONICAL_BLOB"
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/sf-debugger.md",
+      "before": "9ca7dbf84b72fa4a974fb732090adf37e4a62dbc695efdfb8df4aea364ea9b36",
+      "after": "fa0292f05a52bb08b8ceb7f489cb5a60d0da5fbb22e8a69137efe1d5656d1232",
+      "classification": "EOL_ONLY_SAME_CANONICAL_BLOB"
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/sf-design.md",
+      "before": "92be5c515f2f47399aaebabdfcd5abc731367c66d43ce85bf288d0d4d2f3af33",
+      "after": "b7303de0a9e5e2e55ee5620898a422c5499099a3a43f375d6e4e9c5adf9dc266",
+      "classification": "EOL_ONLY_SAME_CANONICAL_BLOB"
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/sf-evidence-collector.md",
+      "before": "b1fb57bdaad02454bce5aba90f133f4f8e3abab2c1f4b6a49fa251a26c19d8ae",
+      "after": "667b64120feac0aaaf3bf316b5d33f4a815b3821c67b08ba545e3549843379c8",
+      "classification": "EOL_ONLY_SAME_CANONICAL_BLOB"
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/sf-executor.md",
+      "before": "ae271040a4fba22f29678afc817ee38eee534ff7bc8f4d51ac694f25d7d49b5a",
+      "after": "063bf8f19eb26eb0c3b6254eef8c0d039d50dd609d85e9746500c0601fb72dd2",
+      "classification": "EOL_ONLY_SAME_CANONICAL_BLOB"
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/sf-extension.md",
+      "before": "06f5c894100fd906d437dc5d3475b74bb893ccc204edea116f2739037328a3d8",
+      "after": "22f8ff7f90c14b569410e696799543c95ea0fe65861f3cb6a5d727f9019de718",
+      "classification": "EOL_ONLY_SAME_CANONICAL_BLOB"
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/sf-investigator.md",
+      "before": "87d23859f17b40e8d6cb6a993e1caef8bd7202335590ba0cd5b0e081d0e0fe0c",
+      "after": "3ea6452d8afe458832162e070c1d07f04bab87ed374e37a7ed35484f1397f238",
+      "classification": "EOL_ONLY_SAME_CANONICAL_BLOB"
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/sf-knowledge.md",
+      "before": "0a12dd035fa6b554b081d168b82105a5bce8f029025f02139ba144873b15d041",
+      "after": "905e505ff81541ad4a5ff04c546f8f76f0c6ff05953861ff239a70d94e1616aa",
+      "classification": "EOL_ONLY_SAME_CANONICAL_BLOB"
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/sf-requirements.md",
+      "before": "5a5f5a7205e2c505119fb32b7a26675cd345a74da5ace3806fd3c43b81b00172",
+      "after": "ee9d20936eda4d46ab7756687ce9b36d9f7216d1bc73f362c59f3603fd05086e",
+      "classification": "EOL_ONLY_SAME_CANONICAL_BLOB"
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/sf-reviewer.md",
+      "before": "00b33a3366a5b16de1714babff4a2e3508170cba6fe4db72814af535fb632d71",
+      "after": "e933fddc09d32a29ee21d031c926535c60b530fc5ae6be858b56c4cc78a6750b",
+      "classification": "EOL_ONLY_SAME_CANONICAL_BLOB"
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/sf-task-planner.md",
+      "before": "44621b040d25b2c90f9ae77386484b0144885677fee99b6cf2a3d4bbf156f8c9",
+      "after": "3e7b79216bff998b2efb8a3fddfd0f74a7a64281f43fec312ba5122953ceda94",
+      "classification": "EOL_ONLY_SAME_CANONICAL_BLOB"
+    },
+    {
+      "path": "setup/userlevel-opencode/skills/sf-intake/SKILL.md",
+      "before": "c67a3701da465671fee261928ff3b55a519170401459913fe4572fcff3880bc8",
+      "after": "ad7b8c46f11ea76b4f2cad050629e0163ed03f15d8194355b54d86ace664bc8a",
+      "classification": "EOL_ONLY_SAME_CANONICAL_BLOB"
+    },
+    {
+      "path": "setup/userlevel-opencode/skills/superpowers-writing-plans/SKILL.md",
+      "before": "c7339c34506cc8d7de1862054bed264dcbda3e68e03933c1267f0b17e75879f1",
+      "after": "69f7a7c1eb0c097ed5ab60c9f935e51cf125595fefb9477039230d0b066dac05",
+      "classification": "EOL_ONLY_SAME_CANONICAL_BLOB"
+    }
+  ],
+  "native": [
+    {
+      "target": "sf-user/bin/specforge.exe",
+      "source": "release/bin/specforge.exe",
+      "sha256": "4e60c6b592434421240f92006abf63691a41dd9736967eeec39c45482d60ee8d"
+    },
+    {
+      "target": "sf-user/bin/specforged.exe",
+      "source": "release/bin/specforged.exe",
+      "sha256": "003faf31d46f30a440c65037acae46dd8a9ab7df82e395160100ba44798daca8"
+    },
+    {
+      "target": "sf-user/bin/verification/assets.json",
+      "source": "release/bin/verification/assets.json",
+      "sha256": "28ee6f93f9a72a4e058004ade5cb79a22aacdbb3459090eee95ab04532bebc59"
+    },
+    {
+      "target": "sf-user/bin/verification/node.exe",
+      "source": "release/bin/verification/node.exe",
+      "sha256": "3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237"
+    },
+    {
+      "target": "sf-user/bin/verification/specforge-verify.exe",
+      "source": "release/bin/verification/specforge-verify.exe",
+      "sha256": "5cb378826469834143067b551108f2fc295e1e3e9a04dadb4d7293bc77a41d7f"
+    }
+  ],
+  "tracked_clean": true,
+  "business_project_changed": false
+}

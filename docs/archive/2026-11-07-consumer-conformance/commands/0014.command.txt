@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261107-CONSUMER-CONFORMANCE-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-consumer-conformance/integrate-main.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Verify live remote andintegrate reviewed consumer source into authorized localmain preserving canonical bytes andnative tuple",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=localmain fast-forward andcheckout EOL-only transformations;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=integration evidence",
+  "started_utc": "2026-11-07T13:27:34.040Z",
+  "carrier_source_sha256": "7fc6b23e47031e861c544f4a1c8818eec297d371a209ccd82f62c247c9e5e5cc",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-consumer-conformance\\integrate-main.cjs",
+      "sha256": "ba7c01f75ba3d605345160ef5d346c47b36a110cf274159610919af2766e513d",
+      "size": 2844,
+      "extension": ".cjs"
+    }
+  ]
+}

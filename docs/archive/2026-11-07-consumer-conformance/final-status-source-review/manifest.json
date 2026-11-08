@@ -1,0 +1,23 @@
+{
+  "utc": "2026-11-08T01:07:55.444Z",
+  "source_head": "24f6b0c7f8dcfca3b514b7c74eee1e9b3d09e8c5",
+  "members": [
+    {
+      "path": "docs/project-status.md",
+      "current": "0.current.raw",
+      "head": "0.head.raw",
+      "raw_sha256": "88571fa49ded7e59aa7c12ad8bf4c9e363bab7cb557d25d756a37f8e0c428718",
+      "head_sha256": "7421f7bef4221e072dde7256a3097aff762872dc06acad91a65d8971d32d54d5",
+      "expected_index_oid": "4c47c157488ed67141095e3a25ef169328accabd"
+    },
+    {
+      "path": "docs/rule/specforge-development-error-ledger-and-experience.md",
+      "current": "1.current.raw",
+      "head": "1.head.raw",
+      "raw_sha256": "bd7d879c68a16e2a794509b6ae37b55a6bfc9a9d5a43e9f6fea4f41cd4d79bac",
+      "head_sha256": "9d167b841b986377198064e64c51b9c726f13dbef327a5cccd43d5b9823a0b40",
+      "expected_index_oid": "c3ae9081054d3afe28a5029db3387a7f5ee02143"
+    }
+  ],
+  "scope": "Final unique status andauditledger reconciliation only;all productguidance alreadycommitted anddeployed"
+}

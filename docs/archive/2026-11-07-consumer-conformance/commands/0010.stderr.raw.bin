@@ -1,0 +1,2 @@
+$ vitest run "tests/v11-agent-skill-contract-alignment.test.ts" tests/unit/node-command-contract.test.ts tests/unit/node-command-proof-boundary.test.ts tests/unit/static-task-command.test.ts tests/unit/no-code-changed-files-audit.test.ts tests/task-artifact-contract-governance.test.ts tests/verification-report-contract-delegation.test.ts
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m

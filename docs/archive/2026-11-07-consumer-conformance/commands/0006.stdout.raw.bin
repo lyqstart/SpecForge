@@ -1,0 +1,27 @@
+
+ RUN  v3.2.4 D:/code/SpecForge/packages/daemon-core
+
+ ❯ tests/v11-agent-skill-contract-alignment.test.ts (16 tests | 1 failed) 165ms
+   × v1.1.5 Agent/Skill final governance contract alignment > keeps every shared audit paragraph consistent with resolved-history Runtime verdicts 14ms
+     → setup/userlevel-opencode/agents/sf-analyst.md: expected '<!-- SPECFORGE_V11_FINAL_GOVERNANCE_C…' to match /\bunresolved_blocked_write_attempts\s…/
+   ✓ v1.1.5 Agent/Skill final governance contract alignment > compiles positive planning command examples with the real finite execution grammar 53ms
+   ✓ v1.1.5 Agent/Skill final governance contract alignment > makes planning consumers state the current independent execution owners and unsupported boundary 4ms
+   ✓ v1.1.5 Agent/Skill final governance contract alignment > keeps positive formal-verification delegation aligned with the D23 entry and consumer prerequisites 3ms
+   ✓ v1.1.5 Agent/Skill final governance contract alignment > keeps the orchestrator positive closure sequence on the same D23 and audit owners 1ms
+   ✓ v1.1.5 Agent/Skill final governance contract alignment > keeps the positive feature workflow Close steps owned by Close Gate 2ms
+   ✓ v1.1.5 Agent/Skill final governance contract alignment > has target Agent/Skill markdown files to govern 3ms
+   ✓ v1.1.5 Agent/Skill final governance contract alignment > task planning examples use typed verification_commands 7ms
+   ✓ v1.1.5 Agent/Skill final governance contract alignment > injects the final governance contract into every userlevel SpecForge Agent and Skill markdown file 29ms
+   ✓ v1.1.5 Agent/Skill final governance contract alignment > does not leave explicit legacy mainline transition instructions in governed Agent/Skill prose outside the contract block 27ms
+   ✓ v1.1.5 Agent/Skill final governance contract alignment > keeps professional Candidate writers on controlled Tools and Runtime-owned Manifest materialization 7ms
+   ✓ v1.1.5 Agent/Skill final governance contract alignment > keeps sf-orchestrator on read-only evidence tools in restricted states 1ms
+   ✓ v1.1.5 Agent/Skill final governance contract alignment > keeps setup wrappers aligned with final governance fields 1ms
+   ✓ v1.1.5 Agent/Skill final governance contract alignment > keeps daemon handlers aligned with the contract-enforced workflow 2ms
+   ✓ v1.1.5 Agent/Skill final governance contract alignment > keeps Contract consumer truth-source and manual-review rules aligned in Agents and Skills 5ms
+   ✓ v1.1.5 Agent/Skill final governance contract alignment > aligns detached bootstrap fields across actual wrappers, handlers, orchestrator and workflow 3ms
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 15 passed (16)
+   Start at  21:21:57
+   Duration  2.28s (transform 489ms, setup 0ms, collect 1.25s, tests 165ms, environment 0ms, prepare 212ms)
+

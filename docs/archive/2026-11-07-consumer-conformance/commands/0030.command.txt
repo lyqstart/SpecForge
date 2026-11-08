@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261107-CONSUMER-CONFORMANCE-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-consumer-conformance/complete-status.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Reconcile unique currentstatus fromactual completed source tests,official deployment andgenuine freshloader",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=unique currentstatus only;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=priorstatus rawbaseline andcompletion receipt",
+  "started_utc": "2026-11-08T01:04:33.353Z",
+  "carrier_source_sha256": "7fc6b23e47031e861c544f4a1c8818eec297d371a209ccd82f62c247c9e5e5cc",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-consumer-conformance\\complete-status.cjs",
+      "sha256": "cfbebb75b0f89ecd2a8c21e98d23b753d848cf66c2e29552b47fdb0a51c65ab1",
+      "size": 3422,
+      "extension": ".cjs"
+    }
+  ]
+}

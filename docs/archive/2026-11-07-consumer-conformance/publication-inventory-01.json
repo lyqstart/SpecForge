@@ -1,0 +1,143 @@
+{
+  "utc": "2026-11-08T01:06:57.339Z",
+  "method": "Read-only complete current archive regular-file inventory, named credential exclusions, known token/private-key shapes and parsed sensitive JSON fields. Candidate values are withheld. Pattern scan alone cannot prove absence of every possible credential.",
+  "files": 439,
+  "bytes": 18511752,
+  "groups": {
+    "[root]": {
+      "files": 33,
+      "bytes": 204093
+    },
+    "baseline": {
+      "files": 23,
+      "bytes": 4915747
+    },
+    "commands": {
+      "files": 307,
+      "bytes": 1681457
+    },
+    "consumer-guidance-upgrade-01": {
+      "files": 13,
+      "bytes": 1823448
+    },
+    "fresh-loader-01": {
+      "files": 6,
+      "bytes": 4230
+    },
+    "fresh-loader-02": {
+      "files": 7,
+      "bytes": 4948
+    },
+    "publication-derivatives-00": {
+      "files": 1,
+      "bytes": 188
+    },
+    "skill-loader-diagnosis-01": {
+      "files": 5,
+      "bytes": 77746
+    },
+    "source-review-01": {
+      "files": 44,
+      "bytes": 9799895
+    }
+  },
+  "largest": [
+    {
+      "path": "source-review-01/0003.current.raw",
+      "size": 4479820
+    },
+    {
+      "path": "baseline/0003.raw",
+      "size": 4476156
+    },
+    {
+      "path": "source-review-01/0003.head.raw",
+      "size": 4443328
+    },
+    {
+      "path": "consumer-guidance-upgrade-01/original-install-baseline.json",
+      "size": 716729
+    },
+    {
+      "path": "consumer-guidance-upgrade-01/original-before-controlled-stop.json",
+      "size": 716613
+    },
+    {
+      "path": "consumer-guidance-upgrade-01/owner-before.json",
+      "size": 287653
+    },
+    {
+      "path": "journal.jsonl",
+      "size": 76508
+    },
+    {
+      "path": "commands/0030.result.json",
+      "size": 57264
+    },
+    {
+      "path": "consumer-guidance-upgrade-01/source-release-manifest.json",
+      "size": 56561
+    },
+    {
+      "path": "commands/0029.result.json",
+      "size": 55414
+    },
+    {
+      "path": "commands/0028.result.json",
+      "size": 52936
+    },
+    {
+      "path": "commands/0027.result.json",
+      "size": 50748
+    },
+    {
+      "path": "skill-loader-diagnosis-01/sf-workflow-feature-spec-actual-own-public-content.json",
+      "size": 49731
+    },
+    {
+      "path": "commands/0026.result.json",
+      "size": 49088
+    },
+    {
+      "path": "source-review-01/0019.current.raw",
+      "size": 48859
+    },
+    {
+      "path": "baseline/0019.raw",
+      "size": 48593
+    },
+    {
+      "path": "source-review-01/0019.head.raw",
+      "size": 48593
+    },
+    {
+      "path": "commands/0025.result.json",
+      "size": 46964
+    },
+    {
+      "path": "commands/0024.result.json",
+      "size": 45504
+    },
+    {
+      "path": "baseline/0008.raw",
+      "size": 44598
+    }
+  ],
+  "sensitive_names": [],
+  "candidates": [
+    {
+      "path": "commands/0032.entry-source-0.cjs",
+      "kind": "PRIVATE_KEY_MARKER",
+      "sha256": "b37042e9d5da1ccaeafc4aaf8aaf4b5941a8749bb2822f07d358c54877caa1c6"
+    },
+    {
+      "path": "inventory-publication.cjs",
+      "kind": "PRIVATE_KEY_MARKER",
+      "sha256": "b37042e9d5da1ccaeafc4aaf8aaf4b5941a8749bb2822f07d358c54877caa1c6"
+    }
+  ],
+  "reasoning_parts": 0,
+  "reasoning": [],
+  "source_read_scope": "Evidence root only; no private owner key or provider credential source read",
+  "active_archive": true
+}

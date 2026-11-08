@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261107-CONSUMER-CONFORMANCE-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-consumer-conformance/qualify-raw-skill-body.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Qualify exact actual raw Skill body domain with preserved newline positive andtamper negative before generating observer02",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=raw Skill identity proof andnew observer source",
+  "started_utc": "2026-11-08T01:01:53.357Z",
+  "carrier_source_sha256": "7fc6b23e47031e861c544f4a1c8818eec297d371a209ccd82f62c247c9e5e5cc",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-consumer-conformance\\qualify-raw-skill-body.cjs",
+      "sha256": "1f573a00f38f8df0a5f9729b8e06551758e57d69d0bd2432d44eb3c56ec5d7ef",
+      "size": 1772,
+      "extension": ".cjs"
+    }
+  ]
+}

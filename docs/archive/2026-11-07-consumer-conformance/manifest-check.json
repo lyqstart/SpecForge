@@ -1,0 +1,16 @@
+{
+  "utc": "2026-11-08T01:08:14.075Z",
+  "run_id": "CODEX-SF-20261107-CONSUMER-CONFORMANCE-A01",
+  "files": 484,
+  "bytes": 27774939,
+  "manifest_sha256": "700cbab6478f91b79a2166ddff011838ced7131cebe70380eeaed2e397a339b5",
+  "self_check": "PASS",
+  "exclusions": {
+    "manifest_and_own_check": "Avoid recursive hash",
+    "local_originals_manifest": "publication-derivatives-00/manifest.json",
+    "local_originals": 0,
+    "publication_live": "Reserved ignored local transport receipts; each command has independent immutable four-piece/seal. Not part of the sealed source acceptance package; avoids recursive Git self-publication.",
+    "reason": "Local native reasoning copies retained; public hash-bound tool/evidence derivatives included"
+  },
+  "inner_exit_code": 0
+}

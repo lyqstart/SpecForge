@@ -32846,3 +32846,18 @@ Candidate 字节完整性不能替代内容事实完整性。进入候选编制�
 
 - 0006规划两项回归已通过，审计用例却在只读sf-analyst的精简合同中要求unresolved字段。实读该Agent不包含sf_changed_files_audit判据，也不负责实现收口；权威要求纠正真实审计指令消费者，不能把“全部Agent”扩大为所有角色都必须复制审计规则。责任是新增测试作用域过宽，不是新运行时缺陷。
 - 维护回归仍遍历完整Agent/Skill合同集合，但只对实际包含sf_changed_files_audit规则的合同验证zero-unresolved和禁止zero-total，并要求该消费集合非空；真实Runtime的历史resolved正例和unresolved反例继续保留，不修改sf-analyst角色或降低已存在审计规则。失败原件与源码seal保持。EXP-007/022/025/036/044/251。
+
+### ERR-2019：真实Skill加载身份检查出现未解释的正文哈希差异
+
+- 0022真实新OpenCode1.18.35加载8个更新Agent成功；对sf-intake的正文哈希检查返回SKILL_BODY_DRIFT，入口真实退出1。自有Kernel已由成功CIM证明结束，独立Daemon仍健康；无模型提示或业务工具。117安装字节已核验一致，因此不得直接推断安装失败或把加载验收补写通过。
+- 首版观察器在断言前没有保存所选Skill的实际location/正文身份，当前缺少差异定位证据。下一步新独立诊断Attempt只保存受管Skill路径、大小、哈希及LF/CRLF/frontmatter处理对照，不读取凭据、不覆盖旧失败、不重复业务验证。根因在取得实际来源前为INSUFFICIENT_EVIDENCE。EXP-007/008/026/193/260/296。
+
+### ERR-2020：Skill观察器修订前误猜正文trim，且未先阻断依赖步骤
+
+- 诊断实际CRLF后，交互探针先猜测正文trim再做字符串相等断言，真实失败并输出过大公开Skill diff；该探针在任何新observer/新结论落盘之前退出。随后依赖node --check和运行不存在的02文件均真实失败（0024/25），不作为加载或验证通过。产品/安装文件未改变。
+- 改为只打印候选域的大小/布尔/哈希；三份当前实际API正文均逐字等于保留原始CRLF及首尾空行、只去frontmatter的raw body，无trim。正式修订用已保存的真实API原件做SHA正例和内容变异反例，成功后才生成新observer；后续Generate/Check/Execute逐步核验真实退出码，失败不继续依赖步骤。EXP-007/008/193/260/296。
+
+### 本轮三项消费者缺口最终核验
+
+- 维护回归16项、相关7文件89项、Root51文件748项及生成器检查通过；0004真实红例3失败/13通过和观察器失败原件保留。正式安装13份Markdown、跳过104、verify117；五个合格原生资产未变。真实fresh-loader-02返回8个更新Agent与3份Skill，三份正文按实际raw/frontmatter域逐字核验，自有Kernel结束、独立Daemon健康，无模型提示/业务工具。
+- 0031通过正式validation-contract-kernel冻结12条独立断言，逐项audit/planning/status均CLOSED；zero-total变异被拒绝，缺status证据为INSUFFICIENT_EVIDENCE。独立当前owner非秘密哈希及敏感文件仅元数据保持，原业务main28c8e3d、5实现/9验收成员保持，未重开或重跑原WI。ERR2019/2020的加载检查域与依赖步骤问题已按真实原件修正，未改安装文件以迎合观察器。旧20行aggregatePASS作为历史保留，不作为本轮全产品验收。

@@ -1,0 +1,26 @@
+[
+  {
+    "name": "run-publication-command.cjs",
+    "accepted_source_sha256": "0b78c0362dd3a3550e884a0360afb7aae8c3ad0b2c19cead9718e40c1d33f140",
+    "current_sha256": "3720aab04137920b51d2efafc581cc72047d5bf44a46d4e0155c38fa2f575a08",
+    "change": "RUN_ID only where present;root remains script-directory bound"
+  },
+  {
+    "name": "seal-final-bounded.cjs",
+    "accepted_source_sha256": "cc757d4919c9d0fbe4ff8820e23dc4eb800c39ad6d1c3e2aa687aff8d66aafbc",
+    "current_sha256": "3645bfe5133ca3cf049b17cb5f324131ef6b782b974456040cde396dce5562be",
+    "change": "RUN_ID only where present;root remains script-directory bound"
+  },
+  {
+    "name": "verify-final-publication-bounded.cjs",
+    "accepted_source_sha256": "b6f4743a024a46e4049e4404bc5b11d4ca47744c699fbc19cff13208b5e2e3b6",
+    "current_sha256": "b6f4743a024a46e4049e4404bc5b11d4ca47744c699fbc19cff13208b5e2e3b6",
+    "change": "RUN_ID only where present;root remains script-directory bound"
+  },
+  {
+    "name": "inventory-publication.cjs",
+    "accepted_source_sha256": "b37042e9d5da1ccaeafc4aaf8aaf4b5941a8749bb2822f07d358c54877caa1c6",
+    "current_sha256": "b37042e9d5da1ccaeafc4aaf8aaf4b5941a8749bb2822f07d358c54877caa1c6",
+    "change": "RUN_ID only where present;root remains script-directory bound"
+  }
+]

@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261107-CONSUMER-CONFORMANCE-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-consumer-conformance/apply-consumer-fix.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Apply exact baseline-bound shared audit andfinite planning instruction corrections in template owners",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=only identified Agent Skill andAGENTS template consumers;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=per-file patch identities",
+  "started_utc": "2026-11-07T13:21:48.966Z",
+  "carrier_source_sha256": "7fc6b23e47031e861c544f4a1c8818eec297d371a209ccd82f62c247c9e5e5cc",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-consumer-conformance\\apply-consumer-fix.cjs",
+      "sha256": "e271475d9d1adde8562a77bf1ca3045a28461c21162fdfb2171e826d50d19574",
+      "size": 4230,
+      "extension": ".cjs"
+    }
+  ]
+}

@@ -1,0 +1,88 @@
+{
+  "utc": "2026-11-07T13:21:49.741Z",
+  "changes": [
+    {
+      "path": "setup/userlevel-opencode/AGENTS.md",
+      "previous_sha256": "1d50c91e376e3cdeb49c508afcf391488cb3a0c0b9fb49732c06602c6261540c",
+      "sha256": "3c08cee9ecb1c2408c482463e1c77193a37f1855725de01b8bcebab2bd3d18e4"
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/_AGENT_BASE.md",
+      "previous_sha256": "c7b13eee1cd62d36ce85b3dde088b2d4e52be1043828528fe8a8214be5e3b559",
+      "sha256": "f54949a123c3bba25bf041f7b2be6677864361caa6f87e40c1a1eaff5a7c6665"
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/sf-debugger.md",
+      "previous_sha256": "b087c2be2077ee6f6c7dfbbaba69209b50a86517dca24cdc8534dc66336fbd3d",
+      "sha256": "9ca7dbf84b72fa4a974fb732090adf37e4a62dbc695efdfb8df4aea364ea9b36"
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/sf-design.md",
+      "previous_sha256": "087cc70b1a72677991ca0e99e0ca64d95540116b0b423fc62a196ca0a2fd4327",
+      "sha256": "92be5c515f2f47399aaebabdfcd5abc731367c66d43ce85bf288d0d4d2f3af33"
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/sf-evidence-collector.md",
+      "previous_sha256": "91c4be80ebde35d00a54a80a4996cca37f6853bcf7c7ceda2946163bca458bec",
+      "sha256": "b1fb57bdaad02454bce5aba90f133f4f8e3abab2c1f4b6a49fa251a26c19d8ae"
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/sf-executor.md",
+      "previous_sha256": "2c997efdba9a926229c2062903b6c34437ebdf1ec5ec316972c58d78693c6452",
+      "sha256": "ae271040a4fba22f29678afc817ee38eee534ff7bc8f4d51ac694f25d7d49b5a"
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/sf-extension.md",
+      "previous_sha256": "d2036a7c9d715dda4b5cfb886a33e01662f21dc6c938afc322c56acd3e560ce5",
+      "sha256": "06f5c894100fd906d437dc5d3475b74bb893ccc204edea116f2739037328a3d8"
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/sf-investigator.md",
+      "previous_sha256": "28aba66bba5f144896ee841ce534e0fa8418bcfce0e417188df4e70ae7b4e760",
+      "sha256": "87d23859f17b40e8d6cb6a993e1caef8bd7202335590ba0cd5b0e081d0e0fe0c"
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/sf-knowledge.md",
+      "previous_sha256": "133007e202114a211388aee517edc29f13f8121f0489870058a0143e2414309e",
+      "sha256": "0a12dd035fa6b554b081d168b82105a5bce8f029025f02139ba144873b15d041"
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/sf-requirements.md",
+      "previous_sha256": "57fd49bd4c626b2ebfef917c468d88edbeec339670726edaffc80ea2e5753ab2",
+      "sha256": "5a5f5a7205e2c505119fb32b7a26675cd345a74da5ace3806fd3c43b81b00172"
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/sf-reviewer.md",
+      "previous_sha256": "3d4273ffd5bdd97e1ff7618f820658ba1d48b8b00f90a64fdbf6e4cd8077cf24",
+      "sha256": "00b33a3366a5b16de1714babff4a2e3508170cba6fe4db72814af535fb632d71"
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/sf-task-planner.md",
+      "previous_sha256": "a83cfbe07b99871fd2390646a6da2c4bdc396c043e9e19813002489ebd50b476",
+      "sha256": "44621b040d25b2c90f9ae77386484b0144885677fee99b6cf2a3d4bbf156f8c9"
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/sf-verifier.md",
+      "previous_sha256": "9080216c04584f29638afdced3214afe7da77f67e2f519d66103727939350ea5",
+      "sha256": "87dfe943573df61f64240f11fea3240443d865d4580a7ea4c06f9db8723a2bff"
+    },
+    {
+      "path": "setup/userlevel-opencode/skills/sf-intake/SKILL.md",
+      "previous_sha256": "44d62765426054f3bdf484eec46a79cfb71c8d7789a35e8c1f05e52d866b307e",
+      "sha256": "c67a3701da465671fee261928ff3b55a519170401459913fe4572fcff3880bc8"
+    },
+    {
+      "path": "setup/userlevel-opencode/skills/sf-workflow-feature-spec/SKILL.md",
+      "previous_sha256": "5e59ced0b55bb23a89556b787082a0514112d9b49ee8ecb97c6b29b475720523",
+      "sha256": "7446e472084d12226fddb1a3560368bdd8ad571db480e27255cf60bf792cd06b"
+    },
+    {
+      "path": "setup/userlevel-opencode/skills/superpowers-writing-plans/SKILL.md",
+      "previous_sha256": "a74cade726014388939c0295f173767862a4b28a54053aae044ec32859ab12bf",
+      "sha256": "c7339c34506cc8d7de1862054bed264dcbda3e68e03933c1267f0b17e75879f1"
+    }
+  ],
+  "runtime_source_changed": false,
+  "product_scope_changed": false,
+  "original_wi_changed": false
+}

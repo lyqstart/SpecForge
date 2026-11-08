@@ -1,0 +1,20 @@
+[
+  {
+    "name": "sf-intake",
+    "content_sha256": "012785f9cd965c409bc59228daca919ba303ff06ba9685ddade68d904fe5d82f",
+    "installed_sha256": "ad7b8c46f11ea76b4f2cad050629e0163ed03f15d8194355b54d86ace664bc8a",
+    "body_identity_verified": true
+  },
+  {
+    "name": "sf-workflow-feature-spec",
+    "content_sha256": "2bf6441c16c27b84f8df499662127fa9bf5964d9f33f55bd362a38abaecb0ab5",
+    "installed_sha256": "7446e472084d12226fddb1a3560368bdd8ad571db480e27255cf60bf792cd06b",
+    "body_identity_verified": true
+  },
+  {
+    "name": "superpowers-writing-plans",
+    "content_sha256": "24611db52bc70101e767ebbe5fe9d3a6bdb5b8b969ebbce77ae9da4aa57b192c",
+    "installed_sha256": "69f7a7c1eb0c097ed5ab60c9f935e51cf125595fefb9477039230d0b066dac05",
+    "body_identity_verified": true
+  }
+]

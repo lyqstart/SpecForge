@@ -1,0 +1,16 @@
+{
+  "run_id": "CODEX-SF-20261107-CONSUMER-CONFORMANCE-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "git",
+  "args": [
+    "switch",
+    "-c",
+    "codex/consumer-conformance"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Create isolated local codex branch for user-authorized three-consumer repair",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=Git branch only;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=branch receipt",
+  "started_utc": "2026-11-07T13:19:12.580Z",
+  "carrier_source_sha256": "7fc6b23e47031e861c544f4a1c8818eec297d371a209ccd82f62c247c9e5e5cc",
+  "entry_sources": []
+}

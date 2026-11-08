@@ -1,0 +1,12 @@
+{
+  "utc": "2026-11-08T01:07:54.507Z",
+  "scanned_files": 439,
+  "bytes": 18511752,
+  "credential_files": 0,
+  "raw_reasoning": 0,
+  "candidates_classified": 2,
+  "classification": "Both are scanner source literal; no private key body orcredential value collected",
+  "unresolved": 0,
+  "source_credentials_read": false,
+  "result": "PASS"
+}

@@ -1,0 +1,60 @@
+$ vitest run "tests/v11-agent-skill-contract-alignment.test.ts"
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/v11-agent-skill-contract-alignment.test.ts > v1.1.5 Agent/Skill final governance contract alignment > keeps every shared audit paragraph consistent with resolved-history Runtime verdicts
+AssertionError: setup/userlevel-opencode/agents/sf-analyst.md: expected '<!-- SPECFORGE_V11_FINAL_GOVERNANCE_C…' to match /\bunresolved_blocked_write_attempts\s…/
+
+- Expected: 
+/\bunresolved_blocked_write_attempts\s*=\s*0\b/
+
++ Received: 
+"<!-- SPECFORGE_V11_FINAL_GOVERNANCE_CONTRACT:START -->
+## SpecForge 当前治理契约
+
+产品范围来自 SPS-1.0；以下规则是本 Agent 必须遵守的可执行 Runtime 合同，不是并行产品权威。
+
+### 1. State authority
+
+- StateManager/events.jsonl is the only authoritative workflow state source.
+- runtime/state.json is only a projection cache.
+- work_item.json is metadata only. work_item.json must not be used as the actual state source.
+- Do not write, repair, or advance governance state by editing work_item.json.status.
+- All state movement must go through approved SpecForge tools and the final state machine.
+
+### 2. Workflow and approval authority
+
+- New Work Items always use workflow_type=feature_spec; workflow_path is the fact-derived governance route inside that lifecycle.
+- Historical or BUILT_NOT_ENABLED workflow names must fail closed with UNSUPPORTED_CURRENT_RELEASE_WORKFLOW.
+- User approval must be recorded only through sf_user_decision_record.
+- Notes, comments, reasons, Agent statements and historical approval do not constitute current structured approval evidence.
+- Candidate and merge artifacts remain under the current Work Item governance path and must not be written by this read-only Agent.
+
+### 3. Code permission and verification
+
+- Implementation requires sf_code_permission; Executor may modify only explicitly granted files.
+- This Agent must not edit product files, .specforge/work-items/**, governance artifacts or authoritative state.
+- Verification evidence must be real and traceable before Close.
+- If authoritative state is not verification_done, sf_close_gate must fail fast with AUTHORITATIVE_STATE_MISMATCH.
+- closed must be written only by close_gate.
+
+### 4. HardStop and uncertainty
+
+- An unresolved HardStop blocks the dangerous action and its dependent actions; it must not be bypassed.
+- Only sf-orchestrator may invoke sf_hard_stop_resolve and then resume from the recorded safe step.
+- If evidence is insufficient or a request conflicts with this contract, report the gap or conflict instead of guessing, modifying truth sources, or using a legacy path.
+
+<!-- SPECFORGE_V11_FINAL_GOVERNANCE_CONTRACT:END -->"
+
+ ❯ tests/v11-agent-skill-contract-alignment.test.ts:110:42
+    108|     for (const file of targetMarkdownFiles()) {
+    109|       const body = contractBody(readFileSync(file, 'utf8'));
+    110|       expect(body, relativeToRepo(file)).toMatch(/\bunresolved_blocked…
+       |                                          ^
+    111|       expect(body, relativeToRepo(file)).not.toMatch(/\bblocked_write_…
+    112|     }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+error: script "test" exited with code 1

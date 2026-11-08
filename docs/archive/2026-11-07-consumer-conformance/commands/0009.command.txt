@@ -1,0 +1,23 @@
+{
+  "run_id": "CODEX-SF-20261107-CONSUMER-CONFORMANCE-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "scripts/run-root-tests.mjs",
+    "current"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Run maintained current root regression after consumer-only repair",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=owned root test fixtures only;EXTERNAL_EVIDENCE_WRITES=root regression receipt",
+  "started_utc": "2026-11-07T13:23:35.894Z",
+  "carrier_source_sha256": "7fc6b23e47031e861c544f4a1c8818eec297d371a209ccd82f62c247c9e5e5cc",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\scripts\\run-root-tests.mjs",
+      "sha256": "35d93a02e3888e286d1076e06d44a48b1e581b3f2b6e7279ed5a3375c9ad5a9c",
+      "size": 5208,
+      "extension": ".mjs"
+    }
+  ]
+}

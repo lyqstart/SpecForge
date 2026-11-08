@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261107-CONSUMER-CONFORMANCE-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-consumer-conformance/open-repair-checkpoint.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Open unique repair status andbackfill confirmed query/acceptance errors with original raw baselines preserved",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=project-status ledger andevidence transport attributes only;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=stage checkpoint receipt",
+  "started_utc": "2026-11-07T13:19:14.624Z",
+  "carrier_source_sha256": "7fc6b23e47031e861c544f4a1c8818eec297d371a209ccd82f62c247c9e5e5cc",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-consumer-conformance\\open-repair-checkpoint.cjs",
+      "sha256": "3e7a62b00649a34e8ea45eae0732e31f4fb08fae39de7841b7449a8cf86cdae3",
+      "size": 6098,
+      "extension": ".cjs"
+    }
+  ]
+}

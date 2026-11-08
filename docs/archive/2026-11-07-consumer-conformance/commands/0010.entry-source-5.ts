@@ -1,0 +1,210 @@
+import { mkdtemp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import path from 'node:path';
+import { afterEach, describe, expect, it } from 'vitest';
+import {
+  TASK_ARTIFACT_CONTRACT_VERSION,
+  TaskArtifactDocumentSchema,
+  isValidCorrectnessPropertyId,
+} from '@specforge/types';
+import {
+  parseRefsFields,
+  parseTaskAllowedWriteFiles,
+  parseTaskVerification,
+  validateTaskArtifactContract,
+} from '../src/tools/lib/sf_markdown_verification_parser';
+import { getHandler } from '../src/tools/ToolDispatcher';
+import { crossValidateTask } from '../src/tools/lib/sf_tasks_gate_core';
+import '../src/tools/handlers/sf-artifact-write';
+
+const tempRoots: string[] = [];
+
+async function tempProject(): Promise<string> {
+  const root = await mkdtemp(path.join(tmpdir(), 'sf-task-contract-'));
+  tempRoots.push(root);
+  return root;
+}
+
+afterEach(async () => {
+  await Promise.all(tempRoots.splice(0).map(root => rm(root, { recursive: true, force: true })));
+});
+
+function canonicalTask(refsField = '- **refs**: [DD-AUTH-001, REQ-AUTH-001]'): string {
+  return `### TASK-WI-0001-001 Implement authentication
+
+${refsField}
+- **allowed_write_files**: [src/auth.ts]
+- **verification_commands**:
+  - unit:
+    - \`node --test tests/auth.test.mjs\`
+  - integration:
+    - \`node scripts/verify-auth.mjs\`
+`;
+}
+
+describe('task-document/v1 producer and consumer governance', () => {
+  it('normalizes plain and bold refs fields to the same semantic value', () => {
+    const plain = parseTaskVerification(canonicalTask('- refs: [DD-AUTH-001, REQ-AUTH-001]'));
+    const bold = parseTaskVerification(canonicalTask());
+
+    expect(plain.format).toBe('typed');
+    expect(plain.refs).toEqual(['DD-AUTH-001', 'REQ-AUTH-001']);
+    expect(plain.refs).toEqual(bold.refs);
+    expect(parseRefsFields(canonicalTask())).toEqual(['DD-AUTH-001', 'REQ-AUTH-001']);
+  });
+
+  it('normalizes real Planner inline allowed_write_files and legacy multiline compatibility', () => {
+    const inline = canonicalTask().replace(
+      '- **allowed_write_files**: [src/auth.ts]',
+      '- **allowed_write_files**: [src/auth.ts, tests/auth.test.ts]'
+    );
+    expect(parseTaskAllowedWriteFiles(inline)).toEqual([
+      'src/auth.ts',
+      'tests/auth.test.ts',
+    ]);
+    const legacy = inline.replace(
+      '- **allowed_write_files**: [src/auth.ts, tests/auth.test.ts]',
+      '- **allowed_write_files**:\n  - `src/auth.ts`\n  - `tests/auth.test.ts`'
+    );
+    expect(parseTaskAllowedWriteFiles(legacy)).toEqual([
+      'src/auth.ts',
+      'tests/auth.test.ts',
+    ]);
+    expect(
+      validateTaskArtifactContract(inline, { requireAllowedWriteFiles: true }).valid
+    ).toBe(true);
+    expect(
+      validateTaskArtifactContract(legacy, { requireAllowedWriteFiles: true }).valid
+    ).toBe(true);
+  });
+
+  it('keeps missing write scope readable only outside strict Producer/governance mode', () => {
+    const missing = canonicalTask().replace(
+      '- **allowed_write_files**: [src/auth.ts]\n',
+      ''
+    );
+    expect(validateTaskArtifactContract(missing).valid).toBe(true);
+    const strict = validateTaskArtifactContract(missing, {
+      requireAllowedWriteFiles: true,
+    });
+    expect(strict.valid).toBe(false);
+    expect(strict.issues.some(issue => issue.code === 'ALLOWED_WRITE_FILES_MISSING')).toBe(true);
+  });
+
+  it('rejects non-concrete allowed_write_files at the task-document/v1 semantic boundary', () => {
+    for (const invalidPath of ['src/**', 'tests/', '/absolute.ts', '../escape.ts']) {
+      const result = validateTaskArtifactContract(
+        canonicalTask().replace('src/auth.ts', invalidPath),
+        { requireAllowedWriteFiles: true }
+      );
+      expect(result.valid, invalidPath).toBe(false);
+      expect(
+        result.issues.some(
+          issue =>
+            issue.code === 'TASK_CONTRACT_SCHEMA_INVALID' &&
+            String(issue.path ?? '').includes('allowed_write_files')
+        ),
+        invalidPath
+      ).toBe(true);
+    }
+  });
+
+  it('validates the semantic contract and makes legacy aliases read-only', () => {
+    const valid = validateTaskArtifactContract(canonicalTask());
+    expect(valid.valid).toBe(true);
+    expect(valid.contract_version).toBe(TASK_ARTIFACT_CONTRACT_VERSION);
+    expect(valid.tasks[0]?.allowed_write_files).toEqual(['src/auth.ts']);
+    expect(
+      TaskArtifactDocumentSchema.safeParse({
+        contract_version: valid.contract_version,
+        tasks: valid.tasks,
+      }).success
+    ).toBe(true);
+
+    const legacy = canonicalTask()
+      .replace('TASK-WI-0001-001', 'TASK-1')
+      .replaceAll('DD-AUTH-001', 'DD-1')
+      .replaceAll('REQ-AUTH-001', 'REQ-1');
+    expect(validateTaskArtifactContract(legacy).valid).toBe(false);
+
+    const compatibilityRead = validateTaskArtifactContract(legacy, {
+      allowLegacyCommands: true,
+      allowLegacyIds: true,
+    });
+    expect(compatibilityRead.valid).toBe(true);
+    expect(compatibilityRead.issues.every(issue => issue.severity === 'warning')).toBe(true);
+
+    const canonicalProperty = canonicalTask(
+      '- **refs**: [REQ-AUTH-001, DD-AUTH-001, CP-AUTH-001]'
+    ).replace(
+      '  - integration:\n    - `node scripts/verify-auth.mjs`',
+      '  - property:\n    - `node --test tests/auth.property.test.mjs`'
+    );
+    expect(isValidCorrectnessPropertyId('CP-AUTH-001')).toBe(true);
+    expect(isValidCorrectnessPropertyId('CP-1')).toBe(false);
+    expect(validateTaskArtifactContract(canonicalProperty).valid).toBe(true);
+
+    const legacyProperty = canonicalProperty.replace('CP-AUTH-001', 'CP-1');
+    expect(validateTaskArtifactContract(legacyProperty).valid).toBe(false);
+    expect(
+      validateTaskArtifactContract(legacyProperty, {
+        allowLegacyCommands: true,
+        allowLegacyIds: true,
+      }).valid
+    ).toBe(true);
+  });
+
+  it('keeps the Task Planner example executable against the runtime contract', async () => {
+    const repoRoot = path.resolve(__dirname, '..', '..', '..');
+    const planner = await readFile(
+      path.join(repoRoot, 'setup', 'userlevel-opencode', 'agents', 'sf-task-planner.md'),
+      'utf8'
+    );
+    const example = /✅ 正确格式：\s*```markdown\s*([\s\S]*?)```/.exec(planner)?.[1];
+    expect(example).toBeDefined();
+    const validation = validateTaskArtifactContract(example!, { requireAllowedWriteFiles: true });
+    expect(validation.issues).toEqual([]);
+    expect(validation.valid).toBe(true);
+  });
+
+  it('rejects an invalid task contract before creating a candidate file', async () => {
+    const root = await tempProject();
+    const workItemDir = path.join(root, '.specforge', 'work-items', 'WI-0001');
+    await mkdir(workItemDir, { recursive: true });
+    await writeFile(
+      path.join(workItemDir, 'work_item.json'),
+      JSON.stringify({
+        schema_version: '1.1',
+        work_item_id: 'WI-0001',
+        workflow_type: 'feature_spec',
+        workflow_path: 'requirement_change_path',
+      }, null, 2) + '\n',
+    );
+    const handler = getHandler('sf_artifact_write');
+    expect(handler).toBeDefined();
+
+    const result = (await handler!(
+      {
+        work_item_id: 'WI-0001',
+        file_type: 'candidate_tasks',
+        content: canonicalTask().replace(
+          '- **refs**: [DD-AUTH-001, REQ-AUTH-001]',
+          '- **refs**: [DD-AUTH-001]'
+        ),
+      },
+      { directory: root, agent: 'sf-task-planner' },
+      {} as any
+    )) as any;
+
+    expect(result.success).toBe(false);
+    expect(result.error).toBe('INVALID_TASK_ARTIFACT_CONTRACT');
+    expect(result.contract_version).toBe(TASK_ARTIFACT_CONTRACT_VERSION);
+    await expect(
+      readFile(
+        path.join(root, '.specforge', 'work-items', 'WI-0001', 'candidates', 'tasks.md'),
+        'utf8'
+      )
+    ).rejects.toMatchObject({ code: 'ENOENT' });
+  });
+
+});

@@ -1,0 +1,60 @@
+diff --git a/docs/project-status.md b/docs/project-status.md
+index 6010709d..4c47c157 100644
+--- a/docs/project-status.md
++++ b/docs/project-status.md
+@@ -11,25 +11,25 @@ PROJECT_STATUS_SCHEMA=2
+ PROJECT_STATUS_DECLARATION=ACTIVE
+ ACTIVE_INITIATIVE=CONSUMER_CONFORMANCE_REPAIR
+ OBJECTIVE=Repair three independently confirmed subordinate consumer gaps: resolved audit history, finite planning commands, and unique status reconciliation; preserve original closed business delivery.
+-CURRENT_PHASE=CONSUMER_SOURCE_VERIFIED_INSTALL_PENDING
++CURRENT_PHASE=THREE_CONSUMER_GAPS_REPAIRED_AND_DEPLOYED
+ OWNER_DECISIONS=AR-DEC-01:APPROVED;AR-DEC-02:APPROVED_WITH_ARCHIVE_CONSOLIDATION;AR-DEC-03:APPROVED_WITH_KIRO_RETIREMENT;AR-DEC-04:APPROVED_WITH_SINGLE_PROJECT_STATUS;AR-DEC-05:ONLY_TWO_EXTERNAL_EXECUTION_MODES_CODEX_DIRECT_AND_WORKBUDDY_COORDINATED;AR-DEC-06:ACTIVE_RULES_SEPARATED_FROM_HISTORICAL_LEDGER;D05:OPENCODE_ADAPTER_ENABLED;D10:NSSM_REMOVED_WINDOWS_DIRECT_DAEMON_ONLY;D11:GLOBAL_ONLY_THIN_PLUGIN_SINGLE_EXPORT;VR-DEC-01:NEW_EPOCH_1_0_0;VR-DEC-02:TAG_PREFIX_SPECFORGE_V;VR-DEC-03:INDEPENDENT_CONTRACT_VERSIONS;VR-DEC-04:ACTIVE_REFERENCES_CONVERGE_HISTORY_PRESERVED;D18:INTERNAL_READ_ONLY_COMMAND_CONTAINMENT;D20:BOUNDED_WINDOWS_LPAC_READONLY_NODE_APPROVED_ACCEPTANCE_FIRST;D21:REGISTRY_READ_SINGLE_CAPABILITY_SYNTHETIC_EXPERIMENT_ONLY;D22:STRICT_SINGLE_PROCESS_FIRST_PHASE_SCOPE_APPROVED_ACCEPTANCE_FIRST;D23:PRODUCTION_ADOPTION_AND_COMPLETE_CONTROLLED_VERIFICATION_IMPLEMENTATION_APPROVED
+ EXECUTION_MODE=CODEX_DIRECT
+-EXECUTION_STATE=IN_PROGRESS
++EXECUTION_STATE=COMPLETE
+ EXECUTION_PROTOCOL=docs/rule/specforge-execution-mode-and-evidence-protocol.md
+ EXECUTION_PLANNER=CODEX
+ EXECUTION_ACTOR=CODEX
+ EXECUTION_AUDITOR=CODEX
+ EXECUTION_RUN_ID=CODEX-SF-20261107-CONSUMER-CONFORMANCE-A01
+ EXECUTION_EVIDENCE_ROOT=D:/code/SpecForge/docs/archive/2026-11-07-consumer-conformance
+-LAST_EXECUTION_CHECKPOINT=Shared audit mirrors andplanning examples corrected in16 templatefiles;actual Runtime historical-resolved positive/unresolved negative andfinitecommand positive/negative compile checks pass. Maintained suite0007 all16;related7files89 checks0010;Root51files748 checks0009;workflow renderer0008 pass. Original businessWI remains closed/localmain delivered. Official installation andfreshloader stillpending.
++LAST_EXECUTION_CHECKPOINT=Reviewed21 sourcepaths integrated tolocalmain24f6b0c7. Real audit-history positive/unresolved negative andfinite command positive/unsupported negative checks pass;maintained16 tests,related7files89 tests,Root51files748 tests andworkflow generationcheck allgreen. Officialinstaller updated13 Markdown/skipped104 andverified117;qualifiednative5 unchanged,ownerstore/keymetadata andoriginalwhole installerinterval preserved. Fresh OpenCode loader02 actuallyverified8 changedAgents and3 Skill rawbody identities;ownedKernel ended,independentDaemon healthy. First loaderfailure was CRLF/rawbody observer mismatch,diagnosed withreal API sources andpreserved;no modelprompt/business tool. Three specific consumer gapsclosed;old broad20-row aggregate acceptance is historical andcannot substitute for independent per-clause proof.
+ NEXT_EXECUTION_STOP=ALL_THREE_CONSUMER_GAPS_INDEPENDENTLY_VERIFIED_INSTALLED_AND_PUBLISHED_OR_EVIDENCED_HARD_BLOCKER
+-LAST_COMPLETED_CHECKPOINT=Original WI0001 governed Verification/FormalVersion/Close anduser-approved localmain28c8e3d delivery remain completed. Prior product physical117 anddocumented interactive4096/coldReplay evidence remain valid within their observed scope;previous overall consumer-complete conclusion is superseded by this direct reassessment.
+-CURRENT_BLOCKER=SOURCE_REVIEW_MAIN_INTEGRATION_OFFICIAL_GUIDANCE_SYNC_AND_FINAL_RECONCILIATION_PENDING
+-NEXT_LEGAL_ACTION=Review andcommit exact21 modifiedsource/status/ledger/transport paths plusimmutable raw baselines,integrate verifiedcodex branch tolocalmain afterfreshremote check. Regenerate/precheck117 manifest usingphysical mainbytes;official guidance-only upgrade/verify with unchangednative tuple andownerstore/originalpreservation. Prove actual freshOpenCode loader withoutmodelprompt,then independently reconcile3 gaps,update unique finalstatus,seal/publication andBootstrapREADY. Never modify originalclosedWI orretag1.0.23.
++LAST_COMPLETED_CHECKPOINT=OriginalWI0001 Verification/FormalVersion/Close anduser-approved localmain28c8e3d remain completed. This repair closed audit-rule,finite-planning andstale-status consumer gaps only,with real tests,official install andfreshloader evidence. Native1.0.23 tuple isunchanged;existing specforge-v1.0.23 tag remainsimmutable.
++CURRENT_BLOCKER=NONE
++NEXT_LEGAL_ACTION=No remaining action for these three repaired consumer gaps. Preserve originalclosedWI/localmain andqualifiednative tuple;do not rerun successfulbusiness verification orretag1.0.23. Future work begins withprotocol andread-onlyBootstrap,thencurrentSPS/Authority. Any wider full-product claim requires its own clause/consumer evidence,not thepreviousaggregatePASS. Same-run final evidence publication/remoteBootstrap isverified separately by immutable transport receipts.
+ ALLOWED_SCOPE=AGENTS.md;README.md;.gitattributes;.gitignore;package.json;bun.lock;docs/project-status.md;docs/product-specification/**;docs/design/SpecForge架构一致性治理最终实施方案.md;docs/archive/**;docs/adr/**;docs/cli/**;docs/conventions/**;docs/user/**;docs/plugins/**;docs/tools/**;docs/engineering-lessons/**;docs/rule/**;scripts/**;setup/**;packages/**/package.json;packages/service-management/src/**;packages/configuration/src/**;packages/opencode-adapter/src/**;packages/permission-engine/src/**;packages/daemon-core/src/**;packages/cli/src/**;packages/types/src/**;packages/observability/src/**;packages/observability/examples/**;packages/workflow-runtime/src/**;packages/workflow-runtime/tsconfig.json;packages/workflow-runtime/examples/**;packages/workflow-runtime/vitest.config.ts;packages/**/README.md;packages/**/DEVELOPMENT.md;packages/**/docs/**;packages/**/src/**/*.md;packages/**/tests/**;tests/**;docs/design/windows-lpac-node-readonly-contract.md;packages/workflow-runtime/EVENT_REPLAY_COMPLETION_SUMMARY.md;packages/workflow-runtime/STATE_RECOVERY_IMPLEMENTATION_SUMMARY.md
+ PROHIBITED=Deleting ADR ERR audit or report evidence;creating another active handoff current-status or recovery-status file;modifying D:\code\t3 outside a separately authorized controlled recovery phase;reading or modifying D:\code\t2 during SpecForge repair;creating a SpecForge Work Item for SpecForge product self-development;using archive evidence as a current product contract
+ REQUIRED_RULES=docs/rule/specforge-active-development-rules.md;docs/product-specification/authority-registry.md;docs/product-specification/specforge-product-specification.md;docs/design/SpecForge架构一致性治理最终实施方案.md;docs/rule/specforge-execution-mode-and-evidence-protocol.md
+-REQUIRED_VALIDATION=Current maintained Agent/Skill mirrors must require zero unresolved rather than total historical blocks,matching real audit parser positive/negative results. Every positive TaskPlanner/WritingPlans verification example must compile under current finite Node/static grammar;unsupported classes andlegalplan/run owners explicit. Workflow generatedblocks,related audit/command tests,root regression,exact117 install/native identity,actual freshloader andunique status no obsolete pending tasks;originalWI close/localmain preserved. No old20-row aggregate PASS is accepted as a substitute.
++REQUIRED_VALIDATION=Completed inthisrepair: actual sharedaudit policies match Runtime resolved/unresolved verdicts;positive planning declarations compile undercurrent finitegrammar andunsupported examplesremain refused;maintained16,related89,Root748 andworkflowcheck passed;official117 install,fiveunchangednativeassets andfresh8Agent/3Skill loaderverified. OriginalWI/SP-I01/SP-D01 are completed historical gates,not pending actions. Future affected edits rerun corresponding consumer checks andphysical installation proof.
+ <!-- SPECFORGE_PROJECT_STATUS:END -->
+ 
+ ## Resume guidance
+diff --git a/docs/rule/specforge-development-error-ledger-and-experience.md b/docs/rule/specforge-development-error-ledger-and-experience.md
+index cc41eb18..c3ae9081 100644
+--- a/docs/rule/specforge-development-error-ledger-and-experience.md
++++ b/docs/rule/specforge-development-error-ledger-and-experience.md
+@@ -32846,3 +32846,18 @@ Candidate 字节完整性不能替代内容事实完整性。进入候选编制
+ 
+ - 0006规划两项回归已通过，审计用例却在只读sf-analyst的精简合同中要求unresolved字段。实读该Agent不包含sf_changed_files_audit判据，也不负责实现收口；权威要求纠正真实审计指令消费者，不能把“全部Agent”扩大为所有角色都必须复制审计规则。责任是新增测试作用域过宽，不是新运行时缺陷。
+ - 维护回归仍遍历完整Agent/Skill合同集合，但只对实际包含sf_changed_files_audit规则的合同验证zero-unresolved和禁止zero-total，并要求该消费集合非空；真实Runtime的历史resolved正例和unresolved反例继续保留，不修改sf-analyst角色或降低已存在审计规则。失败原件与源码seal保持。EXP-007/022/025/036/044/251。
++
++### ERR-2019：真实Skill加载身份检查出现未解释的正文哈希差异
++
++- 0022真实新OpenCode1.18.35加载8个更新Agent成功；对sf-intake的正文哈希检查返回SKILL_BODY_DRIFT，入口真实退出1。自有Kernel已由成功CIM证明结束，独立Daemon仍健康；无模型提示或业务工具。117安装字节已核验一致，因此不得直接推断安装失败或把加载验收补写通过。
++- 首版观察器在断言前没有保存所选Skill的实际location/正文身份，当前缺少差异定位证据。下一步新独立诊断Attempt只保存受管Skill路径、大小、哈希及LF/CRLF/frontmatter处理对照，不读取凭据、不覆盖旧失败、不重复业务验证。根因在取得实际来源前为INSUFFICIENT_EVIDENCE。EXP-007/008/026/193/260/296。
++
++### ERR-2020：Skill观察器修订前误猜正文trim，且未先阻断依赖步骤
++
++- 诊断实际CRLF后，交互探针先猜测正文trim再做字符串相等断言，真实失败并输出过大公开Skill diff；该探针在任何新observer/新结论落盘之前退出。随后依赖node --check和运行不存在的02文件均真实失败（0024/25），不作为加载或验证通过。产品/安装文件未改变。
++- 改为只打印候选域的大小/布尔/哈希；三份当前实际API正文均逐字等于保留原始CRLF及首尾空行、只去frontmatter的raw body，无trim。正式修订用已保存的真实API原件做SHA正例和内容变异反例，成功后才生成新observer；后续Generate/Check/Execute逐步核验真实退出码，失败不继续依赖步骤。EXP-007/008/193/260/296。
++
++### 本轮三项消费者缺口最终核验
++
++- 维护回归16项、相关7文件89项、Root51文件748项及生成器检查通过；0004真实红例3失败/13通过和观察器失败原件保留。正式安装13份Markdown、跳过104、verify117；五个合格原生资产未变。真实fresh-loader-02返回8个更新Agent与3份Skill，三份正文按实际raw/frontmatter域逐字核验，自有Kernel结束、独立Daemon健康，无模型提示/业务工具。
++- 0031通过正式validation-contract-kernel冻结12条独立断言，逐项audit/planning/status均CLOSED；zero-total变异被拒绝，缺status证据为INSUFFICIENT_EVIDENCE。独立当前owner非秘密哈希及敏感文件仅元数据保持，原业务main28c8e3d、5实现/9验收成员保持，未重开或重跑原WI。ERR2019/2020的加载检查域与依赖步骤问题已按真实原件修正，未改安装文件以迎合观察器。旧20行aggregatePASS作为历史保留，不作为本轮全产品验收。

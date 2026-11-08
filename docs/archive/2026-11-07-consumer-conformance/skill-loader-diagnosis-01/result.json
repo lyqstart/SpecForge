@@ -1,0 +1,12 @@
+{
+  "utc": "2026-11-08T01:00:02.796Z",
+  "inner_exit_code": 0,
+  "failure": null,
+  "owned_pid": 37408,
+  "exit": {
+    "code": null,
+    "signal": "SIGTERM"
+  },
+  "model_prompt_sent": false,
+  "acceptance_claim": false
+}

@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261107-CONSUMER-CONFORMANCE-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "docs/archive/2026-11-07-consumer-conformance/verify-final-contract.ts"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Independently reconcile each ofthree gaps withfrozen12 assertions throughcanonical validator kernel andnegative selfchecks",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=read-only owner metadata/nonsecret hashes andbusiness Git identities;EXTERNAL_EVIDENCE_WRITES=pergap finalvalidation andcounterexample results",
+  "started_utc": "2026-11-08T01:04:41.326Z",
+  "carrier_source_sha256": "7fc6b23e47031e861c544f4a1c8818eec297d371a209ccd82f62c247c9e5e5cc",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-consumer-conformance\\verify-final-contract.ts",
+      "sha256": "cac82b6c8bc0bcb053104cb2ad373c80721489705538b49bf9bb0ba2a7299ce2",
+      "size": 7568,
+      "extension": ".ts"
+    }
+  ]
+}

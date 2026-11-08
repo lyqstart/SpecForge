@@ -1,0 +1,19 @@
+
+ RUN  v3.2.4 D:/code/SpecForge/packages/daemon-core
+
+ ✓ tests/verification-report-contract-delegation.test.ts (6 tests) 12ms
+ ✓ tests/unit/node-command-proof-boundary.test.ts (7 tests) 92ms
+ ✓ tests/unit/node-command-contract.test.ts (33 tests) 200ms
+ ✓ tests/v11-agent-skill-contract-alignment.test.ts (16 tests) 369ms
+ ✓ tests/task-artifact-contract-governance.test.ts (7 tests) 60ms
+ ✓ tests/unit/no-code-changed-files-audit.test.ts (3 tests) 173ms
+ ✓ tests/unit/static-task-command.test.ts (17 tests) 2793ms
+   ✓ finite readonly static Task normalization > retains BRE literal parentheses/braces, wildcard dots and exact line counts  1080ms
+   ✓ finite readonly static Task normalization > counts matching lines once across ERE alternatives and accepts escaped literal metacharacters  854ms
+   ✓ finite readonly static Task normalization > retains grep empty/final-line/CRLF/quiet/negative exit and output behavior  641ms
+
+ Test Files  7 passed (7)
+      Tests  89 passed (89)
+   Start at  21:23:36
+   Duration  6.37s (transform 6.48s, setup 0ms, collect 12.39s, tests 3.70s, environment 31ms, prepare 4.40s)
+

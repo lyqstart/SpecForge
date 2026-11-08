@@ -1,0 +1,7 @@
+Loaded 1 current workflow definition.
+
+Checking markdown files match JSON definitions...
+
+  OK: setup\userlevel-opencode\skills\sf-workflow-feature-spec\SKILL.md [phase-table]
+
+All files are in sync.

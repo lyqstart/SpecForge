@@ -1,0 +1,23 @@
+{
+  "run_id": "CODEX-SF-20261107-CONSUMER-CONFORMANCE-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "--check",
+    "docs/archive/2026-11-07-consumer-conformance/review-and-stage.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Qualify exactsource review andstage helper syntax before index mutation",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=syntax receipt",
+  "started_utc": "2026-11-07T13:25:39.940Z",
+  "carrier_source_sha256": "7fc6b23e47031e861c544f4a1c8818eec297d371a209ccd82f62c247c9e5e5cc",
+  "entry_sources": [
+    {
+      "argument_index": 1,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-consumer-conformance\\review-and-stage.cjs",
+      "sha256": "1c14ae02831a29dc663e3d8f1dd31086cabaaa00492c0e9f9d8eb17485d13d8b",
+      "size": 4652,
+      "extension": ".cjs"
+    }
+  ]
+}

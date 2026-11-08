@@ -1,0 +1,151 @@
+{
+  "validator_id": "consumer-conformance-final/v1",
+  "validation_target": "Three specific subordinate consumer gaps and current deployment",
+  "validation_contract_id": "SPS-CONSUMER-RECONCILIATION-20261107",
+  "contract_source": "SPS sections9.2/9.2.4/19.19/20/22;GOV-POST-001;EXP193/287",
+  "truth_source": "Current source,real maintained test consumers,physical installation andactual freshloader",
+  "baseline_source": "main0995f0c5 and baseline/manifest.json",
+  "baseline_freshness": "main24f6b0c7 reviewed21 source paths;no Runtime/native edits;before final reconciliation",
+  "assertions": [
+    {
+      "assertion_id": "REGRESSION_EXIT_CODES",
+      "expected": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "assertion_type": "IMMUTABLE_EVIDENCE",
+      "truth_source": "commands/0007..0010 sealed results and frozen test sources",
+      "contract_source": "SPS9.2/9.2.4/19.19/20/22;GOV-POST-001",
+      "comparator": "EQUALS",
+      "baseline_mode": "ABSOLUTE",
+      "blocking": true
+    },
+    {
+      "assertion_id": "AUDIT_ZERO_TOTAL_POLICIES",
+      "expected": 0,
+      "assertion_type": "PARSER",
+      "truth_source": "all actual shared audit paragraphs + actual audit verdict regression",
+      "contract_source": "SPS9.2/9.2.4/19.19/20/22;GOV-POST-001",
+      "comparator": "EQUALS",
+      "baseline_mode": "ABSOLUTE",
+      "blocking": true
+    },
+    {
+      "assertion_id": "AUDIT_MISSING_UNRESOLVED_POLICIES",
+      "expected": 0,
+      "assertion_type": "PARSER",
+      "truth_source": "all actual shared audit paragraphs + actual unresolved rejection regression",
+      "contract_source": "SPS9.2/9.2.4/19.19/20/22;GOV-POST-001",
+      "comparator": "EQUALS",
+      "baseline_mode": "ABSOLUTE",
+      "blocking": true
+    },
+    {
+      "assertion_id": "POSITIVE_PLANNING_GRAMMAR_VERIFIED",
+      "expected": true,
+      "assertion_type": "IMMUTABLE_EVIDENCE",
+      "truth_source": "maintained16-case complete suite, actual finite compiler positive/negative checks",
+      "contract_source": "SPS9.2/9.2.4/19.19/20/22;GOV-POST-001",
+      "comparator": "EQUALS",
+      "baseline_mode": "ABSOLUTE",
+      "blocking": true
+    },
+    {
+      "assertion_id": "INSTALLED_IDENTITIES",
+      "expected": 117,
+      "assertion_type": "EXACT_HASH",
+      "truth_source": "official117 release manifest and independently read installed bytes",
+      "contract_source": "SPS9.2/9.2.4/19.19/20/22;GOV-POST-001",
+      "comparator": "EQUALS",
+      "baseline_mode": "ABSOLUTE",
+      "blocking": true
+    },
+    {
+      "assertion_id": "ACTUAL_CHANGED_AGENT_NAMES",
+      "expected": [
+        "sf-debugger",
+        "sf-design",
+        "sf-executor",
+        "sf-knowledge",
+        "sf-requirements",
+        "sf-reviewer",
+        "sf-task-planner",
+        "sf-verifier"
+      ],
+      "assertion_type": "STRUCTURED_STATE",
+      "truth_source": "fresh-loader-02/agents.json",
+      "contract_source": "SPS9.2/9.2.4/19.19/20/22;GOV-POST-001",
+      "comparator": "EQUALS",
+      "baseline_mode": "ABSOLUTE",
+      "blocking": true
+    },
+    {
+      "assertion_id": "ACTUAL_CHANGED_SKILL_NAMES",
+      "expected": [
+        "sf-intake",
+        "sf-workflow-feature-spec",
+        "superpowers-writing-plans"
+      ],
+      "assertion_type": "STRUCTURED_STATE",
+      "truth_source": "fresh-loader-02/skills.json exact raw-body bindings",
+      "contract_source": "SPS9.2/9.2.4/19.19/20/22;GOV-POST-001",
+      "comparator": "EQUALS",
+      "baseline_mode": "ABSOLUTE",
+      "blocking": true
+    },
+    {
+      "assertion_id": "OWNER_STORE_PRESERVED",
+      "expected": true,
+      "assertion_type": "EXACT_HASH",
+      "truth_source": "before owner nonsecret hashes/key metadata versus independent current owner snapshot",
+      "contract_source": "SPS9.2/9.2.4/19.19/20/22;GOV-POST-001",
+      "comparator": "EQUALS",
+      "baseline_mode": "ABSOLUTE",
+      "blocking": true
+    },
+    {
+      "assertion_id": "BUSINESS_DELIVERY_PRESERVED",
+      "expected": true,
+      "assertion_type": "EXACT_HASH",
+      "truth_source": "approved localmain28c8e3d,5 raw code files,9 canonical acceptance members",
+      "contract_source": "SPS9.2/9.2.4/19.19/20/22;GOV-POST-001",
+      "comparator": "EQUALS",
+      "baseline_mode": "ABSOLUTE",
+      "blocking": true
+    },
+    {
+      "assertion_id": "NATIVE_TUPLE_PRESERVED",
+      "expected": true,
+      "assertion_type": "EXACT_HASH",
+      "truth_source": "five original qualified native asset identities from deployment-readiness",
+      "contract_source": "SPS9.2/9.2.4/19.19/20/22;GOV-POST-001",
+      "comparator": "EQUALS",
+      "baseline_mode": "ABSOLUTE",
+      "blocking": true
+    },
+    {
+      "assertion_id": "STATUS_COMPLETED_AND_RECONCILED",
+      "expected": true,
+      "assertion_type": "STRUCTURED_STATE",
+      "truth_source": "unique project-status parsed fields and current required-validation scope",
+      "contract_source": "SPS9.2/9.2.4/19.19/20/22;GOV-POST-001",
+      "comparator": "EQUALS",
+      "baseline_mode": "ABSOLUTE",
+      "blocking": true
+    },
+    {
+      "assertion_id": "NO_NEW_MODEL_OR_BUSINESS_EXECUTION",
+      "expected": true,
+      "assertion_type": "IMMUTABLE_EVIDENCE",
+      "truth_source": "actual fresh-loader-02 process receipt: no model prompt or business tool",
+      "contract_source": "SPS9.2/9.2.4/19.19/20/22;GOV-POST-001",
+      "comparator": "EQUALS",
+      "baseline_mode": "ABSOLUTE",
+      "blocking": true
+    }
+  ],
+  "validation_contract_frozen": true,
+  "validation_contract_hash": "97EF4DA69ECEC65A2FBA440FB4AC7701D876B3DDBC5756EE1004458265E89D8B"
+}

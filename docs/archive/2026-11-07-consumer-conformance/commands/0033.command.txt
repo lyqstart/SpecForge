@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261107-CONSUMER-CONFORMANCE-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-consumer-conformance/prepare-final-publication.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Close ledger facts,accept privacy candidates andfreeze complete final unique-status/ledger raw source review",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=finalledger closure record only;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=final source andprivacy review",
+  "started_utc": "2026-11-08T01:07:53.686Z",
+  "carrier_source_sha256": "7fc6b23e47031e861c544f4a1c8818eec297d371a209ccd82f62c247c9e5e5cc",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-consumer-conformance\\prepare-final-publication.cjs",
+      "sha256": "0618fea56c9e24e6234bd26a84e646a49148b8642f23594c2550493240e6d424",
+      "size": 4095,
+      "extension": ".cjs"
+    }
+  ]
+}

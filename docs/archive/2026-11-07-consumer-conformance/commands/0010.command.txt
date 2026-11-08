@@ -1,0 +1,73 @@
+{
+  "run_id": "CODEX-SF-20261107-CONSUMER-CONFORMANCE-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "test",
+    "--",
+    "tests/v11-agent-skill-contract-alignment.test.ts",
+    "tests/unit/node-command-contract.test.ts",
+    "tests/unit/node-command-proof-boundary.test.ts",
+    "tests/unit/static-task-command.test.ts",
+    "tests/unit/no-code-changed-files-audit.test.ts",
+    "tests/task-artifact-contract-governance.test.ts",
+    "tests/verification-report-contract-delegation.test.ts"
+  ],
+  "cwd": "D:\\code\\SpecForge\\packages\\daemon-core",
+  "purpose": "Run related real task command and audit consumers plus maintained instruction alignment",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=owned test fixtures only;EXTERNAL_EVIDENCE_WRITES=related regression receipts",
+  "started_utc": "2026-11-07T13:23:35.944Z",
+  "carrier_source_sha256": "7fc6b23e47031e861c544f4a1c8818eec297d371a209ccd82f62c247c9e5e5cc",
+  "entry_sources": [
+    {
+      "argument_index": 3,
+      "path": "D:\\code\\SpecForge\\packages\\daemon-core\\tests\\v11-agent-skill-contract-alignment.test.ts",
+      "sha256": "6feec1c5db5218a6cbd4b4a95be2208aaa3000e61eeed714f63072165b0caf06",
+      "size": 21427,
+      "extension": ".ts"
+    },
+    {
+      "argument_index": 4,
+      "path": "D:\\code\\SpecForge\\packages\\daemon-core\\tests\\unit\\node-command-contract.test.ts",
+      "sha256": "e19f3b06078b7d72dc189664b12562edf434959dd419ebfd7f1ebc3a71df3353",
+      "size": 5123,
+      "extension": ".ts"
+    },
+    {
+      "argument_index": 5,
+      "path": "D:\\code\\SpecForge\\packages\\daemon-core\\tests\\unit\\node-command-proof-boundary.test.ts",
+      "sha256": "e6a271f4faadc8266e27f116ceaed5888acccaafd48d729236407750ab28900a",
+      "size": 1389,
+      "extension": ".ts"
+    },
+    {
+      "argument_index": 6,
+      "path": "D:\\code\\SpecForge\\packages\\daemon-core\\tests\\unit\\static-task-command.test.ts",
+      "sha256": "7f88dfc3f68950dad60102446686e48abd6de02a3667f63dd5af1ee34d1d96f5",
+      "size": 4212,
+      "extension": ".ts"
+    },
+    {
+      "argument_index": 7,
+      "path": "D:\\code\\SpecForge\\packages\\daemon-core\\tests\\unit\\no-code-changed-files-audit.test.ts",
+      "sha256": "06ce3bbd2ede757322bfa8d39e3957a79ffd4a545f5d3a4c760a2f61df8c9d13",
+      "size": 4813,
+      "extension": ".ts"
+    },
+    {
+      "argument_index": 8,
+      "path": "D:\\code\\SpecForge\\packages\\daemon-core\\tests\\task-artifact-contract-governance.test.ts",
+      "sha256": "b84cfaa1ef77610929855574614a7eef4a6becf2016a0d3558c9dcdcd6135351",
+      "size": 7803,
+      "extension": ".ts"
+    },
+    {
+      "argument_index": 9,
+      "path": "D:\\code\\SpecForge\\packages\\daemon-core\\tests\\verification-report-contract-delegation.test.ts",
+      "sha256": "aab2ff48cbebfb3fb0f515c5adc3900d87f491ed145e0bd8df9c6e0f5727b9d1",
+      "size": 4654,
+      "extension": ".ts"
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "utc": "2026-11-07T13:29:05.053Z",
+  "source_commit": "24f6b0c7f8dcfca3b514b7c74eee1e9b3d09e8c5",
+  "release_manifest_sha256": "11b21c844b6ac020a0f1d10390659572132058e91f497e6660961925346a8317",
+  "version": "1.0.23",
+  "delta": [
+    "AGENTS.md",
+    "agents/_AGENT_BASE.md",
+    "agents/sf-debugger.md",
+    "agents/sf-design.md",
+    "agents/sf-executor.md",
+    "agents/sf-knowledge.md",
+    "agents/sf-requirements.md",
+    "agents/sf-reviewer.md",
+    "agents/sf-task-planner.md",
+    "agents/sf-verifier.md",
+    "skills/sf-intake/SKILL.md",
+    "skills/sf-workflow-feature-spec/SKILL.md",
+    "skills/superpowers-writing-plans/SKILL.md"
+  ],
+  "native_unchanged": [
+    {
+      "target": "sf-user/bin/specforge.exe",
+      "sha256": "4e60c6b592434421240f92006abf63691a41dd9736967eeec39c45482d60ee8d"
+    },
+    {
+      "target": "sf-user/bin/specforged.exe",
+      "sha256": "003faf31d46f30a440c65037acae46dd8a9ab7df82e395160100ba44798daca8"
+    },
+    {
+      "target": "sf-user/bin/verification/assets.json",
+      "sha256": "28ee6f93f9a72a4e058004ade5cb79a22aacdbb3459090eee95ab04532bebc59"
+    },
+    {
+      "target": "sf-user/bin/verification/node.exe",
+      "sha256": "3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237"
+    },
+    {
+      "target": "sf-user/bin/verification/specforge-verify.exe",
+      "sha256": "5cb378826469834143067b551108f2fc295e1e3e9a04dadb4d7293bc77a41d7f"
+    }
+  ],
+  "business_installer_writes_authorized": false,
+  "owner_key_content_read": false,
+  "source_tests": [
+    "0007",
+    "0008",
+    "0009",
+    "0010"
+  ],
+  "official_precheck_exit_code": 0
+}

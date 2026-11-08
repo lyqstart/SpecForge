@@ -1,0 +1,17 @@
+{
+  "run_id": "CODEX-SF-20261107-CONSUMER-CONFORMANCE-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "specforge",
+  "args": [
+    "daemon",
+    "start",
+    "--detach",
+    "--json"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Cold-start the same qualified installedDaemon through official short CLI after guidance synchronization",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=officialDaemon start runtime only;EXTERNAL_EVIDENCE_WRITES=cold start receipt",
+  "started_utc": "2026-11-07T13:31:01.605Z",
+  "carrier_source_sha256": "7fc6b23e47031e861c544f4a1c8818eec297d371a209ccd82f62c247c9e5e5cc",
+  "entry_sources": []
+}

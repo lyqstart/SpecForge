@@ -1,0 +1,29 @@
+{
+  "run_id": "CODEX-SF-20261107-CONSUMER-CONFORMANCE-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "git",
+  "args": [
+    "switch",
+    "-c",
+    "codex/consumer-conformance"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Create isolated local codex branch for user-authorized three-consumer repair",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=Git branch only;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=branch receipt",
+  "started_utc": "2026-11-07T13:19:12.580Z",
+  "carrier_source_sha256": "7fc6b23e47031e861c544f4a1c8818eec297d371a209ccd82f62c247c9e5e5cc",
+  "entry_sources": [],
+  "finished_utc": "2026-11-07T13:19:12.918Z",
+  "carrier_exit_code": 0,
+  "inner_exit_code": 0,
+  "numeric_inner_exit_code_available": true,
+  "process_started": true,
+  "child_pid": 39532,
+  "spawn_error": null,
+  "signal": null,
+  "observed_writes": {
+    "repository_status_before": "?? docs/archive/2026-11-07-consumer-conformance/baseline/0000.raw\n?? docs/archive/2026-11-07-consumer-conformance/baseline/0001.raw\n?? docs/archive/2026-11-07-consumer-conformance/baseline/0002.raw\n?? docs/archive/2026-11-07-consumer-conformance/baseline/0003.raw\n?? docs/archive/2026-11-07-consumer-conformance/baseline/0004.raw\n?? docs/archive/2026-11-07-consumer-conformance/baseline/0005.raw\n?? docs/archive/2026-11-07-consumer-conformance/baseline/0006.raw\n?? docs/archive/2026-11-07-consumer-conformance/baseline/0007.raw\n?? docs/archive/2026-11-07-consumer-conformance/baseline/0008.raw\n?? docs/archive/2026-11-07-consumer-conformance/baseline/0009.raw\n?? docs/archive/2026-11-07-consumer-conformance/baseline/0010.raw\n?? docs/archive/2026-11-07-consumer-conformance/baseline/0011.raw\n?? docs/archive/2026-11-07-consumer-conformance/baseline/0012.raw\n?? docs/archive/2026-11-07-consumer-conformance/baseline/0013.raw\n?? docs/archive/2026-11-07-consumer-conformance/baseline/0014.raw\n?? docs/archive/2026-11-07-consumer-conformance/baseline/0015.raw\n?? docs/archive/2026-11-07-consumer-conformance/baseline/0016.raw\n?? docs/archive/2026-11-07-consumer-conformance/baseline/0017.raw\n?? docs/archive/2026-11-07-consumer-conformance/baseline/0018.raw\n?? docs/archive/2026-11-07-consumer-conformance/baseline/0019.raw\n?? docs/archive/2026-11-07-consumer-conformance/baseline/0020.raw\n?? docs/archive/2026-11-07-consumer-conformance/baseline/installed-manifest.json\n?? docs/archive/2026-11-07-consumer-conformance/baseline/manifest.json\n?? docs/archive/2026-11-07-consumer-conformance/change-plan.md\n?? docs/archive/2026-11-07-consumer-conformance/commands/0001.carrier-source.cjs\n?? docs/archive/2026-11-07-consumer-conformance/commands/0001.command.txt\n?? docs/archive/2026-11-07-consumer-conformance/initialize-evidence.cjs\n?? docs/archive/2026-11-07-consumer-conformance/received-prompt.txt\n?? docs/archive/2026-11-07-consumer-conformance/rule-gate.json\n?? docs/archive/2026-11-07-consumer-conformance/run-command.cjs\n?? docs/archive/2026-11-07-consumer-conformance/seal-receipts.cjs\n",
+    "repository_status_after": "?? docs/archive/2026-11-07-consumer-conformance/baseline/0000.raw\n?? docs/archive/2026-11-07-consumer-conformance/baseline/0001.raw\n?? docs/archive/2026-11-07-consumer-conformance/baseline/0002.raw\n?? docs/archive/2026-11-07-consumer-conformance/baseline/0003.raw\n?? docs/archive/2026-11-07-consumer-conformance/baseline/0004.raw\n?? docs/archive/2026-11-07-consumer-conformance/baseline/0005.raw\n?? docs/archive/2026-11-07-consumer-conformance/baseline/0006.raw\n?? docs/archive/2026-11-07-consumer-conformance/baseline/0007.raw\n?? docs/archive/2026-11-07-consumer-conformance/baseline/0008.raw\n?? docs/archive/2026-11-07-consumer-conformance/baseline/0009.raw\n?? docs/archive/2026-11-07-consumer-conformance/baseline/0010.raw\n?? docs/archive/2026-11-07-consumer-conformance/baseline/0011.raw\n?? docs/archive/2026-11-07-consumer-conformance/baseline/0012.raw\n?? docs/archive/2026-11-07-consumer-conformance/baseline/0013.raw\n?? docs/archive/2026-11-07-consumer-conformance/baseline/0014.raw\n?? docs/archive/2026-11-07-consumer-conformance/baseline/0015.raw\n?? docs/archive/2026-11-07-consumer-conformance/baseline/0016.raw\n?? docs/archive/2026-11-07-consumer-conformance/baseline/0017.raw\n?? docs/archive/2026-11-07-consumer-conformance/baseline/0018.raw\n?? docs/archive/2026-11-07-consumer-conformance/baseline/0019.raw\n?? docs/archive/2026-11-07-consumer-conformance/baseline/0020.raw\n?? docs/archive/2026-11-07-consumer-conformance/baseline/installed-manifest.json\n?? docs/archive/2026-11-07-consumer-conformance/baseline/manifest.json\n?? docs/archive/2026-11-07-consumer-conformance/change-plan.md\n?? docs/archive/2026-11-07-consumer-conformance/commands/0001.carrier-source.cjs\n?? docs/archive/2026-11-07-consumer-conformance/commands/0001.command.txt\n?? docs/archive/2026-11-07-consumer-conformance/commands/0001.stderr.raw.bin\n?? docs/archive/2026-11-07-consumer-conformance/commands/0001.stderr.txt\n?? docs/archive/2026-11-07-consumer-conformance/commands/0001.stdout.raw.bin\n?? docs/archive/2026-11-07-consumer-conformance/commands/0001.stdout.txt\n?? docs/archive/2026-11-07-consumer-conformance/initialize-evidence.cjs\n?? docs/archive/2026-11-07-consumer-conformance/journal.jsonl\n?? docs/archive/2026-11-07-consumer-conformance/received-prompt.txt\n?? docs/archive/2026-11-07-consumer-conformance/rule-gate.json\n?? docs/archive/2026-11-07-consumer-conformance/run-command.cjs\n?? docs/archive/2026-11-07-consumer-conformance/seal-receipts.cjs\n",
+    "other": "See expected writes and owner-specific receipt; status does not enumerate external runtime writes."
+  }
+}

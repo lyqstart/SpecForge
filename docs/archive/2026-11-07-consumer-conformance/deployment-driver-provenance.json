@@ -1,0 +1,12 @@
+{
+  "utc": "2026-11-07T13:29:05.056Z",
+  "previous_path": "docs\\archive\\2026-11-07-verification-production\\upgrade-user-guidance-1.0.23.cjs",
+  "previous_accepted_sha256": "d8700ff0e6e61944ee99e7f0ff93fc03e08e9fce63d6cfb4d7b8313b4956874e",
+  "current_sha256": "7747c4d5133610f96a0efd976c19e3ab0c3491dbb4517b29a4f8d413b8dcb40b",
+  "changes": [
+    "Evidence output directory",
+    "Readiness input name",
+    "Exact previously-two now-authorized13 Markdown delta assertion"
+  ],
+  "retained": "Official controlledstop/independent oldPID exit,owner nonsecret hashes/key metadata,whole original installation interval,officialupgrade/verify117;no --force,no manual global payload writes"
+}

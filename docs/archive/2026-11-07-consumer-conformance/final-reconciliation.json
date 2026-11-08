@@ -1,0 +1,136 @@
+{
+  "utc": "2026-11-08T01:07:01.784Z",
+  "run_id": "CODEX-SF-20261107-CONSUMER-CONFORMANCE-A01",
+  "scope": "Only the three independently identified consumer gaps; this is not a blanket new20-clause SPS verdict",
+  "source_commit": "24f6b0c7f8dcfca3b514b7c74eee1e9b3d09e8c5",
+  "contract_hash": "97EF4DA69ECEC65A2FBA440FB4AC7701D876B3DDBC5756EE1004458265E89D8B",
+  "values": {
+    "REGRESSION_EXIT_CODES": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "AUDIT_ZERO_TOTAL_POLICIES": 0,
+    "AUDIT_MISSING_UNRESOLVED_POLICIES": 0,
+    "POSITIVE_PLANNING_GRAMMAR_VERIFIED": true,
+    "INSTALLED_IDENTITIES": 117,
+    "ACTUAL_CHANGED_AGENT_NAMES": [
+      "sf-debugger",
+      "sf-design",
+      "sf-executor",
+      "sf-knowledge",
+      "sf-requirements",
+      "sf-reviewer",
+      "sf-task-planner",
+      "sf-verifier"
+    ],
+    "ACTUAL_CHANGED_SKILL_NAMES": [
+      "sf-intake",
+      "sf-workflow-feature-spec",
+      "superpowers-writing-plans"
+    ],
+    "OWNER_STORE_PRESERVED": true,
+    "BUSINESS_DELIVERY_PRESERVED": true,
+    "NATIVE_TUPLE_PRESERVED": true,
+    "STATUS_COMPLETED_AND_RECONCILED": true,
+    "NO_NEW_MODEL_OR_BUSINESS_EXECUTION": true
+  },
+  "result": {
+    "validator_accepted": true,
+    "validation_result": "PASS",
+    "error": null,
+    "declared_blocking_assertions": 12,
+    "executed_blocking_assertions": 12,
+    "extra_blocking_assertions": 0,
+    "missing_blocking_assertions": 0,
+    "assertion_results": [
+      {
+        "assertion_id": "REGRESSION_EXIT_CODES",
+        "blocking": true,
+        "passed": true,
+        "detail": {}
+      },
+      {
+        "assertion_id": "AUDIT_ZERO_TOTAL_POLICIES",
+        "blocking": true,
+        "passed": true,
+        "detail": {}
+      },
+      {
+        "assertion_id": "AUDIT_MISSING_UNRESOLVED_POLICIES",
+        "blocking": true,
+        "passed": true,
+        "detail": {}
+      },
+      {
+        "assertion_id": "POSITIVE_PLANNING_GRAMMAR_VERIFIED",
+        "blocking": true,
+        "passed": true,
+        "detail": {}
+      },
+      {
+        "assertion_id": "INSTALLED_IDENTITIES",
+        "blocking": true,
+        "passed": true,
+        "detail": {}
+      },
+      {
+        "assertion_id": "ACTUAL_CHANGED_AGENT_NAMES",
+        "blocking": true,
+        "passed": true,
+        "detail": {}
+      },
+      {
+        "assertion_id": "ACTUAL_CHANGED_SKILL_NAMES",
+        "blocking": true,
+        "passed": true,
+        "detail": {}
+      },
+      {
+        "assertion_id": "OWNER_STORE_PRESERVED",
+        "blocking": true,
+        "passed": true,
+        "detail": {}
+      },
+      {
+        "assertion_id": "BUSINESS_DELIVERY_PRESERVED",
+        "blocking": true,
+        "passed": true,
+        "detail": {}
+      },
+      {
+        "assertion_id": "NATIVE_TUPLE_PRESERVED",
+        "blocking": true,
+        "passed": true,
+        "detail": {}
+      },
+      {
+        "assertion_id": "STATUS_COMPLETED_AND_RECONCILED",
+        "blocking": true,
+        "passed": true,
+        "detail": {}
+      },
+      {
+        "assertion_id": "NO_NEW_MODEL_OR_BUSINESS_EXECUTION",
+        "blocking": true,
+        "passed": true,
+        "detail": {}
+      }
+    ],
+    "validation_contract_gap": false
+  },
+  "selfChecks": {
+    "resolved_count_regression_cannot_be_overridden": true,
+    "missing_status_evidence_rejected": true
+  },
+  "gaps": {
+    "audit": "CLOSED",
+    "planning": "CLOSED",
+    "status": "CLOSED"
+  },
+  "audit_consumers": 16,
+  "owner_secret_content_read": false,
+  "original_business_reexecution": false,
+  "previous_aggregate_report": "Retained immutable historical claim; superseded for full-consumer completion by direct reassessment andthis specific repair"
+}

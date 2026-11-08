@@ -1,0 +1,23 @@
+{
+  "run_id": "CODEX-SF-20261107-CONSUMER-CONFORMANCE-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "--check",
+    "docs/archive/2026-11-07-consumer-conformance/verify-fresh-loader-02.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Syntax-qualify corrected raw-body freshloader02 before execution",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=observer02 syntax qualification",
+  "started_utc": "2026-11-08T01:02:08.481Z",
+  "carrier_source_sha256": "7fc6b23e47031e861c544f4a1c8818eec297d371a209ccd82f62c247c9e5e5cc",
+  "entry_sources": [
+    {
+      "argument_index": 1,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-consumer-conformance\\verify-fresh-loader-02.cjs",
+      "sha256": "92a9c3a384a67157b6f614223c0f977db1aa3173fd9f4c9f8f841a900c0c4f75",
+      "size": 6800,
+      "extension": ".cjs"
+    }
+  ]
+}

@@ -1,0 +1,1 @@
+{"result":"PASS","gaps":{"audit":"CLOSED","planning":"CLOSED","status":"CLOSED"},"selfChecks":{"resolved_count_regression_cannot_be_overridden":true,"missing_status_evidence_rejected":true},"installed":117,"audit_consumers":16}
