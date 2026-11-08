@@ -32989,3 +32989,11 @@ Candidate 字节完整性不能替代内容事实完整性。进入候选编制�
 ### ERR-2049：定向Vitest1命令再次遗漏worker下限
 
 - 0264仅maxWorkers导致min/max冲突、零测试，与0132为同类已知载体错误，不能归因产品或计入测试覆盖。0265显式同时设置max/min=1后2项实际测试通过。保留失败并约束后续所有定向测试使用成对上限下限，避免仅凭命令退出或用法输出声称完成。
+
+### ERR-2050：不能把Vitest1的worker参数规则推广到Vitest4
+
+- 0285 Root实际Vitest4拒绝minWorkers，零测试。ERR-2049中“所有定向测试成对参数”的泛化说法在跨主版本时不成立，明确撤回其通用性；Vitest1用max/min成对，Vitest4仅max，版本必须取实际包声明/运行输出，不能机械复制。现有test-workspace owner已按实际包版本选择，未修改产品测试范围。0286 Root753项实际通过；最终Windows/Linux完整workspace及Root均已通过，旧零测试记录不计覆盖。
+
+### ERR-2051：历史合同原始字节在Git交付时被行尾规范化
+
+- 真实c0fff6b CI已完成冷构建，三平台正式Distribution全部通过，但完整测试唯一失败是历史合同SHA：Git blob58de8884（LF）不等于已登记原始25861569（CRLF）。同一Windows工作树原文件、当前从属合同及archive index均指向25861569；捕获两种完整原始表示，逐字证明差异仅CRLF→LF。修复仅为该确切历史文件添加-text/-diff并把未修改的原始字节正确存入Git，保留旧规范化blob和原始哈希断言，不以改测试或放宽摘要掩盖交付缺陷。最终c0本机Windows/Linux完整包与Root通过、freeze05输入逐字未漂移。该Git交付修复不改变Runtime源码或安装物理集合，仍需实际CI检出后核验。
