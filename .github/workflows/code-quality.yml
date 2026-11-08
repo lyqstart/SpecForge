@@ -98,8 +98,6 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-    env:
-      SPECFORGE_CI_REPORT_DIR: ${{ runner.temp }}/specforge-full-regression
     steps:
       - name: 检出代码
         uses: actions/checkout@v4
@@ -118,12 +116,20 @@ jobs:
       - name: 安装依赖
         run: bun install --frozen-lockfile
       - name: 构建当前发布 workspace
+        env:
+          SPECFORGE_CI_REPORT_DIR: ${{ runner.temp }}/specforge-full-regression
         run: node scripts/run-ci-regression.mjs build
       - name: 完整 ESLint
+        env:
+          SPECFORGE_CI_REPORT_DIR: ${{ runner.temp }}/specforge-full-regression
         run: node scripts/run-ci-regression.mjs lint
       - name: 运行当前发布 workspace 测试
+        env:
+          SPECFORGE_CI_REPORT_DIR: ${{ runner.temp }}/specforge-full-regression
         run: node scripts/run-ci-regression.mjs workspace
       - name: 运行当前 Root 测试
+        env:
+          SPECFORGE_CI_REPORT_DIR: ${{ runner.temp }}/specforge-full-regression
         run: node scripts/run-ci-regression.mjs root
       - name: Upload complete raw regression evidence
         if: always()
