@@ -1,0 +1,1130 @@
+$ vitest run "--maxWorkers=1" "tests/property/property-1.test.ts"
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould generate events for all state change operations
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould generate events for all state change operations
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould generate events for all state change operations
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould generate events for all state change operations
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould generate events for all state change operations
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould generate events for all state change operations
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould generate events for all state change operations
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould generate events for all state change operations
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould generate events for all state change operations
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould generate events for all state change operations
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould generate events for all state change operations
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould generate events for all state change operations
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould generate events for all state change operations
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould generate events for all state change operations
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould generate events for all state change operations
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould generate events for all state change operations
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould generate events for all state change operations
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould generate events for all state change operations
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould generate events for all state change operations
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould generate events for all state change operations
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould generate events for all state change operations
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould generate events for all state change operations
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould generate events for all state change operations
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould generate events for all state change operations
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould generate events for all state change operations
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould generate events for all state change operations
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould generate events for all state change operations
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould generate events for all state change operations
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould generate events for all state change operations
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould generate events for all state change operations
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould generate events for all state change operations
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould generate events for all state change operations
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould generate events for all state change operations
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould generate events for all state change operations
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould generate events for all state change operations
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould generate events for all state change operations
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould generate events for all state change operations
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould generate events for all state change operations
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould generate events for all state change operations
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould generate events for all state change operations
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould generate events for all state change operations
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould generate events for all state change operations
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould generate events for all state change operations
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould generate events for all state change operations
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould generate events for all state change operations
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould generate events for all state change operations
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould generate events for all state change operations
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould generate events for all state change operations
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould generate events for all state change operations
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould generate events for all state change operations
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould generate events for all state change operations
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould generate events for all state change operations
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould generate events for all state change operations
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould generate events for all state change operations
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould generate events for all state change operations
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould generate events for all state change operations
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould generate events for all state change operations
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould generate events for all state change operations
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould generate events for all state change operations
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould generate events for all state change operations
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould generate events for all state change operations
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould generate events for all state change operations
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould generate events for all state change operations
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould generate events for all state change operations
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould generate events for all state change operations
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould publish all events through EventBus
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould publish all events through EventBus
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould publish all events through EventBus
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould publish all events through EventBus
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould publish all events through EventBus
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould publish all events through EventBus
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould publish all events through EventBus
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould publish all events through EventBus
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould publish all events through EventBus
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould publish all events through EventBus
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould publish all events through EventBus
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould publish all events through EventBus
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould publish all events through EventBus
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould publish all events through EventBus
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould publish all events through EventBus
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould publish all events through EventBus
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould publish all events through EventBus
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould publish all events through EventBus
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould publish all events through EventBus
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould publish all events through EventBus
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould publish all events through EventBus
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould publish all events through EventBus
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould publish all events through EventBus
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould publish all events through EventBus
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould publish all events through EventBus
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould publish all events through EventBus
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould publish all events through EventBus
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould publish all events through EventBus
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould publish all events through EventBus
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould publish all events through EventBus
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould publish all events through EventBus
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould publish all events through EventBus
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould publish all events through EventBus
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould publish all events through EventBus
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould publish all events through EventBus
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould publish all events through EventBus
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould publish all events through EventBus
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould publish all events through EventBus
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould publish all events through EventBus
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould publish all events through EventBus
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould publish all events through EventBus
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould publish all events through EventBus
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould publish all events through EventBus
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould publish all events through EventBus
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould publish all events through EventBus
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould publish all events through EventBus
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould publish all events through EventBus
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould publish all events through EventBus
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould publish all events through EventBus
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould publish all events through EventBus
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould publish all events through EventBus
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould publish all events through EventBus
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould publish all events through EventBus
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould publish all events through EventBus
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould publish all events through EventBus
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould publish all events through EventBus
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould publish all events through EventBus
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould publish all events through EventBus
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould publish all events through EventBus
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould publish all events through EventBus
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould publish all events through EventBus
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould publish all events through EventBus
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould publish all events through EventBus
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould publish all events through EventBus
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.1: All state changes produce events[2m > [22m[2mshould publish all events through EventBus
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould generate UUIDv7 eventIds
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould generate monotonically non-decreasing timestamps
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould generate monotonically non-decreasing timestamps
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould generate monotonically non-decreasing timestamps
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould generate monotonically non-decreasing timestamps
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould generate monotonically non-decreasing timestamps
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould generate monotonically non-decreasing timestamps
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould generate monotonically non-decreasing timestamps
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould generate monotonically non-decreasing timestamps
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould generate monotonically non-decreasing timestamps
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould generate monotonically non-decreasing timestamps
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould generate monotonically non-decreasing timestamps
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould generate monotonically non-decreasing timestamps
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould generate monotonically non-decreasing timestamps
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould generate monotonically non-decreasing timestamps
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould generate monotonically non-decreasing timestamps
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould generate monotonically non-decreasing timestamps
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould generate monotonically non-decreasing timestamps
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould generate monotonically non-decreasing timestamps
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould generate monotonically non-decreasing timestamps
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould generate monotonically non-decreasing timestamps
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould generate monotonically non-decreasing timestamps
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould generate monotonically non-decreasing timestamps
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould generate monotonically non-decreasing timestamps
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould generate monotonically non-decreasing timestamps
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould generate monotonically non-decreasing timestamps
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould generate monotonically non-decreasing timestamps
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould generate monotonically non-decreasing timestamps
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould generate monotonically non-decreasing timestamps
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould generate monotonically non-decreasing timestamps
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould generate monotonically non-decreasing timestamps
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould generate monotonically non-decreasing timestamps
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould generate monotonically non-decreasing timestamps
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould generate monotonically non-decreasing timestamps
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould generate monotonically non-decreasing timestamps
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould generate monotonically non-decreasing timestamps
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould generate monotonically non-decreasing timestamps
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould have non-empty projectId
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould have non-empty projectId
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould have non-empty projectId
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould have non-empty projectId
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould have non-empty projectId
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould have non-empty projectId
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould have non-empty projectId
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould have non-empty projectId
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould have non-empty projectId
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould have non-empty projectId
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould have non-empty projectId
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould have non-empty projectId
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould have non-empty projectId
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould have non-empty projectId
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould have non-empty projectId
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould have non-empty projectId
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould have non-empty projectId
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould have non-empty projectId
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould have non-empty projectId
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould have non-empty projectId
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould have non-empty projectId
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould have non-empty projectId
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould have non-empty projectId
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould have non-empty projectId
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould have non-empty projectId
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould have non-empty projectId
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould have non-empty projectId
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould have non-empty projectId
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould have non-empty projectId
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould have non-empty projectId
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould have non-empty projectId
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould have non-empty projectId
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould have action and payload
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould have action and payload
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould have action and payload
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould have action and payload
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould have action and payload
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould have action and payload
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould have action and payload
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould have action and payload
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould have action and payload
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould have action and payload
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould have action and payload
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould have action and payload
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould have action and payload
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould have action and payload
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould have action and payload
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould have action and payload
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould have action and payload
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould have action and payload
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould have action and payload
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould have action and payload
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould have action and payload
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould have action and payload
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould have action and payload
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould have action and payload
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould have action and payload
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould have action and payload
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould have action and payload
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould have action and payload
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould have action and payload
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould have action and payload
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould have action and payload
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.2: Events contain all required context[2m > [22m[2mshould have action and payload
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.3: Events persisted to WAL[2m > [22m[2mshould persist events to WAL
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.3: Events persisted to WAL[2m > [22m[2mshould persist events to WAL
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.3: Events persisted to WAL[2m > [22m[2mshould persist events to WAL
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.3: Events persisted to WAL[2m > [22m[2mshould persist events to WAL
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.3: Events persisted to WAL[2m > [22m[2mshould persist events to WAL
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.3: Events persisted to WAL[2m > [22m[2mshould persist events to WAL
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.3: Events persisted to WAL[2m > [22m[2mshould persist events to WAL
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.3: Events persisted to WAL[2m > [22m[2mshould persist events to WAL
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.3: Events persisted to WAL[2m > [22m[2mshould persist events to WAL
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.3: Events persisted to WAL[2m > [22m[2mshould persist events to WAL
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.3: Events persisted to WAL[2m > [22m[2mshould persist events to WAL
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.3: Events persisted to WAL[2m > [22m[2mshould persist events to WAL
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.3: Events persisted to WAL[2m > [22m[2mshould persist events to WAL
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.3: Events persisted to WAL[2m > [22m[2mshould persist events to WAL
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.3: Events persisted to WAL[2m > [22m[2mshould persist events to WAL
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.3: Events persisted to WAL[2m > [22m[2mshould persist events to WAL
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.3: Events persisted to WAL[2m > [22m[2mshould persist events to WAL
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.3: Events persisted to WAL[2m > [22m[2mshould persist events to WAL
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.3: Events persisted to WAL[2m > [22m[2mshould persist events to WAL
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.3: Events persisted to WAL[2m > [22m[2mshould persist events to WAL
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.3: Events persisted to WAL[2m > [22m[2mshould persist events to WAL
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.3: Events persisted to WAL[2m > [22m[2mshould persist events to WAL
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.3: Events persisted to WAL[2m > [22m[2mshould persist events to WAL
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.3: Events persisted to WAL[2m > [22m[2mshould persist events to WAL
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.3: Events persisted to WAL[2m > [22m[2mshould persist events to WAL
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.3: Events persisted to WAL[2m > [22m[2mshould persist events to WAL
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.3: Events persisted to WAL[2m > [22m[2mshould persist events to WAL
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.3: Events persisted to WAL[2m > [22m[2mshould persist events to WAL
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.3: Events persisted to WAL[2m > [22m[2mshould persist events to WAL
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.3: Events persisted to WAL[2m > [22m[2mshould persist events to WAL
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.3: Events persisted to WAL[2m > [22m[2mshould persist events to WAL
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.3: Events persisted to WAL[2m > [22m[2mshould persist events to WAL
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.3: Events persisted to WAL[2m > [22m[2mshould persist events to WAL
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.3: Events persisted to WAL[2m > [22m[2mshould persist events to WAL
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.3: Events persisted to WAL[2m > [22m[2mshould persist events to WAL
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.3: Events persisted to WAL[2m > [22m[2mshould persist events to WAL
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.3: Events persisted to WAL[2m > [22m[2mshould persist events to WAL
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.3: Events persisted to WAL[2m > [22m[2mshould maintain event ordering in WAL
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.3: Events persisted to WAL[2m > [22m[2mshould maintain event ordering in WAL
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.3: Events persisted to WAL[2m > [22m[2mshould maintain event ordering in WAL
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.3: Events persisted to WAL[2m > [22m[2mshould maintain event ordering in WAL
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.3: Events persisted to WAL[2m > [22m[2mshould maintain event ordering in WAL
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.3: Events persisted to WAL[2m > [22m[2mshould maintain event ordering in WAL
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.4: No bypass paths[2m > [22m[2mshould require EventBus for SessionRegistry changes
+[22m[39m[SessionRegistry] WAL not injected — running in memory-only mode
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.4: No bypass paths[2m > [22m[2mshould flow all state changes through EventBus
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.4: No bypass paths[2m > [22m[2mshould flow all state changes through EventBus
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.4: No bypass paths[2m > [22m[2mshould flow all state changes through EventBus
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.4: No bypass paths[2m > [22m[2mshould flow all state changes through EventBus
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.4: No bypass paths[2m > [22m[2mshould flow all state changes through EventBus
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.4: No bypass paths[2m > [22m[2mshould flow all state changes through EventBus
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.4: No bypass paths[2m > [22m[2mshould flow all state changes through EventBus
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.4: No bypass paths[2m > [22m[2mshould flow all state changes through EventBus
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.4: No bypass paths[2m > [22m[2mshould flow all state changes through EventBus
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.4: No bypass paths[2m > [22m[2mshould flow all state changes through EventBus
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.4: No bypass paths[2m > [22m[2mshould flow all state changes through EventBus
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.4: No bypass paths[2m > [22m[2mshould flow all state changes through EventBus
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.4: No bypass paths[2m > [22m[2mshould flow all state changes through EventBus
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.4: No bypass paths[2m > [22m[2mshould flow all state changes through EventBus
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.4: No bypass paths[2m > [22m[2mshould flow all state changes through EventBus
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.4: No bypass paths[2m > [22m[2mshould flow all state changes through EventBus
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.4: No bypass paths[2m > [22m[2mshould flow all state changes through EventBus
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.4: No bypass paths[2m > [22m[2mshould flow all state changes through EventBus
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.4: No bypass paths[2m > [22m[2mshould flow all state changes through EventBus
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.4: No bypass paths[2m > [22m[2mshould flow all state changes through EventBus
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.4: No bypass paths[2m > [22m[2mshould flow all state changes through EventBus
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.4: No bypass paths[2m > [22m[2mshould flow all state changes through EventBus
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.4: No bypass paths[2m > [22m[2mshould flow all state changes through EventBus
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.4: No bypass paths[2m > [22m[2mshould flow all state changes through EventBus
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.4: No bypass paths[2m > [22m[2mshould flow all state changes through EventBus
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.4: No bypass paths[2m > [22m[2mshould flow all state changes through EventBus
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.4: No bypass paths[2m > [22m[2mshould flow all state changes through EventBus
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.4: No bypass paths[2m > [22m[2mshould flow all state changes through EventBus
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.4: No bypass paths[2m > [22m[2mshould flow all state changes through EventBus
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.4: No bypass paths[2m > [22m[2mshould flow all state changes through EventBus
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.4: No bypass paths[2m > [22m[2mshould flow all state changes through EventBus
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.4: No bypass paths[2m > [22m[2mshould flow all state changes through EventBus
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.5: Session operations produce events[2m > [22m[2mshould produce event on session registration
+[22m[39m[SessionRegistry] WAL not injected — running in memory-only mode
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.5: Session operations produce events[2m > [22m[2mshould produce event on session activation
+[22m[39m[SessionRegistry] WAL not injected — running in memory-only mode
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.5: Session operations produce events[2m > [22m[2mshould produce event on session termination
+[22m[39m[SessionRegistry] WAL not injected — running in memory-only mode
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.6: Unique eventIds[2m > [22m[2mshould generate unique eventIds across multiple operations
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.6: Unique eventIds[2m > [22m[2mshould generate unique eventIds across multiple operations
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.6: Unique eventIds[2m > [22m[2mshould generate unique eventIds across multiple operations
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.6: Unique eventIds[2m > [22m[2mshould generate unique eventIds across multiple operations
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.6: Unique eventIds[2m > [22m[2mshould generate unique eventIds across multiple operations
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.6: Unique eventIds[2m > [22m[2mshould generate unique eventIds across multiple operations
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.6: Unique eventIds[2m > [22m[2mshould generate unique eventIds across multiple operations
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.6: Unique eventIds[2m > [22m[2mshould generate unique eventIds across multiple operations
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.6: Unique eventIds[2m > [22m[2mshould generate unique eventIds across multiple operations
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.6: Unique eventIds[2m > [22m[2mshould generate unique eventIds across multiple operations
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.6: Unique eventIds[2m > [22m[2mshould generate unique eventIds across multiple operations
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.6: Unique eventIds[2m > [22m[2mshould generate unique eventIds across multiple operations
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.6: Unique eventIds[2m > [22m[2mshould generate unique eventIds across multiple operations
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.6: Unique eventIds[2m > [22m[2mshould generate unique eventIds across multiple operations
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.6: Unique eventIds[2m > [22m[2mshould generate unique eventIds across multiple operations
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.6: Unique eventIds[2m > [22m[2mshould generate unique eventIds across multiple operations
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.6: Unique eventIds[2m > [22m[2mshould generate unique eventIds across multiple operations
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.6: Unique eventIds[2m > [22m[2mshould generate unique eventIds across multiple operations
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.6: Unique eventIds[2m > [22m[2mshould generate unique eventIds across multiple operations
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.6: Unique eventIds[2m > [22m[2mshould generate unique eventIds across multiple operations
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.6: Unique eventIds[2m > [22m[2mshould generate unique eventIds across multiple operations
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.6: Unique eventIds[2m > [22m[2mshould generate unique eventIds across multiple operations
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.6: Unique eventIds[2m > [22m[2mshould generate unique eventIds across multiple operations
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.6: Unique eventIds[2m > [22m[2mshould generate unique eventIds across multiple operations
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.6: Unique eventIds[2m > [22m[2mshould generate unique eventIds across multiple operations
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.6: Unique eventIds[2m > [22m[2mshould generate unique eventIds across multiple operations
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.6: Unique eventIds[2m > [22m[2mshould generate unique eventIds across multiple operations
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.6: Unique eventIds[2m > [22m[2mshould generate unique eventIds across multiple operations
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.6: Unique eventIds[2m > [22m[2mshould generate unique eventIds across multiple operations
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.6: Unique eventIds[2m > [22m[2mshould generate unique eventIds across multiple operations
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.6: Unique eventIds[2m > [22m[2mshould generate unique eventIds across multiple operations
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.6: Unique eventIds[2m > [22m[2mshould generate unique eventIds across multiple operations
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.6: Unique eventIds[2m > [22m[2mshould generate unique eventIds across multiple operations
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.6: Unique eventIds[2m > [22m[2mshould generate unique eventIds across multiple operations
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.6: Unique eventIds[2m > [22m[2mshould generate unique eventIds across multiple operations
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.6: Unique eventIds[2m > [22m[2mshould generate unique eventIds across multiple operations
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.6: Unique eventIds[2m > [22m[2mshould generate unique eventIds across multiple operations
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.6: Unique eventIds[2m > [22m[2mshould generate unique eventIds across multiple operations
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.6: Unique eventIds[2m > [22m[2mshould generate unique eventIds across multiple operations
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.6: Unique eventIds[2m > [22m[2mshould generate unique eventIds across multiple operations
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.6: Unique eventIds[2m > [22m[2mshould generate unique eventIds across multiple operations
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.6: Unique eventIds[2m > [22m[2mshould generate unique eventIds across multiple operations
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.6: Unique eventIds[2m > [22m[2mshould generate unique eventIds across multiple operations
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.6: Unique eventIds[2m > [22m[2mshould generate unique eventIds across multiple operations
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.6: Unique eventIds[2m > [22m[2mshould generate unique eventIds across multiple operations
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.6: Unique eventIds[2m > [22m[2mshould generate unique eventIds across multiple operations
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.6: Unique eventIds[2m > [22m[2mshould generate unique eventIds across multiple operations
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.6: Unique eventIds[2m > [22m[2mshould generate unique eventIds across multiple operations
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.6: Unique eventIds[2m > [22m[2mshould generate unique eventIds across multiple operations
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.6: Unique eventIds[2m > [22m[2mshould generate unique eventIds across multiple operations
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.6: Unique eventIds[2m > [22m[2mshould generate unique eventIds across multiple operations
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.6: Unique eventIds[2m > [22m[2mshould generate unique eventIds across multiple operations
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.6: Unique eventIds[2m > [22m[2mshould generate unique eventIds across multiple operations
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.6: Unique eventIds[2m > [22m[2mshould generate unique eventIds across multiple operations
+[22m[39m[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.6: Unique eventIds[2m > [22m[2mshould generate unique eventIds across multiple operations
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+[90mstderr[2m | tests/property/property-1.test.ts[2m > [22m[2mProperty 1: Single Source of Truth[2m > [22m[2mProperty 1.6: Unique eventIds[2m > [22m[2mshould generate unique eventIds across multiple operations
+[22m[39m[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+

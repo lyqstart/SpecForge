@@ -1,0 +1,25 @@
+{
+  "utc": "2026-11-09T13:44:05.184Z",
+  "stage": "afterEach",
+  "pid": 2724,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "controlled detached Git bootstrap > rejects a tracked hard-link alias and retains bytes at both names",
+    "start_ms": 76188.9119,
+    "duration_ms": 1778.931899999996
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "writeFile": 59,
+    "mkdir": 117,
+    "readFile": 684,
+    "open": 106,
+    "readdir": 1591,
+    "appendFile": 1169,
+    "stat": 6
+  },
+  "rows": []
+}

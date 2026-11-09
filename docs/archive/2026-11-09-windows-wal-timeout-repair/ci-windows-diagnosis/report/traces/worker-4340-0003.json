@@ -1,0 +1,22 @@
+{
+  "utc": "2026-11-09T13:32:15.674Z",
+  "stage": "afterEach",
+  "pid": 4340,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "runCloseGate semantic closure hard gate > fails closed when .semantic_closure.json is missing",
+    "start_ms": 449.6277,
+    "duration_ms": 37.99919999999997
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 8,
+    "writeFile": 36,
+    "readFile": 73,
+    "readdir": 2
+  },
+  "rows": []
+}

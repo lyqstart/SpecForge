@@ -1,0 +1,20 @@
+{
+  "utc": "2026-11-09T14:11:07.721Z",
+  "platform_verifier": {
+    "original_sha256": "7fd8967ae18d777e9ef93d81467a308ff653e7d1ed456ff0eb506def9cbe6f02",
+    "new_sha256": "479eea6144a383c3c52131e71229721754c0dd258ff4429a5eefe1608266cdfb",
+    "changes": [
+      "Expected actual source inventory now includes exactly one added TypeScript test:632 files",
+      "Require RUNNER_TEMP selection context and exact frozen entry bytes for every phase"
+    ]
+  },
+  "collector": {
+    "original_and_copy_sha256": "34b50eed0b13ee22f98dfa0c411c137d73affad4737e95e08e3371aa46f1a132",
+    "source": "../2026-11-09-plugin-registration-recovery/collect-structured.cjs"
+  },
+  "comparison": {
+    "original_and_copy_sha256": "c99d72a7fd527f3f3f28d1e77c9d4479282b290ead888941319d07ca89501fe7",
+    "source": "../2026-11-09-plugin-registration-recovery/compare-qualification.cjs",
+    "unchanged_historical_suite_case_canaries": true
+  }
+}

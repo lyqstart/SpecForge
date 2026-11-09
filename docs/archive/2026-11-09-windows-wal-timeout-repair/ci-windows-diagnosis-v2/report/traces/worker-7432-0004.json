@@ -1,0 +1,23 @@
+{
+  "utc": "2026-11-09T13:42:18.251Z",
+  "stage": "afterEach",
+  "pid": 7432,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "P0 Contract consumer atomic merge > rejects a full Trace matrix masquerading as Trace Delta",
+    "start_ms": 530.2552,
+    "duration_ms": 42.98750000000007
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 62,
+    "writeFile": 77,
+    "readFile": 167,
+    "stat": 56,
+    "readdir": 22
+  },
+  "rows": []
+}

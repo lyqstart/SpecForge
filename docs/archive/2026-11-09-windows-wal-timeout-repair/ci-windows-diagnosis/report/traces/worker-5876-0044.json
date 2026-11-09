@@ -1,0 +1,17 @@
+{
+  "utc": "2026-11-09T13:31:28.844Z",
+  "stage": "afterEach",
+  "pid": 5876,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "Cross-platform path handling > handles Windows-style project paths on any platform",
+    "start_ms": 307.545,
+    "duration_ms": 0.13939999999996644
+  },
+  "truncated": false,
+  "all_fs_call_counts": {},
+  "rows": []
+}

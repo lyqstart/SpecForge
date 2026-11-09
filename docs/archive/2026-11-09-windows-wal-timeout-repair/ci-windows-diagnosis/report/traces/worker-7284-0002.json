@@ -1,0 +1,17 @@
+{
+  "utc": "2026-11-09T13:33:46.690Z",
+  "stage": "afterEach",
+  "pid": 7284,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "Phase 11 Impact Scope field-kind contract > accepts Module code only in affected_modules and real Contract IDs in module_contract_refs",
+    "start_ms": 348.8531,
+    "duration_ms": 2.4816999999999894
+  },
+  "truncated": false,
+  "all_fs_call_counts": {},
+  "rows": []
+}

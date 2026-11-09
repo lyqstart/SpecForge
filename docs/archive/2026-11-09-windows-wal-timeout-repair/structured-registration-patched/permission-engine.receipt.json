@@ -1,0 +1,20 @@
+{
+  "owner": "permission-engine",
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "test",
+    "--",
+    "--maxWorkers=1",
+    "--minWorkers=1",
+    "--reporter=json",
+    "--outputFile=D:\\code\\SpecForge\\docs\\archive\\2026-11-09-windows-wal-timeout-repair\\structured-registration-patched\\permission-engine.vitest.json"
+  ],
+  "cwd": "D:\\code\\SpecForge\\.wal-patched-a01\\packages\\permission-engine",
+  "context_sha256": "3fd2e6309be2cd0442b33c67e04b3a1517bd8305874a22a2b6ae612e9bc61b42",
+  "started_utc": "2026-11-09T14:25:43.934Z",
+  "finished_utc": "2026-11-09T14:26:07.029Z",
+  "exit": 0,
+  "stdout_sha256": "6d93f8146e8ba1374e80794539e08ee7548da5ba6f8f5fcbf61450d3e87ce77d",
+  "stderr_sha256": "49ede3fa5ffa164ef6187b4444d070629073e52f732c05e7bb2544362d3f82af"
+}

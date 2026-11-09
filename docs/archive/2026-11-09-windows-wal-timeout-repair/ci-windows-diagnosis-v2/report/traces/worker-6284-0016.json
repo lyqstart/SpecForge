@@ -1,0 +1,23 @@
+{
+  "utc": "2026-11-09T13:42:26.026Z",
+  "stage": "afterEach",
+  "pid": 6284,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "State Manager Integration > should rebuild state from events",
+    "start_ms": 1423.5288,
+    "duration_ms": 18.22759999999994
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 8,
+    "open": 4,
+    "writeFile": 4,
+    "readFile": 18,
+    "readdir": 4
+  },
+  "rows": []
+}

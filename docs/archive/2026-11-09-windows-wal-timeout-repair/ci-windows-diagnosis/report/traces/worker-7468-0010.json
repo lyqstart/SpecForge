@@ -1,0 +1,25 @@
+{
+  "utc": "2026-11-09T13:32:39.319Z",
+  "stage": "afterEach",
+  "pid": 7468,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "controlled runtime project configuration owner > rejects invalid candidate without document changes: {\"schema_version\":\"fake\"}",
+    "start_ms": 701.8957,
+    "duration_ms": 9.313199999999938
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "readFile": 86,
+    "readdir": 17,
+    "mkdir": 14,
+    "writeFile": 14,
+    "open": 6,
+    "stat": 1,
+    "appendFile": 1
+  },
+  "rows": []
+}

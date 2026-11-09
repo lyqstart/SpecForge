@@ -1,0 +1,21 @@
+{
+  "utc": "2026-11-09T13:31:27.771Z",
+  "stage": "afterEach",
+  "pid": 6344,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "CAS compression for oversized payloads > should return 413 for oversized JSON without data field",
+    "start_ms": 623.9501,
+    "duration_ms": 8.842199999999934
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 9,
+    "writeFile": 6,
+    "readFile": 5
+  },
+  "rows": []
+}

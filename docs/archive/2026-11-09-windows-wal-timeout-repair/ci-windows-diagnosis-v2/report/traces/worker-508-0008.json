@@ -1,0 +1,25 @@
+{
+  "utc": "2026-11-09T13:46:22.185Z",
+  "stage": "afterEach",
+  "pid": 508,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "current Runtime persistence boundary > makes direct WAL reads fail closed on corrupt input",
+    "start_ms": 416.2265,
+    "duration_ms": 3.0264999999999986
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "readFile": 32,
+    "readdir": 7,
+    "mkdir": 5,
+    "writeFile": 7,
+    "open": 4,
+    "stat": 1,
+    "appendFile": 1
+  },
+  "rows": []
+}

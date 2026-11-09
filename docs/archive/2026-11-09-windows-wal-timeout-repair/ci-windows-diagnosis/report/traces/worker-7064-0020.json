@@ -1,0 +1,25 @@
+{
+  "utc": "2026-11-09T13:32:12.028Z",
+  "stage": "afterEach",
+  "pid": 7064,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "authoritative history integrity at configuration consumer > preserves active task across real rotation, recreated=true",
+    "start_ms": 2806.5255,
+    "duration_ms": 158.7230999999997
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "readFile": 421,
+    "readdir": 128,
+    "mkdir": 59,
+    "writeFile": 60,
+    "open": 77,
+    "stat": 36,
+    "appendFile": 36
+  },
+  "rows": []
+}

@@ -1,0 +1,21 @@
+{
+  "utc": "2026-11-09T13:45:42.036Z",
+  "stage": "afterEach",
+  "pid": 2588,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "Fresh-04 prospective module_definition consumer > fails closed on malformed candidate JSON instead of silently using formal code_paths",
+    "start_ms": 429.9262,
+    "duration_ms": 36.96890000000002
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 42,
+    "writeFile": 42,
+    "readFile": 92
+  },
+  "rows": []
+}

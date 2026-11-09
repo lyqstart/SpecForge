@@ -1,0 +1,25 @@
+{
+  "utc": "2026-11-09T13:45:09.604Z",
+  "stage": "afterEach",
+  "pid": 3912,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "StateManager > getCurrentState > should reflect updates from appendEvent",
+    "start_ms": 522.8972,
+    "duration_ms": 17.626899999999978
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 41,
+    "readFile": 113,
+    "readdir": 34,
+    "writeFile": 19,
+    "open": 24,
+    "appendFile": 6,
+    "stat": 5
+  },
+  "rows": []
+}

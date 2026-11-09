@@ -1,0 +1,23 @@
+{
+  "utc": "2026-11-09T13:32:02.400Z",
+  "stage": "afterEach",
+  "pid": 1720,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "affirmative implementation facts > rejects a real contradiction: 本项目为绿地新建。",
+    "start_ms": 943.7053,
+    "duration_ms": 22.73020000000008
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 30,
+    "writeFile": 80,
+    "readFile": 90,
+    "stat": 20,
+    "readdir": 10
+  },
+  "rows": []
+}

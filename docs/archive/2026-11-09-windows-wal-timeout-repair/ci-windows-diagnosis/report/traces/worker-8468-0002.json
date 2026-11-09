@@ -1,0 +1,19 @@
+{
+  "utc": "2026-11-09T13:33:56.509Z",
+  "stage": "afterEach",
+  "pid": 8468,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "SpecForge closed-loop governance contract > defines one canonical pre-change and closed-loop sequence",
+    "start_ms": 274.4753,
+    "duration_ms": 3.5896999999999935
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "readFile": 1
+  },
+  "rows": []
+}

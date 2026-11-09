@@ -1,0 +1,24 @@
+{
+  "utc": "2026-11-09T13:31:20.991Z",
+  "stage": "afterEach",
+  "pid": 6912,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "verification Runtime plan/permission owner (unit dependencies) > rejects an actual role mismatch and caller-supplied commands before private writes",
+    "start_ms": 1541.2566,
+    "duration_ms": 325.1046000000001
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 40,
+    "writeFile": 37,
+    "readdir": 9,
+    "readFile": 22,
+    "open": 18,
+    "stat": 1
+  },
+  "rows": []
+}

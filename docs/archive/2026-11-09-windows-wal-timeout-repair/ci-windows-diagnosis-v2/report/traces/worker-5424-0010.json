@@ -1,0 +1,17 @@
+{
+  "utc": "2026-11-09T13:42:04.018Z",
+  "stage": "afterEach",
+  "pid": 5424,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "v1.1 Live Daemon OpenCode Write Guard E2E > A4: allowed_write_files match → allowed > daemon reads real work_item.json and allows write",
+    "start_ms": 475.3444,
+    "duration_ms": 7.122200000000021
+  },
+  "truncated": false,
+  "all_fs_call_counts": {},
+  "rows": []
+}

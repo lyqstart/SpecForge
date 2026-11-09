@@ -1,0 +1,21 @@
+{
+  "utc": "2026-11-09T13:46:27.319Z",
+  "stage": "afterEach",
+  "pid": 8168,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "Phase 11 Module Definition Candidate canonical contract > schema gate helper validates frozen Module Definition candidates",
+    "start_ms": 642.7583,
+    "duration_ms": 13.701700000000073
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 2,
+    "writeFile": 2,
+    "readFile": 2
+  },
+  "rows": []
+}

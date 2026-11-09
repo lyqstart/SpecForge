@@ -1,0 +1,22 @@
+{
+  "utc": "2026-11-09T13:46:38.319Z",
+  "stage": "afterEach",
+  "pid": 3632,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "sf_trace_matrix canonical trace parsing > reports a canonical DD that no task refs field covers",
+    "start_ms": 321.9089,
+    "duration_ms": 15.814300000000003
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 3,
+    "writeFile": 7,
+    "readFile": 14,
+    "readdir": 4
+  },
+  "rows": []
+}

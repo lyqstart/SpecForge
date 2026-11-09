@@ -1,0 +1,25 @@
+{
+  "utc": "2026-11-09T13:45:15.216Z",
+  "stage": "afterEach",
+  "pid": 604,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "Property 6: Idempotent Recovery > should validate idempotent recovery with various event sequences",
+    "start_ms": 526.5072,
+    "duration_ms": 40.08219999999994
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "readFile": 57,
+    "readdir": 16,
+    "mkdir": 8,
+    "writeFile": 12,
+    "open": 17,
+    "stat": 5,
+    "appendFile": 5
+  },
+  "rows": []
+}

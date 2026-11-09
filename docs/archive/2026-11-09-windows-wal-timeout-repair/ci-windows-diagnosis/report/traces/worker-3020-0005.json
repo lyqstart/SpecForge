@@ -1,0 +1,25 @@
+{
+  "utc": "2026-11-09T13:32:56.192Z",
+  "stage": "afterEach",
+  "pid": 3020,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "Property 20: recovery preserves complete history and rejects loss > rejects missing-reference with zero authority writes",
+    "start_ms": 706.2379,
+    "duration_ms": 56.218200000000024
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "readFile": 120,
+    "readdir": 37,
+    "mkdir": 12,
+    "writeFile": 16,
+    "open": 23,
+    "stat": 9,
+    "appendFile": 10
+  },
+  "rows": []
+}

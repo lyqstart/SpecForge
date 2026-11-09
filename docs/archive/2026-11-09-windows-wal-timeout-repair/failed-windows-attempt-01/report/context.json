@@ -1,0 +1,43 @@
+{
+  "lock_sha256": "3f60323fd1c3303673a8d79d4253257198725d247d3e6551e7648d0826db4438",
+  "temporary_directory": {
+    "requested": "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp",
+    "canonical": "C:\\Users\\runneradmin\\AppData\\Local\\Temp",
+    "ancestors": [
+      {
+        "path": "C:\\",
+        "kind": "directory"
+      },
+      {
+        "path": "C:\\Users",
+        "kind": "directory"
+      },
+      {
+        "path": "C:\\Users\\RUNNER~1",
+        "kind": "directory"
+      },
+      {
+        "path": "C:\\Users\\RUNNER~1\\AppData",
+        "kind": "directory"
+      },
+      {
+        "path": "C:\\Users\\RUNNER~1\\AppData\\Local",
+        "kind": "directory"
+      },
+      {
+        "path": "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp",
+        "kind": "directory"
+      }
+    ]
+  },
+  "source_commit": "48fc9057014413bd712c33f710b794f8bf6f273a",
+  "platform": "win32",
+  "arch": "x64",
+  "os_release": "10.0.26100",
+  "node": "v24.19.0",
+  "node_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "node_sha256": "3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237",
+  "bun": "1.3.14",
+  "bun_path": "C:\\Users\\runneradmin\\.bun\\bin\\bun.exe",
+  "bun_sha256": "0187f68d843f825a72ada4a7eca60db896ed753759a7f8252edcd31ac1bf1b9c"
+}

@@ -1,0 +1,19 @@
+{
+  "owner": "daemon-core",
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "test",
+    "--",
+    "--maxWorkers=1",
+    "--reporter=json",
+    "--outputFile=D:\\code\\SpecForge\\docs\\archive\\2026-11-09-windows-wal-timeout-repair\\structured-registration-patched\\daemon-core.vitest.json"
+  ],
+  "cwd": "D:\\code\\SpecForge\\.wal-patched-a01\\packages\\daemon-core",
+  "context_sha256": "3fd2e6309be2cd0442b33c67e04b3a1517bd8305874a22a2b6ae612e9bc61b42",
+  "started_utc": "2026-11-09T14:29:21.928Z",
+  "finished_utc": "2026-11-09T14:37:41.705Z",
+  "exit": 0,
+  "stdout_sha256": "8a7a43e15c724dee51a685fcfc069dd23e6f572d7f56413bdde1d9415c81642b",
+  "stderr_sha256": "7b4ea75bf098c006a79dd3419f6e2d5d63f59bcb25117d9f78f1cb839a8a645d"
+}

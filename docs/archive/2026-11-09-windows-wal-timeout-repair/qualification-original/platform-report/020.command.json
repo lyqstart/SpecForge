@@ -1,0 +1,16 @@
+{
+  "number": "020",
+  "name": "current-help",
+  "executable": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-wal-A01-original\\temp\\sf-platform-acceptance-rciiDX\\opencode\\sf-user\\bin\\specforge.exe",
+  "args": [
+    "opencode-server",
+    "install-service",
+    "--help",
+    "--json"
+  ],
+  "started_utc": "2026-11-09T13:45:23.233Z",
+  "finished_utc": "2026-11-09T13:45:23.616Z",
+  "inner_exit_code": 0,
+  "signal": null,
+  "spawn_error": null
+}

@@ -1,0 +1,22 @@
+{
+  "utc": "2026-11-09T13:46:23.287Z",
+  "stage": "afterEach",
+  "pid": 8612,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "registered current Contract Candidate owner > rejects immutable or unavailable authoritative state approval_required",
+    "start_ms": 734.8956,
+    "duration_ms": 42.004600000000096
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 141,
+    "writeFile": 114,
+    "readFile": 228,
+    "readdir": 90
+  },
+  "rows": []
+}

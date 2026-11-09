@@ -1,0 +1,1 @@
+$ vitest run "--maxWorkers=1" "--minWorkers=1" ci-runner-temporary-root.test.ts current-crossplatform-ci-contract.test.ts

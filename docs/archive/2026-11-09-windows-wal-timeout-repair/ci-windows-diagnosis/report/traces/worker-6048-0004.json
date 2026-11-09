@@ -1,0 +1,25 @@
+{
+  "utc": "2026-11-09T13:33:41.439Z",
+  "stage": "afterEach",
+  "pid": 6048,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "verification evidence integrity > finds the authoritative close time in a retained rotation segment",
+    "start_ms": 412.0839,
+    "duration_ms": 428.20689999999996
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 7,
+    "writeFile": 10,
+    "readFile": 19,
+    "readdir": 6,
+    "stat": 2,
+    "appendFile": 2,
+    "open": 2
+  },
+  "rows": []
+}

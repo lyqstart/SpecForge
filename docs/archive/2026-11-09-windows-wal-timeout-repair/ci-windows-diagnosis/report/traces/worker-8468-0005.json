@@ -1,0 +1,19 @@
+{
+  "utc": "2026-11-09T13:33:56.514Z",
+  "stage": "afterEach",
+  "pid": 8468,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "SpecForge closed-loop governance contract > loads continuity from AGENTS, Bootstrap and project-status instead of a fixed prompt",
+    "start_ms": 282.0022,
+    "duration_ms": 0.7699999999999818
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "readFile": 4
+  },
+  "rows": []
+}

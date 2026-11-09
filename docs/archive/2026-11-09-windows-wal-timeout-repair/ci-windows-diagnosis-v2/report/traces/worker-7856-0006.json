@@ -1,0 +1,23 @@
+{
+  "utc": "2026-11-09T13:45:16.539Z",
+  "stage": "afterEach",
+  "pid": 7856,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "current project layout boundary > rejects an old root manifest without writing current project state",
+    "start_ms": 710.0506,
+    "duration_ms": 4.922699999999963
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 14,
+    "writeFile": 17,
+    "readFile": 32,
+    "readdir": 3,
+    "open": 1
+  },
+  "rows": []
+}

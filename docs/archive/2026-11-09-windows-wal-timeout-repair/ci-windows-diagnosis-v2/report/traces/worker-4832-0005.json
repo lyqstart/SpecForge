@@ -1,0 +1,21 @@
+{
+  "utc": "2026-11-09T13:45:35.720Z",
+  "stage": "afterEach",
+  "pid": 4832,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "Evidence Manifest schema owner > makes the controlled Artifact Writer emit the owner schema 1.0",
+    "start_ms": 461.8474,
+    "duration_ms": 15.006799999999998
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 6,
+    "writeFile": 3,
+    "readFile": 6
+  },
+  "rows": []
+}

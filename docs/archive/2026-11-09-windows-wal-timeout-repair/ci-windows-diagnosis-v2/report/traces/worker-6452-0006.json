@@ -1,0 +1,22 @@
+{
+  "utc": "2026-11-09T13:44:40.706Z",
+  "stage": "afterEach",
+  "pid": 6452,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "Candidate / approval / state governance > atomically invalidates approval, records gate hashes, blocks, and recovers",
+    "start_ms": 1001.7821,
+    "duration_ms": 28.40289999999993
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 12,
+    "writeFile": 14,
+    "readFile": 28,
+    "readdir": 1
+  },
+  "rows": []
+}

@@ -1,0 +1,21 @@
+{
+  "utc": "2026-11-09T13:33:40.563Z",
+  "stage": "afterEach",
+  "pid": 8664,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "current observability configuration contract > makes daemon and userlevel consumers derive behavior from the same mode",
+    "start_ms": 479.4919,
+    "duration_ms": 102.49270000000001
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "readFile": 9,
+    "mkdir": 44,
+    "writeFile": 37
+  },
+  "rows": []
+}

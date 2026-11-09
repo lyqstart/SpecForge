@@ -1,0 +1,25 @@
+{
+  "utc": "2026-11-09T13:45:42.575Z",
+  "stage": "afterEach",
+  "pid": 2604,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "E1 Chaos Recovery > Multi-project isolation > should keep state isolated between projects",
+    "start_ms": 489.731,
+    "duration_ms": 19.6755
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 20,
+    "writeFile": 23,
+    "readFile": 148,
+    "readdir": 44,
+    "open": 33,
+    "stat": 12,
+    "appendFile": 12
+  },
+  "rows": []
+}

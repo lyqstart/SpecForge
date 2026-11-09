@@ -1,0 +1,19 @@
+{
+  "utc": "2026-11-09T13:46:53.304Z",
+  "stage": "afterEach",
+  "pid": 7912,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "execution-mode and evidence protocol contract > keeps the schema-2 project status valid against bootstrap validation",
+    "start_ms": 290.8374,
+    "duration_ms": 2.5627000000000066
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "readFile": 4
+  },
+  "rows": []
+}

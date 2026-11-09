@@ -1,0 +1,110 @@
+{
+  "utc": "2026-11-09T14:39:23.984Z",
+  "run_id": "CODEX-SF-20261109-WINDOWS-WAL-A01",
+  "mode": "CODEX_DIRECT",
+  "conclusion": "PASS_CURRENT_APPROVED_RELEASE_SCOPE_WITH_CI_TEMP_STORAGE_REPAIR",
+  "qualified_candidate": "3262bc6a2caa60dcc6bcb4c22e918af76c297bca",
+  "base": "48fc9057014413bd712c33f710b794f8bf6f273a",
+  "root_cause_strength": "CORROBORATED for original timeout; CONFIRMED CI root-selection defect and same-workload storage-latency difference",
+  "ownership": "CI entry consumes existing qualification capability; no product runtime architecture extension",
+  "implementation": [
+    {
+      "file": "scripts/run-ci-regression.mjs",
+      "sha256": "c89e5950565e574f61aea6807350e5a73c0da47b08fb27b0c45b194bf1d3140d",
+      "bytes": 6078
+    },
+    {
+      "file": "packages/scope-gate/tests/ci-runner-temporary-root.test.ts",
+      "sha256": "3156b32dd249c8964570b7a5c71faf586f16d904670d41c95d3a19c7af345670",
+      "bytes": 5505
+    },
+    {
+      "file": "packages/scope-gate/tests/fixtures/ci-spawn-environment-probe.cjs",
+      "sha256": "def439d5fb5aba95876f65732cbd03a88d145f2f8ab395b4f51a84b6fe526533",
+      "bytes": 1312
+    }
+  ],
+  "totals": {
+    "original": {
+      "files": 545,
+      "tests": 7411,
+      "passed": 7411,
+      "pending": 0
+    },
+    "patched": {
+      "files": 546,
+      "tests": 7420,
+      "passed": 7420,
+      "pending": 0
+    }
+  },
+  "comparable_files": 545,
+  "new_file_classification": "AB_INCOMPARABLE; all9 independently passed, no fabricated new-failure count",
+  "platforms": [
+    {
+      "platform": "win32",
+      "arch": "x64",
+      "artifact_id": 13681057849,
+      "artifact_digest": "sha256:117d451b0ffed7379752b5890f4b3b1e45c58e08545747f73047ecb7515221bc",
+      "report_location": "ci-candidate-full-windows",
+      "all_four_numeric_phase_exits": 0,
+      "root_passed": 753,
+      "workspace_owners": 11,
+      "lint_files": 632,
+      "lint_errors": 0,
+      "lint_warnings": 0,
+      "helper_typecheck_step": "success"
+    },
+    {
+      "platform": "linux",
+      "arch": "x64",
+      "artifact_id": 13680429475,
+      "artifact_digest": "sha256:7aa44848839f42235900b6d7a774d60a5007396d53dc127dd710d87e787f32c1",
+      "report_location": "ci-candidate-full-linux",
+      "all_four_numeric_phase_exits": 0,
+      "root_passed": 753,
+      "workspace_owners": 11,
+      "lint_files": 632,
+      "lint_errors": 0,
+      "lint_warnings": 0,
+      "helper_typecheck_step": "success"
+    },
+    {
+      "platform": "darwin",
+      "arch": "arm64",
+      "artifact_id": 13681306661,
+      "artifact_digest": "sha256:d87aa97b5a71e64b6cb30f3e313a0e9b4338d3ab2904ce4755d12dc65d6d19d5",
+      "report_location": "ci-candidate-full-macos",
+      "all_four_numeric_phase_exits": 0,
+      "root_passed": 753,
+      "workspace_owners": 11,
+      "lint_files": 632,
+      "lint_errors": 0,
+      "lint_warnings": 0,
+      "helper_typecheck_step": "success"
+    }
+  ],
+  "official_jobs_passed": 12,
+  "complete_cold_phases_per_leg": 7,
+  "production_tests_and_durability_unchanged": true,
+  "installed_files_unchanged": 117,
+  "daemon_pid": 39204,
+  "deployment_performed": false,
+  "authority_audit": "authority-source-audit.json",
+  "diagnostic_limits": "diagnostic-summary.json",
+  "historical_failure": "failed-windows-attempt-01/artifact.zip",
+  "delivery_receipts": "publication-live/delivery.json and publication-live/main-ci/acceptance.json",
+  "status_sha256": "bfd83cbdfa9fcab02621acd1f1b4ab40d31dec188bc6c290d2fbe690331458e5",
+  "limits": [
+    "Exact per-operation timing/random sequence on the original failed runner remains unavailable. Measured controls establish a repairable CI environment defect without claiming a particular storage/antivirus/hypervisor cause.",
+    "No new provider/model-driven business WI,real UI reload or full native attack matrix. Existing plugin/initialization/native acceptance is reused only through verified unchanged source/program/deployment identities.",
+    "Fresh executable build hashes are distinct from actually installed identities. No runtime reinstall or restart is required for this CI-only repair."
+  ],
+  "formal_windows_original_suite": "✓ tests/property/property-1.test.ts (14 tests) 661ms",
+  "evidence_carrier_fault": {
+    "outer_failures_preserved": 3,
+    "original_outer_streams_reconstructed": false,
+    "all_actual_inner_phase_and_owner_numeric_receipts_verified": true,
+    "report": "carrier-evidence-reconciliation.json"
+  }
+}

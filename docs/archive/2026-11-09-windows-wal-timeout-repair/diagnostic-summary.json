@@ -1,0 +1,1198 @@
+{
+  "utc": "2026-11-09T14:14:43.245Z",
+  "classification": "CORROBORATED_CI_TEMP_STORAGE_CAUSE_WITH_DIRECT_NATIVE_IO_CONTROLS",
+  "original_failure_not_relabelled": true,
+  "formal_release_acceptance": false,
+  "v2": {
+    "producer_exit_semantics": "DIAGNOSTIC_EVIDENCE_COLLECTED_NOT_RELEASE_ACCEPTANCE",
+    "inner_exits": [
+      {
+        "name": "build",
+        "exit": 0
+      },
+      {
+        "name": "traced-full-daemon",
+        "exit": 1
+      },
+      {
+        "name": "plain-focused",
+        "exit": 0
+      },
+      {
+        "name": "native-io",
+        "exit": 0
+      }
+    ],
+    "suite_load_failures": 35,
+    "diagnostic_error_blocks": 31,
+    "all_error_blocks": "EEXIST in diagnostic trace filename; PID plus hook-local counter does not ensure uniqueness across full worker lifetime",
+    "property_spans": [
+      {
+        "name": "Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should generate events for all state change operations",
+        "duration_ms": 643.7254,
+        "sync_count": 100,
+        "io": {
+          "readdir": {
+            "count": 101,
+            "total_ms": 25.075400000000514,
+            "max_ms": 1.1517000000000053
+          },
+          "readFile": {
+            "count": 200,
+            "total_ms": 49.67589999999967,
+            "max_ms": 0.5395000000000323
+          },
+          "mkdir": {
+            "count": 1,
+            "total_ms": 0.3439000000000192,
+            "max_ms": 0.3439000000000192
+          },
+          "stat": {
+            "count": 100,
+            "total_ms": 9.393400000000497,
+            "max_ms": 0.17199999999996862
+          },
+          "appendFile": {
+            "count": 100,
+            "total_ms": 46.15699999999924,
+            "max_ms": 3.561999999999955
+          },
+          "open": {
+            "count": 100,
+            "total_ms": 17.071800000000394,
+            "max_ms": 0.8862000000000307
+          },
+          "handle.sync": {
+            "count": 100,
+            "total_ms": 410.06430000000006,
+            "max_ms": 12.165500000000009
+          },
+          "handle.close": {
+            "count": 100,
+            "total_ms": 8.287499999999113,
+            "max_ms": 0.8301999999999907
+          }
+        }
+      },
+      {
+        "name": "Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should publish all events through EventBus",
+        "duration_ms": 619.8877999999999,
+        "sync_count": 100,
+        "io": {
+          "readdir": {
+            "count": 101,
+            "total_ms": 23.162000000001058,
+            "max_ms": 0.36400000000003274
+          },
+          "readFile": {
+            "count": 200,
+            "total_ms": 50.70870000000059,
+            "max_ms": 1.7882000000000744
+          },
+          "mkdir": {
+            "count": 1,
+            "total_ms": 0.22870000000000346,
+            "max_ms": 0.22870000000000346
+          },
+          "stat": {
+            "count": 100,
+            "total_ms": 8.419699999999011,
+            "max_ms": 0.1635999999998603
+          },
+          "appendFile": {
+            "count": 100,
+            "total_ms": 40.8110000000014,
+            "max_ms": 1.6625000000000227
+          },
+          "open": {
+            "count": 100,
+            "total_ms": 16.694499999999266,
+            "max_ms": 1.2126999999998134
+          },
+          "handle.sync": {
+            "count": 100,
+            "total_ms": 403.8041999999998,
+            "max_ms": 16.175100000000157
+          },
+          "handle.close": {
+            "count": 100,
+            "total_ms": 7.147000000000503,
+            "max_ms": 0.13230000000010023
+          }
+        }
+      },
+      {
+        "name": "Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should generate UUIDv7 eventIds",
+        "duration_ms": 4.048500000000104,
+        "sync_count": 0,
+        "io": {
+          "readdir": {
+            "count": 1,
+            "total_ms": 0.15260000000012042,
+            "max_ms": 0.15260000000012042
+          },
+          "readFile": {
+            "count": 1,
+            "total_ms": 0.12339999999994689,
+            "max_ms": 0.12339999999994689
+          },
+          "mkdir": {
+            "count": 1,
+            "total_ms": 0.21910000000002583,
+            "max_ms": 0.21910000000002583
+          }
+        }
+      },
+      {
+        "name": "Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should generate monotonically non-decreasing timestamps",
+        "duration_ms": 323.37480000000005,
+        "sync_count": 50,
+        "io": {
+          "readdir": {
+            "count": 51,
+            "total_ms": 11.325399999999945,
+            "max_ms": 0.33140000000003056
+          },
+          "readFile": {
+            "count": 100,
+            "total_ms": 23.312299999999368,
+            "max_ms": 1.2201000000000022
+          },
+          "mkdir": {
+            "count": 1,
+            "total_ms": 0.21219999999993888,
+            "max_ms": 0.21219999999993888
+          },
+          "stat": {
+            "count": 50,
+            "total_ms": 4.088700000000472,
+            "max_ms": 0.1372999999998683
+          },
+          "appendFile": {
+            "count": 50,
+            "total_ms": 21.287199999999984,
+            "max_ms": 2.1843999999998687
+          },
+          "open": {
+            "count": 50,
+            "total_ms": 7.313899999999194,
+            "max_ms": 0.2422999999998865
+          },
+          "handle.sync": {
+            "count": 50,
+            "total_ms": 222.47890000000007,
+            "max_ms": 11.170799999999872
+          },
+          "handle.close": {
+            "count": 50,
+            "total_ms": 3.5437000000001717,
+            "max_ms": 0.18389999999999418
+          }
+        }
+      },
+      {
+        "name": "Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should have non-empty projectId",
+        "duration_ms": 298.4821999999999,
+        "sync_count": 50,
+        "io": {
+          "readdir": {
+            "count": 51,
+            "total_ms": 11.64830000000029,
+            "max_ms": 0.4189000000001215
+          },
+          "readFile": {
+            "count": 100,
+            "total_ms": 23.751199999999244,
+            "max_ms": 0.9558999999999287
+          },
+          "mkdir": {
+            "count": 1,
+            "total_ms": 0.21739999999999782,
+            "max_ms": 0.21739999999999782
+          },
+          "stat": {
+            "count": 50,
+            "total_ms": 4.304599999999255,
+            "max_ms": 0.18399999999996908
+          },
+          "appendFile": {
+            "count": 50,
+            "total_ms": 21.25460000000089,
+            "max_ms": 1.5538000000001375
+          },
+          "open": {
+            "count": 50,
+            "total_ms": 7.5192000000013195,
+            "max_ms": 0.25949999999988904
+          },
+          "handle.sync": {
+            "count": 50,
+            "total_ms": 195.1010000000008,
+            "max_ms": 5.822799999999916
+          },
+          "handle.close": {
+            "count": 50,
+            "total_ms": 3.7357000000006337,
+            "max_ms": 0.309099999999944
+          }
+        }
+      },
+      {
+        "name": "Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should have action and payload",
+        "duration_ms": 278.1842999999999,
+        "sync_count": 50,
+        "io": {
+          "readdir": {
+            "count": 51,
+            "total_ms": 11.076799999999821,
+            "max_ms": 0.27650000000039654
+          },
+          "readFile": {
+            "count": 100,
+            "total_ms": 22.492899999997462,
+            "max_ms": 0.6720000000000255
+          },
+          "mkdir": {
+            "count": 1,
+            "total_ms": 0.2856000000001586,
+            "max_ms": 0.2856000000001586
+          },
+          "stat": {
+            "count": 50,
+            "total_ms": 4.8268999999995685,
+            "max_ms": 0.8492000000001099
+          },
+          "appendFile": {
+            "count": 50,
+            "total_ms": 20.457499999999072,
+            "max_ms": 1.9519000000000233
+          },
+          "open": {
+            "count": 50,
+            "total_ms": 7.16470000000254,
+            "max_ms": 0.2173000000002503
+          },
+          "handle.sync": {
+            "count": 50,
+            "total_ms": 179.87749999999824,
+            "max_ms": 5.1995999999999185
+          },
+          "handle.close": {
+            "count": 50,
+            "total_ms": 3.363499999999931,
+            "max_ms": 0.09749999999985448
+          }
+        }
+      },
+      {
+        "name": "Property 1: Single Source of Truth > Property 1.3: Events persisted to WAL > should persist events to WAL",
+        "duration_ms": 343.78060000000005,
+        "sync_count": 50,
+        "io": {
+          "readdir": {
+            "count": 101,
+            "total_ms": 17.553800000000138,
+            "max_ms": 0.7046000000000276
+          },
+          "readFile": {
+            "count": 250,
+            "total_ms": 55.36580000000595,
+            "max_ms": 1.207300000000032
+          },
+          "mkdir": {
+            "count": 1,
+            "total_ms": 0.21289999999999054,
+            "max_ms": 0.21289999999999054
+          },
+          "stat": {
+            "count": 50,
+            "total_ms": 3.975000000002183,
+            "max_ms": 0.14459999999962747
+          },
+          "appendFile": {
+            "count": 50,
+            "total_ms": 20.691999999998643,
+            "max_ms": 1.428899999999885
+          },
+          "open": {
+            "count": 50,
+            "total_ms": 7.537399999998797,
+            "max_ms": 0.1995999999999185
+          },
+          "handle.sync": {
+            "count": 50,
+            "total_ms": 196.25109999999768,
+            "max_ms": 13.607300000000123
+          },
+          "handle.close": {
+            "count": 50,
+            "total_ms": 3.491899999999532,
+            "max_ms": 0.26650000000017826
+          }
+        }
+      },
+      {
+        "name": "Property 1: Single Source of Truth > Property 1.3: Events persisted to WAL > should maintain event ordering in WAL",
+        "duration_ms": 56.035899999999856,
+        "sync_count": 10,
+        "io": {
+          "readdir": {
+            "count": 12,
+            "total_ms": 2.460800000000745,
+            "max_ms": 0.287300000000414
+          },
+          "readFile": {
+            "count": 23,
+            "total_ms": 4.794800000001942,
+            "max_ms": 0.327900000000227
+          },
+          "mkdir": {
+            "count": 1,
+            "total_ms": 0.2298000000000684,
+            "max_ms": 0.2298000000000684
+          },
+          "stat": {
+            "count": 10,
+            "total_ms": 0.7991000000001804,
+            "max_ms": 0.10130000000026484
+          },
+          "appendFile": {
+            "count": 10,
+            "total_ms": 5.189299999999093,
+            "max_ms": 1.5889999999999418
+          },
+          "open": {
+            "count": 10,
+            "total_ms": 1.55600000000004,
+            "max_ms": 0.2015000000001237
+          },
+          "handle.sync": {
+            "count": 10,
+            "total_ms": 34.23049999999921,
+            "max_ms": 3.832499999999982
+          },
+          "handle.close": {
+            "count": 10,
+            "total_ms": 0.6742999999992207,
+            "max_ms": 0.08220000000028449
+          }
+        }
+      },
+      {
+        "name": "Property 1: Single Source of Truth > Property 1.4: No bypass paths > should require EventBus for SessionRegistry changes",
+        "duration_ms": 2.55199999999968,
+        "sync_count": 0,
+        "io": {
+          "readdir": {
+            "count": 1,
+            "total_ms": 0.1532999999999447,
+            "max_ms": 0.1532999999999447
+          },
+          "readFile": {
+            "count": 1,
+            "total_ms": 0.10880000000042855,
+            "max_ms": 0.10880000000042855
+          },
+          "mkdir": {
+            "count": 1,
+            "total_ms": 0.213799999999992,
+            "max_ms": 0.213799999999992
+          }
+        }
+      },
+      {
+        "name": "Property 1: Single Source of Truth > Property 1.4: No bypass paths > should flow all state changes through EventBus",
+        "duration_ms": 273.1622000000002,
+        "sync_count": 50,
+        "io": {
+          "readdir": {
+            "count": 51,
+            "total_ms": 10.67410000000018,
+            "max_ms": 0.25880000000006476
+          },
+          "readFile": {
+            "count": 100,
+            "total_ms": 22.96479999999974,
+            "max_ms": 0.9933999999998377
+          },
+          "mkdir": {
+            "count": 1,
+            "total_ms": 0.22470000000021173,
+            "max_ms": 0.22470000000021173
+          },
+          "stat": {
+            "count": 50,
+            "total_ms": 4.551900000001297,
+            "max_ms": 0.33059999999977663
+          },
+          "appendFile": {
+            "count": 50,
+            "total_ms": 20.495300000000952,
+            "max_ms": 1.4290999999998348
+          },
+          "open": {
+            "count": 50,
+            "total_ms": 7.434800000000905,
+            "max_ms": 0.2486999999996442
+          },
+          "handle.sync": {
+            "count": 50,
+            "total_ms": 177.9009000000001,
+            "max_ms": 4.725500000000011
+          },
+          "handle.close": {
+            "count": 50,
+            "total_ms": 3.2493000000017673,
+            "max_ms": 0.11070000000017899
+          }
+        }
+      },
+      {
+        "name": "Property 1: Single Source of Truth > Property 1.5: Session operations produce events > should produce event on session registration",
+        "duration_ms": 2.1399999999998727,
+        "sync_count": 0,
+        "io": {
+          "readdir": {
+            "count": 1,
+            "total_ms": 0.14560000000028595,
+            "max_ms": 0.14560000000028595
+          },
+          "readFile": {
+            "count": 1,
+            "total_ms": 0.1269999999999527,
+            "max_ms": 0.1269999999999527
+          },
+          "mkdir": {
+            "count": 1,
+            "total_ms": 0.2112000000001899,
+            "max_ms": 0.2112000000001899
+          }
+        }
+      },
+      {
+        "name": "Property 1: Single Source of Truth > Property 1.5: Session operations produce events > should produce event on session activation",
+        "duration_ms": 1.9115999999999076,
+        "sync_count": 0,
+        "io": {
+          "readdir": {
+            "count": 1,
+            "total_ms": 0.1493000000000393,
+            "max_ms": 0.1493000000000393
+          },
+          "readFile": {
+            "count": 1,
+            "total_ms": 0.1115999999997257,
+            "max_ms": 0.1115999999997257
+          },
+          "mkdir": {
+            "count": 1,
+            "total_ms": 0.2056999999999789,
+            "max_ms": 0.2056999999999789
+          }
+        }
+      },
+      {
+        "name": "Property 1: Single Source of Truth > Property 1.5: Session operations produce events > should produce event on session termination",
+        "duration_ms": 1.878099999999904,
+        "sync_count": 0,
+        "io": {
+          "readdir": {
+            "count": 1,
+            "total_ms": 0.13910000000032596,
+            "max_ms": 0.13910000000032596
+          },
+          "readFile": {
+            "count": 1,
+            "total_ms": 0.1180000000003929,
+            "max_ms": 0.1180000000003929
+          },
+          "mkdir": {
+            "count": 1,
+            "total_ms": 0.28559999999970387,
+            "max_ms": 0.28559999999970387
+          }
+        }
+      },
+      {
+        "name": "Property 1: Single Source of Truth > Property 1.6: Unique eventIds > should generate unique eventIds across multiple operations",
+        "duration_ms": 637.5346,
+        "sync_count": 100,
+        "io": {
+          "readdir": {
+            "count": 101,
+            "total_ms": 22.11969999999792,
+            "max_ms": 0.9175000000000182
+          },
+          "readFile": {
+            "count": 200,
+            "total_ms": 46.25109999999768,
+            "max_ms": 1.1080999999999221
+          },
+          "mkdir": {
+            "count": 1,
+            "total_ms": 0.19290000000000873,
+            "max_ms": 0.19290000000000873
+          },
+          "stat": {
+            "count": 100,
+            "total_ms": 8.365000000000691,
+            "max_ms": 0.17990000000008877
+          },
+          "appendFile": {
+            "count": 100,
+            "total_ms": 39.65669999999818,
+            "max_ms": 1.5671000000002095
+          },
+          "open": {
+            "count": 100,
+            "total_ms": 15.159599999999955,
+            "max_ms": 0.25649999999996
+          },
+          "handle.sync": {
+            "count": 100,
+            "total_ms": 444.61380000000054,
+            "max_ms": 31.534000000000106
+          },
+          "handle.close": {
+            "count": 100,
+            "total_ms": 6.895899999999074,
+            "max_ms": 0.14110000000027867
+          }
+        }
+      }
+    ],
+    "selected_original_failure_spans": [
+      {
+        "name": "Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should generate events for all state change operations",
+        "duration_ms": 643.7254,
+        "sync_count": 100,
+        "io": {
+          "readdir": {
+            "count": 101,
+            "total_ms": 25.075400000000514,
+            "max_ms": 1.1517000000000053
+          },
+          "readFile": {
+            "count": 200,
+            "total_ms": 49.67589999999967,
+            "max_ms": 0.5395000000000323
+          },
+          "mkdir": {
+            "count": 1,
+            "total_ms": 0.3439000000000192,
+            "max_ms": 0.3439000000000192
+          },
+          "stat": {
+            "count": 100,
+            "total_ms": 9.393400000000497,
+            "max_ms": 0.17199999999996862
+          },
+          "appendFile": {
+            "count": 100,
+            "total_ms": 46.15699999999924,
+            "max_ms": 3.561999999999955
+          },
+          "open": {
+            "count": 100,
+            "total_ms": 17.071800000000394,
+            "max_ms": 0.8862000000000307
+          },
+          "handle.sync": {
+            "count": 100,
+            "total_ms": 410.06430000000006,
+            "max_ms": 12.165500000000009
+          },
+          "handle.close": {
+            "count": 100,
+            "total_ms": 8.287499999999113,
+            "max_ms": 0.8301999999999907
+          }
+        }
+      },
+      {
+        "name": "Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should have action and payload",
+        "duration_ms": 278.1842999999999,
+        "sync_count": 50,
+        "io": {
+          "readdir": {
+            "count": 51,
+            "total_ms": 11.076799999999821,
+            "max_ms": 0.27650000000039654
+          },
+          "readFile": {
+            "count": 100,
+            "total_ms": 22.492899999997462,
+            "max_ms": 0.6720000000000255
+          },
+          "mkdir": {
+            "count": 1,
+            "total_ms": 0.2856000000001586,
+            "max_ms": 0.2856000000001586
+          },
+          "stat": {
+            "count": 50,
+            "total_ms": 4.8268999999995685,
+            "max_ms": 0.8492000000001099
+          },
+          "appendFile": {
+            "count": 50,
+            "total_ms": 20.457499999999072,
+            "max_ms": 1.9519000000000233
+          },
+          "open": {
+            "count": 50,
+            "total_ms": 7.16470000000254,
+            "max_ms": 0.2173000000002503
+          },
+          "handle.sync": {
+            "count": 50,
+            "total_ms": 179.87749999999824,
+            "max_ms": 5.1995999999999185
+          },
+          "handle.close": {
+            "count": 50,
+            "total_ms": 3.363499999999931,
+            "max_ms": 0.09749999999985448
+          }
+        }
+      }
+    ],
+    "plain_focused_tests_passed": 14,
+    "all_syncs_observed": 560,
+    "full_diagnostic_qualified": false
+  },
+  "controls": [
+    {
+      "version": "v1",
+      "source": "system-temp",
+      "root": "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp",
+      "dev": 1422631540,
+      "source_report_sha256": "8b27af8eb379b13046ea18f4f20fc46bf5c0bcb42a6b03c8e09a2d73c304ec2d",
+      "samples": [
+        {
+          "count": 100,
+          "variant": "split",
+          "duration_ms": 2877.9905,
+          "acknowledged_syncs": 100,
+          "sha256": "f750cf58f55ef70ee1487f2e529aa9f2f6a7e9dd62d38b2396cf13597d31b612"
+        },
+        {
+          "count": 100,
+          "variant": "single",
+          "duration_ms": 1324.6598000000004,
+          "acknowledged_syncs": 100,
+          "sha256": "f750cf58f55ef70ee1487f2e529aa9f2f6a7e9dd62d38b2396cf13597d31b612"
+        },
+        {
+          "count": 100,
+          "variant": "single",
+          "duration_ms": 1965.4171999999999,
+          "acknowledged_syncs": 100,
+          "sha256": "f750cf58f55ef70ee1487f2e529aa9f2f6a7e9dd62d38b2396cf13597d31b612"
+        },
+        {
+          "count": 100,
+          "variant": "split",
+          "duration_ms": 2996.8269999999993,
+          "acknowledged_syncs": 100,
+          "sha256": "f750cf58f55ef70ee1487f2e529aa9f2f6a7e9dd62d38b2396cf13597d31b612"
+        },
+        {
+          "count": 50,
+          "variant": "single",
+          "duration_ms": 895.8080999999984,
+          "acknowledged_syncs": 50,
+          "sha256": "fec0cc72a796f19537a7d33874f626fc423f06039a8ec07c58087155e528c2b4"
+        },
+        {
+          "count": 50,
+          "variant": "split",
+          "duration_ms": 1468.8672000000006,
+          "acknowledged_syncs": 50,
+          "sha256": "fec0cc72a796f19537a7d33874f626fc423f06039a8ec07c58087155e528c2b4"
+        },
+        {
+          "count": 50,
+          "variant": "split",
+          "duration_ms": 756.8984999999993,
+          "acknowledged_syncs": 50,
+          "sha256": "fec0cc72a796f19537a7d33874f626fc423f06039a8ec07c58087155e528c2b4"
+        },
+        {
+          "count": 50,
+          "variant": "single",
+          "duration_ms": 2044.4202999999998,
+          "acknowledged_syncs": 50,
+          "sha256": "fec0cc72a796f19537a7d33874f626fc423f06039a8ec07c58087155e528c2b4"
+        }
+      ]
+    },
+    {
+      "version": "v1",
+      "source": "runner-temp",
+      "root": "D:\\a\\_temp",
+      "dev": 1859280449,
+      "source_report_sha256": "930eabfbaf9e490bcb6ab64e6fb36d2bca507d3ebc247654e707521044fc18c6",
+      "samples": [
+        {
+          "count": 100,
+          "variant": "split",
+          "duration_ms": 63.1302,
+          "acknowledged_syncs": 100,
+          "sha256": "f750cf58f55ef70ee1487f2e529aa9f2f6a7e9dd62d38b2396cf13597d31b612"
+        },
+        {
+          "count": 100,
+          "variant": "single",
+          "duration_ms": 44.6259,
+          "acknowledged_syncs": 100,
+          "sha256": "f750cf58f55ef70ee1487f2e529aa9f2f6a7e9dd62d38b2396cf13597d31b612"
+        },
+        {
+          "count": 100,
+          "variant": "single",
+          "duration_ms": 42.67609999999999,
+          "acknowledged_syncs": 100,
+          "sha256": "f750cf58f55ef70ee1487f2e529aa9f2f6a7e9dd62d38b2396cf13597d31b612"
+        },
+        {
+          "count": 100,
+          "variant": "split",
+          "duration_ms": 53.4666,
+          "acknowledged_syncs": 100,
+          "sha256": "f750cf58f55ef70ee1487f2e529aa9f2f6a7e9dd62d38b2396cf13597d31b612"
+        },
+        {
+          "count": 50,
+          "variant": "single",
+          "duration_ms": 19.617700000000013,
+          "acknowledged_syncs": 50,
+          "sha256": "fec0cc72a796f19537a7d33874f626fc423f06039a8ec07c58087155e528c2b4"
+        },
+        {
+          "count": 50,
+          "variant": "split",
+          "duration_ms": 30.876499999999993,
+          "acknowledged_syncs": 50,
+          "sha256": "fec0cc72a796f19537a7d33874f626fc423f06039a8ec07c58087155e528c2b4"
+        },
+        {
+          "count": 50,
+          "variant": "split",
+          "duration_ms": 27.7235,
+          "acknowledged_syncs": 50,
+          "sha256": "fec0cc72a796f19537a7d33874f626fc423f06039a8ec07c58087155e528c2b4"
+        },
+        {
+          "count": 50,
+          "variant": "single",
+          "duration_ms": 20.468999999999994,
+          "acknowledged_syncs": 50,
+          "sha256": "fec0cc72a796f19537a7d33874f626fc423f06039a8ec07c58087155e528c2b4"
+        }
+      ]
+    },
+    {
+      "version": "v2",
+      "source": "system-native",
+      "root": "C:\\Users\\runneradmin\\AppData\\Local\\Temp",
+      "dev": 1422631540,
+      "ino": 3096224743856026,
+      "source_report_sha256": "3c553cc7cd7916415973405de967e83403f2b91e95bc680e3f4a91312c943c53",
+      "samples": [
+        {
+          "count": 100,
+          "variant": "split",
+          "duration_ms": 662.7869000000001,
+          "acknowledged_syncs": 100,
+          "sha256": "f750cf58f55ef70ee1487f2e529aa9f2f6a7e9dd62d38b2396cf13597d31b612"
+        },
+        {
+          "count": 100,
+          "variant": "single",
+          "duration_ms": 671.3089,
+          "acknowledged_syncs": 100,
+          "sha256": "f750cf58f55ef70ee1487f2e529aa9f2f6a7e9dd62d38b2396cf13597d31b612"
+        },
+        {
+          "count": 100,
+          "variant": "single",
+          "duration_ms": 652.2799,
+          "acknowledged_syncs": 100,
+          "sha256": "f750cf58f55ef70ee1487f2e529aa9f2f6a7e9dd62d38b2396cf13597d31b612"
+        },
+        {
+          "count": 100,
+          "variant": "split",
+          "duration_ms": 683.7727,
+          "acknowledged_syncs": 100,
+          "sha256": "f750cf58f55ef70ee1487f2e529aa9f2f6a7e9dd62d38b2396cf13597d31b612"
+        },
+        {
+          "count": 50,
+          "variant": "single",
+          "duration_ms": 339.1696000000002,
+          "acknowledged_syncs": 50,
+          "sha256": "fec0cc72a796f19537a7d33874f626fc423f06039a8ec07c58087155e528c2b4"
+        },
+        {
+          "count": 50,
+          "variant": "split",
+          "duration_ms": 352.08500000000004,
+          "acknowledged_syncs": 50,
+          "sha256": "fec0cc72a796f19537a7d33874f626fc423f06039a8ec07c58087155e528c2b4"
+        },
+        {
+          "count": 50,
+          "variant": "split",
+          "duration_ms": 313.4142999999999,
+          "acknowledged_syncs": 50,
+          "sha256": "fec0cc72a796f19537a7d33874f626fc423f06039a8ec07c58087155e528c2b4"
+        },
+        {
+          "count": 50,
+          "variant": "single",
+          "duration_ms": 326.81579999999985,
+          "acknowledged_syncs": 50,
+          "sha256": "fec0cc72a796f19537a7d33874f626fc423f06039a8ec07c58087155e528c2b4"
+        }
+      ]
+    },
+    {
+      "version": "v2",
+      "source": "system-alias",
+      "root": "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp",
+      "dev": 1422631540,
+      "ino": 3096224743856026,
+      "source_report_sha256": "6c8c7b417548edaad99dab76798c7f4a9679e3675b3104e954cc605adc7893dc",
+      "samples": [
+        {
+          "count": 100,
+          "variant": "split",
+          "duration_ms": 664.2647000000001,
+          "acknowledged_syncs": 100,
+          "sha256": "f750cf58f55ef70ee1487f2e529aa9f2f6a7e9dd62d38b2396cf13597d31b612"
+        },
+        {
+          "count": 100,
+          "variant": "single",
+          "duration_ms": 588.4476999999999,
+          "acknowledged_syncs": 100,
+          "sha256": "f750cf58f55ef70ee1487f2e529aa9f2f6a7e9dd62d38b2396cf13597d31b612"
+        },
+        {
+          "count": 100,
+          "variant": "single",
+          "duration_ms": 608.367,
+          "acknowledged_syncs": 100,
+          "sha256": "f750cf58f55ef70ee1487f2e529aa9f2f6a7e9dd62d38b2396cf13597d31b612"
+        },
+        {
+          "count": 100,
+          "variant": "split",
+          "duration_ms": 707.2196000000001,
+          "acknowledged_syncs": 100,
+          "sha256": "f750cf58f55ef70ee1487f2e529aa9f2f6a7e9dd62d38b2396cf13597d31b612"
+        },
+        {
+          "count": 50,
+          "variant": "single",
+          "duration_ms": 337.1127999999999,
+          "acknowledged_syncs": 50,
+          "sha256": "fec0cc72a796f19537a7d33874f626fc423f06039a8ec07c58087155e528c2b4"
+        },
+        {
+          "count": 50,
+          "variant": "split",
+          "duration_ms": 307.02610000000004,
+          "acknowledged_syncs": 50,
+          "sha256": "fec0cc72a796f19537a7d33874f626fc423f06039a8ec07c58087155e528c2b4"
+        },
+        {
+          "count": 50,
+          "variant": "split",
+          "duration_ms": 309.39789999999994,
+          "acknowledged_syncs": 50,
+          "sha256": "fec0cc72a796f19537a7d33874f626fc423f06039a8ec07c58087155e528c2b4"
+        },
+        {
+          "count": 50,
+          "variant": "single",
+          "duration_ms": 299.91759999999977,
+          "acknowledged_syncs": 50,
+          "sha256": "fec0cc72a796f19537a7d33874f626fc423f06039a8ec07c58087155e528c2b4"
+        }
+      ]
+    },
+    {
+      "version": "v2",
+      "source": "runner-native",
+      "root": "D:\\a\\_temp",
+      "dev": 338930822,
+      "ino": 281474976710695,
+      "source_report_sha256": "0246733b4152e8e9ccbb04d3e4555c8c6f64f979175f03db6ca48f9b7a5ef94b",
+      "samples": [
+        {
+          "count": 100,
+          "variant": "split",
+          "duration_ms": 39.2638,
+          "acknowledged_syncs": 100,
+          "sha256": "f750cf58f55ef70ee1487f2e529aa9f2f6a7e9dd62d38b2396cf13597d31b612"
+        },
+        {
+          "count": 100,
+          "variant": "single",
+          "duration_ms": 28.244899999999994,
+          "acknowledged_syncs": 100,
+          "sha256": "f750cf58f55ef70ee1487f2e529aa9f2f6a7e9dd62d38b2396cf13597d31b612"
+        },
+        {
+          "count": 100,
+          "variant": "single",
+          "duration_ms": 27.877300000000005,
+          "acknowledged_syncs": 100,
+          "sha256": "f750cf58f55ef70ee1487f2e529aa9f2f6a7e9dd62d38b2396cf13597d31b612"
+        },
+        {
+          "count": 100,
+          "variant": "split",
+          "duration_ms": 38.92400000000001,
+          "acknowledged_syncs": 100,
+          "sha256": "f750cf58f55ef70ee1487f2e529aa9f2f6a7e9dd62d38b2396cf13597d31b612"
+        },
+        {
+          "count": 50,
+          "variant": "single",
+          "duration_ms": 14.688600000000008,
+          "acknowledged_syncs": 50,
+          "sha256": "fec0cc72a796f19537a7d33874f626fc423f06039a8ec07c58087155e528c2b4"
+        },
+        {
+          "count": 50,
+          "variant": "split",
+          "duration_ms": 17.7928,
+          "acknowledged_syncs": 50,
+          "sha256": "fec0cc72a796f19537a7d33874f626fc423f06039a8ec07c58087155e528c2b4"
+        },
+        {
+          "count": 50,
+          "variant": "split",
+          "duration_ms": 17.9837,
+          "acknowledged_syncs": 50,
+          "sha256": "fec0cc72a796f19537a7d33874f626fc423f06039a8ec07c58087155e528c2b4"
+        },
+        {
+          "count": 50,
+          "variant": "single",
+          "duration_ms": 13.28139999999999,
+          "acknowledged_syncs": 50,
+          "sha256": "fec0cc72a796f19537a7d33874f626fc423f06039a8ec07c58087155e528c2b4"
+        }
+      ]
+    },
+    {
+      "version": "v2",
+      "source": "runner-native",
+      "root": "D:\\a\\_temp",
+      "dev": 338930822,
+      "ino": 281474976710695,
+      "source_report_sha256": "889a0d5e18ba94f78f0b07be360f62cd6e97232a4e34647e8ff1402ed583eeac",
+      "samples": [
+        {
+          "count": 100,
+          "variant": "split",
+          "duration_ms": 39.2692,
+          "acknowledged_syncs": 100,
+          "sha256": "f750cf58f55ef70ee1487f2e529aa9f2f6a7e9dd62d38b2396cf13597d31b612"
+        },
+        {
+          "count": 100,
+          "variant": "single",
+          "duration_ms": 28.080600000000004,
+          "acknowledged_syncs": 100,
+          "sha256": "f750cf58f55ef70ee1487f2e529aa9f2f6a7e9dd62d38b2396cf13597d31b612"
+        },
+        {
+          "count": 100,
+          "variant": "single",
+          "duration_ms": 27.703500000000005,
+          "acknowledged_syncs": 100,
+          "sha256": "f750cf58f55ef70ee1487f2e529aa9f2f6a7e9dd62d38b2396cf13597d31b612"
+        },
+        {
+          "count": 100,
+          "variant": "split",
+          "duration_ms": 36.85810000000001,
+          "acknowledged_syncs": 100,
+          "sha256": "f750cf58f55ef70ee1487f2e529aa9f2f6a7e9dd62d38b2396cf13597d31b612"
+        },
+        {
+          "count": 50,
+          "variant": "single",
+          "duration_ms": 14.2149,
+          "acknowledged_syncs": 50,
+          "sha256": "fec0cc72a796f19537a7d33874f626fc423f06039a8ec07c58087155e528c2b4"
+        },
+        {
+          "count": 50,
+          "variant": "split",
+          "duration_ms": 17.337500000000006,
+          "acknowledged_syncs": 50,
+          "sha256": "fec0cc72a796f19537a7d33874f626fc423f06039a8ec07c58087155e528c2b4"
+        },
+        {
+          "count": 50,
+          "variant": "split",
+          "duration_ms": 20.048100000000005,
+          "acknowledged_syncs": 50,
+          "sha256": "fec0cc72a796f19537a7d33874f626fc423f06039a8ec07c58087155e528c2b4"
+        },
+        {
+          "count": 50,
+          "variant": "single",
+          "duration_ms": 13.665599999999984,
+          "acknowledged_syncs": 50,
+          "sha256": "fec0cc72a796f19537a7d33874f626fc423f06039a8ec07c58087155e528c2b4"
+        }
+      ]
+    },
+    {
+      "version": "v2",
+      "source": "system-alias",
+      "root": "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp",
+      "dev": 1422631540,
+      "ino": 3096224743856026,
+      "source_report_sha256": "bf0f922d2b3edff7d420a5a8782afc0aad438aca6b5c505b1d52b831f0f16ede",
+      "samples": [
+        {
+          "count": 100,
+          "variant": "split",
+          "duration_ms": 634.8631,
+          "acknowledged_syncs": 100,
+          "sha256": "f750cf58f55ef70ee1487f2e529aa9f2f6a7e9dd62d38b2396cf13597d31b612"
+        },
+        {
+          "count": 100,
+          "variant": "single",
+          "duration_ms": 588.9815,
+          "acknowledged_syncs": 100,
+          "sha256": "f750cf58f55ef70ee1487f2e529aa9f2f6a7e9dd62d38b2396cf13597d31b612"
+        },
+        {
+          "count": 100,
+          "variant": "single",
+          "duration_ms": 622.1955,
+          "acknowledged_syncs": 100,
+          "sha256": "f750cf58f55ef70ee1487f2e529aa9f2f6a7e9dd62d38b2396cf13597d31b612"
+        },
+        {
+          "count": 100,
+          "variant": "split",
+          "duration_ms": 609.4425000000001,
+          "acknowledged_syncs": 100,
+          "sha256": "f750cf58f55ef70ee1487f2e529aa9f2f6a7e9dd62d38b2396cf13597d31b612"
+        },
+        {
+          "count": 50,
+          "variant": "single",
+          "duration_ms": 295.3911000000003,
+          "acknowledged_syncs": 50,
+          "sha256": "fec0cc72a796f19537a7d33874f626fc423f06039a8ec07c58087155e528c2b4"
+        },
+        {
+          "count": 50,
+          "variant": "split",
+          "duration_ms": 284.39480000000003,
+          "acknowledged_syncs": 50,
+          "sha256": "fec0cc72a796f19537a7d33874f626fc423f06039a8ec07c58087155e528c2b4"
+        },
+        {
+          "count": 50,
+          "variant": "split",
+          "duration_ms": 304.5314000000003,
+          "acknowledged_syncs": 50,
+          "sha256": "fec0cc72a796f19537a7d33874f626fc423f06039a8ec07c58087155e528c2b4"
+        },
+        {
+          "count": 50,
+          "variant": "single",
+          "duration_ms": 358.7968999999998,
+          "acknowledged_syncs": 50,
+          "sha256": "fec0cc72a796f19537a7d33874f626fc423f06039a8ec07c58087155e528c2b4"
+        }
+      ]
+    },
+    {
+      "version": "v2",
+      "source": "system-native",
+      "root": "C:\\Users\\runneradmin\\AppData\\Local\\Temp",
+      "dev": 1422631540,
+      "ino": 3096224743856026,
+      "source_report_sha256": "edc5203ddbcbd7d4c5d7fd146f51e6d29209b75743f362014702e0a11af76634",
+      "samples": [
+        {
+          "count": 100,
+          "variant": "split",
+          "duration_ms": 684.7523000000001,
+          "acknowledged_syncs": 100,
+          "sha256": "f750cf58f55ef70ee1487f2e529aa9f2f6a7e9dd62d38b2396cf13597d31b612"
+        },
+        {
+          "count": 100,
+          "variant": "single",
+          "duration_ms": 673.5419,
+          "acknowledged_syncs": 100,
+          "sha256": "f750cf58f55ef70ee1487f2e529aa9f2f6a7e9dd62d38b2396cf13597d31b612"
+        },
+        {
+          "count": 100,
+          "variant": "single",
+          "duration_ms": 592.2269000000001,
+          "acknowledged_syncs": 100,
+          "sha256": "f750cf58f55ef70ee1487f2e529aa9f2f6a7e9dd62d38b2396cf13597d31b612"
+        },
+        {
+          "count": 100,
+          "variant": "split",
+          "duration_ms": 581.6015999999997,
+          "acknowledged_syncs": 100,
+          "sha256": "f750cf58f55ef70ee1487f2e529aa9f2f6a7e9dd62d38b2396cf13597d31b612"
+        },
+        {
+          "count": 50,
+          "variant": "single",
+          "duration_ms": 291.3824999999997,
+          "acknowledged_syncs": 50,
+          "sha256": "fec0cc72a796f19537a7d33874f626fc423f06039a8ec07c58087155e528c2b4"
+        },
+        {
+          "count": 50,
+          "variant": "split",
+          "duration_ms": 281.7347,
+          "acknowledged_syncs": 50,
+          "sha256": "fec0cc72a796f19537a7d33874f626fc423f06039a8ec07c58087155e528c2b4"
+        },
+        {
+          "count": 50,
+          "variant": "split",
+          "duration_ms": 290.41939999999977,
+          "acknowledged_syncs": 50,
+          "sha256": "fec0cc72a796f19537a7d33874f626fc423f06039a8ec07c58087155e528c2b4"
+        },
+        {
+          "count": 50,
+          "variant": "single",
+          "duration_ms": 293.1848,
+          "acknowledged_syncs": 50,
+          "sha256": "fec0cc72a796f19537a7d33874f626fc423f06039a8ec07c58087155e528c2b4"
+        }
+      ]
+    }
+  ],
+  "limits": [
+    "The original failed runner did not capture operation timing or its random sequence; exact first-run millisecond attribution is unavailable.",
+    "Full instrumented V1/V2 results are not release acceptance; tracing introduces observer effects and V2 file collisions.",
+    "Native controls preserve identical bytes, counts, every per-append sync and content hash. They directly measure root selection latency, not a particular disk, antivirus or hypervisor.",
+    "Formal acceptance uses unchanged production WAL/tests with the frozen uninstrumented CI-entry repair."
+  ]
+}

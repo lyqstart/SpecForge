@@ -1,0 +1,23 @@
+{
+  "utc": "2026-11-09T13:42:23.423Z",
+  "stage": "afterEach",
+  "pid": 8892,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "legacy filesystem version-control mode recovery > rejects recovery outside implementation_done or after the late repository advances",
+    "start_ms": 1873.109,
+    "duration_ms": 419.10019999999986
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 29,
+    "writeFile": 32,
+    "readFile": 73,
+    "stat": 6,
+    "readdir": 1
+  },
+  "rows": []
+}

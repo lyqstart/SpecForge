@@ -1,0 +1,21 @@
+{
+  "utc": "2026-11-09T13:32:09.026Z",
+  "stage": "afterEach",
+  "pid": 4972,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "Property 21: Session WAL Replay Scope > should pass property-based test: WAL replay scope limitation (≥100 iter)",
+    "start_ms": 448.3252,
+    "duration_ms": 793.8679
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 246,
+    "readdir": 321,
+    "readFile": 321
+  },
+  "rows": []
+}

@@ -1,0 +1,21 @@
+{
+  "utc": "2026-11-09T13:32:07.012Z",
+  "stage": "afterEach",
+  "pid": 4872,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "Property 30: Event Schema Multi-sync Readiness > should have forward-compatible schema structure",
+    "start_ms": 295.6456,
+    "duration_ms": 3.0470000000000255
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "readdir": 4,
+    "readFile": 4,
+    "mkdir": 4
+  },
+  "rows": []
+}

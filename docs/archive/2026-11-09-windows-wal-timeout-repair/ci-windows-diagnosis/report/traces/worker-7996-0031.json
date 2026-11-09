@@ -1,0 +1,25 @@
+{
+  "utc": "2026-11-09T13:31:18.525Z",
+  "stage": "afterEach",
+  "pid": 7996,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "controlled detached Git bootstrap > consumes actual StateManager events through the real public dispatcher while preserving state and recording normal context",
+    "start_ms": 26311.6301,
+    "duration_ms": 948.0159000000021
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "writeFile": 66,
+    "mkdir": 63,
+    "readFile": 163,
+    "open": 33,
+    "readdir": 451,
+    "stat": 1,
+    "appendFile": 1
+  },
+  "rows": []
+}

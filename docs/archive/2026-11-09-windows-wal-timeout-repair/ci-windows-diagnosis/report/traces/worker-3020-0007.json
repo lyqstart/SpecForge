@@ -1,0 +1,25 @@
+{
+  "utc": "2026-11-09T13:33:21.397Z",
+  "stage": "afterEach",
+  "pid": 3020,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "Property 20: recovery preserves complete history and rejects loss > replays every generated complete history; no tolerated failures",
+    "start_ms": 836.3324,
+    "duration_ms": 25130.4794
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "readFile": 7491,
+    "readdir": 2161,
+    "mkdir": 495,
+    "writeFile": 1016,
+    "open": 1783,
+    "stat": 769,
+    "appendFile": 770
+  },
+  "rows": []
+}

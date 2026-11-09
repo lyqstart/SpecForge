@@ -1,0 +1,17 @@
+{
+  "utc": "2026-11-09T13:46:33.591Z",
+  "stage": "afterEach",
+  "pid": 8992,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "frozen readonly Node declaration contract > rejects unsupported or observable declaration node --test C:/outside.ts",
+    "start_ms": 604.0571,
+    "duration_ms": 0.12969999999995707
+  },
+  "truncated": false,
+  "all_fs_call_counts": {},
+  "rows": []
+}

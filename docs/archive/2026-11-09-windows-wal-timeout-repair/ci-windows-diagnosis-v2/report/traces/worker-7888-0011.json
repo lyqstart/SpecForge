@@ -1,0 +1,25 @@
+{
+  "utc": "2026-11-09T13:41:53.583Z",
+  "stage": "afterEach",
+  "pid": 7888,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "T4: ProjectManager with daemon global StateManager > T4.2: daemon global StateManager receives events for all projects",
+    "start_ms": 870.4345,
+    "duration_ms": 31.28640000000007
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "readdir": 77,
+    "readFile": 251,
+    "mkdir": 32,
+    "stat": 23,
+    "appendFile": 23,
+    "open": 56,
+    "writeFile": 37
+  },
+  "rows": []
+}

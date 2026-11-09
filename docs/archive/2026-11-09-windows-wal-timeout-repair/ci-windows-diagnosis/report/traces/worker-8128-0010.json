@@ -1,0 +1,22 @@
+{
+  "utc": "2026-11-09T13:33:34.011Z",
+  "stage": "afterEach",
+  "pid": 8128,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "controlled verification evidence producer > never treats a work_log topic change-classification as a canonical artifact selector",
+    "start_ms": 592.4497,
+    "duration_ms": 21.301699999999983
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 18,
+    "writeFile": 25,
+    "readFile": 26,
+    "readdir": 5
+  },
+  "rows": []
+}

@@ -1,0 +1,17 @@
+{
+  "utc": "2026-11-09T13:34:18.651Z",
+  "stage": "afterEach",
+  "pid": 2488,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "D18 shell profiles cannot regain external execution > ignores executable and encoding injection while preserving literal output",
+    "start_ms": 301.9083,
+    "duration_ms": 1.2748000000000275
+  },
+  "truncated": false,
+  "all_fs_call_counts": {},
+  "rows": []
+}

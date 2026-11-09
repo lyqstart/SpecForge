@@ -1,0 +1,24 @@
+{
+  "utc": "2026-11-09T13:41:48.271Z",
+  "stage": "afterEach",
+  "pid": 2192,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "SessionRegistry > touch (async with WAL throttle) > should not write WAL when no WAL is injected (memory-only mode)",
+    "start_ms": 559.204,
+    "duration_ms": 0.6308999999999969
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "readdir": 34,
+    "readFile": 52,
+    "mkdir": 8,
+    "stat": 18,
+    "appendFile": 18,
+    "open": 18
+  },
+  "rows": []
+}

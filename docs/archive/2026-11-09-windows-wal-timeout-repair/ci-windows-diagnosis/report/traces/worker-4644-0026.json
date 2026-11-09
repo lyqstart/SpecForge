@@ -1,0 +1,23 @@
+{
+  "utc": "2026-11-09T13:29:38.235Z",
+  "stage": "afterEach",
+  "pid": 4644,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "sf_state_transition - Candidate Manifest materialization > materializes new-module requirements, trace and Project Contract before advancing",
+    "start_ms": 1013.9335,
+    "duration_ms": 42.06350000000009
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 140,
+    "writeFile": 142,
+    "readFile": 143,
+    "stat": 3,
+    "readdir": 12
+  },
+  "rows": []
+}

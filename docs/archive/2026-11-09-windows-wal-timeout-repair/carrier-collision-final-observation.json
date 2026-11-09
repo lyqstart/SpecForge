@@ -1,0 +1,9 @@
+{
+  "collected_utc": "2026-11-09 14:38:42 UTC",
+  "exec_session": 97034,
+  "carrier_exit_code": 1,
+  "error": "EEXIST:commands/0033.json",
+  "raw_tool_output": "node:fs:622\r\n  return binding.open(\r\n                 ^\r\n\r\nError: EEXIST: file already exists, open 'D:\\code\\SpecForge\\docs\\archive\\2026-11-09-windows-wal-timeout-repair\\commands\\0033.json'\r\n    at Object.openSync (node:fs:622:18)\r\n    at Object.writeFileSync (node:fs:2497:35)\r\n    at Object.<anonymous> (D:\\code\\SpecForge\\docs\\archive\\2026-11-09-windows-wal-timeout-repair\\run.cjs:3:987)\r\n    at Module._compile (node:internal/modules/cjs/loader:1872:14)\r\n    at Object..js (node:internal/modules/cjs/loader:2003:10)\r\n    at Module.load (node:internal/modules/cjs/loader:1594:32)\r\n    at Module._load (node:internal/modules/cjs/loader:1396:12)\r\n    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)\r\n    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)\r\n    at node:internal/main/run_main_module:33:47 {\r\n  errno: -4075,\r\n  code: 'EEXIST',\r\n  syscall: 'open',\r\n  path: 'D:\\\\code\\\\SpecForge\\\\docs\\\\archive\\\\2026-11-09-windows-wal-timeout-repair\\\\commands\\\\0033.json'\r\n}\r\n\r\nNode.js v24.19.0\r\n",
+  "inner_result_file": "structured-registration-patched/result.json",
+  "qualification": "Outer save failure preserved; inner direct numeric owner receipts and case reports must be separately verified."
+}

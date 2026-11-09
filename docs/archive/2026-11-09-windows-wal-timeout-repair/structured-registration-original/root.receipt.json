@@ -1,0 +1,19 @@
+{
+  "owner": "root",
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "test:root",
+    "--",
+    "--maxWorkers=1",
+    "--reporter=json",
+    "--outputFile=D:\\code\\SpecForge\\docs\\archive\\2026-11-09-windows-wal-timeout-repair\\structured-registration-original\\root.vitest.json"
+  ],
+  "cwd": "D:\\code\\SpecForge\\.wal-original-a01",
+  "context_sha256": "c6af3d29c66913eed1b7b58c1e4ebe70e1a997198f2aff10bd6f3e0586eaa83a",
+  "started_utc": "2026-11-09T14:21:57.370Z",
+  "finished_utc": "2026-11-09T14:22:39.545Z",
+  "exit": 0,
+  "stdout_sha256": "fcb22ea838da28d488fe7f1178f062ccac96bc33e45c974e1c598be8b7ca260b",
+  "stderr_sha256": "08159604588d22b0a30c7c3b79aa99a8955c6419b0c04cbcb363f952d6d39f5e"
+}

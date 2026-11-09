@@ -1,0 +1,17 @@
+{
+  "utc": "2026-11-09T13:33:26.134Z",
+  "stage": "afterEach",
+  "pid": 4116,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "request lifetime and recovery action boundary > classifies only resource recovery sf_verification_run/prepare",
+    "start_ms": 314.0491,
+    "duration_ms": 0.0876999999999839
+  },
+  "truncated": false,
+  "all_fs_call_counts": {},
+  "rows": []
+}

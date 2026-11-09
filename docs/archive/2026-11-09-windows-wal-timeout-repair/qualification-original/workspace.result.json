@@ -1,0 +1,18 @@
+{
+  "leg": "original",
+  "phase": "workspace",
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "scripts/test-workspace.ts"
+  ],
+  "cwd": "D:\\code\\SpecForge\\.wal-original-a01",
+  "started_utc": "2026-11-09T13:32:34.983Z",
+  "context_sha256": "c6af3d29c66913eed1b7b58c1e4ebe70e1a997198f2aff10bd6f3e0586eaa83a",
+  "expected_writes": "Owned isolated dependencies/build/test/install roots and sealed reports; no real business project or user configuration writes",
+  "finished_utc": "2026-11-09T13:44:38.463Z",
+  "inner_exit_code": 0,
+  "signal": null,
+  "spawn_error": null,
+  "stdout_sha256": "3d5d1dea7b937d404eff0a2caf9208e9f5b35bbd08545b226d52c51174952801",
+  "stderr_sha256": "806a12b5b06fe95fb8a4429c1c5d82de741ba1c85bab31195be11ad11e1fba6b"
+}

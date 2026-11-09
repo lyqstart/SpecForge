@@ -1,0 +1,25 @@
+{
+  "utc": "2026-11-09T13:32:00.016Z",
+  "stage": "afterEach",
+  "pid": 5552,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "E1 PBT State > PBT-ST-01: WAL and in-memory state consistency > should have matching event count between WAL and applied transitions",
+    "start_ms": 551.0031,
+    "duration_ms": 1047.5951
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "readFile": 363,
+    "readdir": 118,
+    "mkdir": 30,
+    "writeFile": 49,
+    "open": 88,
+    "stat": 39,
+    "appendFile": 39
+  },
+  "rows": []
+}

@@ -1,0 +1,21 @@
+{
+  "utc": "2026-11-09T13:45:41.967Z",
+  "stage": "afterEach",
+  "pid": 2588,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "Fresh-04 prospective module_definition consumer > binds the frozen module_definition candidate by module identity and records the actual candidate input",
+    "start_ms": 344.5031,
+    "duration_ms": 53.9316
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 14,
+    "writeFile": 14,
+    "readFile": 38
+  },
+  "rows": []
+}

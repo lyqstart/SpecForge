@@ -1,0 +1,19 @@
+{
+  "utc": "2026-11-09T13:46:41.171Z",
+  "stage": "afterEach",
+  "pid": 5296,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "sf_safe_bash write-guard authorization enforcement > does not let a matching external-operation authorization bypass a local out-of-scope write",
+    "start_ms": 394.6492,
+    "duration_ms": 23.382299999999987
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "readFile": 2
+  },
+  "rows": []
+}

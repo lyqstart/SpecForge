@@ -1,0 +1,21 @@
+{
+  "utc": "2026-11-09T13:45:12.916Z",
+  "stage": "afterEach",
+  "pid": 7716,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "Design Governance gate > accepts new capability only with sufficient justification and layer-by-layer assessment",
+    "start_ms": 340.8626,
+    "duration_ms": 0.3853000000000293
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 2,
+    "writeFile": 2,
+    "readFile": 3
+  },
+  "rows": []
+}

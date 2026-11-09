@@ -1,0 +1,25 @@
+{
+  "utc": "2026-11-09T13:41:53.276Z",
+  "stage": "afterEach",
+  "pid": 7888,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "T1: Daemon startup/restart > T1.2: restart with state.json + events.jsonl passes checkAndRepair",
+    "start_ms": 541.3181,
+    "duration_ms": 53.45100000000002
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "readdir": 18,
+    "readFile": 57,
+    "mkdir": 7,
+    "stat": 6,
+    "appendFile": 6,
+    "open": 12,
+    "writeFile": 6
+  },
+  "rows": []
+}

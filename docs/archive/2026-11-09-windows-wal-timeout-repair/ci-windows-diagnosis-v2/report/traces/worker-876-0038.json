@@ -1,0 +1,17 @@
+{
+  "utc": "2026-11-09T13:44:44.297Z",
+  "stage": "afterEach",
+  "pid": 876,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "InvalidProjectPath validation > all project-scoped methods validate > resolveSessionsDir throws on empty path (EnterprisePathResolver)",
+    "start_ms": 285.3139,
+    "duration_ms": 0.07220000000000937
+  },
+  "truncated": false,
+  "all_fs_call_counts": {},
+  "rows": []
+}

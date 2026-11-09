@@ -1,0 +1,24 @@
+{
+  "utc": "2026-11-09T13:31:46.737Z",
+  "stage": "afterEach",
+  "pid": 4884,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "WAL > readEventsByCategory > should filter events by category",
+    "start_ms": 310.9593,
+    "duration_ms": 37.69659999999999
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 11,
+    "readdir": 7,
+    "readFile": 11,
+    "stat": 3,
+    "appendFile": 3,
+    "open": 3
+  },
+  "rows": []
+}

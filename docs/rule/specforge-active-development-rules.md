@@ -1419,6 +1419,9 @@ patched  = detached exact HEAD + exact payload + install + workspace build
 第二/三腿形成同锁产品修复 A/B；第一/第二腿单独报告工具链影响。三腿均使用独立 HOME/TEMP/APPDATA/OPENCODE_CONFIG_DIR。工具链叠加不得夹带产品修复，须用精确 HEAD 源码/测试/API 哈希与逐字段 manifest 差分证明；运行时依赖发生变化时不适用本开发工具特例。三腿仍执行上述收集层级、失败集合、不可比较、封包和安装验证要求；缺腿或构建/收集失败不能以旧报告、跳过或汇总退出码补造通过。
 <!-- source: ledger view L3916-3943 format H2COLON (purity-filtered) -->
 
+CI 临时存储是验证运行时输入。CI 入口必须显式绑定受信 runner 提供的临时根，验证并记录其原始选择来源与 native 规范路径，再把同一 TEMP/TMP/TMPDIR 传给全部子运行时；缺失或非法不得静默回退用户/系统临时目录。I/O 相关超时须以相同字节、采样与同步落盘语义对照路径和环境，不得通过改生产路径守护、减少同步、削减断言或放宽预算获得绿色结果。
+<!-- source: ERR-2112/ERR-2117; qualified CI storage input -->
+
 ## EXP-123：机器协议stdout与诊断stderr必须分离
 
 以下命令输出属于机器协议：

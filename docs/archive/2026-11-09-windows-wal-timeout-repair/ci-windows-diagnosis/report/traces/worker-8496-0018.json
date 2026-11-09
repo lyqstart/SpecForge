@@ -1,0 +1,17 @@
+{
+  "utc": "2026-11-09T13:31:25.605Z",
+  "stage": "afterEach",
+  "pid": 8496,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "tool-permissions — resolveToolPermission > allows non-protected tool when enableRBAC=true (allow-by-default)",
+    "start_ms": 568.1727,
+    "duration_ms": 0.12049999999999272
+  },
+  "truncated": false,
+  "all_fs_call_counts": {},
+  "rows": []
+}

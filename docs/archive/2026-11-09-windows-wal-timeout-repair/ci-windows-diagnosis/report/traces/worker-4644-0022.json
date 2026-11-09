@@ -1,0 +1,22 @@
+{
+  "utc": "2026-11-09T13:29:38.094Z",
+  "stage": "afterEach",
+  "pid": 4644,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "sf_state_transition - close (verification_done -> closed) > succeeds when all evidence is present and actor is close_gate",
+    "start_ms": 901.2976,
+    "duration_ms": 13.715800000000058
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 104,
+    "writeFile": 96,
+    "readFile": 95,
+    "stat": 3
+  },
+  "rows": []
+}

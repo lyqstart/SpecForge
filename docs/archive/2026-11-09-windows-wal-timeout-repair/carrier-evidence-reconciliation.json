@@ -1,0 +1,271 @@
+{
+  "utc": "2026-11-09T14:38:58.757Z",
+  "classification": "PASS_DIRECT_INNER_EXECUTION_EVIDENCE_WITH_PRESERVED_OUTER_CARRIER_FAILURES",
+  "outer_carrier_failures": 3,
+  "original_outer_raw_streams_reconstructed": false,
+  "phase_and_owner_numeric_OS_receipts_verified": true,
+  "distinct_inner_cold_commands": 14,
+  "distinct_structured_owner_commands": 24,
+  "legs": [
+    {
+      "leg": "original",
+      "source_commit": "48fc9057014413bd712c33f710b794f8bf6f273a",
+      "context_sha256": "c6af3d29c66913eed1b7b58c1e4ebe70e1a997198f2aff10bd6f3e0586eaa83a",
+      "cold_phases": [
+        {
+          "phase": "install",
+          "exit": 0,
+          "receipt_sha256": "02442da9d7a89a6d6186a029b750022b8ad379ecc39b520da901fe1efd41ea2d"
+        },
+        {
+          "phase": "clean",
+          "exit": 0,
+          "receipt_sha256": "95075ec782037af051050fa0913aea2d9f19ec79fc3335d726150e81f4b17bce"
+        },
+        {
+          "phase": "build",
+          "exit": 0,
+          "receipt_sha256": "53432e279572cecd6525c9a1a399db998c94c811b67ec6dfa530f8ffc4d72a4b"
+        },
+        {
+          "phase": "lint",
+          "exit": 0,
+          "receipt_sha256": "56fbd5b3c5bd7dc3f4b833d8d754db813e36e87ead1b62e721aa7d657ace47e0"
+        },
+        {
+          "phase": "workspace",
+          "exit": 0,
+          "receipt_sha256": "8e35f82a142e2c85b99ca6d7b067fb6784d7e828d488cb9aed162570d4d434dd"
+        },
+        {
+          "phase": "root",
+          "exit": 0,
+          "receipt_sha256": "bff0eea7fc2aef92b7dd28518bf760ce7d1b383eca5d26c2923875fb77031c85"
+        },
+        {
+          "phase": "installer",
+          "exit": 0,
+          "receipt_sha256": "8de8293011d88617ae0779f899028bef39d521d7e4f2a2a1caf6eb00979a4a15"
+        }
+      ],
+      "structured_owners": [
+        {
+          "owner": "version-unification",
+          "exit": 0,
+          "receipt_sha256": "ecf61c7c50f3a2f077455650a6984d2536f6b03c78f502dfa82a677ccb0af985",
+          "case_report_sha256": "d3a8c8b99b4e35188732a187e803776ba0b05158e1f4f6864367c344f2fff538",
+          "collected": 2
+        },
+        {
+          "owner": "configuration",
+          "exit": 0,
+          "receipt_sha256": "f36890abda34e308aa5608fa372f821c026cbd8d583f8db6f4fc6f6f311a9550",
+          "case_report_sha256": "a0fcf9f865fd68cc03177c5cc5ae375f65581fa7538fb1358ffb3f8d59f886a4",
+          "collected": 198
+        },
+        {
+          "owner": "service-management",
+          "exit": 0,
+          "receipt_sha256": "371d27faec182ecb6531ff24e5a73036cccb049a77f918dfb48d94167aafe58b",
+          "case_report_sha256": "2cc5768af74da136330388292c9f9074bca3df7bf3212b4cf5b2edb2176e6ab8",
+          "collected": 263
+        },
+        {
+          "owner": "host-profile",
+          "exit": 0,
+          "receipt_sha256": "3505a788d022f82c1a3062af675f6b13e41a70c83033e185d5574dc7d2552926",
+          "case_report_sha256": "0e104cd0574d169ccf1cba155d12eda23b615cc9f9f833f67406ff2716f816b1",
+          "collected": 2
+        },
+        {
+          "owner": "observability",
+          "exit": 0,
+          "receipt_sha256": "e245c2689fe6aa2865ed94d0421d1fc9f03421d5bb32452da5f7658fa5188b0a",
+          "case_report_sha256": "164793578809d238f45bab9fbe0e6f7b99b017a95525afaa4143c034c053b9c7",
+          "collected": 60
+        },
+        {
+          "owner": "permission-engine",
+          "exit": 0,
+          "receipt_sha256": "9b6ceac24af7f1bdd629d7ef7888c392548780ee64f8ab63c711b93474f97773",
+          "case_report_sha256": "309f3d47f1be6fd6f6996fb97a6233a7df3034d099eb16b6944127204dbb08be",
+          "collected": 379
+        },
+        {
+          "owner": "opencode-adapter",
+          "exit": 0,
+          "receipt_sha256": "00e8707b97e498af23bb1b8f6451e477485403fbc7b69665e1f645bcbecba6ce",
+          "case_report_sha256": "5ec15b2b539f310dc531e1723fd4045184acfae5481c302bdcd4ec1a71679fff",
+          "collected": 940
+        },
+        {
+          "owner": "scope-gate",
+          "exit": 0,
+          "receipt_sha256": "098c613a27f5f41e23e79841cf2e1ede011d3a5dda40c48ba25c996ccdb58578",
+          "case_report_sha256": "29bd2d5e5a11afa3c4915f1cf668be4b272f1eecb035009c2a27f98d92dcb8b5",
+          "collected": 175
+        },
+        {
+          "owner": "workflow-runtime",
+          "exit": 0,
+          "receipt_sha256": "aa8516873b3e0655d32a2796e4225f57f04ce42abde1b780f581ba6c98337cec",
+          "case_report_sha256": "de052ba622ce5df7ed2b836d8a1205c67e26a872ed9044c96a767a2b3b387642",
+          "collected": 1390
+        },
+        {
+          "owner": "cli",
+          "exit": 0,
+          "receipt_sha256": "485fc7b470ccd6ccc8c09866ae6021c0a67eadf1d2783b6c10512c814868c047",
+          "case_report_sha256": "b2a81a53c230a30ec90cf221e070d4055c283d7b9e1bf688bf8be8727f9279ae",
+          "collected": 794
+        },
+        {
+          "owner": "daemon-core",
+          "exit": 0,
+          "receipt_sha256": "d0886fc7ce98ab6f9b75be6e9f365493928415f68b95287a9017040eea940499",
+          "case_report_sha256": "3a77839be81682541a669c8a209f11be242e1c571dc66c7e6289edf5344298ff",
+          "collected": 2455
+        },
+        {
+          "owner": "root",
+          "exit": 0,
+          "receipt_sha256": "8b25eec21230346e072ae255975630c526f266a6103c9acc4735e18e8ffe9c9b",
+          "case_report_sha256": "5d42b895329a524aef320149c3cb0ef544d95f5aed37558d3476bc84891772b2",
+          "collected": 753
+        }
+      ],
+      "source_clean": true
+    },
+    {
+      "leg": "patched",
+      "source_commit": "3262bc6a2caa60dcc6bcb4c22e918af76c297bca",
+      "context_sha256": "3fd2e6309be2cd0442b33c67e04b3a1517bd8305874a22a2b6ae612e9bc61b42",
+      "cold_phases": [
+        {
+          "phase": "install",
+          "exit": 0,
+          "receipt_sha256": "54899809f42e063949eb3a22bd77727bcceccc700c589d514fa1b7e28e3a87f6"
+        },
+        {
+          "phase": "clean",
+          "exit": 0,
+          "receipt_sha256": "dd10bc78b5ce92d0e52e6537280e17b31a6f24e92e9c532b7a636bd6280c8c40"
+        },
+        {
+          "phase": "build",
+          "exit": 0,
+          "receipt_sha256": "f97bd9349768e2fff52cb77cae520cf94e78ef7bcc1fa6d70e0179851c0a76c3"
+        },
+        {
+          "phase": "lint",
+          "exit": 0,
+          "receipt_sha256": "59c66890556f09c4b07026d16adb57d8c92bf33582f62fd17deb5e58d449ecde"
+        },
+        {
+          "phase": "workspace",
+          "exit": 0,
+          "receipt_sha256": "62c4255d57057dd475b20ee44d75ec961967f4bd034106d64e5c28406409ead8"
+        },
+        {
+          "phase": "root",
+          "exit": 0,
+          "receipt_sha256": "c847264debee630e426a1d9c76a5c1fa51549e9a87477514a759585f47d66cdd"
+        },
+        {
+          "phase": "installer",
+          "exit": 0,
+          "receipt_sha256": "4d2f2f0edc07207f4665d1293813e88840232fd16921e83766b676c46af7a911"
+        }
+      ],
+      "structured_owners": [
+        {
+          "owner": "version-unification",
+          "exit": 0,
+          "receipt_sha256": "9d366e5313470405d8823aa6ea0a5ace0ce618223deee1f32047d10420e9226e",
+          "case_report_sha256": "28df2de64fe6107979c9f1c64547c71295198f2ba3fbb8679598740929aa556f",
+          "collected": 2
+        },
+        {
+          "owner": "configuration",
+          "exit": 0,
+          "receipt_sha256": "994b44be8948e3fe144652b8a47083395e1a1ed931729add5e5645121f8d4d83",
+          "case_report_sha256": "0b4f29fbbb769e395aff7c7cdd2185b32d1129aa620f0e5e590960eba4fb0eee",
+          "collected": 198
+        },
+        {
+          "owner": "service-management",
+          "exit": 0,
+          "receipt_sha256": "669b41e4e05acf67ff735c619c7e972549ea5cc5775aa2250d80425942252093",
+          "case_report_sha256": "e2edc9825e565ac9b76111393cb34194938b2c0cdc05b00dacdb0d38b93df8b0",
+          "collected": 263
+        },
+        {
+          "owner": "host-profile",
+          "exit": 0,
+          "receipt_sha256": "3bce7742406388701cff2025d2e5dd96451432fde8b41ed6207489152cf6080d",
+          "case_report_sha256": "e41384b8691acc6b9850634b6ecccb616180b459f1f46c3c294f3fd199862cb3",
+          "collected": 2
+        },
+        {
+          "owner": "observability",
+          "exit": 0,
+          "receipt_sha256": "8e4f1ec4d2b14db7f005d2534ebdc3999a7fc376f1036c847b7d12d69252a667",
+          "case_report_sha256": "426e881dce532f495bed8697e733cb8b858dbf551f91ebbff4b369876cba4743",
+          "collected": 60
+        },
+        {
+          "owner": "permission-engine",
+          "exit": 0,
+          "receipt_sha256": "f895b5c70b738ee0232296c5788b2e236715ca28e995c4baf822f92c3d77e5f7",
+          "case_report_sha256": "adb095bbef1efb829ea9698c634769c4ce4df364ee6528fd62d61dc37a52fddb",
+          "collected": 379
+        },
+        {
+          "owner": "opencode-adapter",
+          "exit": 0,
+          "receipt_sha256": "a5264ff444d9b4bf668a8e247a9839a804eebbc33f31ddf19946ad633a858573",
+          "case_report_sha256": "509189173b7118b1087df4136482a87030e68cba4dbadd6ee68f0c85a57a20d3",
+          "collected": 940
+        },
+        {
+          "owner": "scope-gate",
+          "exit": 0,
+          "receipt_sha256": "f6b6a5c345030df4643ddec8c07c9821679ed7437f098daf54b8125e97aada90",
+          "case_report_sha256": "d0fdb6f645ac4ec4b0d8c17baf228c691328afc63790d023792448bbc619bb2d",
+          "collected": 184
+        },
+        {
+          "owner": "workflow-runtime",
+          "exit": 0,
+          "receipt_sha256": "f0ebbcf315c6fcd5a2a34e90823b6202cce719cfc72e887a83c5bc513e814907",
+          "case_report_sha256": "1227ad9dac1dfaf234052372ec9871efd2cf6e5e7463e306872bdc13c4226290",
+          "collected": 1390
+        },
+        {
+          "owner": "cli",
+          "exit": 0,
+          "receipt_sha256": "aed0d01a2eb42fe6f55d075be7018ef6c159bdc966f5e00c1b92787684d9fe25",
+          "case_report_sha256": "4484d977ead18dbf8aca0859ecdeda02f211093e85498f5753210633ec532dac",
+          "collected": 794
+        },
+        {
+          "owner": "daemon-core",
+          "exit": 0,
+          "receipt_sha256": "a058903c782d6268328ad2edb8af22826b251903675e4e71f2c1dea4c483f93c",
+          "case_report_sha256": "d3a1692cd00f666856c36fa8f3b50232f5b48da7bb1b50b4bd97ab12418f2379",
+          "collected": 2455
+        },
+        {
+          "owner": "root",
+          "exit": 0,
+          "receipt_sha256": "04afe9d2c42f56efa452c2f8aeed36c69255fb3e7c6fbbc4853cff7864193952",
+          "case_report_sha256": "df47e05e20ad23e9c8b81d4bf4e8256d972f00530399fe6b7d169ddadb06a2d1",
+          "collected": 753
+        }
+      ],
+      "source_clean": true
+    }
+  ],
+  "source": "Direct independent child-process close/status receipts, raw hashes, original contexts and actual JSON case reports. No failed outer carrier relabelled.",
+  "limits": "Two old cold/structured wrappers and one still-running old wrapper lost only outer final summary capture when immutable numbers collided. Exact lost outer stdout/start snapshots remain unavailable; real inner commands retain command/cwd/time/numeric exits. New reservation and explicit nonzero preservation are separately tested."
+}

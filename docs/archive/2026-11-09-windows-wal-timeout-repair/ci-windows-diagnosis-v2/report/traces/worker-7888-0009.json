@@ -1,0 +1,25 @@
+{
+  "utc": "2026-11-09T13:41:53.519Z",
+  "stage": "afterEach",
+  "pid": 7888,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "T3: events.jsonl integrity > T3.1: current WAL events have schema_version 1.0",
+    "start_ms": 806.299,
+    "duration_ms": 31.726499999999987
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "readdir": 65,
+    "readFile": 210,
+    "mkdir": 21,
+    "stat": 21,
+    "appendFile": 21,
+    "open": 49,
+    "writeFile": 28
+  },
+  "rows": []
+}

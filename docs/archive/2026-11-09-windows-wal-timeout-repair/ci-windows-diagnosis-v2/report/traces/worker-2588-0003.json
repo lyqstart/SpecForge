@@ -1,0 +1,21 @@
+{
+  "utc": "2026-11-09T13:45:41.998Z",
+  "stage": "afterEach",
+  "pid": 2588,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "Fresh-04 prospective module_definition consumer > does not bind a candidate carrying the wrong frozen module_id",
+    "start_ms": 399.4122,
+    "duration_ms": 29.870600000000024
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 28,
+    "writeFile": 28,
+    "readFile": 54
+  },
+  "rows": []
+}

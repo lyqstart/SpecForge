@@ -1,0 +1,17 @@
+{
+  "utc": "2026-11-09T13:29:50.882Z",
+  "stage": "afterEach",
+  "pid": 5792,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "7.5 sf_safe_bash WI artifact path blocking (real failure fix) > hard_stop after sf_safe_bash WI artifact blocks sf_state_transition",
+    "start_ms": 561.7688,
+    "duration_ms": 3.3735999999998967
+  },
+  "truncated": false,
+  "all_fs_call_counts": {},
+  "rows": []
+}

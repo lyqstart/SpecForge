@@ -1,0 +1,20 @@
+{
+  "utc": "2026-11-09T13:44:20.184Z",
+  "stage": "afterEach",
+  "pid": 8336,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "Recoverable HardStop protocol > rejects unsafe or incomplete operator-error recovery plans",
+    "start_ms": 499.5016,
+    "duration_ms": 6.284800000000018
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 19,
+    "writeFile": 13
+  },
+  "rows": []
+}

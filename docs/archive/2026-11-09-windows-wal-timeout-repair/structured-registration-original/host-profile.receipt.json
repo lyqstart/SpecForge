@@ -1,0 +1,19 @@
+{
+  "owner": "host-profile",
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "test",
+    "--",
+    "--maxWorkers=1",
+    "--reporter=json",
+    "--outputFile=D:\\code\\SpecForge\\docs\\archive\\2026-11-09-windows-wal-timeout-repair\\structured-registration-original\\host-profile.vitest.json"
+  ],
+  "cwd": "D:\\code\\SpecForge\\.wal-original-a01\\packages\\host-profile",
+  "context_sha256": "c6af3d29c66913eed1b7b58c1e4ebe70e1a997198f2aff10bd6f3e0586eaa83a",
+  "started_utc": "2026-11-09T14:08:39.620Z",
+  "finished_utc": "2026-11-09T14:08:40.722Z",
+  "exit": 0,
+  "stdout_sha256": "c9419307132ef74a60229f07b0ded644a4dc545c76390c5c299a2640905675fa",
+  "stderr_sha256": "6d8d44e73b5ebd8e236dc3aa98d6c9b2f3967043d4c5d82a40ae248bbf1e6bce"
+}

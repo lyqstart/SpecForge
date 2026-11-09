@@ -1,0 +1,21 @@
+{
+  "utc": "2026-11-09T13:32:27.058Z",
+  "stage": "afterEach",
+  "pid": 1468,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "acceptance-discovered guard and audit gaps > allows the exact official initialization tool through the real HTTP guard, then initializes idempotently",
+    "start_ms": 657.2805,
+    "duration_ms": 4609.6081
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 45,
+    "writeFile": 18,
+    "readFile": 13
+  },
+  "rows": []
+}

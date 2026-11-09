@@ -1,0 +1,23 @@
+{
+  "utc": "2026-11-09T13:42:26.079Z",
+  "stage": "afterEach",
+  "pid": 6284,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "Crash Recovery Simulation > should handle state reconstruction with empty events",
+    "start_ms": 1487.4973,
+    "duration_ms": 7.6409000000001015
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 18,
+    "open": 9,
+    "writeFile": 9,
+    "readFile": 43,
+    "readdir": 10
+  },
+  "rows": []
+}

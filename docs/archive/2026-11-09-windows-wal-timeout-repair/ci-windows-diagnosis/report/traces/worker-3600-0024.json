@@ -1,0 +1,17 @@
+{
+  "utc": "2026-11-09T13:31:52.423Z",
+  "stage": "afterEach",
+  "pid": 3600,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "Bash Write Detection > isBashWriteCommand detects base64 decode",
+    "start_ms": 1015.4932,
+    "duration_ms": 0.32140000000003965
+  },
+  "truncated": false,
+  "all_fs_call_counts": {},
+  "rows": []
+}

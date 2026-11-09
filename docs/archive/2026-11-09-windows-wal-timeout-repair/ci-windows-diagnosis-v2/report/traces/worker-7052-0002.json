@@ -1,0 +1,23 @@
+{
+  "utc": "2026-11-09T13:46:26.380Z",
+  "stage": "afterEach",
+  "pid": 7052,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "merge runner — extension_registry.json version sync > syncs extension_registry.json when another Project Spec Core file is merged",
+    "start_ms": 659.7282,
+    "duration_ms": 81.90509999999995
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 20,
+    "writeFile": 21,
+    "readFile": 60,
+    "stat": 20,
+    "readdir": 10
+  },
+  "rows": []
+}

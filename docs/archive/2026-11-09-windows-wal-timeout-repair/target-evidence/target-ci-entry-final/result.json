@@ -1,0 +1,18 @@
+{
+  "start": "2026-11-09T13:57:03.546Z",
+  "finished": "2026-11-09T13:57:04.319Z",
+  "owner": "scope-gate",
+  "cwd": "D:\\code\\SpecForge\\.wal-patched-a01\\packages\\scope-gate",
+  "args": [
+    "run",
+    "test",
+    "--",
+    "--maxWorkers=1",
+    "tests/ci-runner-temporary-root.test.ts",
+    "tests/current-crossplatform-ci-contract.test.ts"
+  ],
+  "exit": 1,
+  "context_sha256": "7eef97ffaf780287b60b435c6391e16792e4f1c638f8b76b345b20dc56b87b07",
+  "stdout_sha256": "81bb7479ae0a819b3e3b4ac84e8288b2a5d6e70a908a12a8df41fc09f76355de",
+  "stderr_sha256": "259a4379360007d535cd92114fd675be7b35956a9e954addeff59a4a15d2c66b"
+}

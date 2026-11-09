@@ -1,0 +1,20 @@
+{
+  "owner": "observability",
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "test",
+    "--",
+    "--maxWorkers=1",
+    "--minWorkers=1",
+    "--reporter=json",
+    "--outputFile=D:\\code\\SpecForge\\docs\\archive\\2026-11-09-windows-wal-timeout-repair\\structured-registration-patched\\observability.vitest.json"
+  ],
+  "cwd": "D:\\code\\SpecForge\\.wal-patched-a01\\packages\\observability",
+  "context_sha256": "3fd2e6309be2cd0442b33c67e04b3a1517bd8305874a22a2b6ae612e9bc61b42",
+  "started_utc": "2026-11-09T14:25:39.776Z",
+  "finished_utc": "2026-11-09T14:25:43.930Z",
+  "exit": 0,
+  "stdout_sha256": "691f91ec83b6e49413b53cc2cb583aef21cb9121fea5b7a6b17cb202a54c99a0",
+  "stderr_sha256": "f4520713815df773e08f0999be1b0897df1da35c5b894f935468baf22578d7d1"
+}

@@ -1,0 +1,29 @@
+{
+  "collected_utc": "2026-11-09 14:27:05 UTC",
+  "classification": "EVIDENCE_CARRIER_NUMBER_RESERVATION_DEFECT_NOT_TEST_FAILURE",
+  "confirmed_outer_failures": [
+    {
+      "exec_session": 41620,
+      "carrier_exit_code": 1,
+      "error": "EEXIST at commands/0026.json after inner complete qualification",
+      "inner_evidence": "qualification-patched/*.command.json,*.result.json,raw logs,manifest.json and result.json"
+    },
+    {
+      "exec_session": 79238,
+      "carrier_exit_code": 1,
+      "error": "EEXIST at commands/0026.json after inner complete case collection",
+      "inner_evidence": "structured-registration-original/*receipt.json,*.vitest.json and result.json"
+    }
+  ],
+  "still_running_old_carrier": {
+    "exec_session": 97034,
+    "intended_result": "commands/0033.json",
+    "collision_already_exists": true,
+    "inner_evidence": "structured-registration-patched",
+    "must_observe_final_outer_exit": true
+  },
+  "preserved_source": "run-concurrent-unsafe-v1.cjs",
+  "repair": "Reserve distinct .request.json with exclusive create and persist/fsync full request before child execution. Existing immutable results never overwritten or renamed.",
+  "evidence_boundary": "Outer carrier exit1 is preserved and is not relabelled. Lost outer stdout/request snapshots cannot be reconstructed; exact calls remain in tool history. Inner phase/owner commands independently captured actual numeric OS exits, command/cwd/time, raw output/report hashes and isolated contexts. Acceptance must verify all those direct receipts and disclose this carrier fault.",
+  "patch_guard_failure": "An attempted delete+add of the same file in one apply_patch was rejected before mutation; corrected by adding a new version then copying after preserving original."
+}

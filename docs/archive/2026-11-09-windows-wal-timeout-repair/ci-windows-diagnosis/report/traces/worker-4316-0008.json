@@ -1,0 +1,25 @@
+{
+  "utc": "2026-11-09T13:32:31.875Z",
+  "stage": "afterEach",
+  "pid": 4316,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "missing configuration activation at the actual consumer > enterprise, recreated=true: rejects missing record with active work and timeout 2000",
+    "start_ms": 1423.3152,
+    "duration_ms": 78.66370000000006
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "readFile": 216,
+    "readdir": 55,
+    "mkdir": 27,
+    "writeFile": 24,
+    "open": 24,
+    "stat": 7,
+    "appendFile": 7
+  },
+  "rows": []
+}

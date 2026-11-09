@@ -1,0 +1,16 @@
+$ vitest run "--maxWorkers=1" tests/ci-runner-temporary-root.test.ts tests/current-crossplatform-ci-contract.test.ts
+
+⎯⎯⎯⎯⎯⎯ Unhandled Error ⎯⎯⎯⎯⎯⎯⎯
+RangeError: options.minThreads and options.maxThreads must not conflict
+ ❯ new Tinypool ../../node_modules/.bun/tinypool@0.8.4/node_modules/tinypool/dist/esm/index.js:955:13
+ ❯ createForksPool ../../node_modules/.bun/vitest@1.6.1+7b6df19a7009ccf0/node_modules/vitest/dist/vendor/cli-api.OdDWuB7Y.js:8058:16
+ ❯ forks ../../node_modules/.bun/vitest@1.6.1+7b6df19a7009ccf0/node_modules/vitest/dist/vendor/cli-api.OdDWuB7Y.js:8864:20
+ ❯ ../../node_modules/.bun/vitest@1.6.1+7b6df19a7009ccf0/node_modules/vitest/dist/vendor/cli-api.OdDWuB7Y.js:8888:39
+ ❯ Object.runTests ../../node_modules/.bun/vitest@1.6.1+7b6df19a7009ccf0/node_modules/vitest/dist/vendor/cli-api.OdDWuB7Y.js:8880:5
+ ❯ async file:/D:/code/SpecForge/.wal-patched-a01/node_modules/.bun/vitest@1.6.1+7b6df19a7009ccf0/node_modules/vitest/dist/vendor/cli-api.OdDWuB7Y.js:11226:9
+ ❯ Vitest.runFiles ../../node_modules/.bun/vitest@1.6.1+7b6df19a7009ccf0/node_modules/vitest/dist/vendor/cli-api.OdDWuB7Y.js:11244:12
+ ❯ Vitest.start ../../node_modules/.bun/vitest@1.6.1+7b6df19a7009ccf0/node_modules/vitest/dist/vendor/cli-api.OdDWuB7Y.js:11111:7
+ ❯ startVitest ../../node_modules/.bun/vitest@1.6.1+7b6df19a7009ccf0/node_modules/vitest/dist/vendor/cli-api.OdDWuB7Y.js:18364:7
+
+
+error: script "test" exited with code 1

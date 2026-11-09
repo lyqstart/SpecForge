@@ -1,0 +1,19 @@
+{
+  "utc": "2026-11-09T14:22:01.163Z",
+  "members": [
+    {
+      "source": "download-ci-artifact.cjs",
+      "target": "download-publication-ci-artifact.cjs",
+      "source_sha256": "aa52bd82acb2198965e8a6eb1d770d81328dde42c61b71d7ab714cd475d5ffee",
+      "target_sha256": "8bb11849db2e7e01f05763be6e9cb47e6f433450432adbb00b5c4dfb65f4f085",
+      "change": "Only publication-live output root; all identity, digest, link/path and budget checks retained"
+    },
+    {
+      "source": "extract-ci-artifact-tree.ps1",
+      "target": "extract-publication-ci-artifact-tree.ps1",
+      "source_sha256": "b4ddfddd0d041996a92a4cadb6cc1fd472123cf1f119946a8b39d93cdc15b07c",
+      "target_sha256": "90623b61314082c26cb84f03a9b53c15c8ed6413a4158ecdbcc764bdb08f19f2",
+      "change": "Only publication-live output root; all identity, digest, link/path and budget checks retained"
+    }
+  ]
+}

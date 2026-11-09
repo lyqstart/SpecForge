@@ -1,0 +1,21 @@
+{
+  "utc": "2026-11-09T13:46:27.712Z",
+  "stage": "afterEach",
+  "pid": 1060,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "control-plane write provenance persistent owners > does not mutate Git governance metadata when existing provenance is malformed",
+    "start_ms": 340.7625,
+    "duration_ms": 6.3892999999999915
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 9,
+    "writeFile": 10,
+    "readFile": 5
+  },
+  "rows": []
+}

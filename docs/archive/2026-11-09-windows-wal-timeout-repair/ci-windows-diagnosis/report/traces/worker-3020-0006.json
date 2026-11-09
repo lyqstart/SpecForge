@@ -1,0 +1,25 @@
+{
+  "utc": "2026-11-09T13:32:56.266Z",
+  "stage": "afterEach",
+  "pid": 3020,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "Property 20: recovery preserves complete history and rejects loss > rejects invalid-transition with zero authority writes",
+    "start_ms": 763.1886,
+    "duration_ms": 72.41600000000005
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "readFile": 152,
+    "readdir": 47,
+    "mkdir": 15,
+    "writeFile": 19,
+    "open": 29,
+    "stat": 12,
+    "appendFile": 13
+  },
+  "rows": []
+}

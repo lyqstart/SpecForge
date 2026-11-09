@@ -1,0 +1,21 @@
+{
+  "utc": "2026-11-09T13:47:07.073Z",
+  "stage": "afterEach",
+  "pid": 1740,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "current Project Init manifest contract > rejects missing schema and conflicting canonical identity",
+    "start_ms": 621.5069,
+    "duration_ms": 84.43730000000005
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 66,
+    "writeFile": 54,
+    "readFile": 31
+  },
+  "rows": []
+}

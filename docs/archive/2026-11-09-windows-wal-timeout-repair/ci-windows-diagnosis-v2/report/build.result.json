@@ -1,0 +1,15 @@
+{
+  "name": "build",
+  "exe": "bun.exe",
+  "args": [
+    "scripts/prepare-current-release.ts"
+  ],
+  "cwd": "D:\\a\\SpecForge\\SpecForge",
+  "started": "2026-11-09T13:41:02.157Z",
+  "finished": "2026-11-09T13:41:36.732Z",
+  "exit": 0,
+  "signal": null,
+  "error": null,
+  "stdout_sha256": "402850bef184298bb1c936022ae3170e1bfad02b785665142f6919e6be9a9f13",
+  "stderr_sha256": "42580806f72966c011a56229da3d32784afbef0b7cde7cfe7d94dfef7da3aee9"
+}

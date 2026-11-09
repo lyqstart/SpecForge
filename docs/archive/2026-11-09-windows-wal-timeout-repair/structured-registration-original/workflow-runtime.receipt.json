@@ -1,0 +1,20 @@
+{
+  "owner": "workflow-runtime",
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "test",
+    "--",
+    "--maxWorkers=1",
+    "--minWorkers=1",
+    "--reporter=json",
+    "--outputFile=D:\\code\\SpecForge\\docs\\archive\\2026-11-09-windows-wal-timeout-repair\\structured-registration-original\\workflow-runtime.vitest.json"
+  ],
+  "cwd": "D:\\code\\SpecForge\\.wal-original-a01\\packages\\workflow-runtime",
+  "context_sha256": "c6af3d29c66913eed1b7b58c1e4ebe70e1a997198f2aff10bd6f3e0586eaa83a",
+  "started_utc": "2026-11-09T14:10:53.853Z",
+  "finished_utc": "2026-11-09T14:11:48.193Z",
+  "exit": 0,
+  "stdout_sha256": "5f95974156a09dddfb64f0df603c37682e73cd549e36445eda92eac4147385e0",
+  "stderr_sha256": "65e63e463b55505ef0765fbc467c6e1ff789706a6fab51e2f822b0000ff4fa05"
+}

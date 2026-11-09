@@ -1,0 +1,23 @@
+{
+  "utc": "2026-11-09T13:45:28.222Z",
+  "stage": "afterEach",
+  "pid": 2184,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "Gate Attempt immutable evidence > blocks an unknown existing attempt schema before creating or updating evidence",
+    "start_ms": 732.2905,
+    "duration_ms": 9.651200000000017
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 17,
+    "writeFile": 33,
+    "readdir": 8,
+    "readFile": 27,
+    "stat": 19
+  },
+  "rows": []
+}

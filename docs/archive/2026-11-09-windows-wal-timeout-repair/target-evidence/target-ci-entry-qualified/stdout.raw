@@ -1,0 +1,11 @@
+
+ RUN  v1.6.1 D:/code/SpecForge/.wal-patched-a01/packages/scope-gate
+
+ ✓ tests/ci-runner-temporary-root.test.ts  (9 tests) 1141ms
+ ✓ tests/current-crossplatform-ci-contract.test.ts  (5 tests) 17ms
+
+ Test Files  2 passed (2)
+      Tests  14 passed (14)
+   Start at  21:58:34
+   Duration  2.06s (transform 58ms, setup 0ms, collect 92ms, tests 1.16s, environment 1ms, prepare 382ms)
+

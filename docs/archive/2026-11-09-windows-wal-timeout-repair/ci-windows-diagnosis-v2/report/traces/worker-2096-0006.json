@@ -1,0 +1,23 @@
+{
+  "utc": "2026-11-09T13:41:59.270Z",
+  "stage": "afterEach",
+  "pid": 2096,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "SpecForge v1.1 Post-P0 governance regression flow > rejects code_permission enable before successful merge for spec-changing workflows",
+    "start_ms": 3103.082,
+    "duration_ms": 453.72800000000007
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 150,
+    "writeFile": 168,
+    "readFile": 263,
+    "readdir": 21,
+    "stat": 90
+  },
+  "rows": []
+}

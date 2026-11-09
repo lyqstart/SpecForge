@@ -1,0 +1,25 @@
+{
+  "utc": "2026-11-09T13:42:35.702Z",
+  "stage": "afterEach",
+  "pid": 8184,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "Recovery owner sealed project import > rejects hard links without altering their external alias",
+    "start_ms": 6577.281,
+    "duration_ms": 322.4342999999999
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 97,
+    "writeFile": 96,
+    "readFile": 522,
+    "readdir": 311,
+    "open": 179,
+    "stat": 59,
+    "appendFile": 32
+  },
+  "rows": []
+}

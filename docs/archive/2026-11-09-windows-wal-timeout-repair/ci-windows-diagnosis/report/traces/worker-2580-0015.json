@@ -1,0 +1,22 @@
+{
+  "utc": "2026-11-09T13:29:37.071Z",
+  "stage": "afterEach",
+  "pid": 2580,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "Orchestrator governance execution closure > requires the create owner to persist a non-empty original request before intake_ready",
+    "start_ms": 2037.6339,
+    "duration_ms": 25.944400000000087
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 151,
+    "writeFile": 84,
+    "readFile": 93,
+    "readdir": 3
+  },
+  "rows": []
+}

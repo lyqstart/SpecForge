@@ -1,0 +1,25 @@
+{
+  "utc": "2026-11-09T13:44:29.420Z",
+  "stage": "afterEach",
+  "pid": 8088,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "verification Runtime plan/permission owner (unit dependencies) > rejects orchestrator run ownership even with a verifier self-claim and preserves code permission",
+    "start_ms": 7163.1976,
+    "duration_ms": 2021.7642999999998
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 106,
+    "writeFile": 93,
+    "readdir": 68,
+    "readFile": 108,
+    "open": 306,
+    "stat": 1,
+    "appendFile": 1
+  },
+  "rows": []
+}

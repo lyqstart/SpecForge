@@ -1,0 +1,23 @@
+{
+  "utc": "2026-11-09T13:32:02.563Z",
+  "stage": "afterEach",
+  "pid": 1720,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "affirmative implementation facts > rejects a real contradiction: app.js: new file",
+    "start_ms": 1110.5289,
+    "duration_ms": 18.752500000000055
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 54,
+    "writeFile": 144,
+    "readFile": 162,
+    "stat": 36,
+    "readdir": 18
+  },
+  "rows": []
+}

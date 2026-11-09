@@ -1,0 +1,20 @@
+{
+  "owner": "cli",
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "test",
+    "--",
+    "--maxWorkers=1",
+    "--minWorkers=1",
+    "--reporter=json",
+    "--outputFile=D:\\code\\SpecForge\\docs\\archive\\2026-11-09-windows-wal-timeout-repair\\structured-registration-patched\\cli.vitest.json"
+  ],
+  "cwd": "D:\\code\\SpecForge\\.wal-patched-a01\\packages\\cli",
+  "context_sha256": "3fd2e6309be2cd0442b33c67e04b3a1517bd8305874a22a2b6ae612e9bc61b42",
+  "started_utc": "2026-11-09T14:28:33.629Z",
+  "finished_utc": "2026-11-09T14:29:21.926Z",
+  "exit": 0,
+  "stdout_sha256": "8f7eb9d977918c967662dadbbedb914ff1184e0ca2db6dead4d6d2775b8323a1",
+  "stderr_sha256": "407f81b5844b5ac6c22eb596660b831b5edbc697616db32d523a7c03f70ce8e6"
+}

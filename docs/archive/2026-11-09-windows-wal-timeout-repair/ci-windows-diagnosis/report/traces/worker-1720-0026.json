@@ -1,0 +1,23 @@
+{
+  "utc": "2026-11-09T13:32:02.758Z",
+  "stage": "afterEach",
+  "pid": 1720,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "candidate gates cannot perform the seal owner transaction > rejects state created before any attempt/file/state write",
+    "start_ms": 1256.005,
+    "duration_ms": 68.26209999999992
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 75,
+    "writeFile": 204,
+    "readFile": 365,
+    "stat": 74,
+    "readdir": 87
+  },
+  "rows": []
+}

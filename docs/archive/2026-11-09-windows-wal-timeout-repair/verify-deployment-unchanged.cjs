@@ -1,0 +1,35 @@
+const fs = require('node:fs');
+const path = require('node:path');
+const assert = require('node:assert/strict');
+const crypto = require('node:crypto');
+const sha = b => crypto.createHash('sha256').update(b).digest('hex');
+const root = path.resolve(__dirname, '../../..');
+const config = 'C:/Users/lyq/.config/opencode';
+(async () => {
+  const historical = JSON.parse(fs.readFileSync(path.join(__dirname, '../2026-11-09-plugin-registration-recovery/user-upgrade-02/result.json')));
+  const installed = JSON.parse(fs.readFileSync(path.join(config, 'specforge-manifest.json')));
+  const candidate = JSON.parse(fs.readFileSync(path.join(root, '.wal-patched-a01/release/release-manifest.json')));
+  assert.equal(installed.shared_version, '1.0.25');
+  assert.equal(candidate.version, '1.0.25');
+  assert.equal(Object.keys(installed.files).length, 117);
+  const members = Object.entries(installed.files).map(([file, identity]) => {
+    const actual = sha(fs.readFileSync(path.join(config, file)));
+    assert.equal(actual, identity.sha256, 'USER_FILE_DRIFT:' + file);
+    assert.equal(actual, historical.actual_identities[file], 'PREVIOUS_DEPLOYMENT_DRIFT:' + file);
+    const fresh = candidate.installFiles.find(f => f.targetPath === file);
+    assert(fresh, 'FRESH_BUILD_MEMBER_MISSING:' + file);
+    return { file, installed_sha256: actual, fresh_build_sha256: fresh.sha256, fresh_build_equal: actual === fresh.sha256 };
+  });
+  const handshake = JSON.parse(fs.readFileSync(path.join(config, 'sf-user/runtime/handshake.json')));
+  const response = await fetch('http://127.0.0.1:' + handshake.port + '/api/v1/healthz', { signal: AbortSignal.timeout(10000) });
+  assert.equal(response.status, 200);
+  const health = await response.json();
+  assert.equal(health.status, 'ok');
+  assert.equal(health.version, '1.0.25');
+  assert.equal(health.pid, 39204);
+  assert.equal(health.pid, handshake.pid);
+  const key = fs.lstatSync(path.join(config, 'sf-user/runtime/verification-owner/owner.key'));
+  const report = { utc: new Date().toISOString(), classification: 'INSTALLED_DEPLOYMENT_UNCHANGED_AND_HEALTHY', current_version: installed.shared_version, managed_files_verified: members.length, members, fresh_build_differences: members.filter(m => !m.fresh_build_equal).map(m => m.file), health, owner_key: { content_read: false, size: key.size, ino: key.ino, dev: key.dev, mtimeMs: key.mtimeMs, birthtimeMs: key.birthtimeMs }, deployment_performed: false, restart_performed: false, business_project_access: false, limits: 'Fresh build packaging identity may differ without runtime source changes; differences, if any, require classification before closure. No new UI/model/business-workflow claim.' };
+  fs.writeFileSync(path.join(__dirname, 'deployment-verification.json'), JSON.stringify(report, null, 2) + '\n', { flag: 'wx' });
+  console.log(JSON.stringify({ managed_verified: 117, daemon_pid: health.pid, health: health.status, fresh_build_differences: report.fresh_build_differences, deployed: false }));
+})().catch(e => { console.error(e.name + ':' + e.message); process.exitCode = 1; });

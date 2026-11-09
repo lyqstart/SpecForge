@@ -1,0 +1,22 @@
+{
+  "utc": "2026-11-09T13:42:47.071Z",
+  "stage": "afterEach",
+  "pid": 3604,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "Memory Usage Tests > should not leak memory on repeated start/stop cycles",
+    "start_ms": 1521.2527,
+    "duration_ms": 329.6763000000001
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 26,
+    "open": 14,
+    "writeFile": 12,
+    "readFile": 24
+  },
+  "rows": []
+}

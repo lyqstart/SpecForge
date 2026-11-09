@@ -1,0 +1,21 @@
+{
+  "phase": "lint",
+  "cwd": "D:\\a\\SpecForge\\SpecForge",
+  "executable": "C:\\Users\\runneradmin\\.bun\\bin\\bun.exe",
+  "args": [
+    "run",
+    "lint"
+  ],
+  "started_utc": "2026-11-09T14:08:13.620Z",
+  "context_sha256": "54c5d6d42d750d3ea926801fd29a110d224b3638301a225e2bf74725e832560d",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES:build/test outputs;EXTERNAL_EVIDENCE_WRITES:owned runner-temp report;no tracked source changes",
+  "finished_utc": "2026-11-09T14:09:27.697Z",
+  "inner_exit_code": 0,
+  "carrier_exit_code": 0,
+  "success": true,
+  "signal": null,
+  "spawn_error": null,
+  "source_unchanged": true,
+  "stdout_sha256": "43ba605e206c17cbdb6257b5e7d023fa0a4d008d0c2ae524663158c00b7f1da9",
+  "stderr_sha256": "f3057fb7412d8bad44b554618fef5876038cfcc98fc02a2fc6c5112e5ca0b160"
+}

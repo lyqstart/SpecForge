@@ -1,0 +1,21 @@
+{
+  "utc": "2026-11-09T13:33:30.448Z",
+  "stage": "afterEach",
+  "pid": 9204,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "ensureProjectInit — extension_registry.json preservation > does NOT overwrite a non-empty extension_registry.json on re-init (registered contracts survive)",
+    "start_ms": 1046.5484,
+    "duration_ms": 220.52830000000017
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 66,
+    "writeFile": 35,
+    "readFile": 18
+  },
+  "rows": []
+}

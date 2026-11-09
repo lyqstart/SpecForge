@@ -1,0 +1,20 @@
+{
+  "utc": "2026-11-09T13:31:46.342Z",
+  "stage": "afterEach",
+  "pid": 7056,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "Runtime Candidate Manifest materialization > requires the Project Contract candidate for project_contract_changed classification",
+    "start_ms": 349.0715,
+    "duration_ms": 6.051600000000008
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 17,
+    "writeFile": 17
+  },
+  "rows": []
+}

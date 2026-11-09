@@ -1,0 +1,13 @@
+{
+  "leg": "patched",
+  "phase": "lint",
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "lint"
+  ],
+  "cwd": "D:\\code\\SpecForge\\.wal-patched-a01",
+  "started_utc": "2026-11-09T14:07:47.554Z",
+  "context_sha256": "3fd2e6309be2cd0442b33c67e04b3a1517bd8305874a22a2b6ae612e9bc61b42",
+  "expected_writes": "Owned isolated dependencies/build/test/install roots and sealed reports; no real business project or user configuration writes"
+}

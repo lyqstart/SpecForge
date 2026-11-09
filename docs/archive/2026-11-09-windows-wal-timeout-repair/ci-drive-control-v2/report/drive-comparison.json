@@ -1,0 +1,57 @@
+{
+  "utc": "2026-11-09T13:40:15.176Z",
+  "node": "v24.19.0",
+  "platform": "win32",
+  "probe_sha256": "eedf9fdf6880c3ec189a31f861b0599b6cae0a7406b61a57176024828a91fc10",
+  "results": [
+    {
+      "source": "system-native",
+      "root": "C:\\Users\\runneradmin\\AppData\\Local\\Temp",
+      "dev": 1422631540,
+      "ino": 3096224743856026,
+      "exit": 0,
+      "profile": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-drive-control-Z34W0S"
+    },
+    {
+      "source": "system-alias",
+      "root": "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp",
+      "dev": 1422631540,
+      "ino": 3096224743856026,
+      "exit": 0,
+      "profile": "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\sf-wal-drive-control-lSeWJN"
+    },
+    {
+      "source": "runner-native",
+      "root": "D:\\a\\_temp",
+      "dev": 338930822,
+      "ino": 281474976710695,
+      "exit": 0,
+      "profile": "D:\\a\\_temp\\sf-wal-drive-control-s012Ek"
+    },
+    {
+      "source": "runner-native",
+      "root": "D:\\a\\_temp",
+      "dev": 338930822,
+      "ino": 281474976710695,
+      "exit": 0,
+      "profile": "D:\\a\\_temp\\sf-wal-drive-control-UBY9Xf"
+    },
+    {
+      "source": "system-alias",
+      "root": "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp",
+      "dev": 1422631540,
+      "ino": 3096224743856026,
+      "exit": 0,
+      "profile": "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\sf-wal-drive-control-XLyeaJ"
+    },
+    {
+      "source": "system-native",
+      "root": "C:\\Users\\runneradmin\\AppData\\Local\\Temp",
+      "dev": 1422631540,
+      "ino": 3096224743856026,
+      "exit": 0,
+      "profile": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-drive-control-i3SNcG"
+    }
+  ],
+  "qualification": "Reverse-order exact same bytes/count/syncs on native system temp,system alias and native runner temp. No product/test change; no physical-storage claim beyond measured results."
+}

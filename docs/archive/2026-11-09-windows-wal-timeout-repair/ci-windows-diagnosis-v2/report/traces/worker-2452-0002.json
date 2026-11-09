@@ -1,0 +1,25 @@
+{
+  "utc": "2026-11-09T13:45:49.408Z",
+  "stage": "afterEach",
+  "pid": 2452,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "sf_state_read - P15 preservation: real event log replays and reports true > replays a real event log: rebuilt_from_events === true and work_items match",
+    "start_ms": 390.7267,
+    "duration_ms": 2272.5369
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 100,
+    "readFile": 1380,
+    "readdir": 405,
+    "writeFile": 190,
+    "open": 355,
+    "stat": 165,
+    "appendFile": 165
+  },
+  "rows": []
+}

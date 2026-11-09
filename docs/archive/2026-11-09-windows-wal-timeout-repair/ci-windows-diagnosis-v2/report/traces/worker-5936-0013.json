@@ -1,0 +1,23 @@
+{
+  "utc": "2026-11-09T13:46:37.861Z",
+  "stage": "afterEach",
+  "pid": 5936,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "Runtime verification owner immutable store > does not create private files while inspecting a missing owner store",
+    "start_ms": 405.0439,
+    "duration_ms": 1.9628000000000156
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 30,
+    "writeFile": 35,
+    "open": 37,
+    "readFile": 7,
+    "stat": 1
+  },
+  "rows": []
+}

@@ -68,3 +68,6 @@ bun.lock text eol=lf
 /docs/archive/2026-11-08-eslint-macos-full-acceptance/** -text -diff
 
 /docs/archive/2026-11-09-plugin-registration-recovery/** -text -diff
+
+# Immutable raw Windows WAL diagnostic and qualification evidence.
+/docs/archive/2026-11-09-windows-wal-timeout-repair/** -text -diff

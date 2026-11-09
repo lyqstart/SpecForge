@@ -1,0 +1,20 @@
+{
+  "phase": "build",
+  "cwd": "/home/runner/work/SpecForge/SpecForge",
+  "executable": "/home/runner/.bun/bin/bun",
+  "args": [
+    "scripts/prepare-current-release.ts"
+  ],
+  "started_utc": "2026-11-09T14:06:52.581Z",
+  "context_sha256": "14ab46ea4a193c95ae3a57efd96dfab247d09c56dbce26db9c894b1c2cb696dc",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES:build/test outputs;EXTERNAL_EVIDENCE_WRITES:owned runner-temp report;no tracked source changes",
+  "finished_utc": "2026-11-09T14:07:19.680Z",
+  "inner_exit_code": 0,
+  "carrier_exit_code": 0,
+  "success": true,
+  "signal": null,
+  "spawn_error": null,
+  "source_unchanged": true,
+  "stdout_sha256": "daa523920b1071cf47e39981c98e123d3b272d612f9fd74abe513edf8f8a5630",
+  "stderr_sha256": "42580806f72966c011a56229da3d32784afbef0b7cde7cfe7d94dfef7da3aee9"
+}

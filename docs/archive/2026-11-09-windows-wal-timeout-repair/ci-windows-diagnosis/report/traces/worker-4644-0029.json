@@ -1,0 +1,23 @@
+{
+  "utc": "2026-11-09T13:29:38.333Z",
+  "stage": "afterEach",
+  "pid": 4644,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "sf_state_transition - Candidate Manifest materialization > rejects a missing authoritative state before changing the Manifest",
+    "start_ms": 1122.0786,
+    "duration_ms": 31.968799999999874
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 169,
+    "writeFile": 177,
+    "readFile": 178,
+    "stat": 3,
+    "readdir": 20
+  },
+  "rows": []
+}

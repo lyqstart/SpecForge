@@ -1,0 +1,22 @@
+{
+  "utc": "2026-11-09T13:45:29.895Z",
+  "stage": "afterEach",
+  "pid": 3772,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "ERR-157 and ERR-158 installed-source contracts > keeps Planner relation operations restricted to ADD/REMOVE",
+    "start_ms": 668.0637,
+    "duration_ms": 1.2656999999999243
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 7,
+    "writeFile": 8,
+    "readFile": 14,
+    "readdir": 3
+  },
+  "rows": []
+}

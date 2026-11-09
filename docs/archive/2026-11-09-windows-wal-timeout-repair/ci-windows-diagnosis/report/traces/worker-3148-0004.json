@@ -1,0 +1,21 @@
+{
+  "utc": "2026-11-09T13:33:59.043Z",
+  "stage": "afterEach",
+  "pid": 3148,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "contract integrity - Module Contract candidates > rejects owner_module and DD provenance from another module",
+    "start_ms": 478.6191,
+    "duration_ms": 18.341499999999996
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 3,
+    "writeFile": 6,
+    "readFile": 78
+  },
+  "rows": []
+}

@@ -1,0 +1,17 @@
+{
+  "utc": "2026-11-09T13:45:05.403Z",
+  "stage": "afterEach",
+  "pid": 8736,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "v1.1 Tool Registry > sf_close_gate must be registered and not return UNKNOWN_TOOL",
+    "start_ms": 923.5363,
+    "duration_ms": 0.09410000000002583
+  },
+  "truncated": false,
+  "all_fs_call_counts": {},
+  "rows": []
+}

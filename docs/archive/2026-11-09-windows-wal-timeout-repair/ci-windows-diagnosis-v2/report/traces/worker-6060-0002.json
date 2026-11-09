@@ -1,0 +1,17 @@
+{
+  "utc": "2026-11-09T13:46:49.732Z",
+  "stage": "afterEach",
+  "pid": 6060,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "authoritative work item response boundary > replays before reading and preserves both owner receivers",
+    "start_ms": 246.2308,
+    "duration_ms": 1.5773000000000081
+  },
+  "truncated": false,
+  "all_fs_call_counts": {},
+  "rows": []
+}

@@ -1,0 +1,21 @@
+{
+  "utc": "2026-11-09T13:33:38.649Z",
+  "stage": "afterEach",
+  "pid": 5804,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "optional native file lock ownership > fails closed on incomplete native flags and closes the owned descriptor",
+    "start_ms": 432.595,
+    "duration_ms": 4.823699999999974
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 3,
+    "writeFile": 1,
+    "readFile": 1
+  },
+  "rows": []
+}

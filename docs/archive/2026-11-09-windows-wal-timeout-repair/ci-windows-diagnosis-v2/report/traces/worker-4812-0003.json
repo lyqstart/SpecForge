@@ -1,0 +1,23 @@
+{
+  "utc": "2026-11-09T13:46:47.609Z",
+  "stage": "afterEach",
+  "pid": 4812,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "project archive exclusion across dispatcher consumers > rejects direct worktree dispatch before observations or handlers, then allows the real handler",
+    "start_ms": 980.2252,
+    "duration_ms": 11.701700000000073
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "readdir": 8,
+    "readFile": 20,
+    "mkdir": 4,
+    "writeFile": 2,
+    "open": 2
+  },
+  "rows": []
+}

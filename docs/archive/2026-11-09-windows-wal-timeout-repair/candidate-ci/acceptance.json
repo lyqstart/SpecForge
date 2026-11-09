@@ -1,0 +1,71 @@
+{
+  "utc": "2026-11-09T14:17:10.606Z",
+  "commit": "3262bc6a2caa60dcc6bcb4c22e918af76c297bca",
+  "stage": "candidate",
+  "conclusion": "PASS_CANDIDATE_THREE_PLATFORM_REGRESSION_AND_RELEASE",
+  "all_jobs_success": 12,
+  "platforms": [
+    {
+      "platform": "win32",
+      "arch": "x64",
+      "artifact_id": 13681057849,
+      "artifact_digest": "sha256:117d451b0ffed7379752b5890f4b3b1e45c58e08545747f73047ecb7515221bc",
+      "report_location": "ci-candidate-full-windows",
+      "all_four_numeric_phase_exits": 0,
+      "root_passed": 753,
+      "workspace_owners": 11,
+      "lint_files": 632,
+      "lint_errors": 0,
+      "lint_warnings": 0,
+      "helper_typecheck_step": "success"
+    },
+    {
+      "platform": "linux",
+      "arch": "x64",
+      "artifact_id": 13680429475,
+      "artifact_digest": "sha256:7aa44848839f42235900b6d7a774d60a5007396d53dc127dd710d87e787f32c1",
+      "report_location": "ci-candidate-full-linux",
+      "all_four_numeric_phase_exits": 0,
+      "root_passed": 753,
+      "workspace_owners": 11,
+      "lint_files": 632,
+      "lint_errors": 0,
+      "lint_warnings": 0,
+      "helper_typecheck_step": "success"
+    },
+    {
+      "platform": "darwin",
+      "arch": "arm64",
+      "artifact_id": 13681306661,
+      "artifact_digest": "sha256:d87aa97b5a71e64b6cb30f3e313a0e9b4338d3ab2904ce4755d12dc65d6d19d5",
+      "report_location": "ci-candidate-full-macos",
+      "all_four_numeric_phase_exits": 0,
+      "root_passed": 753,
+      "workspace_owners": 11,
+      "lint_files": 632,
+      "lint_errors": 0,
+      "lint_warnings": 0,
+      "helper_typecheck_step": "success"
+    }
+  ],
+  "runs": [
+    {
+      "id": 42631406002,
+      "name": "Distribution Smoke Tests",
+      "url": "https://github.com/lyqstart/SpecForge/actions/runs/42631406002",
+      "status": "completed",
+      "conclusion": "success",
+      "run_attempt": 1
+    },
+    {
+      "id": 42631406035,
+      "name": "Code Quality",
+      "url": "https://github.com/lyqstart/SpecForge/actions/runs/42631406035",
+      "status": "completed",
+      "conclusion": "success",
+      "run_attempt": 1
+    }
+  ],
+  "historical_nonpassing_attempt": null,
+  "limits": "Latest successful immutable-source reports are accepted; earlier failure is preserved, never relabeled. Raw numeric four-phase reports reverified. Helper typecheck and official release lifecycle use primary GitHub successful job/step conclusions and archived workflow, separate from local numeric receipts. No provider/model or original business execution."
+}

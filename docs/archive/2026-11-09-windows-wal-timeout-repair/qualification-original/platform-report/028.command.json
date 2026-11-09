@@ -1,0 +1,13 @@
+{
+  "number": "028",
+  "name": "unsupported-command-rejected",
+  "executable": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-wal-A01-original\\temp\\sf-platform-acceptance-rciiDX\\opencode\\sf-user\\bin\\specforge.exe",
+  "args": [
+    "job"
+  ],
+  "started_utc": "2026-11-09T13:45:25.580Z",
+  "finished_utc": "2026-11-09T13:45:25.815Z",
+  "inner_exit_code": 1,
+  "signal": null,
+  "spawn_error": null
+}

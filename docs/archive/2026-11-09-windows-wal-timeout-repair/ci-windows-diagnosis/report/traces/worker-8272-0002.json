@@ -1,0 +1,17 @@
+{
+  "utc": "2026-11-09T13:31:53.098Z",
+  "stage": "afterEach",
+  "pid": 8272,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "OpenCode event routing — end-to-end integration > Test 1 — basic route hit > should route session.idle event without WARN and update lastActiveAt",
+    "start_ms": 280.1442,
+    "duration_ms": 15.036200000000008
+  },
+  "truncated": false,
+  "all_fs_call_counts": {},
+  "rows": []
+}

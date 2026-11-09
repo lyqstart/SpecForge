@@ -1,0 +1,22 @@
+{
+  "utc": "2026-11-09T13:33:40.983Z",
+  "stage": "afterEach",
+  "pid": 6048,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "verification evidence integrity > proves self-referential manual acceptance and post-close reported time are invalid",
+    "start_ms": 365.2909,
+    "duration_ms": 19.316499999999962
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 2,
+    "writeFile": 3,
+    "readFile": 4,
+    "readdir": 1
+  },
+  "rows": []
+}

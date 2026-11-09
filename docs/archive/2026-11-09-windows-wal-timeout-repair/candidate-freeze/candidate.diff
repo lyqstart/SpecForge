@@ -1,0 +1,220 @@
+diff --git a/packages/scope-gate/tests/ci-runner-temporary-root.test.ts b/packages/scope-gate/tests/ci-runner-temporary-root.test.ts
+new file mode 100644
+index 00000000..8509c415
+--- /dev/null
++++ b/packages/scope-gate/tests/ci-runner-temporary-root.test.ts
+@@ -0,0 +1,154 @@
++import { spawnSync, type SpawnSyncReturns } from 'node:child_process';
++import {
++  existsSync,
++  mkdirSync,
++  mkdtempSync,
++  readFileSync,
++  realpathSync,
++  rmSync,
++  writeFileSync,
++} from 'node:fs';
++import { tmpdir } from 'node:os';
++import path from 'node:path';
++
++import { afterEach, describe, expect, it } from 'vitest';
++
++import { qualifyTemporaryEnvironment } from '../../../scripts/lib/qualification-environment.mjs';
++
++const root = path.resolve(import.meta.dirname, '../../..');
++const owned: Array<{ directory: string; parent: string }> = [];
++afterEach(() => {
++  for (const { directory, parent } of owned.splice(0)) {
++    if (
++      realpathSync.native(directory) !== directory ||
++      path.dirname(directory) !== parent ||
++      !path.basename(directory).startsWith('sf-ci-temp-contract-')
++    )
++      throw new Error('UNOWNED_TEMP_CLEANUP');
++    rmSync(directory, { recursive: true, force: true });
++  }
++});
++
++interface ProbeFixture {
++  directory: string;
++  legacy: string;
++  runner: string;
++  report: string;
++  capture: string;
++  run(selected: string | undefined, phase?: string): SpawnSyncReturns<string>;
++}
++
++function fixture(): ProbeFixture {
++  const parent = realpathSync.native(tmpdir());
++  const directory = mkdtempSync(path.join(parent, 'sf-ci-temp-contract-'));
++  owned.push({ directory, parent });
++  const legacy = path.join(directory, 'legacy-system');
++  const runner = path.join(directory, 'runner space');
++  mkdirSync(legacy);
++  mkdirSync(runner);
++  const report = path.join(directory, 'report');
++  const capture = path.join(directory, 'child-environment.json');
++  function run(selected: string | undefined, phase = 'lint'): SpawnSyncReturns<string> {
++    const env: NodeJS.ProcessEnv = {
++      ...process.env,
++      TEMP: legacy,
++      TMP: legacy,
++      TMPDIR: legacy,
++      SPECFORGE_CI_REPORT_DIR: report,
++      SF_CI_SPAWN_UNIT_PROBE: '1',
++      SF_CI_ENV_CAPTURE: capture,
++    };
++    if (selected === undefined) delete env.RUNNER_TEMP;
++    else env.RUNNER_TEMP = selected;
++    delete env.NODE_OPTIONS;
++    return spawnSync(
++      process.execPath,
++      [
++        '--require',
++        path.join(root, 'packages/scope-gate/tests/fixtures/ci-spawn-environment-probe.cjs'),
++        path.join(root, 'scripts/run-ci-regression.mjs'),
++        phase,
++      ],
++      { cwd: root, env, windowsHide: true, encoding: 'utf8', maxBuffer: 1024 * 1024 }
++    );
++  }
++  return { directory, legacy, runner, report, capture, run };
++}
++
++describe('CI runner temporary root at the real entrypoint', () => {
++  it('propagates the native runner root instead of the inherited system root and records its source', () => {
++    const f = fixture();
++    const result = f.run(path.join(f.runner, '..', path.basename(f.runner)));
++    expect(result.status, result.stderr).toBe(0);
++    const canonical = realpathSync.native(f.runner);
++    expect(JSON.parse(readFileSync(f.capture, 'utf8'))).toEqual({
++      TEMP: canonical,
++      TMP: canonical,
++      TMPDIR: canonical,
++    });
++    const context = JSON.parse(readFileSync(path.join(f.report, 'context.json'), 'utf8'));
++    expect(context.temporary_directory.selection_source).toBe('RUNNER_TEMP');
++    expect(context.temporary_directory.canonical).toBe(canonical);
++    expect(context.temporary_directory.requested).toBe(path.resolve(f.runner));
++  });
++
++  it.each([undefined, '', '   '])(
++    'rejects missing or empty runner root before phase execution: %s',
++    (selected) => {
++      const f = fixture();
++      const result = f.run(selected);
++      expect(result.status).not.toBe(0);
++      expect(result.stderr).toContain('CI_RUNNER_TEMP_REQUIRED');
++      expect(existsSync(f.capture)).toBe(false);
++      expect(existsSync(f.report)).toBe(false);
++    }
++  );
++
++  it('rejects a relative runner root instead of falling back', () => {
++    const f = fixture();
++    const result = f.run('relative-runner-temp');
++    expect(result.status).not.toBe(0);
++    expect(result.stderr).toContain('QUALIFICATION_TEMP_NOT_ABSOLUTE');
++    expect(existsSync(f.capture)).toBe(false);
++    expect(existsSync(f.report)).toBe(false);
++  });
++
++  it('does not create a missing runner root or start a phase', () => {
++    const f = fixture();
++    const missing = path.join(f.directory, 'missing');
++    const result = f.run(missing);
++    expect(result.status).not.toBe(0);
++    expect(existsSync(missing)).toBe(false);
++    expect(existsSync(f.capture)).toBe(false);
++    expect(existsSync(f.report)).toBe(false);
++  });
++
++  it('rejects a file supplied as the runner root', () => {
++    const f = fixture();
++    const file = path.join(f.directory, 'not-a-directory');
++    writeFileSync(file, 'unchanged');
++    const result = f.run(file);
++    expect(result.status).not.toBe(0);
++    expect(readFileSync(file, 'utf8')).toBe('unchanged');
++    expect(existsSync(f.capture)).toBe(false);
++  });
++
++  it('keeps standalone explicit temporary qualification compatible', () => {
++    const f = fixture();
++    const qualified = qualifyTemporaryEnvironment(f.legacy);
++    expect(qualified.canonical).toBe(realpathSync.native(f.legacy));
++    expect(qualified.environment).toEqual({
++      TEMP: qualified.canonical,
++      TMP: qualified.canonical,
++      TMPDIR: qualified.canonical,
++    });
++  });
++
++  it('still refuses an unknown phase without invoking an external command', () => {
++    const f = fixture();
++    const result = f.run(f.runner, 'unknown-phase');
++    expect(result.status).not.toBe(0);
++    expect(result.stderr).toContain('CI_UNKNOWN_REGRESSION_PHASE');
++    expect(existsSync(f.capture)).toBe(false);
++  });
++});
+diff --git a/packages/scope-gate/tests/fixtures/ci-spawn-environment-probe.cjs b/packages/scope-gate/tests/fixtures/ci-spawn-environment-probe.cjs
+new file mode 100644
+index 00000000..66443261
+--- /dev/null
++++ b/packages/scope-gate/tests/fixtures/ci-spawn-environment-probe.cjs
+@@ -0,0 +1,30 @@
++// Unit-only process discovery double. Its reports are never release evidence.
++const fs = require('node:fs');
++const path = require('node:path');
++const cp = require('node:child_process');
++const { syncBuiltinESMExports } = require('node:module');
++if (process.env.SF_CI_SPAWN_UNIT_PROBE !== '1') throw new Error('UNIT_PROBE_REQUIRED');
++const success = (stdout) => ({
++  status: 0,
++  stdout: Buffer.from(stdout),
++  stderr: Buffer.alloc(0),
++  signal: null,
++});
++cp.spawnSync = (executable, args, options) => {
++  if (executable === 'git' && args[0] === 'status') return success('');
++  if (executable === 'git' && args[0] === 'rev-parse') return success('1'.repeat(40) + '\n');
++  if (args[0] === '-e') return success(process.execPath);
++  if (args[0] === '--version') return success('1.3.14\n');
++  if (executable === process.execPath && args[0] === 'run' && args[1] === 'lint') {
++    const capture = process.env.SF_CI_ENV_CAPTURE;
++    if (!capture || !path.isAbsolute(capture)) throw new Error('UNIT_CAPTURE_REQUIRED');
++    fs.writeFileSync(
++      capture,
++      JSON.stringify({ TEMP: options.env.TEMP, TMP: options.env.TMP, TMPDIR: options.env.TMPDIR }),
++      { flag: 'wx' }
++    );
++    return success('unit phase execution double\n');
++  }
++  throw new Error('UNEXPECTED_UNIT_PROBE_PROCESS');
++};
++syncBuiltinESMExports();
+diff --git a/scripts/run-ci-regression.mjs b/scripts/run-ci-regression.mjs
+index 2c2cdaec..2a8507d4 100644
+--- a/scripts/run-ci-regression.mjs
++++ b/scripts/run-ci-regression.mjs
+@@ -26,7 +26,9 @@ function gitStatus() {
+ async function main() {
+   if (process.version !== 'v24.19.0') throw new Error('CI_NODE_VERSION_MISMATCH');
+   const phase = process.argv[2];
+-  const temporary = qualifyTemporaryEnvironment();
++  const runnerTemporaryRoot = process.env.RUNNER_TEMP;
++  if (typeof runnerTemporaryRoot !== 'string' || !runnerTemporaryRoot.trim()) throw new Error('CI_RUNNER_TEMP_REQUIRED');
++  const temporary = qualifyTemporaryEnvironment(runnerTemporaryRoot);
+   if (!Object.hasOwn(phases, phase) || process.argv.length !== 3) throw new Error('CI_UNKNOWN_REGRESSION_PHASE');
+   const reportRoot = process.env.SPECFORGE_CI_REPORT_DIR;
+   if (!reportRoot || !path.isAbsolute(reportRoot)) throw new Error('CI_ABSOLUTE_REPORT_ROOT_REQUIRED');
+@@ -41,7 +43,7 @@ async function main() {
+   if (!path.isAbsolute(bun) || !fs.statSync(bun).isFile()) throw new Error('CI_BUN_IDENTITY_INVALID');
+   const version = run(bun, ['--version']);
+   if (version.status !== 0 || version.stdout.toString().trim() !== '1.3.14') throw new Error('CI_BUN_VERSION_MISMATCH');
+-  const context = { lock_sha256: hash(fs.readFileSync(path.join(root, 'bun.lock'))), temporary_directory: { requested: temporary.requested, canonical: temporary.canonical, ancestors: temporary.ancestors }, source_commit: head.stdout.toString().trim(), platform: process.platform, arch: process.arch, os_release: os.release(), node: process.version, node_path: process.execPath, node_sha256: hash(fs.readFileSync(process.execPath)), bun: version.stdout.toString().trim(), bun_path: bun, bun_sha256: hash(fs.readFileSync(bun)) };
++  const context = { lock_sha256: hash(fs.readFileSync(path.join(root, 'bun.lock'))), temporary_directory: { selection_source: 'RUNNER_TEMP', requested: temporary.requested, canonical: temporary.canonical, ancestors: temporary.ancestors }, source_commit: head.stdout.toString().trim(), platform: process.platform, arch: process.arch, os_release: os.release(), node: process.version, node_path: process.execPath, node_sha256: hash(fs.readFileSync(process.execPath)), bun: version.stdout.toString().trim(), bun_path: bun, bun_sha256: hash(fs.readFileSync(bun)) };
+   const contextFile = path.join(reportRoot, 'context.json');
+   if (fs.existsSync(contextFile)) {
+     if (JSON.stringify(JSON.parse(fs.readFileSync(contextFile))) !== JSON.stringify(context)) throw new Error('CI_CONTEXT_DRIFT');

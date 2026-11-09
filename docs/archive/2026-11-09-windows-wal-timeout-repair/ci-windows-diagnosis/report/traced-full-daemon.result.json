@@ -1,0 +1,20 @@
+{
+  "name": "traced-full-daemon",
+  "exe": "bun.exe",
+  "args": [
+    "run",
+    "test",
+    "--",
+    "--maxWorkers=1",
+    "--config",
+    "D:\\a\\SpecForge\\SpecForge\\scripts\\ci\\wal-diagnostic.config.mts"
+  ],
+  "cwd": "D:\\a\\SpecForge\\SpecForge\\packages\\daemon-core",
+  "started": "2026-11-09T13:29:29.361Z",
+  "finished": "2026-11-09T13:34:31.998Z",
+  "exit": 1,
+  "signal": null,
+  "error": null,
+  "stdout_sha256": "33edf554aad3cfbb070727535225cf14df98608eb4f293dca1da39a7376dbe06",
+  "stderr_sha256": "e68d2ceff92bada047bccc5ef1317c9d14b8b9f2d3f8ae473c8a7b99d25e95d8"
+}

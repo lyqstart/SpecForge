@@ -1,0 +1,29 @@
+{
+  "utc": "2026-11-09T14:39:21.065Z",
+  "baseline": "48fc9057014413bd712c33f710b794f8bf6f273a",
+  "candidate": "3262bc6a2caa60dcc6bcb4c22e918af76c297bca",
+  "changes_classified": true,
+  "members": [
+    {
+      "file": "scripts/run-ci-regression.mjs",
+      "sha256": "c89e5950565e574f61aea6807350e5a73c0da47b08fb27b0c45b194bf1d3140d",
+      "target": "D:\\code\\SpecForge\\scripts\\run-ci-regression.mjs",
+      "before": {
+        "sha256": "71a5dee3c748b5fe348902d20094b70048140bdafbcc4217d835d7853dfac4ed",
+        "storage": "001.before.raw"
+      }
+    },
+    {
+      "file": "packages/scope-gate/tests/ci-runner-temporary-root.test.ts",
+      "sha256": "3156b32dd249c8964570b7a5c71faf586f16d904670d41c95d3a19c7af345670",
+      "target": "D:\\code\\SpecForge\\packages\\scope-gate\\tests\\ci-runner-temporary-root.test.ts",
+      "before": null
+    },
+    {
+      "file": "packages/scope-gate/tests/fixtures/ci-spawn-environment-probe.cjs",
+      "sha256": "def439d5fb5aba95876f65732cbd03a88d145f2f8ab395b4f51a84b6fe526533",
+      "target": "D:\\code\\SpecForge\\packages\\scope-gate\\tests\\fixtures\\ci-spawn-environment-probe.cjs",
+      "before": null
+    }
+  ]
+}

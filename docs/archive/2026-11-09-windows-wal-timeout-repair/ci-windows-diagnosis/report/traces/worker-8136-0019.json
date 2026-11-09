@@ -1,0 +1,23 @@
+{
+  "utc": "2026-11-09T13:29:46.985Z",
+  "stage": "afterEach",
+  "pid": 8136,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "current Work Item metadata owner > makes safe bash reject non-current metadata before authorization or shell execution",
+    "start_ms": 1198.88,
+    "duration_ms": 10.7029
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 62,
+    "writeFile": 43,
+    "readFile": 33,
+    "readdir": 1,
+    "stat": 1
+  },
+  "rows": []
+}

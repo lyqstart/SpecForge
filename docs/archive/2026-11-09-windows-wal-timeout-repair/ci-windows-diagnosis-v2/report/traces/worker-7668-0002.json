@@ -1,0 +1,25 @@
+{
+  "utc": "2026-11-09T13:45:41.475Z",
+  "stage": "afterEach",
+  "pid": 7668,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "RecoverySubsystem + SessionRegistry startupReplay integration > should replay session events during checkAndRepair when sessionRegistry is injected",
+    "start_ms": 380.2309,
+    "duration_ms": 39.41089999999997
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "readFile": 18,
+    "readdir": 7,
+    "mkdir": 2,
+    "writeFile": 1,
+    "open": 4,
+    "stat": 3,
+    "appendFile": 3
+  },
+  "rows": []
+}

@@ -1,0 +1,23 @@
+{
+  "utc": "2026-11-09T13:31:15.688Z",
+  "stage": "afterEach",
+  "pid": 7996,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "controlled detached Git bootstrap > does not execute repository hooks or change the index",
+    "start_ms": 23525.4499,
+    "duration_ms": 897.2610999999997
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "writeFile": 57,
+    "mkdir": 53,
+    "readFile": 133,
+    "open": 26,
+    "readdir": 426
+  },
+  "rows": []
+}

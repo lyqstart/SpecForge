@@ -1,0 +1,16 @@
+{
+  "name": "native-io",
+  "exe": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "args": [
+    "D:\\a\\SpecForge\\SpecForge\\scripts\\ci\\wal-native-io-probe.mjs",
+    "D:\\a\\_temp\\wal-diagnosis\\native-control"
+  ],
+  "cwd": "D:\\a\\SpecForge\\SpecForge",
+  "started": "2026-11-09T13:47:27.275Z",
+  "finished": "2026-11-09T13:47:30.153Z",
+  "exit": 0,
+  "signal": null,
+  "error": null,
+  "stdout_sha256": "986bd771e96d5d4ee273cebc30bf76dc69043fa721b7e89305759d8d555f8236",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

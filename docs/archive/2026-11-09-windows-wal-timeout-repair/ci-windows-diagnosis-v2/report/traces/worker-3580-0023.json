@@ -1,0 +1,22 @@
+{
+  "utc": "2026-11-09T13:41:47.677Z",
+  "stage": "afterEach",
+  "pid": 3580,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "sf_close_gate handler > preserves the current revoke event while Close synchronizes permission facts",
+    "start_ms": 2408.1325,
+    "duration_ms": 1.06479999999965
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 117,
+    "writeFile": 397,
+    "readFile": 768,
+    "readdir": 30
+  },
+  "rows": []
+}

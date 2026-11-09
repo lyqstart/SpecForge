@@ -1,0 +1,20 @@
+{
+  "utc": "2026-11-09T13:44:46.140Z",
+  "stage": "afterEach",
+  "pid": 7484,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "v1.1 Full Daemon Startup Write Guard E2E > S3: outside allowed_write_files → blocked > daemon blocks write to file not in allowed_write_files",
+    "start_ms": 578.8975,
+    "duration_ms": 10.631799999999998
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "readFile": 13,
+    "readdir": 5
+  },
+  "rows": []
+}

@@ -1,0 +1,23 @@
+{
+  "utc": "2026-11-09T13:29:46.906Z",
+  "stage": "afterEach",
+  "pid": 8136,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "current Work Item metadata owner > does not let code permission synthesize an unknown Work Item",
+    "start_ms": 1125.695,
+    "duration_ms": 5.253500000000031
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 44,
+    "writeFile": 25,
+    "readFile": 15,
+    "readdir": 1,
+    "stat": 1
+  },
+  "rows": []
+}

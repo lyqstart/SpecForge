@@ -1,0 +1,25 @@
+{
+  "utc": "2026-11-09T13:42:05.306Z",
+  "stage": "afterEach",
+  "pid": 4108,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "daemon.json — project manifest > should load empty manifest when no daemon.json exists",
+    "start_ms": 1157.0042,
+    "duration_ms": 2.0500999999999294
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "readdir": 74,
+    "readFile": 212,
+    "mkdir": 53,
+    "writeFile": 33,
+    "open": 39,
+    "stat": 14,
+    "appendFile": 14
+  },
+  "rows": []
+}

@@ -1,0 +1,25 @@
+{
+  "utc": "2026-11-09T13:44:27.398Z",
+  "stage": "afterEach",
+  "pid": 8088,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "verification Runtime plan/permission owner (unit dependencies) > does not reuse an actual invocation or accept changed source/approved Tasks",
+    "start_ms": 4280.6332,
+    "duration_ms": 2881.8818
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 80,
+    "writeFile": 70,
+    "readdir": 49,
+    "readFile": 80,
+    "open": 221,
+    "stat": 1,
+    "appendFile": 1
+  },
+  "rows": []
+}

@@ -1,0 +1,23 @@
+{
+  "utc": "2026-11-09T13:31:50.707Z",
+  "stage": "afterEach",
+  "pid": 7392,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "RecoverySubsystem > should refuse an unbound daemon checkpoint without a project path",
+    "start_ms": 479.8867,
+    "duration_ms": 2.2999999999999545
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 6,
+    "readdir": 5,
+    "readFile": 9,
+    "writeFile": 3,
+    "open": 3
+  },
+  "rows": []
+}

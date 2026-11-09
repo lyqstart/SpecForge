@@ -1,0 +1,76 @@
+{
+  "utc": "2026-11-09T14:18:14.193Z",
+  "classification": "PASS_AUTHORITY_SOURCE_AND_HISTORICAL_EVIDENCE_BOUNDARIES",
+  "responsibility": "Verification / CI entrypoint; existing temporary qualification contract already supports explicit roots",
+  "capability": "SUPPORTED_WITH_EXISTING_QUALIFICATION",
+  "product_authority_conflict": false,
+  "authority": [
+    {
+      "file": "docs/product-specification/specforge-product-specification.md",
+      "sha256": "37b52eca9e7f32787bff3ef529c955a712d4cd6c97969e5002f8d3c080ae6052",
+      "unchanged": true
+    },
+    {
+      "file": "docs/product-specification/authority-registry.md",
+      "sha256": "5ba13ce20545eb660aa8556097f2d5cbdea0a018c46ce60674985784e87d9a1e",
+      "unchanged": true
+    },
+    {
+      "file": "docs/design/SpecForge架构一致性治理最终实施方案.md",
+      "sha256": "956df3943a44d1b99636790a32e9b2a0dc266b7116f50b60b7b8c6f2614423ac",
+      "unchanged": true
+    },
+    {
+      "file": "docs/rule/specforge-execution-mode-and-evidence-protocol.md",
+      "sha256": "166db21aecece99aa7787bc62978a1bdb89c8b17750182ea1030fedd17a063ef",
+      "unchanged": true
+    }
+  ],
+  "active_rules": {
+    "file": "docs/rule/specforge-active-development-rules.md",
+    "sha256": "33a56add8a0c68c0df3267e8ac4a9594a072ec598533097f358ecd5f45c07e05",
+    "only_reviewed_EXP122_insertion": true,
+    "complete_prior_read_plus_new_paragraph_covers_current_file": true
+  },
+  "experience_file_read": "YES",
+  "applicable_experience_rules": [
+    "EXP-001",
+    "EXP-007",
+    "EXP-008",
+    "EXP-011",
+    "EXP-122",
+    "EXP-123",
+    "EXP-180",
+    "EXP-296"
+  ],
+  "historical_search": "WAL,fsync,Windows timeout,CI temp; ERR-2112 through ERR-2120; previous full-read identities bound by plan.json",
+  "repeated_error_check": "PASS_WITH_PRESERVED_AND_CORRECTED_CARRIER_FAILURES",
+  "ledger_append_only": true,
+  "implementation_files": [
+    "packages/scope-gate/tests/ci-runner-temporary-root.test.ts",
+    "packages/scope-gate/tests/fixtures/ci-spawn-environment-probe.cjs",
+    "scripts/run-ci-regression.mjs"
+  ],
+  "production_WAL_tests_budgets_samples_unchanged": true,
+  "project_manager_comment_AST_equal_to_deployed_source": true,
+  "prior_archives": [
+    {
+      "name": "2026-11-09-plugin-registration-recovery",
+      "manifest_sha256": "2043db41f8b5ee977f814b885e9a749e19fdf808cf5d38b9a1103f3cf758f4ef",
+      "members": 1312,
+      "all_member_bytes_unchanged": true
+    },
+    {
+      "name": "2026-11-09-documentation-reconciliation",
+      "manifest_sha256": "b89a79f6569fc9d3787e239789366e2b8184ccd185082f75003452e09936d8bf",
+      "members": 23,
+      "all_member_bytes_unchanged": true
+    }
+  ],
+  "release_version": "1.0.25",
+  "release_tag_unchanged": true,
+  "kiro_exists": false,
+  "business_access": false,
+  "self_WI_created": false,
+  "limits": "Current product behavior remains governed by SPS/Registry. Prior deployed plugin/controlled initialization and native isolation evidence is reused only through unchanged source/installed identity; this audit does not claim a newly executed model-driven business WI or full native attack matrix."
+}

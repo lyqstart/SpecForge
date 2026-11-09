@@ -1,0 +1,21 @@
+{
+  "utc": "2026-11-09T13:45:37.658Z",
+  "stage": "afterEach",
+  "pid": 8588,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "Candidate Task write scope consistency > shares exact, directory-prefix, and glob coverage semantics",
+    "start_ms": 443.7362,
+    "duration_ms": 1.056600000000003
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 36,
+    "writeFile": 36,
+    "readFile": 57
+  },
+  "rows": []
+}

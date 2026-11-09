@@ -1,0 +1,17 @@
+{
+  "utc": "2026-11-09T13:31:58.379Z",
+  "stage": "afterEach",
+  "pid": 1392,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "governance Trace prospective model > diagnoses Governance Delta column and relation failures precisely",
+    "start_ms": 348.7803,
+    "duration_ms": 0.9046999999999912
+  },
+  "truncated": false,
+  "all_fs_call_counts": {},
+  "rows": []
+}

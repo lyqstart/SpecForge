@@ -1,0 +1,21 @@
+{
+  "utc": "2026-11-09T13:45:10.520Z",
+  "stage": "afterEach",
+  "pid": 2836,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "new project governance bootstrap > controlled first-project Candidates can establish active Architecture/Data/Module/Contract/Trace governance",
+    "start_ms": 478.5529,
+    "duration_ms": 120.13889999999992
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 28,
+    "writeFile": 25,
+    "readFile": 106
+  },
+  "rows": []
+}

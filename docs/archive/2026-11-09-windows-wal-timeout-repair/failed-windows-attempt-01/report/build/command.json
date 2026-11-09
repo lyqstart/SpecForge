@@ -1,0 +1,11 @@
+{
+  "phase": "build",
+  "cwd": "D:\\a\\SpecForge\\SpecForge",
+  "executable": "C:\\Users\\runneradmin\\.bun\\bin\\bun.exe",
+  "args": [
+    "scripts/prepare-current-release.ts"
+  ],
+  "started_utc": "2026-11-09T12:27:33.413Z",
+  "context_sha256": "4a9cb8d81785a1be53e39cdbab8a0d9e5fdd60a57938335f0746ca2a7ae8b765",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES:build/test outputs;EXTERNAL_EVIDENCE_WRITES:owned runner-temp report;no tracked source changes"
+}

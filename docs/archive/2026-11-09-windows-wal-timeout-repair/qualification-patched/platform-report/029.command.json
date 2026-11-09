@@ -1,0 +1,13 @@
+{
+  "number": "029",
+  "name": "unsupported-command-rejected",
+  "executable": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-wal-A01-patched\\temp\\sf-platform-acceptance-RlsAQa\\opencode\\sf-user\\bin\\specforge.exe",
+  "args": [
+    "webhook"
+  ],
+  "started_utc": "2026-11-09T14:24:48.795Z",
+  "finished_utc": "2026-11-09T14:24:48.985Z",
+  "inner_exit_code": 1,
+  "signal": null,
+  "spawn_error": null
+}

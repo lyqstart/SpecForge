@@ -1,0 +1,17 @@
+{
+  "utc": "2026-11-09T13:47:18.448Z",
+  "stage": "afterEach",
+  "pid": 1104,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "source contract syntax normalization > does not hide changed literal values, operators, array holes or comments",
+    "start_ms": 484.6373,
+    "duration_ms": 3.1825000000000045
+  },
+  "truncated": false,
+  "all_fs_call_counts": {},
+  "rows": []
+}

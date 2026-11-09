@@ -1,0 +1,22 @@
+{
+  "utc": "2026-11-09T13:42:19.585Z",
+  "stage": "afterEach",
+  "pid": 8060,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "invalid merged Project Spec closure recovery > rejects missing successful Atomic Spec Merge evidence without changing the decision",
+    "start_ms": 520.8942,
+    "duration_ms": 29.674000000000092
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 54,
+    "writeFile": 57,
+    "readFile": 27,
+    "readdir": 3
+  },
+  "rows": []
+}

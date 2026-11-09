@@ -1,0 +1,19 @@
+{
+  "utc": "2026-11-09T13:45:10.873Z",
+  "stage": "afterEach",
+  "pid": 3452,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "governance Trace prospective model > allows DD constrained_by Project Contract and blocks cross-Module internal consumption",
+    "start_ms": 313.2945,
+    "duration_ms": 0.531599999999969
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "readFile": 1
+  },
+  "rows": []
+}

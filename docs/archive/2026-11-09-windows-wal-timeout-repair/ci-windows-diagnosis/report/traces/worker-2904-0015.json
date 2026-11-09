@@ -1,0 +1,25 @@
+{
+  "utc": "2026-11-09T13:30:01.176Z",
+  "stage": "afterEach",
+  "pid": 2904,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "Personal Mode E2E — WAL persistence > should create state.json inside project/.specforge/runtime/",
+    "start_ms": 505.7849,
+    "duration_ms": 15.026200000000017
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "readdir": 7,
+    "readFile": 17,
+    "mkdir": 6,
+    "writeFile": 2,
+    "open": 3,
+    "stat": 1,
+    "appendFile": 1
+  },
+  "rows": []
+}

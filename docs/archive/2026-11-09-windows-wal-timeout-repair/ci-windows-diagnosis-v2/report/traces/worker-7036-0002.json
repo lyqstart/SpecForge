@@ -1,0 +1,17 @@
+{
+  "utc": "2026-11-09T13:46:39.254Z",
+  "stage": "afterEach",
+  "pid": 7036,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "ERR-125—ERR-126 build output and generated workflow documentation governance > records both failures and their class-level prevention rules",
+    "start_ms": 238.1726,
+    "duration_ms": 43.575800000000015
+  },
+  "truncated": false,
+  "all_fs_call_counts": {},
+  "rows": []
+}

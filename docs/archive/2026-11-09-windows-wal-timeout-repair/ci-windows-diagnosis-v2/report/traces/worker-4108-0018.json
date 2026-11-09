@@ -1,0 +1,25 @@
+{
+  "utc": "2026-11-09T13:42:04.667Z",
+  "stage": "afterEach",
+  "pid": 4108,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "Personal Mode E2E — WAL persistence > should enforce optimistic locking — reject stale from_state",
+    "start_ms": 497.3339,
+    "duration_ms": 22.543399999999963
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "readdir": 24,
+    "readFile": 61,
+    "mkdir": 15,
+    "writeFile": 7,
+    "open": 11,
+    "stat": 4,
+    "appendFile": 4
+  },
+  "rows": []
+}

@@ -1,0 +1,23 @@
+{
+  "utc": "2026-11-09T13:31:50.671Z",
+  "stage": "afterEach",
+  "pid": 7392,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "RecoverySubsystem > should rebuild state from events",
+    "start_ms": 444.996,
+    "duration_ms": 1.221400000000017
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 4,
+    "readdir": 5,
+    "readFile": 7,
+    "writeFile": 1,
+    "open": 1
+  },
+  "rows": []
+}

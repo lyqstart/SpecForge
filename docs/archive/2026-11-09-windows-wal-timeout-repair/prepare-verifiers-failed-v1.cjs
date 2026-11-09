@@ -1,0 +1,11 @@
+const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict'),crypto=require('node:crypto');
+const sha=b=>crypto.createHash('sha256').update(b).digest('hex'),old=path.join(__dirname,'../2026-11-09-plugin-registration-recovery/verify-platform-ci.cjs');
+let text=fs.readFileSync(old,'utf8');
+assert.equal((text.match(/631/g)||[]).length,4);
+text=text.replaceAll('631','632');
+const needle="assert.equal(ctx.lock_sha256,'3f60323fd1c3303673a8d79d4253257198725d247d3e6551e7648d0826db4438');";
+assert.equal(text.split(needle).length,2);
+text=text.replace(needle,needle+"assert.equal(ctx.temporary_directory.selection_source,'RUNNER_TEMP');assert(ctx.temporary_directory.canonical);const frozen=JSON.parse(fs.readFileSync(path.join(__dirname,'candidate-freeze/manifest.json')));for(const phase of ['build','lint','workspace','root'])assert.equal(sha(fs.readFileSync(path.join(dir,'report',phase,'entry-source.mjs'))),frozen.members.find(m=>m.file==='scripts/run-ci-regression.mjs').sha256,'CI_ENTRY_BYTE_DRIFT');");
+fs.writeFileSync(path.join(__dirname,'verify-platform-ci.cjs'),text,{flag:'wx'});
+fs.writeFileSync(path.join(__dirname,'verifier-provenance.json'),JSON.stringify({utc:new Date().toISOString(),platform_verifier:{original_sha256:sha(fs.readFileSync(old)),new_sha256:sha(Buffer.from(text)),changes:['Expected actual source inventory now includes exactly one added TypeScript test:632 files','Require RUNNER_TEMP selection context and exact frozen entry bytes for every phase']},collector:{original_and_copy_sha256:sha(fs.readFileSync(path.join(__dirname,'collect-structured.cjs'))),source:'../2026-11-09-plugin-registration-recovery/collect-structured.cjs'},comparison:{original_and_copy_sha256:sha(fs.readFileSync(path.join(__dirname,'compare-qualification.cjs'))),source:'../2026-11-09-plugin-registration-recovery/compare-qualification.cjs',unchanged_historical_suite_case_canaries:true}},null,2)+'\n',{flag:'wx'});
+console.log('PINNED_VERIFIERS_PREPARED');

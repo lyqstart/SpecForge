@@ -1,0 +1,25 @@
+{
+  "utc": "2026-11-09T13:30:02.150Z",
+  "stage": "afterEach",
+  "pid": 2904,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "daemon.json — project manifest > should register project with unique projectId",
+    "start_ms": 1471.4157,
+    "duration_ms": 23.172900000000027
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "readdir": 77,
+    "readFile": 225,
+    "mkdir": 61,
+    "writeFile": 39,
+    "open": 40,
+    "stat": 14,
+    "appendFile": 14
+  },
+  "rows": []
+}

@@ -1,0 +1,23 @@
+{
+  "utc": "2026-11-09T13:41:40.433Z",
+  "stage": "afterEach",
+  "pid": 8564,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "§21.2 Acceptance: design_change_path > should complete full design_change_path lifecycle",
+    "start_ms": 2810.0622,
+    "duration_ms": 236.25860000000011
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 89,
+    "writeFile": 125,
+    "readFile": 506,
+    "readdir": 21,
+    "stat": 132
+  },
+  "rows": []
+}

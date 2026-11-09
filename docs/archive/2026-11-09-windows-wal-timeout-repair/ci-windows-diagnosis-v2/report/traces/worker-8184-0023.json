@@ -1,0 +1,25 @@
+{
+  "utc": "2026-11-09T13:42:40.522Z",
+  "stage": "afterEach",
+  "pid": 8184,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "Recovery owner sealed project import > rejects a junction in target ancestry and does not modify its destination",
+    "start_ms": 11404.8814,
+    "duration_ms": 315.4989000000005
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 156,
+    "writeFile": 133,
+    "readFile": 995,
+    "readdir": 740,
+    "open": 353,
+    "stat": 86,
+    "appendFile": 44
+  },
+  "rows": []
+}

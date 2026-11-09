@@ -1,0 +1,17 @@
+{
+  "utc": "2026-11-09T13:31:52.417Z",
+  "stage": "afterEach",
+  "pid": 3600,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "WriteGuard Tool Classification > sf_gate_run must be classified as specforge control tool (non-filesystem)",
+    "start_ms": 1009.4789,
+    "duration_ms": 0.10750000000007276
+  },
+  "truncated": false,
+  "all_fs_call_counts": {},
+  "rows": []
+}

@@ -1,0 +1,22 @@
+{
+  "utc": "2026-11-09T13:45:14.608Z",
+  "stage": "afterEach",
+  "pid": 2340,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "ERR-218 repair relocation consumer proof in compatibility mode > fails closed when a formal consumer edge cannot be resolved to a Module",
+    "start_ms": 484.4024,
+    "duration_ms": 31.168299999999988
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 16,
+    "writeFile": 77,
+    "readFile": 104,
+    "readdir": 2
+  },
+  "rows": []
+}

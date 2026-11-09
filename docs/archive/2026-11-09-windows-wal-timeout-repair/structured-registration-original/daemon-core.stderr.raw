@@ -1,0 +1,33 @@
+$ vitest run "--maxWorkers=1" "--reporter=json" "--outputFile=D:\\code\\SpecForge\\docs\\archive\\2026-11-09-windows-wal-timeout-repair\\structured-registration-original\\daemon-core.vitest.json"
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+warning: in the working copy of 'package.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/value.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tests/value.test.mjs', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'package.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/value.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tests/value.test.mjs', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'package.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/value.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tests/value.test.mjs', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'package.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/value.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tests/value.test.mjs', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'package.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/value.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tests/value.test.mjs', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'package.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/value.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tests/value.test.mjs', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'package.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/value.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tests/value.test.mjs', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'package.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/value.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tests/value.test.mjs', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'package.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/value.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tests/value.test.mjs', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'package.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/value.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tests/value.test.mjs', LF will be replaced by CRLF the next time Git touches it
+HEAD is now at a3882e4 synthetic baseline

@@ -1,0 +1,25 @@
+{
+  "utc": "2026-11-09T13:47:06.326Z",
+  "stage": "afterEach",
+  "pid": 8428,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "never starts a repository clean filter while checking or publishing a detached bootstrap",
+    "start_ms": 308.6604,
+    "duration_ms": 7684.9461
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "writeFile": 3,
+    "readFile": 51,
+    "mkdir": 5,
+    "open": 8,
+    "readdir": 156,
+    "stat": 2,
+    "appendFile": 147
+  },
+  "rows": []
+}

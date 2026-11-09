@@ -1,0 +1,25 @@
+{
+  "utc": "2026-11-09T13:45:45.804Z",
+  "stage": "afterEach",
+  "pid": 3864,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "controlled runtime project configuration owner > serializes competing updates so only one stale-baseline writer succeeds",
+    "start_ms": 599.0086,
+    "duration_ms": 21.996999999999957
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "readFile": 100,
+    "readdir": 20,
+    "mkdir": 17,
+    "writeFile": 17,
+    "open": 7,
+    "stat": 1,
+    "appendFile": 1
+  },
+  "rows": []
+}

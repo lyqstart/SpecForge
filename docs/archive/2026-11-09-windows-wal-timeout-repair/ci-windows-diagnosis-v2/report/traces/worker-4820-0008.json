@@ -1,0 +1,25 @@
+{
+  "utc": "2026-11-09T13:46:42.424Z",
+  "stage": "afterEach",
+  "pid": 4820,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "StateManager > Optimistic Concurrency Control (TASK-1) > persistStateFromExternal should sync in-memory state and write",
+    "start_ms": 437.2023,
+    "duration_ms": 13.65300000000002
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "readFile": 43,
+    "readdir": 13,
+    "mkdir": 10,
+    "writeFile": 8,
+    "open": 10,
+    "stat": 2,
+    "appendFile": 2
+  },
+  "rows": []
+}

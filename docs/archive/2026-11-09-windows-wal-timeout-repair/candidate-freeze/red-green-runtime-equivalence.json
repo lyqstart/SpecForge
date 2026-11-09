@@ -1,0 +1,7 @@
+{
+  "utc": "2026-11-09T14:06:10.697Z",
+  "method": "TypeScript transpile erases types; parse AST with identifier/literal text; compare complete executable body and sorted runtime imports",
+  "equal": true,
+  "red_source_sha256": "5c69e9443d6ea054705e41fd4994fed35d296bfe84bea1c61a82fb838be6a97e",
+  "final_source_sha256": "3156b32dd249c8964570b7a5c71faf586f16d904670d41c95d3a19c7af345670"
+}

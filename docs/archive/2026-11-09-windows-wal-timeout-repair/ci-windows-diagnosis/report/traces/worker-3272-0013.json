@@ -1,0 +1,22 @@
+{
+  "utc": "2026-11-09T13:29:44.306Z",
+  "stage": "afterEach",
+  "pid": 3272,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "B. close_gate happy path (code_only_fast_path) > code_permission already revoked — handler proceeds without error",
+    "start_ms": 949.2698,
+    "duration_ms": 56.37950000000001
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 52,
+    "writeFile": 191,
+    "readFile": 236,
+    "readdir": 12
+  },
+  "rows": []
+}

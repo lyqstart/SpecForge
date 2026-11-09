@@ -1,0 +1,46 @@
+{
+  "utc": "2026-11-09T13:42:13.514Z",
+  "stage": "afterEach",
+  "pid": 9088,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "Property 1: Single Source of Truth > Property 1.4: No bypass paths > should require EventBus for SessionRegistry changes",
+    "start_ms": 2840.09,
+    "duration_ms": 2.55199999999968
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "readdir": 470,
+    "readFile": 975,
+    "mkdir": 9,
+    "stat": 410,
+    "appendFile": 410,
+    "open": 410
+  },
+  "rows": [
+    {
+      "op": "readdir",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-OVtpHS",
+      "start_ms": 2840.5444,
+      "duration_ms": 0.1532999999999447,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-OVtpHS\\state.json",
+      "start_ms": 2840.7137,
+      "duration_ms": 0.10880000000042855,
+      "error": "ENOENT"
+    },
+    {
+      "op": "mkdir",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-OVtpHS",
+      "start_ms": 2840.8328,
+      "duration_ms": 0.213799999999992,
+      "error": null
+    }
+  ]
+}

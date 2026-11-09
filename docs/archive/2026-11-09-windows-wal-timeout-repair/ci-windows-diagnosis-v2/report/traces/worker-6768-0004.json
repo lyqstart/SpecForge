@@ -1,0 +1,25 @@
+{
+  "utc": "2026-11-09T13:44:43.896Z",
+  "stage": "afterEach",
+  "pid": 6768,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "StateManager concurrency — C2 / CP-2 version lock > CP-2: version conflict resolved via retry — transition succeeds after rebuild",
+    "start_ms": 447.1402,
+    "duration_ms": 35.46530000000001
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 9,
+    "readFile": 57,
+    "readdir": 18,
+    "writeFile": 20,
+    "open": 15,
+    "stat": 6,
+    "appendFile": 6
+  },
+  "rows": []
+}

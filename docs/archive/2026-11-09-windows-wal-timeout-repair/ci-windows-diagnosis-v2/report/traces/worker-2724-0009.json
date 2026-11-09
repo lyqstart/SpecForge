@@ -1,0 +1,24 @@
+{
+  "utc": "2026-11-09T13:43:29.055Z",
+  "stage": "afterEach",
+  "pid": 2724,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "controlled detached Git bootstrap > rejects a tampered immutable plan before refs",
+    "start_ms": 40370.9359,
+    "duration_ms": 1468.2120000000068
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "writeFile": 16,
+    "mkdir": 41,
+    "readFile": 369,
+    "open": 49,
+    "readdir": 949,
+    "appendFile": 841
+  },
+  "rows": []
+}

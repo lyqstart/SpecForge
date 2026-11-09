@@ -1,0 +1,23 @@
+{
+  "utc": "2026-11-09T13:46:42.356Z",
+  "stage": "afterEach",
+  "pid": 4820,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "StateManager > should initialize state manager",
+    "start_ms": 366.973,
+    "duration_ms": 16.15089999999998
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "readFile": 7,
+    "readdir": 2,
+    "mkdir": 2,
+    "writeFile": 1,
+    "open": 1
+  },
+  "rows": []
+}

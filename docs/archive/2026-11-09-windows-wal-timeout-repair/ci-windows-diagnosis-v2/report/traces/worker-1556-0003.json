@@ -1,0 +1,22 @@
+{
+  "utc": "2026-11-09T13:45:29.193Z",
+  "stage": "afterEach",
+  "pid": 1556,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "runCloseGate no-code investigation audit > does not accept no-code audit wording for feature_spec implementation WI",
+    "start_ms": 416.3192,
+    "duration_ms": 31.64119999999997
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 4,
+    "writeFile": 31,
+    "readFile": 78,
+    "readdir": 2
+  },
+  "rows": []
+}

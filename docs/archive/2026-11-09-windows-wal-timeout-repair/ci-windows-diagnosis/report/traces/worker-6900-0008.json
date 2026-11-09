@@ -1,0 +1,22 @@
+{
+  "utc": "2026-11-09T13:31:24.981Z",
+  "stage": "afterEach",
+  "pid": 6900,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "Candidate / approval / state governance > restores the decision and invalidation record when state transition fails",
+    "start_ms": 1058.3322,
+    "duration_ms": 24.758799999999837
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 17,
+    "writeFile": 22,
+    "readFile": 45,
+    "readdir": 2
+  },
+  "rows": []
+}

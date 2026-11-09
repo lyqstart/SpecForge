@@ -1,0 +1,43 @@
+{
+  "started": "2026-11-09T14:27:27.305Z",
+  "finished": "2026-11-09T14:27:30.225Z",
+  "classification": "PASS_CONCURRENT_RESERVATION_AND_NONZERO_PRESERVATION",
+  "results": [
+    {
+      "expected": 0,
+      "args": [
+        "D:\\code\\SpecForge\\docs\\archive\\2026-11-09-windows-wal-timeout-repair\\run.cjs",
+        "carrier-concurrent-canary-expected-exit-0",
+        "Owned fixture receipt only; intentional canary, not product acceptance",
+        "D:\\code\\SpecForge",
+        "C:\\Program Files\\nodejs\\node.exe",
+        "D:\\code\\SpecForge\\docs\\archive\\2026-11-09-windows-wal-timeout-repair\\carrier-fixture-child.cjs",
+        "0"
+      ],
+      "exit": 0,
+      "stdout": "{\"file\":\"D:\\\\code\\\\SpecForge\\\\docs\\\\archive\\\\2026-11-09-windows-wal-timeout-repair\\\\commands\\\\0034.json\",\"exit\":0,\"stdout_bytes\":31,\"stderr_bytes\":0}\n",
+      "stderr": ""
+    },
+    {
+      "expected": 7,
+      "args": [
+        "D:\\code\\SpecForge\\docs\\archive\\2026-11-09-windows-wal-timeout-repair\\run.cjs",
+        "carrier-concurrent-canary-expected-exit-7",
+        "Owned fixture receipt only; intentional canary, not product acceptance",
+        "D:\\code\\SpecForge",
+        "C:\\Program Files\\nodejs\\node.exe",
+        "D:\\code\\SpecForge\\docs\\archive\\2026-11-09-windows-wal-timeout-repair\\carrier-fixture-child.cjs",
+        "7"
+      ],
+      "exit": 7,
+      "stdout": "{\"file\":\"D:\\\\code\\\\SpecForge\\\\docs\\\\archive\\\\2026-11-09-windows-wal-timeout-repair\\\\commands\\\\0035.json\",\"exit\":7,\"stdout_bytes\":31,\"stderr_bytes\":0}\n",
+      "stderr": ""
+    }
+  ],
+  "distinct_results": [
+    "0034.json",
+    "0035.json"
+  ],
+  "old_source_sha256": "bf907e601018889258e543db8c855e185af65f29c5d34d4c665ed6cecdb4ba17",
+  "new_source_sha256": "8e2286daa907bc89c0808a40a8a823bb04b3c7f4cdace0873d6b43b5758a7d9c"
+}

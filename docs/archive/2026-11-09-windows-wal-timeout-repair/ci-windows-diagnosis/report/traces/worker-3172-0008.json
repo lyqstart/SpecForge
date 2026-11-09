@@ -1,0 +1,23 @@
+{
+  "utc": "2026-11-09T13:32:46.739Z",
+  "stage": "afterEach",
+  "pid": 3172,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "current project module schema boundary > rejects a manifest module path that does not derive from canonical module_code",
+    "start_ms": 606.0208,
+    "duration_ms": 15.355500000000006
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 31,
+    "writeFile": 44,
+    "readFile": 56,
+    "readdir": 3,
+    "open": 1
+  },
+  "rows": []
+}

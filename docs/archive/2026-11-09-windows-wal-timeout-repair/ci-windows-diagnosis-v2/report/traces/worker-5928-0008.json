@@ -1,0 +1,21 @@
+{
+  "utc": "2026-11-09T13:45:08.573Z",
+  "stage": "afterEach",
+  "pid": 5928,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "authorContractCandidate cumulative registration > rejects shared_enum values that do not match value_type or uniqueness rules",
+    "start_ms": 450.212,
+    "duration_ms": 6.1521999999999935
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 24,
+    "writeFile": 41,
+    "readFile": 68
+  },
+  "rows": []
+}

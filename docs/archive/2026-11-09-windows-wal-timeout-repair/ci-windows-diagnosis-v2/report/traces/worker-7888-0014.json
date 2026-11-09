@@ -1,0 +1,25 @@
+{
+  "utc": "2026-11-09T13:41:53.724Z",
+  "stage": "afterEach",
+  "pid": 7888,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "T5: RecoverySubsystem with injected WAL + StateManager > T5.2: corrupted events.jsonl fails closed without deleting evidence",
+    "start_ms": 998.2126,
+    "duration_ms": 44.694000000000074
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "readdir": 106,
+    "readFile": 344,
+    "mkdir": 54,
+    "stat": 29,
+    "appendFile": 30,
+    "open": 72,
+    "writeFile": 55
+  },
+  "rows": []
+}

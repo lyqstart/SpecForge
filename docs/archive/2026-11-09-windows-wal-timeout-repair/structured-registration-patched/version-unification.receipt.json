@@ -1,0 +1,19 @@
+{
+  "owner": "version-unification",
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "test",
+    "--",
+    "--maxWorkers=1",
+    "--reporter=json",
+    "--outputFile=D:\\code\\SpecForge\\docs\\archive\\2026-11-09-windows-wal-timeout-repair\\structured-registration-patched\\version-unification.vitest.json"
+  ],
+  "cwd": "D:\\code\\SpecForge\\.wal-patched-a01\\packages\\version-unification",
+  "context_sha256": "3fd2e6309be2cd0442b33c67e04b3a1517bd8305874a22a2b6ae612e9bc61b42",
+  "started_utc": "2026-11-09T14:25:19.477Z",
+  "finished_utc": "2026-11-09T14:25:20.453Z",
+  "exit": 0,
+  "stdout_sha256": "07b1d64b09a7c9707c80293dcce1b60129bb3400a34ae39704fbaea6f1cff570",
+  "stderr_sha256": "5f05e1cb742bb7d5feeb5086f96a9634e3ac92f29a537b9cb3dd4946bd382f5e"
+}

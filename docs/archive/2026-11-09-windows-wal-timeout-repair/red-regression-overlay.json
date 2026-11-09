@@ -1,0 +1,16 @@
+{
+  "utc": "2026-11-09T13:50:11.572Z",
+  "repo": "D:\\code\\SpecForge\\.wal-patched-a01",
+  "base": "48fc9057014413bd712c33f710b794f8bf6f273a",
+  "source_unchanged": true,
+  "members": [
+    {
+      "target": "packages/scope-gate/tests/ci-runner-temporary-root.test.ts",
+      "sha256": "5c69e9443d6ea054705e41fd4994fed35d296bfe84bea1c61a82fb838be6a97e"
+    },
+    {
+      "target": "packages/scope-gate/tests/fixtures/ci-spawn-environment-probe.cjs",
+      "sha256": "1639ee7db15cfab6cf861beab90984a199e8450f363661d950ad1b2a32cd806a"
+    }
+  ]
+}

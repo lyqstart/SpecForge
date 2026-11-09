@@ -1,0 +1,46 @@
+{
+  "utc": "2026-11-09T13:42:12.205Z",
+  "stage": "afterEach",
+  "pid": 9088,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should generate UUIDv7 eventIds",
+    "start_ms": 1529.2439,
+    "duration_ms": 4.048500000000104
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "readdir": 203,
+    "readFile": 401,
+    "mkdir": 3,
+    "stat": 200,
+    "appendFile": 200,
+    "open": 200
+  },
+  "rows": [
+    {
+      "op": "readdir",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-PgnD6N",
+      "start_ms": 1529.7926,
+      "duration_ms": 0.15260000000012042,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-PgnD6N\\state.json",
+      "start_ms": 1529.963,
+      "duration_ms": 0.12339999999994689,
+      "error": "ENOENT"
+    },
+    {
+      "op": "mkdir",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-PgnD6N",
+      "start_ms": 1530.0986,
+      "duration_ms": 0.21910000000002583,
+      "error": null
+    }
+  ]
+}

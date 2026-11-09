@@ -1,0 +1,79 @@
+{
+  "utc": "2026-11-09T13:47:30.282Z",
+  "classification": "DIAGNOSTIC_EVIDENCE_COLLECTED_NOT_RELEASE_ACCEPTANCE",
+  "records": [
+    {
+      "name": "build",
+      "exe": "bun.exe",
+      "args": [
+        "scripts/prepare-current-release.ts"
+      ],
+      "cwd": "D:\\a\\SpecForge\\SpecForge",
+      "started": "2026-11-09T13:41:02.157Z",
+      "finished": "2026-11-09T13:41:36.732Z",
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "stdout_sha256": "402850bef184298bb1c936022ae3170e1bfad02b785665142f6919e6be9a9f13",
+      "stderr_sha256": "42580806f72966c011a56229da3d32784afbef0b7cde7cfe7d94dfef7da3aee9"
+    },
+    {
+      "name": "traced-full-daemon",
+      "exe": "bun.exe",
+      "args": [
+        "run",
+        "test",
+        "--",
+        "--maxWorkers=1",
+        "--config",
+        "D:\\a\\SpecForge\\SpecForge\\scripts\\ci\\wal-diagnostic.config.mts"
+      ],
+      "cwd": "D:\\a\\SpecForge\\SpecForge\\packages\\daemon-core",
+      "started": "2026-11-09T13:41:36.734Z",
+      "finished": "2026-11-09T13:47:22.440Z",
+      "exit": 1,
+      "signal": null,
+      "error": null,
+      "stdout_sha256": "099febb4f0c1dfa5ad414f0ce5ab65cc23fb5e3b499a08dcf9271517979b391f",
+      "stderr_sha256": "5b98db81ad6353c1791083bd02f05bfb7b7f3e54a36364df5e7aaff20361b9aa"
+    },
+    {
+      "name": "plain-focused",
+      "exe": "bun.exe",
+      "args": [
+        "run",
+        "test",
+        "--",
+        "--maxWorkers=1",
+        "tests/property/property-1.test.ts"
+      ],
+      "cwd": "D:\\a\\SpecForge\\SpecForge\\packages\\daemon-core",
+      "started": "2026-11-09T13:47:22.444Z",
+      "finished": "2026-11-09T13:47:27.273Z",
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "stdout_sha256": "17d9617384c3ea049f38e117493d42d6bea2ee3be4cc7a568a6b56408d97d145",
+      "stderr_sha256": "ce1d0fe2362e65f7bb89cded540565c15aace59fed78ec1ef927d456e0ccf352"
+    },
+    {
+      "name": "native-io",
+      "exe": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+      "args": [
+        "D:\\a\\SpecForge\\SpecForge\\scripts\\ci\\wal-native-io-probe.mjs",
+        "D:\\a\\_temp\\wal-diagnosis\\native-control"
+      ],
+      "cwd": "D:\\a\\SpecForge\\SpecForge",
+      "started": "2026-11-09T13:47:27.275Z",
+      "finished": "2026-11-09T13:47:30.153Z",
+      "exit": 0,
+      "signal": null,
+      "error": null,
+      "stdout_sha256": "986bd771e96d5d4ee273cebc30bf76dc69043fa721b7e89305759d8d555f8236",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "traces": 2364,
+  "test_failures_preserved": true,
+  "budgets_and_test_sources_unchanged": true
+}

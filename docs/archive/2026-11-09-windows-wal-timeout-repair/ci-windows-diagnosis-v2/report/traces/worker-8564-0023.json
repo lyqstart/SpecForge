@@ -1,0 +1,23 @@
+{
+  "utc": "2026-11-09T13:41:40.963Z",
+  "stage": "afterEach",
+  "pid": 8564,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "§21.4 Acceptance: Out-of-bounds Write > should block agent from writing gates/",
+    "start_ms": 3573.763,
+    "duration_ms": 2.8751000000002023
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 169,
+    "writeFile": 237,
+    "readFile": 918,
+    "readdir": 36,
+    "stat": 212
+  },
+  "rows": []
+}

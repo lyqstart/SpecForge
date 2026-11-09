@@ -1,0 +1,24 @@
+{
+  "utc": "2026-11-09T13:42:57.954Z",
+  "stage": "afterEach",
+  "pid": 2724,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "controlled detached Git bootstrap > plans without creating refs, atomically binds two new branches and standard context, then retries idempotently",
+    "start_ms": 928.7368,
+    "duration_ms": 9808.8886
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "writeFile": 2,
+    "mkdir": 7,
+    "readFile": 91,
+    "open": 10,
+    "readdir": 247,
+    "appendFile": 237
+  },
+  "rows": []
+}

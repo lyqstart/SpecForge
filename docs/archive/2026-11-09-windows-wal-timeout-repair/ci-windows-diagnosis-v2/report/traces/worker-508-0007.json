@@ -1,0 +1,25 @@
+{
+  "utc": "2026-11-09T13:46:22.182Z",
+  "stage": "afterEach",
+  "pid": 508,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "current Runtime persistence boundary > fails closed on a corrupt checkpoint instead of treating it as version zero",
+    "start_ms": 412.4581,
+    "duration_ms": 3.220700000000022
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "readFile": 31,
+    "readdir": 6,
+    "mkdir": 4,
+    "writeFile": 6,
+    "open": 4,
+    "stat": 1,
+    "appendFile": 1
+  },
+  "rows": []
+}

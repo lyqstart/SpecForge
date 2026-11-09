@@ -1,0 +1,25 @@
+{
+  "utc": "2026-11-09T13:44:36.677Z",
+  "stage": "afterEach",
+  "pid": 8088,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "verification Runtime plan/permission owner (unit dependencies) > recovers an authenticated interrupted preparation and refuses unknown extra files",
+    "start_ms": 14846.379,
+    "duration_ms": 1595.8178999999982
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 217,
+    "writeFile": 190,
+    "readdir": 136,
+    "readFile": 195,
+    "open": 626,
+    "stat": 2,
+    "appendFile": 1
+  },
+  "rows": []
+}

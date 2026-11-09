@@ -1,0 +1,25 @@
+{
+  "utc": "2026-11-09T13:32:10.983Z",
+  "stage": "afterEach",
+  "pid": 7064,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "authoritative history integrity at configuration consumer > rejects missing-first rather than replaying a partial history",
+    "start_ms": 1811.2806,
+    "duration_ms": 109.06189999999992
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "readFile": 121,
+    "readdir": 37,
+    "mkdir": 18,
+    "writeFile": 18,
+    "open": 24,
+    "stat": 12,
+    "appendFile": 12
+  },
+  "rows": []
+}

@@ -1,0 +1,23 @@
+{
+  "utc": "2026-11-09T13:42:09.242Z",
+  "stage": "afterEach",
+  "pid": 560,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "formal version Git closure regressions > recovers the Formal Version file set from a passed durable Changed Files Audit",
+    "start_ms": 2826.3671,
+    "duration_ms": 5.231499999999869
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 20,
+    "writeFile": 26,
+    "readFile": 14,
+    "readdir": 2,
+    "stat": 5
+  },
+  "rows": []
+}

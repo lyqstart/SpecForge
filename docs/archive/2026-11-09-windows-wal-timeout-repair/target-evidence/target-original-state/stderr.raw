@@ -1,0 +1,1242 @@
+$ vitest run "--maxWorkers=1" "tests/property/property-1.test.ts" tests/integration/pbt-state.test.ts tests/unit/wal.test.ts
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should generate events for all state change operations
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should generate events for all state change operations
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should generate events for all state change operations
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should generate events for all state change operations
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should generate events for all state change operations
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should generate events for all state change operations
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should generate events for all state change operations
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should generate events for all state change operations
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should generate events for all state change operations
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should generate events for all state change operations
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should generate events for all state change operations
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should generate events for all state change operations
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should generate events for all state change operations
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should generate events for all state change operations
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should generate events for all state change operations
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should generate events for all state change operations
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should generate events for all state change operations
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should generate events for all state change operations
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should generate events for all state change operations
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should generate events for all state change operations
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should generate events for all state change operations
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should generate events for all state change operations
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should generate events for all state change operations
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should generate events for all state change operations
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should generate events for all state change operations
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should generate events for all state change operations
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should generate events for all state change operations
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should generate events for all state change operations
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should generate events for all state change operations
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should generate events for all state change operations
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should generate events for all state change operations
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should generate events for all state change operations
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should generate events for all state change operations
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should generate events for all state change operations
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should generate events for all state change operations
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should generate events for all state change operations
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should generate events for all state change operations
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should generate events for all state change operations
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should generate events for all state change operations
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should generate events for all state change operations
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should generate events for all state change operations
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should generate events for all state change operations
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should generate events for all state change operations
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should generate events for all state change operations
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should generate events for all state change operations
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should generate events for all state change operations
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should generate events for all state change operations
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should generate events for all state change operations
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should generate events for all state change operations
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should generate events for all state change operations
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should generate events for all state change operations
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should generate events for all state change operations
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should generate events for all state change operations
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should generate events for all state change operations
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should generate events for all state change operations
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should generate events for all state change operations
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should generate events for all state change operations
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should generate events for all state change operations
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should generate events for all state change operations
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should generate events for all state change operations
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should generate events for all state change operations
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should generate events for all state change operations
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should generate events for all state change operations
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should generate events for all state change operations
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should generate events for all state change operations
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should generate events for all state change operations
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should generate events for all state change operations
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should publish all events through EventBus
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should publish all events through EventBus
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should publish all events through EventBus
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should publish all events through EventBus
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should publish all events through EventBus
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should publish all events through EventBus
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should publish all events through EventBus
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should publish all events through EventBus
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should publish all events through EventBus
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should publish all events through EventBus
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should publish all events through EventBus
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should publish all events through EventBus
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should publish all events through EventBus
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should publish all events through EventBus
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should publish all events through EventBus
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should publish all events through EventBus
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should publish all events through EventBus
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should publish all events through EventBus
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should publish all events through EventBus
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should publish all events through EventBus
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should publish all events through EventBus
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should publish all events through EventBus
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should publish all events through EventBus
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should publish all events through EventBus
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should publish all events through EventBus
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should publish all events through EventBus
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should publish all events through EventBus
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should publish all events through EventBus
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should publish all events through EventBus
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should publish all events through EventBus
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should publish all events through EventBus
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should publish all events through EventBus
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should publish all events through EventBus
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should publish all events through EventBus
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should publish all events through EventBus
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should publish all events through EventBus
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should publish all events through EventBus
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should publish all events through EventBus
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should publish all events through EventBus
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should publish all events through EventBus
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should publish all events through EventBus
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should publish all events through EventBus
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should publish all events through EventBus
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should publish all events through EventBus
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should publish all events through EventBus
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should publish all events through EventBus
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should publish all events through EventBus
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should publish all events through EventBus
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should publish all events through EventBus
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should publish all events through EventBus
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should publish all events through EventBus
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should publish all events through EventBus
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should publish all events through EventBus
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should publish all events through EventBus
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should publish all events through EventBus
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should publish all events through EventBus
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.1: All state changes produce events > should publish all events through EventBus
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should generate UUIDv7 eventIds
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should generate monotonically non-decreasing timestamps
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should generate monotonically non-decreasing timestamps
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should generate monotonically non-decreasing timestamps
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should generate monotonically non-decreasing timestamps
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should generate monotonically non-decreasing timestamps
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should generate monotonically non-decreasing timestamps
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should generate monotonically non-decreasing timestamps
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should generate monotonically non-decreasing timestamps
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should generate monotonically non-decreasing timestamps
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should generate monotonically non-decreasing timestamps
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should generate monotonically non-decreasing timestamps
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should generate monotonically non-decreasing timestamps
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should generate monotonically non-decreasing timestamps
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should generate monotonically non-decreasing timestamps
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should generate monotonically non-decreasing timestamps
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should generate monotonically non-decreasing timestamps
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should generate monotonically non-decreasing timestamps
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should generate monotonically non-decreasing timestamps
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should generate monotonically non-decreasing timestamps
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should generate monotonically non-decreasing timestamps
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should generate monotonically non-decreasing timestamps
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should generate monotonically non-decreasing timestamps
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should generate monotonically non-decreasing timestamps
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should generate monotonically non-decreasing timestamps
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should generate monotonically non-decreasing timestamps
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should generate monotonically non-decreasing timestamps
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should generate monotonically non-decreasing timestamps
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should generate monotonically non-decreasing timestamps
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should generate monotonically non-decreasing timestamps
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should generate monotonically non-decreasing timestamps
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should generate monotonically non-decreasing timestamps
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should generate monotonically non-decreasing timestamps
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should generate monotonically non-decreasing timestamps
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should generate monotonically non-decreasing timestamps
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should generate monotonically non-decreasing timestamps
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should have non-empty projectId
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should have non-empty projectId
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should have non-empty projectId
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should have non-empty projectId
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should have non-empty projectId
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should have non-empty projectId
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should have non-empty projectId
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should have non-empty projectId
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should have non-empty projectId
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should have non-empty projectId
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should have non-empty projectId
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should have non-empty projectId
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should have non-empty projectId
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should have non-empty projectId
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should have non-empty projectId
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should have non-empty projectId
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should have non-empty projectId
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should have non-empty projectId
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should have non-empty projectId
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should have non-empty projectId
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should have non-empty projectId
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should have non-empty projectId
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should have non-empty projectId
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should have non-empty projectId
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should have non-empty projectId
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should have non-empty projectId
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should have non-empty projectId
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should have non-empty projectId
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should have non-empty projectId
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should have non-empty projectId
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should have non-empty projectId
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should have non-empty projectId
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should have non-empty projectId
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should have non-empty projectId
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should have non-empty projectId
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should have non-empty projectId
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should have non-empty projectId
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should have non-empty projectId
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should have non-empty projectId
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should have action and payload
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should have action and payload
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should have action and payload
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should have action and payload
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should have action and payload
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should have action and payload
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should have action and payload
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should have action and payload
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should have action and payload
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should have action and payload
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should have action and payload
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should have action and payload
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should have action and payload
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should have action and payload
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should have action and payload
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should have action and payload
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should have action and payload
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should have action and payload
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should have action and payload
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should have action and payload
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should have action and payload
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should have action and payload
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should have action and payload
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should have action and payload
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should have action and payload
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should have action and payload
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.3: Events persisted to WAL > should persist events to WAL
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.3: Events persisted to WAL > should persist events to WAL
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.3: Events persisted to WAL > should persist events to WAL
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.3: Events persisted to WAL > should persist events to WAL
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.3: Events persisted to WAL > should persist events to WAL
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.3: Events persisted to WAL > should persist events to WAL
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.3: Events persisted to WAL > should persist events to WAL
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.3: Events persisted to WAL > should persist events to WAL
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.3: Events persisted to WAL > should persist events to WAL
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.3: Events persisted to WAL > should persist events to WAL
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.3: Events persisted to WAL > should persist events to WAL
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.3: Events persisted to WAL > should persist events to WAL
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.3: Events persisted to WAL > should persist events to WAL
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.3: Events persisted to WAL > should persist events to WAL
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.3: Events persisted to WAL > should persist events to WAL
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.3: Events persisted to WAL > should persist events to WAL
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.3: Events persisted to WAL > should persist events to WAL
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.3: Events persisted to WAL > should persist events to WAL
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.3: Events persisted to WAL > should persist events to WAL
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.3: Events persisted to WAL > should persist events to WAL
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.3: Events persisted to WAL > should persist events to WAL
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.3: Events persisted to WAL > should persist events to WAL
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.3: Events persisted to WAL > should persist events to WAL
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.3: Events persisted to WAL > should persist events to WAL
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.3: Events persisted to WAL > should persist events to WAL
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.3: Events persisted to WAL > should persist events to WAL
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.3: Events persisted to WAL > should persist events to WAL
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.3: Events persisted to WAL > should persist events to WAL
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.3: Events persisted to WAL > should persist events to WAL
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.3: Events persisted to WAL > should persist events to WAL
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.3: Events persisted to WAL > should maintain event ordering in WAL
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.3: Events persisted to WAL > should maintain event ordering in WAL
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.3: Events persisted to WAL > should maintain event ordering in WAL
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.3: Events persisted to WAL > should maintain event ordering in WAL
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.3: Events persisted to WAL > should maintain event ordering in WAL
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.3: Events persisted to WAL > should maintain event ordering in WAL
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.3: Events persisted to WAL > should maintain event ordering in WAL
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.3: Events persisted to WAL > should maintain event ordering in WAL
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.4: No bypass paths > should require EventBus for SessionRegistry changes
+[SessionRegistry] WAL not injected — running in memory-only mode
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.4: No bypass paths > should flow all state changes through EventBus
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.4: No bypass paths > should flow all state changes through EventBus
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.4: No bypass paths > should flow all state changes through EventBus
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.4: No bypass paths > should flow all state changes through EventBus
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.4: No bypass paths > should flow all state changes through EventBus
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.4: No bypass paths > should flow all state changes through EventBus
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.4: No bypass paths > should flow all state changes through EventBus
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.4: No bypass paths > should flow all state changes through EventBus
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.4: No bypass paths > should flow all state changes through EventBus
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.4: No bypass paths > should flow all state changes through EventBus
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.4: No bypass paths > should flow all state changes through EventBus
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.4: No bypass paths > should flow all state changes through EventBus
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.4: No bypass paths > should flow all state changes through EventBus
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.4: No bypass paths > should flow all state changes through EventBus
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.4: No bypass paths > should flow all state changes through EventBus
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.4: No bypass paths > should flow all state changes through EventBus
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.4: No bypass paths > should flow all state changes through EventBus
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.4: No bypass paths > should flow all state changes through EventBus
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.4: No bypass paths > should flow all state changes through EventBus
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.4: No bypass paths > should flow all state changes through EventBus
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.4: No bypass paths > should flow all state changes through EventBus
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.4: No bypass paths > should flow all state changes through EventBus
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.4: No bypass paths > should flow all state changes through EventBus
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.4: No bypass paths > should flow all state changes through EventBus
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.4: No bypass paths > should flow all state changes through EventBus
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.4: No bypass paths > should flow all state changes through EventBus
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.4: No bypass paths > should flow all state changes through EventBus
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.4: No bypass paths > should flow all state changes through EventBus
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.4: No bypass paths > should flow all state changes through EventBus
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.4: No bypass paths > should flow all state changes through EventBus
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.4: No bypass paths > should flow all state changes through EventBus
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.4: No bypass paths > should flow all state changes through EventBus
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.4: No bypass paths > should flow all state changes through EventBus
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.4: No bypass paths > should flow all state changes through EventBus
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.4: No bypass paths > should flow all state changes through EventBus
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.4: No bypass paths > should flow all state changes through EventBus
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.5: Session operations produce events > should produce event on session registration
+[SessionRegistry] WAL not injected — running in memory-only mode
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.5: Session operations produce events > should produce event on session activation
+[SessionRegistry] WAL not injected — running in memory-only mode
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.5: Session operations produce events > should produce event on session termination
+[SessionRegistry] WAL not injected — running in memory-only mode
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.6: Unique eventIds > should generate unique eventIds across multiple operations
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.6: Unique eventIds > should generate unique eventIds across multiple operations
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.6: Unique eventIds > should generate unique eventIds across multiple operations
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.6: Unique eventIds > should generate unique eventIds across multiple operations
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.6: Unique eventIds > should generate unique eventIds across multiple operations
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.6: Unique eventIds > should generate unique eventIds across multiple operations
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.6: Unique eventIds > should generate unique eventIds across multiple operations
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.6: Unique eventIds > should generate unique eventIds across multiple operations
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.6: Unique eventIds > should generate unique eventIds across multiple operations
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.6: Unique eventIds > should generate unique eventIds across multiple operations
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.6: Unique eventIds > should generate unique eventIds across multiple operations
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.6: Unique eventIds > should generate unique eventIds across multiple operations
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.6: Unique eventIds > should generate unique eventIds across multiple operations
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.6: Unique eventIds > should generate unique eventIds across multiple operations
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.6: Unique eventIds > should generate unique eventIds across multiple operations
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.6: Unique eventIds > should generate unique eventIds across multiple operations
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.6: Unique eventIds > should generate unique eventIds across multiple operations
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.6: Unique eventIds > should generate unique eventIds across multiple operations
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.6: Unique eventIds > should generate unique eventIds across multiple operations
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.6: Unique eventIds > should generate unique eventIds across multiple operations
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.6: Unique eventIds > should generate unique eventIds across multiple operations
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.6: Unique eventIds > should generate unique eventIds across multiple operations
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.6: Unique eventIds > should generate unique eventIds across multiple operations
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.6: Unique eventIds > should generate unique eventIds across multiple operations
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.6: Unique eventIds > should generate unique eventIds across multiple operations
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.6: Unique eventIds > should generate unique eventIds across multiple operations
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.6: Unique eventIds > should generate unique eventIds across multiple operations
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.6: Unique eventIds > should generate unique eventIds across multiple operations
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.6: Unique eventIds > should generate unique eventIds across multiple operations
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.6: Unique eventIds > should generate unique eventIds across multiple operations
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.6: Unique eventIds > should generate unique eventIds across multiple operations
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.6: Unique eventIds > should generate unique eventIds across multiple operations
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.6: Unique eventIds > should generate unique eventIds across multiple operations
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.6: Unique eventIds > should generate unique eventIds across multiple operations
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.6: Unique eventIds > should generate unique eventIds across multiple operations
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.6: Unique eventIds > should generate unique eventIds across multiple operations
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.6: Unique eventIds > should generate unique eventIds across multiple operations
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.6: Unique eventIds > should generate unique eventIds across multiple operations
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.6: Unique eventIds > should generate unique eventIds across multiple operations
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.6: Unique eventIds > should generate unique eventIds across multiple operations
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.6: Unique eventIds > should generate unique eventIds across multiple operations
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.6: Unique eventIds > should generate unique eventIds across multiple operations
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.6: Unique eventIds > should generate unique eventIds across multiple operations
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.6: Unique eventIds > should generate unique eventIds across multiple operations
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.6: Unique eventIds > should generate unique eventIds across multiple operations
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.6: Unique eventIds > should generate unique eventIds across multiple operations
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.6: Unique eventIds > should generate unique eventIds across multiple operations
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.6: Unique eventIds > should generate unique eventIds across multiple operations
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.6: Unique eventIds > should generate unique eventIds across multiple operations
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.6: Unique eventIds > should generate unique eventIds across multiple operations
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.6: Unique eventIds > should generate unique eventIds across multiple operations
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.6: Unique eventIds > should generate unique eventIds across multiple operations
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.6: Unique eventIds > should generate unique eventIds across multiple operations
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.6: Unique eventIds > should generate unique eventIds across multiple operations
+[WAL] Unknown category 'workflow' — event will be written but may not be replayed
+
+stderr | tests/property/property-1.test.ts > Property 1: Single Source of Truth > Property 1.6: Unique eventIds > should generate unique eventIds across multiple operations
+[WAL] Unknown category 'permission' — event will be written but may not be replayed
+
+stderr | tests/unit/wal.test.ts > WAL > createEvent > should create event with auto-generated eventId
+[WAL] Unknown category 'test' — event will be written but may not be replayed
+
+stderr | tests/unit/wal.test.ts > WAL > createEvent > should include schema version
+[WAL] Unknown category 'test' — event will be written but may not be replayed
+
+stderr | tests/unit/wal.test.ts > WAL > createEvent category validation > should create event with unknown category (soft warn, still written)
+[WAL] Unknown category 'unknown_cat' — event will be written but may not be replayed
+
+stderr | tests/integration/pbt-state.test.ts > E1 PBT State > PBT-ST-01: WAL and in-memory state consistency > should have matching event count between WAL and applied transitions
+[StateManager] WARNING: direct StateManager.transition() to critical state 'post_merge_verified' for 'Y__defineSe'. Production code must use WorkflowEngine.transitionFull() / evidence guard before calling this. Caller: at D:\code\SpecForge\.wal-patched-a01\packages\daemon-core\tests\integration\pbt-state.test.ts:106:15
+
+stderr | tests/integration/pbt-state.test.ts > E1 PBT State > PBT-ST-01: WAL and in-memory state consistency > should have matching event count between WAL and applied transitions
+[StateManager] WARNING: direct StateManager.transition() to critical state 'post_merge_verified' for 'Xnw'. Production code must use WorkflowEngine.transitionFull() / evidence guard before calling this. Caller: at D:\code\SpecForge\.wal-patched-a01\packages\daemon-core\tests\integration\pbt-state.test.ts:106:15
+
+stderr | tests/integration/pbt-state.test.ts > E1 PBT State > PBT-ST-01: WAL and in-memory state consistency > should have matching event count between WAL and applied transitions
+[StateManager] WARNING: direct StateManager.transition() to critical state 'verification_done' for '=6[];'. Production code must use WorkflowEngine.transitionFull() / evidence guard before calling this. Caller: at D:\code\SpecForge\.wal-patched-a01\packages\daemon-core\tests\integration\pbt-state.test.ts:106:15
+
+stderr | tests/integration/pbt-state.test.ts > E1 PBT State > PBT-ST-01: WAL and in-memory state consistency > should have matching event count between WAL and applied transitions
+[StateManager] WARNING: direct StateManager.transition() to critical state 'approval_required' for 'z#0~'k'. Production code must use WorkflowEngine.transitionFull() / evidence guard before calling this. Caller: at D:\code\SpecForge\.wal-patched-a01\packages\daemon-core\tests\integration\pbt-state.test.ts:106:15
+
+stderr | tests/integration/pbt-state.test.ts > E1 PBT State > PBT-ST-01: WAL and in-memory state consistency > should have matching event count between WAL and applied transitions
+[StateManager] WARNING: direct StateManager.transition() to critical state 'approval_required' for '&uylengthpro'. Production code must use WorkflowEngine.transitionFull() / evidence guard before calling this. Caller: at D:\code\SpecForge\.wal-patched-a01\packages\daemon-core\tests\integration\pbt-state.test.ts:106:15
+
+stderr | tests/integration/pbt-state.test.ts > E1 PBT State > PBT-ST-01: WAL and in-memory state consistency > should have matching event count between WAL and applied transitions
+[StateManager] WARNING: direct StateManager.transition() to critical state 'closed' for '["R`ZD'. Production code must use WorkflowEngine.transitionFull() / evidence guard before calling this. Caller: at D:\code\SpecForge\.wal-patched-a01\packages\daemon-core\tests\integration\pbt-state.test.ts:106:15
+
+stderr | tests/integration/pbt-state.test.ts > E1 PBT State > PBT-ST-01: WAL and in-memory state consistency > should have matching event count between WAL and applied transitions
+[StateManager] WARNING: direct StateManager.transition() to critical state 'approval_required' for 'Y|ymiE'. Production code must use WorkflowEngine.transitionFull() / evidence guard before calling this. Caller: at D:\code\SpecForge\.wal-patched-a01\packages\daemon-core\tests\integration\pbt-state.test.ts:106:15
+
+stderr | tests/integration/pbt-state.test.ts > E1 PBT State > PBT-ST-01: WAL and in-memory state consistency > should have matching event count between WAL and applied transitions
+[StateManager] WARNING: direct StateManager.transition() to critical state 'approval_required' for 'oEI'0,_]'. Production code must use WorkflowEngine.transitionFull() / evidence guard before calling this. Caller: at D:\code\SpecForge\.wal-patched-a01\packages\daemon-core\tests\integration\pbt-state.test.ts:106:15
+
+stderr | tests/integration/pbt-state.test.ts > E1 PBT State > PBT-ST-01: WAL and in-memory state consistency > should have matching event count between WAL and applied transitions
+[StateManager] WARNING: direct StateManager.transition() to critical state 'merge_ready' for 'X4[s<-t 9T!'. Production code must use WorkflowEngine.transitionFull() / evidence guard before calling this. Caller: at D:\code\SpecForge\.wal-patched-a01\packages\daemon-core\tests\integration\pbt-state.test.ts:106:15
+
+stderr | tests/integration/pbt-state.test.ts > E1 PBT State > PBT-ST-01: WAL and in-memory state consistency > should have matching event count between WAL and applied transitions
+[StateManager] WARNING: direct StateManager.transition() to critical state 'merging' for 'c]5S,N[''. Production code must use WorkflowEngine.transitionFull() / evidence guard before calling this. Caller: at D:\code\SpecForge\.wal-patched-a01\packages\daemon-core\tests\integration\pbt-state.test.ts:106:15
+
+stderr | tests/integration/pbt-state.test.ts > E1 PBT State > PBT-ST-01: WAL and in-memory state consistency > should have matching event count between WAL and applied transitions
+[StateManager] WARNING: direct StateManager.transition() to critical state 'merging' for 'A#w/'. Production code must use WorkflowEngine.transitionFull() / evidence guard before calling this. Caller: at D:\code\SpecForge\.wal-patched-a01\packages\daemon-core\tests\integration\pbt-state.test.ts:106:15
+
+stderr | tests/integration/pbt-state.test.ts > E1 PBT State > PBT-ST-01: WAL and in-memory state consistency > should have matching event count between WAL and applied transitions
+[StateManager] WARNING: direct StateManager.transition() to critical state 'post_merge_verified' for 'VAn?y'. Production code must use WorkflowEngine.transitionFull() / evidence guard before calling this. Caller: at D:\code\SpecForge\.wal-patched-a01\packages\daemon-core\tests\integration\pbt-state.test.ts:106:15
+
+stderr | tests/integration/pbt-state.test.ts > E1 PBT State > PBT-ST-01: WAL and in-memory state consistency > should have matching event count between WAL and applied transitions
+[StateManager] WARNING: direct StateManager.transition() to critical state 'verification_done' for 'R\(k8~'. Production code must use WorkflowEngine.transitionFull() / evidence guard before calling this. Caller: at D:\code\SpecForge\.wal-patched-a01\packages\daemon-core\tests\integration\pbt-state.test.ts:106:15
+
+stderr | tests/integration/pbt-state.test.ts > E1 PBT State > PBT-ST-01: WAL and in-memory state consistency > should have matching event count between WAL and applied transitions
+[StateManager] WARNING: direct StateManager.transition() to critical state 'verification_done' for 'CN,p1zy$@R '. Production code must use WorkflowEngine.transitionFull() / evidence guard before calling this. Caller: at D:\code\SpecForge\.wal-patched-a01\packages\daemon-core\tests\integration\pbt-state.test.ts:106:15
+
+stderr | tests/integration/pbt-state.test.ts > E1 PBT State > PBT-ST-01: WAL and in-memory state consistency > should have matching event count between WAL and applied transitions
+[StateManager] WARNING: direct StateManager.transition() to critical state 'approval_required' for 'KK<@A$TmX'. Production code must use WorkflowEngine.transitionFull() / evidence guard before calling this. Caller: at D:\code\SpecForge\.wal-patched-a01\packages\daemon-core\tests\integration\pbt-state.test.ts:106:15
+
+stderr | tests/integration/pbt-state.test.ts > E1 PBT HTTP Auth > PBT-HTTP-01: all protected endpoints require auth
+[EventBus] Cannot publish: bus is stopped
+[AUTH] Permission denied: Invalid token - GET /api/v1/cas/retrieve
+
+stderr | tests/integration/pbt-state.test.ts > E1 PBT HTTP Auth > PBT-HTTP-01: all protected endpoints require auth
+[EventBus] Cannot publish: bus is stopped
+[AUTH] Permission denied: Invalid token - POST /api/v1/cas/store
+
+stderr | tests/integration/pbt-state.test.ts > E1 PBT HTTP Auth > PBT-HTTP-01: all protected endpoints require auth
+[EventBus] Cannot publish: bus is stopped
+[AUTH] Permission denied: Invalid token - POST /api/v1/state/read
+
+stderr | tests/integration/pbt-state.test.ts > E1 PBT HTTP Auth > PBT-HTTP-01: all protected endpoints require auth
+[EventBus] Cannot publish: bus is stopped
+[AUTH] Permission denied: Invalid token - GET /api/v1/cas/retrieve
+
+stderr | tests/integration/pbt-state.test.ts > E1 PBT HTTP Auth > PBT-HTTP-01: all protected endpoints require auth
+[EventBus] Cannot publish: bus is stopped
+[AUTH] Permission denied: Invalid token - POST /api/v1/event/log
+
+stderr | tests/integration/pbt-state.test.ts > E1 PBT HTTP Auth > PBT-HTTP-01: all protected endpoints require auth
+[EventBus] Cannot publish: bus is stopped
+[AUTH] Permission denied: Invalid token - POST /api/v1/event/query
+
+stderr | tests/integration/pbt-state.test.ts > E1 PBT HTTP Auth > PBT-HTTP-01: all protected endpoints require auth
+[EventBus] Cannot publish: bus is stopped
+[AUTH] Permission denied: Missing or invalid Authorization header - POST /api/v1/event/log
+
+stderr | tests/integration/pbt-state.test.ts > E1 PBT HTTP Auth > PBT-HTTP-01: all protected endpoints require auth
+[EventBus] Cannot publish: bus is stopped
+[AUTH] Permission denied: Missing or invalid Authorization header - POST /api/v1/cas/store
+
+stderr | tests/integration/pbt-state.test.ts > E1 PBT HTTP Auth > PBT-HTTP-01: all protected endpoints require auth
+[EventBus] Cannot publish: bus is stopped
+[AUTH] Permission denied: Invalid token - POST /api/v1/event/query
+
+stderr | tests/integration/pbt-state.test.ts > E1 PBT HTTP Auth > PBT-HTTP-01: all protected endpoints require auth
+[EventBus] Cannot publish: bus is stopped
+[AUTH] Permission denied: Missing or invalid Authorization header - POST /api/v1/event/query
+
+stderr | tests/integration/pbt-state.test.ts > E1 PBT HTTP Auth > PBT-HTTP-01: all protected endpoints require auth
+[EventBus] Cannot publish: bus is stopped
+[AUTH] Permission denied: Invalid token - POST /api/v1/state/read
+
+stderr | tests/integration/pbt-state.test.ts > E1 PBT HTTP Auth > PBT-HTTP-01: all protected endpoints require auth
+[EventBus] Cannot publish: bus is stopped
+[AUTH] Permission denied: Invalid token - GET /api/v1/session/list
+
+stderr | tests/integration/pbt-state.test.ts > E1 PBT HTTP Auth > PBT-HTTP-01: all protected endpoints require auth
+[EventBus] Cannot publish: bus is stopped
+[AUTH] Permission denied: Invalid token - POST /api/v1/event/log
+
+stderr | tests/integration/pbt-state.test.ts > E1 PBT HTTP Auth > PBT-HTTP-01: all protected endpoints require auth
+[EventBus] Cannot publish: bus is stopped
+[AUTH] Permission denied: Invalid token - POST /api/v1/state/read
+
+stderr | tests/integration/pbt-state.test.ts > E1 PBT HTTP Auth > PBT-HTTP-01: all protected endpoints require auth
+[EventBus] Cannot publish: bus is stopped
+[AUTH] Permission denied: Invalid token - POST /api/v1/state/transition
+
+stderr | tests/integration/pbt-state.test.ts > E1 PBT HTTP Auth > PBT-HTTP-01: all protected endpoints require auth
+[EventBus] Cannot publish: bus is stopped
+[AUTH] Permission denied: Invalid token - GET /api/v1/cas/retrieve
+
+stderr | tests/integration/pbt-state.test.ts > E1 PBT HTTP Auth > PBT-HTTP-01: all protected endpoints require auth
+[EventBus] Cannot publish: bus is stopped
+[AUTH] Permission denied: Invalid token - GET /api/v1/session/list
+
+stderr | tests/integration/pbt-state.test.ts > E1 PBT HTTP Auth > PBT-HTTP-01: all protected endpoints require auth
+[EventBus] Cannot publish: bus is stopped
+[AUTH] Permission denied: Invalid token - POST /api/v1/state/transition
+
+stderr | tests/integration/pbt-state.test.ts > E1 PBT HTTP Auth > PBT-HTTP-01: all protected endpoints require auth
+[EventBus] Cannot publish: bus is stopped
+[AUTH] Permission denied: Invalid token - POST /api/v1/event/query
+
+stderr | tests/integration/pbt-state.test.ts > E1 PBT HTTP Auth > PBT-HTTP-01: all protected endpoints require auth
+[EventBus] Cannot publish: bus is stopped
+[AUTH] Permission denied: Invalid token - POST /api/v1/event/log
+

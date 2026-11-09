@@ -1,0 +1,13 @@
+{
+  "responsibility": "CI entrypoint consumes existing temporary-root qualifier",
+  "decision": "Use existing explicit qualification capability; no new helper export or product architecture extension is necessary.",
+  "supersedes": "Potential helper/new-daemon-test locations proposed in root-cause-and-scope.json",
+  "files": [
+    "scripts/run-ci-regression.mjs",
+    "packages/scope-gate/tests/ci-runner-temporary-root.test.ts",
+    "packages/scope-gate/tests/fixtures/ci-spawn-environment-probe.cjs"
+  ],
+  "contract": "RUNNER_TEMP is required and must pass existing absolute/existing-directory/native-canonical checks before any test phase starts. All child TEMP/TMP/TMPDIR values come from that canonical root. Record the selection source in CI context. No implicit fallback to the user/system temporary root.",
+  "regression": "Exercise actual CI entry in a fresh Node child. Mock only external Git/Bun discovery and phase execution; test real filesystem qualification,environment propagation,rejection-before-phase and context. This unit fixture never serves as release execution evidence.",
+  "unchanged": ["Production WAL and StateManager bytes","property-1 and pbt-state tests","testTimeout/hookTimeout and sample counts","installer and deployed runtime assets","SPS and Authority Registry"]
+}

@@ -1,0 +1,17 @@
+{
+  "utc": "2026-11-09T13:47:17.901Z",
+  "stage": "afterEach",
+  "pid": 1860,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "single-file semantic certificate host boundary > rejects reflection and scope-name laundering without executing it: function unused(console){};const c=console;c.log('x');",
+    "start_ms": 569.8116,
+    "duration_ms": 2.1952999999999747
+  },
+  "truncated": false,
+  "all_fs_call_counts": {},
+  "rows": []
+}

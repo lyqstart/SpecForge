@@ -1,0 +1,23 @@
+{
+  "utc": "2026-11-09T13:45:09.448Z",
+  "stage": "afterEach",
+  "pid": 3912,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "StateManager > initialize > should initialize with empty state for new project",
+    "start_ms": 373.6063,
+    "duration_ms": 10.077800000000025
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 6,
+    "readFile": 14,
+    "readdir": 4,
+    "writeFile": 2,
+    "open": 2
+  },
+  "rows": []
+}

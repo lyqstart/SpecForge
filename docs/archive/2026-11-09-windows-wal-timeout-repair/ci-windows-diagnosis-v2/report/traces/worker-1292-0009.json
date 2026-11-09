@@ -1,0 +1,19 @@
+{
+  "utc": "2026-11-09T13:45:44.620Z",
+  "stage": "afterEach",
+  "pid": 1292,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "Architecture governance v7 closure > validates Module Contract provenance in the existing hard contract integrity Gate",
+    "start_ms": 652.6466,
+    "duration_ms": 0.5213999999999714
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "readFile": 1
+  },
+  "rows": []
+}

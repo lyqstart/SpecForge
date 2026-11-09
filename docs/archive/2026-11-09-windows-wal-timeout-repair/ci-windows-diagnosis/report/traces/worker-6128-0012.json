@@ -1,0 +1,25 @@
+{
+  "utc": "2026-11-09T13:31:56.824Z",
+  "stage": "afterEach",
+  "pid": 6128,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "StateManager > rebuildFromEvents > should produce identical state for same events (idempotence)",
+    "start_ms": 685.1215,
+    "duration_ms": 16.02690000000007
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 35,
+    "readFile": 97,
+    "readdir": 29,
+    "writeFile": 16,
+    "open": 20,
+    "appendFile": 5,
+    "stat": 4
+  },
+  "rows": []
+}

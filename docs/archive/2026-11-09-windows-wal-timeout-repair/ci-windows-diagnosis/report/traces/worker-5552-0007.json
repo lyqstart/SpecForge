@@ -1,0 +1,25 @@
+{
+  "utc": "2026-11-09T13:32:00.550Z",
+  "stage": "afterEach",
+  "pid": 5552,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "E1 PBT HTTP Auth > PBT-HTTP-01: all protected endpoints require auth",
+    "start_ms": 2087.3236,
+    "duration_ms": 45.386799999999766
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "readFile": 687,
+    "readdir": 214,
+    "mkdir": 96,
+    "writeFile": 87,
+    "open": 131,
+    "stat": 44,
+    "appendFile": 44
+  },
+  "rows": []
+}

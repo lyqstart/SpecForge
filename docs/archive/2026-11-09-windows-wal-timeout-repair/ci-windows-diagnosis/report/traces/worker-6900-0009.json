@@ -1,0 +1,22 @@
+{
+  "utc": "2026-11-09T13:31:25.002Z",
+  "stage": "afterEach",
+  "pid": 6900,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "Candidate / approval / state governance > reports all merge preflight blockers before writing Project Spec",
+    "start_ms": 1083.6186,
+    "duration_ms": 20.551799999999957
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 20,
+    "writeFile": 26,
+    "readFile": 66,
+    "readdir": 3
+  },
+  "rows": []
+}

@@ -1,0 +1,156 @@
+{
+  "utc": "2026-11-09T12:40:57.974Z",
+  "run_id": "CODEX-SF-20261109-DOCUMENTATION-A01",
+  "attempt_id": "COMPREHENSIVE-RECHECK-02",
+  "head": "48fc9057014413bd712c33f710b794f8bf6f273a",
+  "conclusion": "FULL_ACCEPTANCE_NOT_PASSED_CURRENT_WINDOWS_TWO_TEST_TIMEOUTS",
+  "confirmed": {
+    "local_remote_main_equal": true,
+    "worktree": "CLEAN",
+    "documentation_findings": "BOTH_RESOLVED",
+    "installed_files_exact": 117,
+    "daemon": {
+      "status": "ok",
+      "pid": 39204,
+      "version": "1.0.25",
+      "startedAt": 1794219303771
+    },
+    "latest_official_installer_jobs": "ALL_THREE_PLATFORMS_AND_AGGREGATE_PASSED",
+    "jobs_success": 11,
+    "jobs_failure": 1,
+    "linux_macos_full_regression": "PASS",
+    "windows": "BUILD_LINT_HELPER_TYPECHECK_PASS_WORKSPACE_FAIL_ROOT_NOT_EXECUTED"
+  },
+  "platforms": [
+    {
+      "host": "linux",
+      "artifact_id": 13673446635,
+      "artifact_digest": "sha256:9e0569ef1896d8b7d4130d8a34217a931522620b585554648f45a4f303c7e3a5",
+      "job_id": 129158902239,
+      "job_conclusion": "success",
+      "phases": {
+        "build": 0,
+        "lint": 0,
+        "workspace": 0,
+        "root": 0
+      },
+      "lint_files": 631,
+      "lint_errors": 0,
+      "lint_warnings": 0,
+      "helper_typecheck": "success",
+      "root": "753_PASS"
+    },
+    {
+      "host": "macos",
+      "artifact_id": 13673297269,
+      "artifact_digest": "sha256:eaf803f0c0e1c5a3b7ca8b76a03858ee54e84f9a4d2d217382dbfdd148ad7e61",
+      "job_id": 129158902174,
+      "job_conclusion": "success",
+      "phases": {
+        "build": 0,
+        "lint": 0,
+        "workspace": 0,
+        "root": 0
+      },
+      "lint_files": 631,
+      "lint_errors": 0,
+      "lint_warnings": 0,
+      "helper_typecheck": "success",
+      "root": "753_PASS"
+    },
+    {
+      "host": "windows",
+      "artifact_id": 13673362888,
+      "artifact_digest": "sha256:d4cff2e1aa81a6ce25887ac3f42dcccf37b454df441121582bb24a29bc8ab356",
+      "job_id": 129158902534,
+      "job_conclusion": "failure",
+      "phases": {
+        "build": 0,
+        "lint": 0,
+        "workspace": 1
+      },
+      "lint_files": 631,
+      "lint_errors": 0,
+      "lint_warnings": 0,
+      "helper_typecheck": "success",
+      "root": "NOT_EXECUTED_AFTER_WORKSPACE_FAILURE"
+    }
+  ],
+  "failures": [
+    {
+      "file": "packages/daemon-core/tests/property/property-1.test.ts",
+      "line": 300,
+      "test": "Property 1.1 / should generate events for all state change operations",
+      "observed_ms": 10238,
+      "limit_ms": 10000
+    },
+    {
+      "file": "packages/daemon-core/tests/property/property-1.test.ts",
+      "line": 395,
+      "test": "Property 1.2 / should have action and payload",
+      "observed_ms": 10464,
+      "limit_ms": 10000
+    }
+  ],
+  "unchanged_sources": [
+    {
+      "file": "packages/daemon-core/tests/property/property-1.test.ts",
+      "blob": "cc1268c6532ac47bb6b2c3da2168f396a0cfe33f",
+      "unchanged_since_prior_accepted_main": true
+    },
+    {
+      "file": "packages/daemon-core/src/wal/WAL.ts",
+      "blob": "61c8f787696752d149120c1e6eeb0d09463f89ed",
+      "unchanged_since_prior_accepted_main": true
+    },
+    {
+      "file": "packages/daemon-core/src/state/StateManager.ts",
+      "blob": "89b903a077ef43143e76e503de759fad6b206edf",
+      "unchanged_since_prior_accepted_main": true
+    },
+    {
+      "file": "packages/daemon-core/vitest.config.ts",
+      "blob": "eb71ccce549e0270eb05a001573ed1a91b02b258",
+      "unchanged_since_prior_accepted_main": true
+    }
+  ],
+  "root_cause": {
+    "classification": "INSUFFICIENT_EVIDENCE",
+    "confirmed": "Both cases time out while generating 100 or50 state-change operations using a test-local state-manager wrapper and production WAL.appendEvent, which awaits file-handle sync. This is not a failed event-content assertion. Exact per-operation duration and runner I/O data are absent.",
+    "hypotheses": [
+      "Host filesystem/runner latency versus fixed10s test budget",
+      "Execution performance or lifecycle issue not yet measured"
+    ],
+    "missing": [
+      "Per-operation/event-loop and WAL I/O timings from the failing run",
+      "Replayable random operation sequence and equivalent controlled host comparison"
+    ],
+    "not_proven": [
+      "That the failure is environmental or harmless",
+      "That the previous distinct WAL timeout has the same root cause",
+      "That runtime events are lost or corrupt"
+    ]
+  },
+  "sps_acceptance_impact": "SPS19 state/event/WAL evidence cannot receive unconditional current-Windows full-regression acceptance. Prior successful evidence remains intact but cannot overwrite this newer failure.",
+  "retries": 0,
+  "changes": "Read-only assessment; no product/test/timeout/assertion/numRuns modification and no business/project initialization.",
+  "next_action": "Diagnose Windows state/WAL test timeout with preserved workload and I/O/loop timings; compare original and current unchanged sources under equivalent Windows conditions. Preserve durability and assertions; do not turn rerun success into a root-cause fix.",
+  "sources": {
+    "current_verification_sha256": "58a53f0d9a59152ffd44ef99fb4c139a7aae2b3568d08f0da28aee5449093b95",
+    "daemon_identity_sha256": "c9df45815ae113e0a45a3b631e00b8a62e714ff1f26afaac2addf199f732bf8e",
+    "workflow_runs": [
+      {
+        "id": 42616902740,
+        "url": "https://github.com/lyqstart/SpecForge/actions/runs/42616902740",
+        "conclusion": "success",
+        "attempt": 1
+      },
+      {
+        "id": 42616902591,
+        "url": "https://github.com/lyqstart/SpecForge/actions/runs/42616902591",
+        "conclusion": "failure",
+        "attempt": 1
+      }
+    ]
+  }
+}

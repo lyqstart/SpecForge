@@ -1,0 +1,23 @@
+{
+  "utc": "2026-11-09T13:42:19.004Z",
+  "stage": "afterEach",
+  "pid": 8152,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "Candidate generation integrity > requires every Candidate REQ reference to resolve exactly to a canonical definition",
+    "start_ms": 557.8067,
+    "duration_ms": 8.536799999999971
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 18,
+    "writeFile": 72,
+    "readFile": 121,
+    "readdir": 47,
+    "stat": 66
+  },
+  "rows": []
+}

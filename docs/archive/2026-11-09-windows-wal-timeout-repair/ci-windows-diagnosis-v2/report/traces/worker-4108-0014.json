@@ -1,0 +1,25 @@
+{
+  "utc": "2026-11-09T13:42:04.591Z",
+  "stage": "afterEach",
+  "pid": 4108,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "Personal Mode E2E — WAL persistence > should materialize events.jsonl inside project runtime on first event",
+    "start_ms": 420.9719,
+    "duration_ms": 23.34409999999997
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "readdir": 4,
+    "readFile": 9,
+    "mkdir": 3,
+    "writeFile": 1,
+    "open": 2,
+    "stat": 1,
+    "appendFile": 1
+  },
+  "rows": []
+}

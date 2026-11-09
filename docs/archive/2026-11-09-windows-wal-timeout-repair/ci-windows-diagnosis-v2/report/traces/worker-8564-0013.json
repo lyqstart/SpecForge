@@ -1,0 +1,23 @@
+{
+  "utc": "2026-11-09T13:41:40.436Z",
+  "stage": "afterEach",
+  "pid": 8564,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "§21.3 Acceptance: code_only_fast_path > should classify trivial change as code_only_fast_path",
+    "start_ms": 3046.9527,
+    "duration_ms": 3.070900000000165
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 91,
+    "writeFile": 125,
+    "readFile": 506,
+    "readdir": 21,
+    "stat": 132
+  },
+  "rows": []
+}

@@ -1,0 +1,1 @@
+$ vitest run "--maxWorkers=1" "--minWorkers=1" "--reporter=json" "--outputFile=D:\\code\\SpecForge\\docs\\archive\\2026-11-09-windows-wal-timeout-repair\\structured-registration-original\\workflow-runtime.vitest.json"

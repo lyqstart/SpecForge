@@ -1,0 +1,17 @@
+{
+  "utc": "2026-11-09T13:34:21.403Z",
+  "stage": "afterEach",
+  "pid": 3456,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "Candidate Phase and Classification gate intersection > keeps design phase limited to Design Candidate and Design Gate",
+    "start_ms": 643.8097,
+    "duration_ms": 1.2708000000000084
+  },
+  "truncated": false,
+  "all_fs_call_counts": {},
+  "rows": []
+}

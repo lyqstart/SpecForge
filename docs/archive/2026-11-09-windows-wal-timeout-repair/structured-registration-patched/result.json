@@ -1,0 +1,241 @@
+{
+  "leg": "patched",
+  "passed": true,
+  "results": [
+    {
+      "owner": "version-unification",
+      "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+      "args": [
+        "run",
+        "test",
+        "--",
+        "--maxWorkers=1",
+        "--reporter=json",
+        "--outputFile=D:\\code\\SpecForge\\docs\\archive\\2026-11-09-windows-wal-timeout-repair\\structured-registration-patched\\version-unification.vitest.json"
+      ],
+      "cwd": "D:\\code\\SpecForge\\.wal-patched-a01\\packages\\version-unification",
+      "context_sha256": "3fd2e6309be2cd0442b33c67e04b3a1517bd8305874a22a2b6ae612e9bc61b42",
+      "started_utc": "2026-11-09T14:25:19.477Z",
+      "finished_utc": "2026-11-09T14:25:20.453Z",
+      "exit": 0,
+      "stdout_sha256": "07b1d64b09a7c9707c80293dcce1b60129bb3400a34ae39704fbaea6f1cff570",
+      "stderr_sha256": "5f05e1cb742bb7d5feeb5086f96a9634e3ac92f29a537b9cb3dd4946bd382f5e"
+    },
+    {
+      "owner": "configuration",
+      "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+      "args": [
+        "run",
+        "test",
+        "--",
+        "--maxWorkers=1",
+        "--minWorkers=1",
+        "--reporter=json",
+        "--outputFile=D:\\code\\SpecForge\\docs\\archive\\2026-11-09-windows-wal-timeout-repair\\structured-registration-patched\\configuration.vitest.json"
+      ],
+      "cwd": "D:\\code\\SpecForge\\.wal-patched-a01\\packages\\configuration",
+      "context_sha256": "3fd2e6309be2cd0442b33c67e04b3a1517bd8305874a22a2b6ae612e9bc61b42",
+      "started_utc": "2026-11-09T14:25:20.457Z",
+      "finished_utc": "2026-11-09T14:25:29.040Z",
+      "exit": 0,
+      "stdout_sha256": "44a0ceea7fda762b3b8ec491116bf5b2d2c2f29a34ff68a0ce939c76ed0cea79",
+      "stderr_sha256": "12d6362fee4330e1ff1207647cb4f015ea86512f1a88fe494d8ce358f50575cf"
+    },
+    {
+      "owner": "service-management",
+      "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+      "args": [
+        "run",
+        "test",
+        "--",
+        "--maxWorkers=1",
+        "--reporter=json",
+        "--outputFile=D:\\code\\SpecForge\\docs\\archive\\2026-11-09-windows-wal-timeout-repair\\structured-registration-patched\\service-management.vitest.json"
+      ],
+      "cwd": "D:\\code\\SpecForge\\.wal-patched-a01\\packages\\service-management",
+      "context_sha256": "3fd2e6309be2cd0442b33c67e04b3a1517bd8305874a22a2b6ae612e9bc61b42",
+      "started_utc": "2026-11-09T14:25:29.043Z",
+      "finished_utc": "2026-11-09T14:25:38.585Z",
+      "exit": 0,
+      "stdout_sha256": "05d5f17472fef1f0e24ee1860c2885c8344745ecaf30f3a923f8f0ac5356b510",
+      "stderr_sha256": "d68fabc8175d5201e72d2ab3342b75103eea63bed1d3510deea4c1e58b8b3d95"
+    },
+    {
+      "owner": "host-profile",
+      "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+      "args": [
+        "run",
+        "test",
+        "--",
+        "--maxWorkers=1",
+        "--reporter=json",
+        "--outputFile=D:\\code\\SpecForge\\docs\\archive\\2026-11-09-windows-wal-timeout-repair\\structured-registration-patched\\host-profile.vitest.json"
+      ],
+      "cwd": "D:\\code\\SpecForge\\.wal-patched-a01\\packages\\host-profile",
+      "context_sha256": "3fd2e6309be2cd0442b33c67e04b3a1517bd8305874a22a2b6ae612e9bc61b42",
+      "started_utc": "2026-11-09T14:25:38.589Z",
+      "finished_utc": "2026-11-09T14:25:39.773Z",
+      "exit": 0,
+      "stdout_sha256": "0c4d7561135b5992118e0df61526e382a4104249bf9fbd3c2261576ba1aebdc2",
+      "stderr_sha256": "aa76909478d937c532d5f36ded23e1beef4b37ccaa8047bd7245a25f15be6bcb"
+    },
+    {
+      "owner": "observability",
+      "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+      "args": [
+        "run",
+        "test",
+        "--",
+        "--maxWorkers=1",
+        "--minWorkers=1",
+        "--reporter=json",
+        "--outputFile=D:\\code\\SpecForge\\docs\\archive\\2026-11-09-windows-wal-timeout-repair\\structured-registration-patched\\observability.vitest.json"
+      ],
+      "cwd": "D:\\code\\SpecForge\\.wal-patched-a01\\packages\\observability",
+      "context_sha256": "3fd2e6309be2cd0442b33c67e04b3a1517bd8305874a22a2b6ae612e9bc61b42",
+      "started_utc": "2026-11-09T14:25:39.776Z",
+      "finished_utc": "2026-11-09T14:25:43.930Z",
+      "exit": 0,
+      "stdout_sha256": "691f91ec83b6e49413b53cc2cb583aef21cb9121fea5b7a6b17cb202a54c99a0",
+      "stderr_sha256": "f4520713815df773e08f0999be1b0897df1da35c5b894f935468baf22578d7d1"
+    },
+    {
+      "owner": "permission-engine",
+      "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+      "args": [
+        "run",
+        "test",
+        "--",
+        "--maxWorkers=1",
+        "--minWorkers=1",
+        "--reporter=json",
+        "--outputFile=D:\\code\\SpecForge\\docs\\archive\\2026-11-09-windows-wal-timeout-repair\\structured-registration-patched\\permission-engine.vitest.json"
+      ],
+      "cwd": "D:\\code\\SpecForge\\.wal-patched-a01\\packages\\permission-engine",
+      "context_sha256": "3fd2e6309be2cd0442b33c67e04b3a1517bd8305874a22a2b6ae612e9bc61b42",
+      "started_utc": "2026-11-09T14:25:43.934Z",
+      "finished_utc": "2026-11-09T14:26:07.029Z",
+      "exit": 0,
+      "stdout_sha256": "6d93f8146e8ba1374e80794539e08ee7548da5ba6f8f5fcbf61450d3e87ce77d",
+      "stderr_sha256": "49ede3fa5ffa164ef6187b4444d070629073e52f732c05e7bb2544362d3f82af"
+    },
+    {
+      "owner": "opencode-adapter",
+      "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+      "args": [
+        "run",
+        "test",
+        "--",
+        "--maxWorkers=1",
+        "--reporter=json",
+        "--outputFile=D:\\code\\SpecForge\\docs\\archive\\2026-11-09-windows-wal-timeout-repair\\structured-registration-patched\\opencode-adapter.vitest.json"
+      ],
+      "cwd": "D:\\code\\SpecForge\\.wal-patched-a01\\packages\\opencode-adapter",
+      "context_sha256": "3fd2e6309be2cd0442b33c67e04b3a1517bd8305874a22a2b6ae612e9bc61b42",
+      "started_utc": "2026-11-09T14:26:07.032Z",
+      "finished_utc": "2026-11-09T14:26:37.817Z",
+      "exit": 0,
+      "stdout_sha256": "62a8639eeabf4db04c366e68a8b2fe7e9abe3c9cc78efdc5ef5709b0691ff766",
+      "stderr_sha256": "c72ab6f8bd41d8455ad082b095678dc5fa088abce3b75c937e2f586a20ea2388"
+    },
+    {
+      "owner": "scope-gate",
+      "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+      "args": [
+        "run",
+        "test",
+        "--",
+        "--maxWorkers=1",
+        "--minWorkers=1",
+        "--reporter=json",
+        "--outputFile=D:\\code\\SpecForge\\docs\\archive\\2026-11-09-windows-wal-timeout-repair\\structured-registration-patched\\scope-gate.vitest.json"
+      ],
+      "cwd": "D:\\code\\SpecForge\\.wal-patched-a01\\packages\\scope-gate",
+      "context_sha256": "3fd2e6309be2cd0442b33c67e04b3a1517bd8305874a22a2b6ae612e9bc61b42",
+      "started_utc": "2026-11-09T14:26:37.821Z",
+      "finished_utc": "2026-11-09T14:27:39.755Z",
+      "exit": 0,
+      "stdout_sha256": "c4a420d9dacabe0319749d196d8195cd644632c8b78fdba1936de012bc812867",
+      "stderr_sha256": "9c5a5aaef5b6fbd4dc3b2746fb59a5066b9f52dd7a6056e8f95493198086df09"
+    },
+    {
+      "owner": "workflow-runtime",
+      "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+      "args": [
+        "run",
+        "test",
+        "--",
+        "--maxWorkers=1",
+        "--minWorkers=1",
+        "--reporter=json",
+        "--outputFile=D:\\code\\SpecForge\\docs\\archive\\2026-11-09-windows-wal-timeout-repair\\structured-registration-patched\\workflow-runtime.vitest.json"
+      ],
+      "cwd": "D:\\code\\SpecForge\\.wal-patched-a01\\packages\\workflow-runtime",
+      "context_sha256": "3fd2e6309be2cd0442b33c67e04b3a1517bd8305874a22a2b6ae612e9bc61b42",
+      "started_utc": "2026-11-09T14:27:39.757Z",
+      "finished_utc": "2026-11-09T14:28:33.626Z",
+      "exit": 0,
+      "stdout_sha256": "1374342a6f75d11d4e1dbac8fe14ab880e0a522828a99e5371f7a748e532e42b",
+      "stderr_sha256": "06cb73de2c6ec9eb460320f02d0e8f1d7b79d7d1f3f7a0dafec49a7b71476c85"
+    },
+    {
+      "owner": "cli",
+      "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+      "args": [
+        "run",
+        "test",
+        "--",
+        "--maxWorkers=1",
+        "--minWorkers=1",
+        "--reporter=json",
+        "--outputFile=D:\\code\\SpecForge\\docs\\archive\\2026-11-09-windows-wal-timeout-repair\\structured-registration-patched\\cli.vitest.json"
+      ],
+      "cwd": "D:\\code\\SpecForge\\.wal-patched-a01\\packages\\cli",
+      "context_sha256": "3fd2e6309be2cd0442b33c67e04b3a1517bd8305874a22a2b6ae612e9bc61b42",
+      "started_utc": "2026-11-09T14:28:33.629Z",
+      "finished_utc": "2026-11-09T14:29:21.926Z",
+      "exit": 0,
+      "stdout_sha256": "8f7eb9d977918c967662dadbbedb914ff1184e0ca2db6dead4d6d2775b8323a1",
+      "stderr_sha256": "407f81b5844b5ac6c22eb596660b831b5edbc697616db32d523a7c03f70ce8e6"
+    },
+    {
+      "owner": "daemon-core",
+      "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+      "args": [
+        "run",
+        "test",
+        "--",
+        "--maxWorkers=1",
+        "--reporter=json",
+        "--outputFile=D:\\code\\SpecForge\\docs\\archive\\2026-11-09-windows-wal-timeout-repair\\structured-registration-patched\\daemon-core.vitest.json"
+      ],
+      "cwd": "D:\\code\\SpecForge\\.wal-patched-a01\\packages\\daemon-core",
+      "context_sha256": "3fd2e6309be2cd0442b33c67e04b3a1517bd8305874a22a2b6ae612e9bc61b42",
+      "started_utc": "2026-11-09T14:29:21.928Z",
+      "finished_utc": "2026-11-09T14:37:41.705Z",
+      "exit": 0,
+      "stdout_sha256": "8a7a43e15c724dee51a685fcfc069dd23e6f572d7f56413bdde1d9415c81642b",
+      "stderr_sha256": "7b4ea75bf098c006a79dd3419f6e2d5d63f59bcb25117d9f78f1cb839a8a645d"
+    },
+    {
+      "owner": "root",
+      "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+      "args": [
+        "run",
+        "test:root",
+        "--",
+        "--maxWorkers=1",
+        "--reporter=json",
+        "--outputFile=D:\\code\\SpecForge\\docs\\archive\\2026-11-09-windows-wal-timeout-repair\\structured-registration-patched\\root.vitest.json"
+      ],
+      "cwd": "D:\\code\\SpecForge\\.wal-patched-a01",
+      "context_sha256": "3fd2e6309be2cd0442b33c67e04b3a1517bd8305874a22a2b6ae612e9bc61b42",
+      "started_utc": "2026-11-09T14:37:41.708Z",
+      "finished_utc": "2026-11-09T14:38:15.502Z",
+      "exit": 0,
+      "stdout_sha256": "61a47fe6d07f93e0cd8172af234710c1e3059e36f9d5423b8148620b571e7403",
+      "stderr_sha256": "e832d5cfa921fbda74de920446ea0d4acb0116ded81d11e0226f37b12feaa587"
+    }
+  ],
+  "role": "Additional equal reporter-only full collection supplement; does not replace the cold-build official entry runs."
+}

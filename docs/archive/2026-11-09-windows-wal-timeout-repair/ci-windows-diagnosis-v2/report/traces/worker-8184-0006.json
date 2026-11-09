@@ -1,0 +1,25 @@
+{
+  "utc": "2026-11-09T13:42:31.833Z",
+  "stage": "afterEach",
+  "pid": 8184,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "Recovery owner sealed project import > rejects directory-case before publication",
+    "start_ms": 2717.5896,
+    "duration_ms": 313.7029000000002
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 25,
+    "writeFile": 29,
+    "readFile": 205,
+    "readdir": 140,
+    "open": 61,
+    "stat": 17,
+    "appendFile": 10
+  },
+  "rows": []
+}

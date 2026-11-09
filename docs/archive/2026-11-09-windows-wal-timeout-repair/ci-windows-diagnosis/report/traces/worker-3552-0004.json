@@ -1,0 +1,25 @@
+{
+  "utc": "2026-11-09T13:34:03.941Z",
+  "stage": "afterEach",
+  "pid": 3552,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "persisted configuration activation boundary > rejects changes during active work, including after daemon recreation; accepts after closure",
+    "start_ms": 1400.0599,
+    "duration_ms": 204.34969999999998
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "readFile": 46,
+    "readdir": 13,
+    "mkdir": 8,
+    "writeFile": 7,
+    "open": 7,
+    "stat": 2,
+    "appendFile": 2
+  },
+  "rows": []
+}

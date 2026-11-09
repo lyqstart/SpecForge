@@ -1,0 +1,25 @@
+{
+  "utc": "2026-11-09T13:42:36.752Z",
+  "stage": "afterEach",
+  "pid": 8184,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "Recovery owner sealed project import > resumes a crash between residue and publication renames using the same immutable plan",
+    "start_ms": 6900.4966,
+    "duration_ms": 1049.6147999999994
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 111,
+    "writeFile": 102,
+    "readFile": 659,
+    "readdir": 447,
+    "open": 223,
+    "stat": 65,
+    "appendFile": 34
+  },
+  "rows": []
+}

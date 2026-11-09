@@ -1,0 +1,22 @@
+{
+  "utc": "2026-11-09T13:46:23.457Z",
+  "stage": "afterEach",
+  "pid": 8612,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "registered current Contract Candidate owner > refuses unshipped action repair_relocate_to_module",
+    "start_ms": 907.4188,
+    "duration_ms": 38.64859999999999
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 233,
+    "writeFile": 186,
+    "readFile": 388,
+    "readdir": 162
+  },
+  "rows": []
+}

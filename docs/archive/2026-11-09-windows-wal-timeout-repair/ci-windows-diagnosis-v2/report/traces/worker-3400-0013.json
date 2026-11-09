@@ -1,0 +1,22 @@
+{
+  "utc": "2026-11-09T13:41:43.842Z",
+  "stage": "afterEach",
+  "pid": 3400,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "Orchestrator governance execution closure > keeps evidence-only artifacts out of Project Spec merge and rejects undeclared targets",
+    "start_ms": 1740.7249,
+    "duration_ms": 51.371000000000095
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 112,
+    "writeFile": 55,
+    "readFile": 55,
+    "readdir": 2
+  },
+  "rows": []
+}

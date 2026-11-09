@@ -1,0 +1,25 @@
+{
+  "utc": "2026-11-09T13:45:42.497Z",
+  "stage": "afterEach",
+  "pid": 2604,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "E1 Chaos Recovery > Post-crash WAL replay > should rebuild state from WAL events after restart",
+    "start_ms": 409.7997,
+    "duration_ms": 22.30880000000002
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 6,
+    "writeFile": 6,
+    "readFile": 30,
+    "readdir": 8,
+    "open": 6,
+    "stat": 2,
+    "appendFile": 2
+  },
+  "rows": []
+}

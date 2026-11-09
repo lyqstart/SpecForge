@@ -1,0 +1,17 @@
+{
+  "utc": "2026-11-09T13:34:28.009Z",
+  "stage": "afterEach",
+  "pid": 7892,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "source contract syntax normalization > requires the real named call and argument instead of text mention",
+    "start_ms": 492.7336,
+    "duration_ms": 0.8867999999999938
+  },
+  "truncated": false,
+  "all_fs_call_counts": {},
+  "rows": []
+}

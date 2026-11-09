@@ -1,0 +1,25 @@
+{
+  "utc": "2026-11-09T13:43:53.976Z",
+  "stage": "afterEach",
+  "pid": 2724,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "controlled detached Git bootstrap > rejects staged drift without creating target refs or context",
+    "start_ms": 64737.6552,
+    "duration_ms": 2021.4752999999982
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "writeFile": 44,
+    "mkdir": 89,
+    "readFile": 582,
+    "open": 89,
+    "readdir": 1402,
+    "appendFile": 1103,
+    "stat": 3
+  },
+  "rows": []
+}

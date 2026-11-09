@@ -1,0 +1,19 @@
+{
+  "utc": "2026-11-09T13:34:09.065Z",
+  "stage": "afterEach",
+  "pid": 8352,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "execution-mode and evidence protocol contract > declares exactly two execution modes with fixed role definitions",
+    "start_ms": 282.7465,
+    "duration_ms": 5.5
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "readFile": 1
+  },
+  "rows": []
+}

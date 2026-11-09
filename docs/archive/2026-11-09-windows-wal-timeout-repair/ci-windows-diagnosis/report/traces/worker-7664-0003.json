@@ -1,0 +1,17 @@
+{
+  "utc": "2026-11-09T13:34:20.725Z",
+  "stage": "afterEach",
+  "pid": 7664,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "当前项目规格模块路由契约 > 规范化 Candidate Manifest 路径并校验模块所有权",
+    "start_ms": 278.9383,
+    "duration_ms": 0.8366999999999507
+  },
+  "truncated": false,
+  "all_fs_call_counts": {},
+  "rows": []
+}

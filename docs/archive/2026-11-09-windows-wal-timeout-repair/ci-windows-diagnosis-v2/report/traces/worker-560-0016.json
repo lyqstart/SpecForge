@@ -1,0 +1,23 @@
+{
+  "utc": "2026-11-09T13:42:09.927Z",
+  "stage": "afterEach",
+  "pid": 560,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "formal version Git closure regressions > does not trust file entries from a failed Changed Files Audit",
+    "start_ms": 3511.0757,
+    "duration_ms": 4.587100000000191
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 25,
+    "writeFile": 34,
+    "readFile": 19,
+    "readdir": 2,
+    "stat": 5
+  },
+  "rows": []
+}

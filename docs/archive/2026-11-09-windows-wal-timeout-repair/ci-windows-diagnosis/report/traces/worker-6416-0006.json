@@ -1,0 +1,20 @@
+{
+  "utc": "2026-11-09T13:31:30.785Z",
+  "stage": "afterEach",
+  "pid": 6416,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "v1.1 Full Daemon Startup Write Guard E2E > S1: Write guard route accessible after production startup > health endpoint confirms daemon is running",
+    "start_ms": 604.0123,
+    "duration_ms": 4.541299999999978
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "readFile": 4,
+    "readdir": 2
+  },
+  "rows": []
+}

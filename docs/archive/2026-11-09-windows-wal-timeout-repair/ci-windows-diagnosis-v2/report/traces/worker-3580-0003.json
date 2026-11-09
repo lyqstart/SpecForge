@@ -1,0 +1,17 @@
+{
+  "utc": "2026-11-09T13:41:45.780Z",
+  "stage": "afterEach",
+  "pid": 3580,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "sf_close_gate handler > should reject when work_item_id is missing",
+    "start_ms": 510.1889,
+    "duration_ms": 1.969000000000051
+  },
+  "truncated": false,
+  "all_fs_call_counts": {},
+  "rows": []
+}

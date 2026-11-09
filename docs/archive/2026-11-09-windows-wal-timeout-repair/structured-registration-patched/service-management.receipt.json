@@ -1,0 +1,19 @@
+{
+  "owner": "service-management",
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "test",
+    "--",
+    "--maxWorkers=1",
+    "--reporter=json",
+    "--outputFile=D:\\code\\SpecForge\\docs\\archive\\2026-11-09-windows-wal-timeout-repair\\structured-registration-patched\\service-management.vitest.json"
+  ],
+  "cwd": "D:\\code\\SpecForge\\.wal-patched-a01\\packages\\service-management",
+  "context_sha256": "3fd2e6309be2cd0442b33c67e04b3a1517bd8305874a22a2b6ae612e9bc61b42",
+  "started_utc": "2026-11-09T14:25:29.043Z",
+  "finished_utc": "2026-11-09T14:25:38.585Z",
+  "exit": 0,
+  "stdout_sha256": "05d5f17472fef1f0e24ee1860c2885c8344745ecaf30f3a923f8f0ac5356b510",
+  "stderr_sha256": "d68fabc8175d5201e72d2ab3342b75103eea63bed1d3510deea4c1e58b8b3d95"
+}

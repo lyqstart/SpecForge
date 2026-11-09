@@ -1,0 +1,2889 @@
+{
+  "utc": "2026-11-09T13:42:12.828Z",
+  "stage": "afterEach",
+  "pid": 9088,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "Property 1: Single Source of Truth > Property 1.2: Events contain all required context > should have non-empty projectId",
+    "start_ms": 1858.6149,
+    "duration_ms": 298.4821999999999
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "readdir": 305,
+    "readFile": 601,
+    "mkdir": 5,
+    "stat": 300,
+    "appendFile": 300,
+    "open": 300
+  },
+  "rows": [
+    {
+      "op": "readdir",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy",
+      "start_ms": 1859.0581,
+      "duration_ms": 0.19319999999993342,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\state.json",
+      "start_ms": 1859.2712,
+      "duration_ms": 0.15810000000010405,
+      "error": "ENOENT"
+    },
+    {
+      "op": "mkdir",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy",
+      "start_ms": 1859.4424,
+      "duration_ms": 0.21739999999999782,
+      "error": null
+    },
+    {
+      "op": "readdir",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy",
+      "start_ms": 1860.0511,
+      "duration_ms": 0.19209999999998217,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\state.json",
+      "start_ms": 1860.2656,
+      "duration_ms": 0.13370000000008986,
+      "error": "ENOENT"
+    },
+    {
+      "op": "stat",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1860.4132,
+      "duration_ms": 0.08709999999996398,
+      "error": "ENOENT"
+    },
+    {
+      "op": "appendFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1860.5052,
+      "duration_ms": 0.5282999999999447,
+      "error": null,
+      "synthetic_input": "{\"schema_version\":\"1.0\",\"eventId\":\"01a1c08b-8933-77df-b0d2-ce8c2841ef8a\",\"ts\":1794231732531,\"monotonicSeq\":1,\"projectId\":\"00992234-cfe2-415d-a23b-fb4ba68d2e68\",\"actor\":\"system\",\"category\":\"workflow\",\"action\":\"project.created\",\"payload\":{\"projectId\":\"00992234-cfe2-415d-a23b-fb4ba68d2e68\",\"projectPath\":\"/test/projects/project-7ii99q\"},\"metadata\":{\"schemaVersion\":\"1.0\",\"source\":\"daemon\"}}\n"
+    },
+    {
+      "op": "open",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1861.04,
+      "duration_ms": 0.17380000000002838,
+      "error": null
+    },
+    {
+      "op": "handle.sync",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1861.2156,
+      "duration_ms": 2.8164999999999054,
+      "error": null
+    },
+    {
+      "op": "handle.close",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1864.0346,
+      "duration_ms": 0.06670000000008258,
+      "error": null
+    },
+    {
+      "op": "readdir",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy",
+      "start_ms": 1864.4056,
+      "duration_ms": 0.19659999999998945,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1864.6273,
+      "duration_ms": 0.3394999999998163,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\state.json",
+      "start_ms": 1864.9995,
+      "duration_ms": 0.1327000000001135,
+      "error": "ENOENT"
+    },
+    {
+      "op": "stat",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1865.1481,
+      "duration_ms": 0.13959999999997308,
+      "error": null
+    },
+    {
+      "op": "appendFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1865.2927,
+      "duration_ms": 1.5538000000001375,
+      "error": null,
+      "synthetic_input": "{\"schema_version\":\"1.0\",\"eventId\":\"01a1c08b-8937-71fb-8eb4-9888b3edaa74\",\"ts\":1794231732535,\"monotonicSeq\":2,\"projectId\":\"27e9ff41-e903-4bf0-b4e7-232ba872fa6c\",\"actor\":\"system\",\"category\":\"system\",\"action\":\"config.changed\",\"payload\":{\"projectId\":\"27e9ff41-e903-4bf0-b4e7-232ba872fa6c\",\"key\":\"config-key-ikh745\",\"value\":\"value\"},\"metadata\":{\"schemaVersion\":\"1.0\",\"source\":\"daemon\"}}\n"
+    },
+    {
+      "op": "open",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1866.8539,
+      "duration_ms": 0.25949999999988904,
+      "error": null
+    },
+    {
+      "op": "handle.sync",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1867.1163,
+      "duration_ms": 3.621399999999994,
+      "error": null
+    },
+    {
+      "op": "handle.close",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1870.7404,
+      "duration_ms": 0.07150000000001455,
+      "error": null
+    },
+    {
+      "op": "readdir",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy",
+      "start_ms": 1871.299,
+      "duration_ms": 0.22250000000008185,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1871.5495,
+      "duration_ms": 0.33219999999982974,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\state.json",
+      "start_ms": 1871.9189,
+      "duration_ms": 0.12040000000001783,
+      "error": "ENOENT"
+    },
+    {
+      "op": "stat",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1872.0579,
+      "duration_ms": 0.07950000000005275,
+      "error": null
+    },
+    {
+      "op": "appendFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1872.1412,
+      "duration_ms": 0.3505000000000109,
+      "error": null,
+      "synthetic_input": "{\"schema_version\":\"1.0\",\"eventId\":\"01a1c08b-893e-75ce-b972-7379c75dc292\",\"ts\":1794231732542,\"monotonicSeq\":3,\"projectId\":\"57d8209b\",\"actor\":\"system\",\"category\":\"permission\",\"action\":\"permission.denied\",\"payload\":{\"sessionId\":\"57d8209b-c484-451a-b684-52130a7c62ff\",\"resource\":\"resource-2t2l6k\"},\"metadata\":{\"schemaVersion\":\"1.0\",\"source\":\"daemon\"}}\n"
+    },
+    {
+      "op": "open",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1872.4959,
+      "duration_ms": 0.14410000000020773,
+      "error": null
+    },
+    {
+      "op": "handle.sync",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1872.6412,
+      "duration_ms": 4.0711999999998625,
+      "error": null
+    },
+    {
+      "op": "handle.close",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1876.7151,
+      "duration_ms": 0.06080000000019936,
+      "error": null
+    },
+    {
+      "op": "readdir",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy",
+      "start_ms": 1877.1361,
+      "duration_ms": 0.19489999999996144,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1877.3569,
+      "duration_ms": 0.2919999999999163,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\state.json",
+      "start_ms": 1877.688,
+      "duration_ms": 0.11859999999978754,
+      "error": "ENOENT"
+    },
+    {
+      "op": "stat",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1877.8221,
+      "duration_ms": 0.07559999999989486,
+      "error": null
+    },
+    {
+      "op": "appendFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1877.9015,
+      "duration_ms": 0.3646000000001095,
+      "error": null,
+      "synthetic_input": "{\"schema_version\":\"1.0\",\"eventId\":\"01a1c08b-8944-7452-9198-61764ad301d4\",\"ts\":1794231732548,\"monotonicSeq\":4,\"projectId\":\"ec95f1f6\",\"actor\":\"system\",\"category\":\"session\",\"action\":\"session.activated\",\"payload\":{\"sessionId\":\"ec95f1f6-1f09-479e-b3f7-1bf74fcc97c3\",\"spawnIntentId\":\"ea7d6334-ada0-45d7-b56c-a8e9288f35c0\"},\"metadata\":{\"schemaVersion\":\"1.0\",\"source\":\"daemon\"}}\n"
+    },
+    {
+      "op": "open",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1878.2699,
+      "duration_ms": 0.1674000000000433,
+      "error": null
+    },
+    {
+      "op": "handle.sync",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1878.4385,
+      "duration_ms": 3.1838000000000193,
+      "error": null
+    },
+    {
+      "op": "handle.close",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1881.6249,
+      "duration_ms": 0.059700000000020736,
+      "error": null
+    },
+    {
+      "op": "readdir",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy",
+      "start_ms": 1882.073,
+      "duration_ms": 0.20639999999980319,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1882.3039,
+      "duration_ms": 0.28969999999981155,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\state.json",
+      "start_ms": 1882.6337,
+      "duration_ms": 0.11439999999993233,
+      "error": "ENOENT"
+    },
+    {
+      "op": "stat",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1882.763,
+      "duration_ms": 0.1066000000000713,
+      "error": null
+    },
+    {
+      "op": "appendFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1882.874,
+      "duration_ms": 0.33940000000006876,
+      "error": null,
+      "synthetic_input": "{\"schema_version\":\"1.0\",\"eventId\":\"01a1c08b-8949-75e7-9473-211bfdabfcb0\",\"ts\":1794231732553,\"monotonicSeq\":5,\"projectId\":\"default-project\",\"actor\":\"system\",\"category\":\"workflow\",\"action\":\"workitem.updated\",\"payload\":{\"workItemId\":\"9a02fc01-f95d-4039-8be1-2c3945008e4e\",\"status\":\"completed\"},\"metadata\":{\"schemaVersion\":\"1.0\",\"source\":\"daemon\"}}\n"
+    },
+    {
+      "op": "open",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1883.2174,
+      "duration_ms": 0.1270999999999276,
+      "error": null
+    },
+    {
+      "op": "handle.sync",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1883.3458,
+      "duration_ms": 5.822799999999916,
+      "error": null
+    },
+    {
+      "op": "handle.close",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1889.1713,
+      "duration_ms": 0.06999999999993634,
+      "error": null
+    },
+    {
+      "op": "readdir",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy",
+      "start_ms": 1889.6086,
+      "duration_ms": 0.21270000000004075,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1889.8478,
+      "duration_ms": 0.28680000000008476,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\state.json",
+      "start_ms": 1890.1778,
+      "duration_ms": 0.11560000000008586,
+      "error": "ENOENT"
+    },
+    {
+      "op": "stat",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1890.3083,
+      "duration_ms": 0.07230000000004111,
+      "error": null
+    },
+    {
+      "op": "appendFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1890.384,
+      "duration_ms": 0.3444999999999254,
+      "error": null,
+      "synthetic_input": "{\"schema_version\":\"1.0\",\"eventId\":\"01a1c08b-8951-71c5-8f32-6e68de4c2df1\",\"ts\":1794231732561,\"monotonicSeq\":6,\"projectId\":\"5e4e1540-128d-4553-af15-b84f4efb7067\",\"actor\":\"system\",\"category\":\"workflow\",\"action\":\"project.updated\",\"payload\":{\"projectId\":\"5e4e1540-128d-4553-af15-b84f4efb7067\",\"field\":\"updated\",\"value\":\"test\"},\"metadata\":{\"schemaVersion\":\"1.0\",\"source\":\"daemon\"}}\n"
+    },
+    {
+      "op": "open",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1890.732,
+      "duration_ms": 0.12779999999997926,
+      "error": null
+    },
+    {
+      "op": "handle.sync",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1890.8612,
+      "duration_ms": 4.47180000000003,
+      "error": null
+    },
+    {
+      "op": "handle.close",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1895.3349,
+      "duration_ms": 0.06409999999982574,
+      "error": null
+    },
+    {
+      "op": "readdir",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy",
+      "start_ms": 1895.717,
+      "duration_ms": 0.21049999999991087,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1895.9535,
+      "duration_ms": 0.27929999999992106,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\state.json",
+      "start_ms": 1896.278,
+      "duration_ms": 0.11419999999998254,
+      "error": "ENOENT"
+    },
+    {
+      "op": "stat",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1896.4071,
+      "duration_ms": 0.07380000000011933,
+      "error": null
+    },
+    {
+      "op": "appendFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1896.4844,
+      "duration_ms": 0.3191999999999098,
+      "error": null,
+      "synthetic_input": "{\"schema_version\":\"1.0\",\"eventId\":\"01a1c08b-8957-767a-afcd-86b4627a545d\",\"ts\":1794231732567,\"monotonicSeq\":7,\"projectId\":\"default-project\",\"actor\":\"system\",\"category\":\"session\",\"action\":\"session.created\",\"payload\":{\"sessionId\":\"\",\"spawnIntentId\":\"06b33e13-1229-4369-a1c8-3778f7cbafca\",\"agentRole\":\"sf-design\",\"workflowRole\":\"requirements-phase-executor\",\"workItemId\":\"454705ac-0775-4dde-bb66-5d68d0a5e5fc\"},\"metadata\":{\"schemaVersion\":\"1.0\",\"source\":\"daemon\"}}\n"
+    },
+    {
+      "op": "open",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1896.8073,
+      "duration_ms": 0.13440000000014152,
+      "error": null
+    },
+    {
+      "op": "handle.sync",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1896.9429,
+      "duration_ms": 4.62909999999988,
+      "error": null
+    },
+    {
+      "op": "handle.close",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1901.574,
+      "duration_ms": 0.06169999999997344,
+      "error": null
+    },
+    {
+      "op": "readdir",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy",
+      "start_ms": 1901.9607,
+      "duration_ms": 0.20949999999993452,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1902.1962,
+      "duration_ms": 0.28359999999997854,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\state.json",
+      "start_ms": 1902.5285,
+      "duration_ms": 0.11780000000021573,
+      "error": "ENOENT"
+    },
+    {
+      "op": "stat",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1902.6609,
+      "duration_ms": 0.0748999999998432,
+      "error": null
+    },
+    {
+      "op": "appendFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1902.739,
+      "duration_ms": 0.3613000000000284,
+      "error": null,
+      "synthetic_input": "{\"schema_version\":\"1.0\",\"eventId\":\"01a1c08b-895d-76af-9700-64472b79673e\",\"ts\":1794231732573,\"monotonicSeq\":8,\"projectId\":\"e32ded84\",\"actor\":\"system\",\"category\":\"session\",\"action\":\"session.terminated\",\"payload\":{\"sessionId\":\"e32ded84-c397-40c8-b3a9-5dc4c9cc993c\"},\"metadata\":{\"schemaVersion\":\"1.0\",\"source\":\"daemon\"}}\n"
+    },
+    {
+      "op": "open",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1903.1043,
+      "duration_ms": 0.12850000000003092,
+      "error": null
+    },
+    {
+      "op": "handle.sync",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1903.2341,
+      "duration_ms": 4.188200000000052,
+      "error": null
+    },
+    {
+      "op": "handle.close",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1907.4247,
+      "duration_ms": 0.05870000000004438,
+      "error": null
+    },
+    {
+      "op": "readdir",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy",
+      "start_ms": 1907.8864,
+      "duration_ms": 0.20409999999992579,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1908.1175,
+      "duration_ms": 0.2885999999998603,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\state.json",
+      "start_ms": 1908.4566,
+      "duration_ms": 0.11650000000008731,
+      "error": "ENOENT"
+    },
+    {
+      "op": "stat",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1908.5877,
+      "duration_ms": 0.06790000000000873,
+      "error": null
+    },
+    {
+      "op": "appendFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1908.6589,
+      "duration_ms": 0.34050000000002,
+      "error": null,
+      "synthetic_input": "{\"schema_version\":\"1.0\",\"eventId\":\"01a1c08b-8963-772c-b322-c80b8c27f42c\",\"ts\":1794231732579,\"monotonicSeq\":9,\"projectId\":\"814c9d5b-d173-4597-ba26-8711ff85636b\",\"actor\":\"system\",\"category\":\"workflow\",\"action\":\"workitem.created\",\"payload\":{\"workItemId\":\"1f71541e-9087-4d9e-81bd-6860963659d8\",\"projectId\":\"814c9d5b-d173-4597-ba26-8711ff85636b\"},\"metadata\":{\"schemaVersion\":\"1.0\",\"source\":\"daemon\"}}\n"
+    },
+    {
+      "op": "open",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1909.004,
+      "duration_ms": 0.12330000000019936,
+      "error": null
+    },
+    {
+      "op": "handle.sync",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1909.1285,
+      "duration_ms": 3.5675999999998567,
+      "error": null
+    },
+    {
+      "op": "handle.close",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1912.6974,
+      "duration_ms": 0.05870000000004438,
+      "error": null
+    },
+    {
+      "op": "readdir",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy",
+      "start_ms": 1913.1159,
+      "duration_ms": 0.21710000000007312,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1913.357,
+      "duration_ms": 0.28500000000008185,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\state.json",
+      "start_ms": 1913.6932,
+      "duration_ms": 0.11249999999995453,
+      "error": "ENOENT"
+    },
+    {
+      "op": "stat",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1913.8208,
+      "duration_ms": 0.06729999999993197,
+      "error": null
+    },
+    {
+      "op": "appendFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1913.8914,
+      "duration_ms": 0.35609999999996944,
+      "error": null,
+      "synthetic_input": "{\"schema_version\":\"1.0\",\"eventId\":\"01a1c08b-8968-76b9-b201-6cd610de3afb\",\"ts\":1794231732584,\"monotonicSeq\":10,\"projectId\":\"3b8d445d\",\"actor\":\"system\",\"category\":\"permission\",\"action\":\"permission.denied\",\"payload\":{\"sessionId\":\"3b8d445d-455d-499d-92c5-71e730a7268c\",\"resource\":\"resource-xqk7c\"},\"metadata\":{\"schemaVersion\":\"1.0\",\"source\":\"daemon\"}}\n"
+    },
+    {
+      "op": "open",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1914.2513,
+      "duration_ms": 0.1313000000000102,
+      "error": null
+    },
+    {
+      "op": "handle.sync",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1914.384,
+      "duration_ms": 4.172700000000077,
+      "error": null
+    },
+    {
+      "op": "handle.close",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1918.5588,
+      "duration_ms": 0.07330000000001746,
+      "error": null
+    },
+    {
+      "op": "readdir",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy",
+      "start_ms": 1919.0541,
+      "duration_ms": 0.22339999999985594,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1919.3054,
+      "duration_ms": 0.2925000000000182,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\state.json",
+      "start_ms": 1919.6556,
+      "duration_ms": 0.11879999999996471,
+      "error": "ENOENT"
+    },
+    {
+      "op": "stat",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1919.7926,
+      "duration_ms": 0.07590000000004693,
+      "error": null
+    },
+    {
+      "op": "appendFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1919.8719,
+      "duration_ms": 0.3818999999998596,
+      "error": null,
+      "synthetic_input": "{\"schema_version\":\"1.0\",\"eventId\":\"01a1c08b-896e-7755-8c0e-06f12a3bbd52\",\"ts\":1794231732590,\"monotonicSeq\":11,\"projectId\":\"7303afac-4523-4b9a-ba8e-31e7b7592551\",\"actor\":\"system\",\"category\":\"workflow\",\"action\":\"workitem.created\",\"payload\":{\"workItemId\":\"16260570-91e7-48c1-9e14-a13bd4d86e87\",\"projectId\":\"7303afac-4523-4b9a-ba8e-31e7b7592551\"},\"metadata\":{\"schemaVersion\":\"1.0\",\"source\":\"daemon\"}}\n"
+    },
+    {
+      "op": "open",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1920.2572,
+      "duration_ms": 0.14660000000003492,
+      "error": null
+    },
+    {
+      "op": "handle.sync",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1920.405,
+      "duration_ms": 5.27760000000012,
+      "error": null
+    },
+    {
+      "op": "handle.close",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1925.6851,
+      "duration_ms": 0.06380000000012842,
+      "error": null
+    },
+    {
+      "op": "readdir",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy",
+      "start_ms": 1926.1355,
+      "duration_ms": 0.22730000000001382,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1926.3916,
+      "duration_ms": 0.32169999999996435,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\state.json",
+      "start_ms": 1926.7834,
+      "duration_ms": 0.18309999999996762,
+      "error": "ENOENT"
+    },
+    {
+      "op": "stat",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1926.9964,
+      "duration_ms": 0.12989999999990687,
+      "error": null
+    },
+    {
+      "op": "appendFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1927.1331,
+      "duration_ms": 0.5401999999999134,
+      "error": null,
+      "synthetic_input": "{\"schema_version\":\"1.0\",\"eventId\":\"01a1c08b-8975-71b4-a0e3-47e8b46e4733\",\"ts\":1794231732597,\"monotonicSeq\":12,\"projectId\":\"73e348fb\",\"actor\":\"system\",\"category\":\"permission\",\"action\":\"permission.denied\",\"payload\":{\"sessionId\":\"73e348fb-47a5-45fb-a742-cce6e60a384d\",\"resource\":\"resource-t74i\"},\"metadata\":{\"schemaVersion\":\"1.0\",\"source\":\"daemon\"}}\n"
+    },
+    {
+      "op": "open",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1927.6795,
+      "duration_ms": 0.18659999999999854,
+      "error": null
+    },
+    {
+      "op": "handle.sync",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1927.8684,
+      "duration_ms": 4.716199999999844,
+      "error": null
+    },
+    {
+      "op": "handle.close",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1932.5879,
+      "duration_ms": 0.08420000000000982,
+      "error": null
+    },
+    {
+      "op": "readdir",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy",
+      "start_ms": 1933.0936,
+      "duration_ms": 0.22469999999998436,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1933.3521,
+      "duration_ms": 0.3704999999999927,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\state.json",
+      "start_ms": 1933.79,
+      "duration_ms": 0.18790000000012697,
+      "error": "ENOENT"
+    },
+    {
+      "op": "stat",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1934.0647,
+      "duration_ms": 0.1409000000001015,
+      "error": null
+    },
+    {
+      "op": "appendFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1934.2115,
+      "duration_ms": 0.581000000000131,
+      "error": null,
+      "synthetic_input": "{\"schema_version\":\"1.0\",\"eventId\":\"01a1c08b-897c-776d-bc21-f23d04a53bae\",\"ts\":1794231732604,\"monotonicSeq\":13,\"projectId\":\"320f2240-de07-4c0c-9771-d4161c057348\",\"actor\":\"system\",\"category\":\"workflow\",\"action\":\"project.updated\",\"payload\":{\"projectId\":\"320f2240-de07-4c0c-9771-d4161c057348\",\"field\":\"updated\",\"value\":\"test\"},\"metadata\":{\"schemaVersion\":\"1.0\",\"source\":\"daemon\"}}\n"
+    },
+    {
+      "op": "open",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1934.7993,
+      "duration_ms": 0.18050000000016553,
+      "error": null
+    },
+    {
+      "op": "handle.sync",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1934.9821,
+      "duration_ms": 3.3532000000000153,
+      "error": null
+    },
+    {
+      "op": "handle.close",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1938.3375,
+      "duration_ms": 0.07609999999999673,
+      "error": null
+    },
+    {
+      "op": "readdir",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy",
+      "start_ms": 1938.7885,
+      "duration_ms": 0.20959999999990941,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1939.0244,
+      "duration_ms": 0.3272999999999229,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\state.json",
+      "start_ms": 1939.4278,
+      "duration_ms": 0.1488000000001648,
+      "error": "ENOENT"
+    },
+    {
+      "op": "stat",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1939.5949,
+      "duration_ms": 0.0929999999998472,
+      "error": null
+    },
+    {
+      "op": "appendFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1939.6924,
+      "duration_ms": 0.40170000000011896,
+      "error": null,
+      "synthetic_input": "{\"schema_version\":\"1.0\",\"eventId\":\"01a1c08b-8982-73ef-89fe-d6dcf1b68ecd\",\"ts\":1794231732610,\"monotonicSeq\":14,\"projectId\":\"default-project\",\"actor\":\"system\",\"category\":\"session\",\"action\":\"session.created\",\"payload\":{\"sessionId\":\"\",\"spawnIntentId\":\"fa2f08d2-b17f-40b7-980c-d52a1328d045\",\"agentRole\":\"sf-requirements\",\"workflowRole\":\"design-phase-executor\",\"workItemId\":\"6718f833-8b39-485e-8428-e725c17ae6e5\"},\"metadata\":{\"schemaVersion\":\"1.0\",\"source\":\"daemon\"}}\n"
+    },
+    {
+      "op": "open",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1940.1011,
+      "duration_ms": 0.16089999999985594,
+      "error": null
+    },
+    {
+      "op": "handle.sync",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1940.2641,
+      "duration_ms": 3.919599999999946,
+      "error": null
+    },
+    {
+      "op": "handle.close",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1944.186,
+      "duration_ms": 0.08080000000018117,
+      "error": null
+    },
+    {
+      "op": "readdir",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy",
+      "start_ms": 1944.6866,
+      "duration_ms": 0.22280000000000655,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1944.948,
+      "duration_ms": 0.3670999999999367,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\state.json",
+      "start_ms": 1945.4027,
+      "duration_ms": 0.9558999999999287,
+      "error": "ENOENT"
+    },
+    {
+      "op": "stat",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1946.4535,
+      "duration_ms": 0.18399999999996908,
+      "error": null
+    },
+    {
+      "op": "appendFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1946.6454,
+      "duration_ms": 0.5163000000000011,
+      "error": null,
+      "synthetic_input": "{\"schema_version\":\"1.0\",\"eventId\":\"01a1c08b-8988-73ba-aecf-2176ee08a69c\",\"ts\":1794231732616,\"monotonicSeq\":15,\"projectId\":\"72412bba-4d4c-4df3-b546-cf669a6d00d9\",\"actor\":\"system\",\"category\":\"workflow\",\"action\":\"workitem.created\",\"payload\":{\"workItemId\":\"92fda009-406c-4ed5-8f52-aad1de85e5f0\",\"projectId\":\"72412bba-4d4c-4df3-b546-cf669a6d00d9\"},\"metadata\":{\"schemaVersion\":\"1.0\",\"source\":\"daemon\"}}\n"
+    },
+    {
+      "op": "open",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1947.1698,
+      "duration_ms": 0.16820000000006985,
+      "error": null
+    },
+    {
+      "op": "handle.sync",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1947.34,
+      "duration_ms": 4.230400000000145,
+      "error": null
+    },
+    {
+      "op": "handle.close",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1951.5732,
+      "duration_ms": 0.08739999999988868,
+      "error": null
+    },
+    {
+      "op": "readdir",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy",
+      "start_ms": 1952.0832,
+      "duration_ms": 0.22329999999988104,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1952.3426,
+      "duration_ms": 0.41030000000000655,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\state.json",
+      "start_ms": 1952.8283,
+      "duration_ms": 0.14830000000006294,
+      "error": "ENOENT"
+    },
+    {
+      "op": "stat",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1952.9942,
+      "duration_ms": 0.10639999999989413,
+      "error": null
+    },
+    {
+      "op": "appendFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1953.1052,
+      "duration_ms": 0.4372000000000753,
+      "error": null,
+      "synthetic_input": "{\"schema_version\":\"1.0\",\"eventId\":\"01a1c08b-898f-705e-ac03-aa65c60972a1\",\"ts\":1794231732623,\"monotonicSeq\":16,\"projectId\":\"c06c3089-216b-40b0-81ea-579cb0cc489b\",\"actor\":\"system\",\"category\":\"workflow\",\"action\":\"project.updated\",\"payload\":{\"projectId\":\"c06c3089-216b-40b0-81ea-579cb0cc489b\",\"field\":\"updated\",\"value\":\"test\"},\"metadata\":{\"schemaVersion\":\"1.0\",\"source\":\"daemon\"}}\n"
+    },
+    {
+      "op": "open",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1953.5489,
+      "duration_ms": 0.16840000000001965,
+      "error": null
+    },
+    {
+      "op": "handle.sync",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1953.7195,
+      "duration_ms": 3.5157000000001517,
+      "error": null
+    },
+    {
+      "op": "handle.close",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1957.2392,
+      "duration_ms": 0.309099999999944,
+      "error": null
+    },
+    {
+      "op": "readdir",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy",
+      "start_ms": 1957.9505,
+      "duration_ms": 0.23450000000002547,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1958.2119,
+      "duration_ms": 0.39449999999987995,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\state.json",
+      "start_ms": 1958.7023,
+      "duration_ms": 0.14570000000003347,
+      "error": "ENOENT"
+    },
+    {
+      "op": "stat",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1958.8662,
+      "duration_ms": 0.09600000000000364,
+      "error": null
+    },
+    {
+      "op": "appendFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1958.9668,
+      "duration_ms": 0.4375999999999749,
+      "error": null,
+      "synthetic_input": "{\"schema_version\":\"1.0\",\"eventId\":\"01a1c08b-8995-753a-a83c-459bdcb379bc\",\"ts\":1794231732629,\"monotonicSeq\":17,\"projectId\":\"default-project\",\"actor\":\"system\",\"category\":\"session\",\"action\":\"session.created\",\"payload\":{\"sessionId\":\"\",\"spawnIntentId\":\"4529425b-70bf-40c4-9763-ca73f5296e14\",\"agentRole\":\"sf-design\",\"workflowRole\":\"implementation-phase-executor\",\"workItemId\":\"11748231-27f2-43af-9902-61ace50ab463\"},\"metadata\":{\"schemaVersion\":\"1.0\",\"source\":\"daemon\"}}\n"
+    },
+    {
+      "op": "open",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1959.4109,
+      "duration_ms": 0.1713999999999487,
+      "error": null
+    },
+    {
+      "op": "handle.sync",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1959.5844,
+      "duration_ms": 3.7677000000001044,
+      "error": null
+    },
+    {
+      "op": "handle.close",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1963.3551,
+      "duration_ms": 0.07809999999994943,
+      "error": null
+    },
+    {
+      "op": "readdir",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy",
+      "start_ms": 1963.8569,
+      "duration_ms": 0.22730000000001382,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1964.1198,
+      "duration_ms": 0.3909000000001015,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\state.json",
+      "start_ms": 1964.5922,
+      "duration_ms": 0.14689999999995962,
+      "error": "ENOENT"
+    },
+    {
+      "op": "stat",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1964.7592,
+      "duration_ms": 0.10040000000003602,
+      "error": null
+    },
+    {
+      "op": "appendFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1964.8644,
+      "duration_ms": 0.429300000000012,
+      "error": null,
+      "synthetic_input": "{\"schema_version\":\"1.0\",\"eventId\":\"01a1c08b-899b-74b4-b6ba-1757148699fa\",\"ts\":1794231732635,\"monotonicSeq\":18,\"projectId\":\"bfe9cc9c-5d88-4877-ad46-51f5ca42158b\",\"actor\":\"system\",\"category\":\"workflow\",\"action\":\"project.created\",\"payload\":{\"projectId\":\"bfe9cc9c-5d88-4877-ad46-51f5ca42158b\",\"projectPath\":\"/test/projects/project-aknfki\"},\"metadata\":{\"schemaVersion\":\"1.0\",\"source\":\"daemon\"}}\n"
+    },
+    {
+      "op": "open",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1965.301,
+      "duration_ms": 0.17029999999999745,
+      "error": null
+    },
+    {
+      "op": "handle.sync",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1965.4736,
+      "duration_ms": 3.3333999999999833,
+      "error": null
+    },
+    {
+      "op": "handle.close",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1968.8689,
+      "duration_ms": 0.0783000000001266,
+      "error": null
+    },
+    {
+      "op": "readdir",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy",
+      "start_ms": 1969.3071,
+      "duration_ms": 0.20730000000003201,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1969.5379,
+      "duration_ms": 0.2828999999999269,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\state.json",
+      "start_ms": 1969.8998,
+      "duration_ms": 0.1168999999999869,
+      "error": "ENOENT"
+    },
+    {
+      "op": "stat",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1970.0319,
+      "duration_ms": 0.0724999999999909,
+      "error": null
+    },
+    {
+      "op": "appendFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1970.108,
+      "duration_ms": 0.38820000000009713,
+      "error": null,
+      "synthetic_input": "{\"schema_version\":\"1.0\",\"eventId\":\"01a1c08b-89a0-734b-b6e6-08a984082283\",\"ts\":1794231732640,\"monotonicSeq\":19,\"projectId\":\"ea470775\",\"actor\":\"system\",\"category\":\"session\",\"action\":\"session.terminated\",\"payload\":{\"sessionId\":\"ea470775-7ad9-4ec5-bcdf-9f863fd8c9ef\"},\"metadata\":{\"schemaVersion\":\"1.0\",\"source\":\"daemon\"}}\n"
+    },
+    {
+      "op": "open",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1970.5014,
+      "duration_ms": 0.14829999999983556,
+      "error": null
+    },
+    {
+      "op": "handle.sync",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1970.6508,
+      "duration_ms": 3.289900000000216,
+      "error": null
+    },
+    {
+      "op": "handle.close",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1973.9428,
+      "duration_ms": 0.0625999999999749,
+      "error": null
+    },
+    {
+      "op": "readdir",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy",
+      "start_ms": 1974.3305,
+      "duration_ms": 0.2586999999998625,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1974.613,
+      "duration_ms": 0.284099999999853,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\state.json",
+      "start_ms": 1974.9736,
+      "duration_ms": 0.11840000000006512,
+      "error": "ENOENT"
+    },
+    {
+      "op": "stat",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1975.1073,
+      "duration_ms": 0.07750000000010004,
+      "error": null
+    },
+    {
+      "op": "appendFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1975.1881,
+      "duration_ms": 0.34770000000003165,
+      "error": null,
+      "synthetic_input": "{\"schema_version\":\"1.0\",\"eventId\":\"01a1c08b-89a5-72bf-99c0-13e9df80a44a\",\"ts\":1794231732645,\"monotonicSeq\":20,\"projectId\":\"9df31f45\",\"actor\":\"system\",\"category\":\"session\",\"action\":\"session.activated\",\"payload\":{\"sessionId\":\"9df31f45-cec9-4efd-9cce-23fae771f024\",\"spawnIntentId\":\"3ef04a8d-6893-48b8-82b2-6837311d84de\"},\"metadata\":{\"schemaVersion\":\"1.0\",\"source\":\"daemon\"}}\n"
+    },
+    {
+      "op": "open",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1975.5397,
+      "duration_ms": 0.1352999999999156,
+      "error": null
+    },
+    {
+      "op": "handle.sync",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1975.6761,
+      "duration_ms": 3.3593000000000757,
+      "error": null
+    },
+    {
+      "op": "handle.close",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1979.0378,
+      "duration_ms": 0.06949999999983447,
+      "error": null
+    },
+    {
+      "op": "readdir",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy",
+      "start_ms": 1979.501,
+      "duration_ms": 0.21289999999999054,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1979.7393,
+      "duration_ms": 0.3068000000000666,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\state.json",
+      "start_ms": 1980.1218,
+      "duration_ms": 0.11670000000003711,
+      "error": "ENOENT"
+    },
+    {
+      "op": "stat",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1980.2537,
+      "duration_ms": 0.07400000000006912,
+      "error": null
+    },
+    {
+      "op": "appendFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1980.3325,
+      "duration_ms": 0.34140000000002146,
+      "error": null,
+      "synthetic_input": "{\"schema_version\":\"1.0\",\"eventId\":\"01a1c08b-89aa-71b3-a7e3-cc057ded4459\",\"ts\":1794231732651,\"monotonicSeq\":21,\"projectId\":\"default-project\",\"actor\":\"system\",\"category\":\"workflow\",\"action\":\"workitem.updated\",\"payload\":{\"workItemId\":\"5290256b-f379-4f5e-9454-2eaabf72ebe9\",\"status\":\"completed\"},\"metadata\":{\"schemaVersion\":\"1.0\",\"source\":\"daemon\"}}\n"
+    },
+    {
+      "op": "open",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1980.6777,
+      "duration_ms": 0.12990000000013424,
+      "error": null
+    },
+    {
+      "op": "handle.sync",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1980.8086,
+      "duration_ms": 3.4611999999999625,
+      "error": null
+    },
+    {
+      "op": "handle.close",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1984.2733,
+      "duration_ms": 0.07829999999989923,
+      "error": null
+    },
+    {
+      "op": "readdir",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy",
+      "start_ms": 1984.7237,
+      "duration_ms": 0.2056999999999789,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1984.955,
+      "duration_ms": 0.3041000000000622,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\state.json",
+      "start_ms": 1985.341,
+      "duration_ms": 0.11670000000003711,
+      "error": "ENOENT"
+    },
+    {
+      "op": "stat",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1985.4744,
+      "duration_ms": 0.07240000000001601,
+      "error": null
+    },
+    {
+      "op": "appendFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1985.5504,
+      "duration_ms": 0.38659999999981665,
+      "error": null,
+      "synthetic_input": "{\"schema_version\":\"1.0\",\"eventId\":\"01a1c08b-89b0-7259-a51e-0bee62248282\",\"ts\":1794231732656,\"monotonicSeq\":22,\"projectId\":\"7d5f034d\",\"actor\":\"system\",\"category\":\"permission\",\"action\":\"permission.denied\",\"payload\":{\"sessionId\":\"7d5f034d-dddb-498b-9f58-e66450d7ceeb\",\"resource\":\"resource-h06sw6\"},\"metadata\":{\"schemaVersion\":\"1.0\",\"source\":\"daemon\"}}\n"
+    },
+    {
+      "op": "open",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1985.9409,
+      "duration_ms": 0.14159999999992579,
+      "error": null
+    },
+    {
+      "op": "handle.sync",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1986.0841,
+      "duration_ms": 3.783999999999878,
+      "error": null
+    },
+    {
+      "op": "handle.close",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1989.8712,
+      "duration_ms": 0.06929999999988468,
+      "error": null
+    },
+    {
+      "op": "readdir",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy",
+      "start_ms": 1990.281,
+      "duration_ms": 0.2219000000000051,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1990.5292,
+      "duration_ms": 0.3204000000000633,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\state.json",
+      "start_ms": 1990.9346,
+      "duration_ms": 0.1172999999998865,
+      "error": "ENOENT"
+    },
+    {
+      "op": "stat",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1991.0685,
+      "duration_ms": 0.08219999999982974,
+      "error": null
+    },
+    {
+      "op": "appendFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1991.1546,
+      "duration_ms": 0.3475999999998294,
+      "error": null,
+      "synthetic_input": "{\"schema_version\":\"1.0\",\"eventId\":\"01a1c08b-89b5-7379-839f-cb3c929b17cb\",\"ts\":1794231732661,\"monotonicSeq\":23,\"projectId\":\"b0e9d462-3917-407d-bc24-7cf9a09ede7a\",\"actor\":\"system\",\"category\":\"system\",\"action\":\"config.changed\",\"payload\":{\"projectId\":\"b0e9d462-3917-407d-bc24-7cf9a09ede7a\",\"key\":\"config-key-g16ls\",\"value\":\"value\"},\"metadata\":{\"schemaVersion\":\"1.0\",\"source\":\"daemon\"}}\n"
+    },
+    {
+      "op": "open",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1991.5063,
+      "duration_ms": 0.1516999999998916,
+      "error": null
+    },
+    {
+      "op": "handle.sync",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1991.6592,
+      "duration_ms": 3.7854999999999563,
+      "error": null
+    },
+    {
+      "op": "handle.close",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1995.4471,
+      "duration_ms": 0.05639999999993961,
+      "error": null
+    },
+    {
+      "op": "readdir",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy",
+      "start_ms": 1995.8095,
+      "duration_ms": 0.19859999999994216,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1996.0511,
+      "duration_ms": 0.33390000000008513,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\state.json",
+      "start_ms": 1996.4673,
+      "duration_ms": 0.11879999999996471,
+      "error": "ENOENT"
+    },
+    {
+      "op": "stat",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1996.601,
+      "duration_ms": 0.0727999999999156,
+      "error": null
+    },
+    {
+      "op": "appendFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1996.6773,
+      "duration_ms": 0.3372999999999138,
+      "error": null,
+      "synthetic_input": "{\"schema_version\":\"1.0\",\"eventId\":\"01a1c08b-89bb-75af-aa1e-c23c06d63596\",\"ts\":1794231732667,\"monotonicSeq\":24,\"projectId\":\"bb1a3fdc\",\"actor\":\"system\",\"category\":\"session\",\"action\":\"session.terminated\",\"payload\":{\"sessionId\":\"bb1a3fdc-916b-4297-8f33-c013fa928bdd\"},\"metadata\":{\"schemaVersion\":\"1.0\",\"source\":\"daemon\"}}\n"
+    },
+    {
+      "op": "open",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1997.0183,
+      "duration_ms": 0.1311000000000604,
+      "error": null
+    },
+    {
+      "op": "handle.sync",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 1997.1504,
+      "duration_ms": 3.7724000000000615,
+      "error": null
+    },
+    {
+      "op": "handle.close",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2000.9243,
+      "duration_ms": 0.05460000000016407,
+      "error": null
+    },
+    {
+      "op": "readdir",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy",
+      "start_ms": 2001.3323,
+      "duration_ms": 0.20219999999994798,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2001.5588,
+      "duration_ms": 0.30160000000000764,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\state.json",
+      "start_ms": 2001.9462,
+      "duration_ms": 0.13469999999983884,
+      "error": "ENOENT"
+    },
+    {
+      "op": "stat",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2002.0965,
+      "duration_ms": 0.09709999999995489,
+      "error": null
+    },
+    {
+      "op": "appendFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2002.1976,
+      "duration_ms": 0.34050000000002,
+      "error": null,
+      "synthetic_input": "{\"schema_version\":\"1.0\",\"eventId\":\"01a1c08b-89c0-77ba-b583-c5b7c8ec7863\",\"ts\":1794231732672,\"monotonicSeq\":25,\"projectId\":\"default-project\",\"actor\":\"system\",\"category\":\"workflow\",\"action\":\"workitem.updated\",\"payload\":{\"workItemId\":\"46f93b20-f34e-409d-92ae-b13c3cf31eab\",\"status\":\"completed\"},\"metadata\":{\"schemaVersion\":\"1.0\",\"source\":\"daemon\"}}\n"
+    },
+    {
+      "op": "open",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2002.5425,
+      "duration_ms": 0.12249999999994543,
+      "error": null
+    },
+    {
+      "op": "handle.sync",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2002.666,
+      "duration_ms": 3.623600000000124,
+      "error": null
+    },
+    {
+      "op": "handle.close",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2006.2912,
+      "duration_ms": 0.061800000000175714,
+      "error": null
+    },
+    {
+      "op": "readdir",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy",
+      "start_ms": 2006.6992,
+      "duration_ms": 0.18830000000002656,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2006.9119,
+      "duration_ms": 0.2999999999999545,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\state.json",
+      "start_ms": 2007.294,
+      "duration_ms": 0.14929999999981192,
+      "error": "ENOENT"
+    },
+    {
+      "op": "stat",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2007.4583,
+      "duration_ms": 0.10140000000001237,
+      "error": null
+    },
+    {
+      "op": "appendFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2007.564,
+      "duration_ms": 0.34969999999998436,
+      "error": null,
+      "synthetic_input": "{\"schema_version\":\"1.0\",\"eventId\":\"01a1c08b-89c6-714f-bc88-cc234d9a508d\",\"ts\":1794231732678,\"monotonicSeq\":26,\"projectId\":\"default-project\",\"actor\":\"system\",\"category\":\"workflow\",\"action\":\"workitem.updated\",\"payload\":{\"workItemId\":\"eede8b1c-e373-46f2-b3da-ff6732f2302d\",\"status\":\"completed\"},\"metadata\":{\"schemaVersion\":\"1.0\",\"source\":\"daemon\"}}\n"
+    },
+    {
+      "op": "open",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2007.9183,
+      "duration_ms": 0.12210000000004584,
+      "error": null
+    },
+    {
+      "op": "handle.sync",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2008.0415,
+      "duration_ms": 3.1470999999999094,
+      "error": null
+    },
+    {
+      "op": "handle.close",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2011.1901,
+      "duration_ms": 0.05700000000001637,
+      "error": null
+    },
+    {
+      "op": "readdir",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy",
+      "start_ms": 2011.6388,
+      "duration_ms": 0.20800000000008367,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2011.8748,
+      "duration_ms": 0.33189999999990505,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\state.json",
+      "start_ms": 2012.2968,
+      "duration_ms": 0.11230000000000473,
+      "error": "ENOENT"
+    },
+    {
+      "op": "stat",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2012.4241,
+      "duration_ms": 0.08000000000015461,
+      "error": null
+    },
+    {
+      "op": "appendFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2012.5079,
+      "duration_ms": 0.5294999999998709,
+      "error": null,
+      "synthetic_input": "{\"schema_version\":\"1.0\",\"eventId\":\"01a1c08b-89cb-75b8-b0cd-72c8deb9e352\",\"ts\":1794231732683,\"monotonicSeq\":27,\"projectId\":\"ad27c198-1ae4-4980-acdf-11a3ae1efee2\",\"actor\":\"system\",\"category\":\"workflow\",\"action\":\"workitem.created\",\"payload\":{\"workItemId\":\"ee9a5dd9-0396-4d34-a566-75afcb37c343\",\"projectId\":\"ad27c198-1ae4-4980-acdf-11a3ae1efee2\"},\"metadata\":{\"schemaVersion\":\"1.0\",\"source\":\"daemon\"}}\n"
+    },
+    {
+      "op": "open",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2013.0447,
+      "duration_ms": 0.1490000000001146,
+      "error": null
+    },
+    {
+      "op": "handle.sync",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2013.1949,
+      "duration_ms": 3.192299999999932,
+      "error": null
+    },
+    {
+      "op": "handle.close",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2016.3899,
+      "duration_ms": 0.06400000000007822,
+      "error": null
+    },
+    {
+      "op": "readdir",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy",
+      "start_ms": 2016.816,
+      "duration_ms": 0.1995999999999185,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2017.0412,
+      "duration_ms": 0.30770000000006803,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\state.json",
+      "start_ms": 2017.4399,
+      "duration_ms": 0.12220000000002074,
+      "error": "ENOENT"
+    },
+    {
+      "op": "stat",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2017.5778,
+      "duration_ms": 0.07780000000002474,
+      "error": null
+    },
+    {
+      "op": "appendFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2017.6593,
+      "duration_ms": 0.39560000000005857,
+      "error": null,
+      "synthetic_input": "{\"schema_version\":\"1.0\",\"eventId\":\"01a1c08b-89d0-736c-b4ce-b8f8e6bc7226\",\"ts\":1794231732688,\"monotonicSeq\":28,\"projectId\":\"default-project\",\"actor\":\"system\",\"category\":\"workflow\",\"action\":\"workitem.updated\",\"payload\":{\"workItemId\":\"6463a7dd-8468-4407-966a-1ad150e0ce1f\",\"status\":\"failed\"},\"metadata\":{\"schemaVersion\":\"1.0\",\"source\":\"daemon\"}}\n"
+    },
+    {
+      "op": "open",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2018.063,
+      "duration_ms": 0.1414999999999509,
+      "error": null
+    },
+    {
+      "op": "handle.sync",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2018.206,
+      "duration_ms": 3.7415000000000873,
+      "error": null
+    },
+    {
+      "op": "handle.close",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2021.9496,
+      "duration_ms": 0.08180000000015752,
+      "error": null
+    },
+    {
+      "op": "readdir",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy",
+      "start_ms": 2022.3856,
+      "duration_ms": 0.20069999999986976,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2022.6164,
+      "duration_ms": 0.3043999999999869,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\state.json",
+      "start_ms": 2023.0182,
+      "duration_ms": 0.11950000000001637,
+      "error": "ENOENT"
+    },
+    {
+      "op": "stat",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2023.1554,
+      "duration_ms": 0.07949999999982538,
+      "error": null
+    },
+    {
+      "op": "appendFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2023.2387,
+      "duration_ms": 0.4875999999999294,
+      "error": null,
+      "synthetic_input": "{\"schema_version\":\"1.0\",\"eventId\":\"01a1c08b-89d5-750a-877e-2e84faf1647c\",\"ts\":1794231732693,\"monotonicSeq\":29,\"projectId\":\"default-project\",\"actor\":\"system\",\"category\":\"session\",\"action\":\"session.created\",\"payload\":{\"sessionId\":\"\",\"spawnIntentId\":\"292ff838-0f7e-466a-a4aa-8925fcd91243\",\"agentRole\":\"sf-executor\",\"workflowRole\":\"implementation-phase-executor\",\"workItemId\":\"a04dd4af-36e4-4b0c-8f84-ba4f0b1448e1\"},\"metadata\":{\"schemaVersion\":\"1.0\",\"source\":\"daemon\"}}\n"
+    },
+    {
+      "op": "open",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2023.7327,
+      "duration_ms": 0.15259999999989304,
+      "error": null
+    },
+    {
+      "op": "handle.sync",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2023.8865,
+      "duration_ms": 3.778099999999995,
+      "error": null
+    },
+    {
+      "op": "handle.close",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2027.6672,
+      "duration_ms": 0.06790000000000873,
+      "error": null
+    },
+    {
+      "op": "readdir",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy",
+      "start_ms": 2028.0936,
+      "duration_ms": 0.22910000000001673,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2028.3508,
+      "duration_ms": 0.27880000000004657,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\state.json",
+      "start_ms": 2028.7219,
+      "duration_ms": 0.1172999999998865,
+      "error": "ENOENT"
+    },
+    {
+      "op": "stat",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2028.8579,
+      "duration_ms": 0.07210000000009131,
+      "error": null
+    },
+    {
+      "op": "appendFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2028.9334,
+      "duration_ms": 0.604200000000219,
+      "error": null,
+      "synthetic_input": "{\"schema_version\":\"1.0\",\"eventId\":\"01a1c08b-89db-736f-a774-7de37ef7be9b\",\"ts\":1794231732699,\"monotonicSeq\":30,\"projectId\":\"060dfac8-e71c-4599-b951-60afbaff6d72\",\"actor\":\"system\",\"category\":\"system\",\"action\":\"config.changed\",\"payload\":{\"projectId\":\"060dfac8-e71c-4599-b951-60afbaff6d72\",\"key\":\"config-key-odq91\",\"value\":\"value\"},\"metadata\":{\"schemaVersion\":\"1.0\",\"source\":\"daemon\"}}\n"
+    },
+    {
+      "op": "open",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2029.5447,
+      "duration_ms": 0.16489999999998872,
+      "error": null
+    },
+    {
+      "op": "handle.sync",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2029.7114,
+      "duration_ms": 3.7791000000001986,
+      "error": null
+    },
+    {
+      "op": "handle.close",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2033.4932,
+      "duration_ms": 0.0969000000000051,
+      "error": null
+    },
+    {
+      "op": "readdir",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy",
+      "start_ms": 2033.9725,
+      "duration_ms": 0.1914999999999054,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2034.1908,
+      "duration_ms": 0.3011999999998807,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\state.json",
+      "start_ms": 2034.5915,
+      "duration_ms": 0.116800000000012,
+      "error": "ENOENT"
+    },
+    {
+      "op": "stat",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2034.7251,
+      "duration_ms": 0.07349999999996726,
+      "error": null
+    },
+    {
+      "op": "appendFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2034.8027,
+      "duration_ms": 0.35390000000006694,
+      "error": null,
+      "synthetic_input": "{\"schema_version\":\"1.0\",\"eventId\":\"01a1c08b-89e1-7329-97f0-eac7caddf3aa\",\"ts\":1794231732705,\"monotonicSeq\":31,\"projectId\":\"9b80ec83-45bc-47d7-8275-b205a9a3f30a\",\"actor\":\"system\",\"category\":\"system\",\"action\":\"config.changed\",\"payload\":{\"projectId\":\"9b80ec83-45bc-47d7-8275-b205a9a3f30a\",\"key\":\"config-key-tla96\",\"value\":\"value\"},\"metadata\":{\"schemaVersion\":\"1.0\",\"source\":\"daemon\"}}\n"
+    },
+    {
+      "op": "open",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2035.1602,
+      "duration_ms": 0.13259999999991123,
+      "error": null
+    },
+    {
+      "op": "handle.sync",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2035.2938,
+      "duration_ms": 4.07529999999997,
+      "error": null
+    },
+    {
+      "op": "handle.close",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2039.3723,
+      "duration_ms": 0.07130000000006476,
+      "error": null
+    },
+    {
+      "op": "readdir",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy",
+      "start_ms": 2039.7938,
+      "duration_ms": 0.2495000000001255,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2040.0718,
+      "duration_ms": 0.3182000000001608,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\state.json",
+      "start_ms": 2040.4917,
+      "duration_ms": 0.12329999999997199,
+      "error": "ENOENT"
+    },
+    {
+      "op": "stat",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2040.6313,
+      "duration_ms": 0.08030000000007931,
+      "error": null
+    },
+    {
+      "op": "appendFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2040.7153,
+      "duration_ms": 0.3593999999998232,
+      "error": null,
+      "synthetic_input": "{\"schema_version\":\"1.0\",\"eventId\":\"01a1c08b-89e7-76de-a50b-f4c38ba2825c\",\"ts\":1794231732711,\"monotonicSeq\":32,\"projectId\":\"448bfce1\",\"actor\":\"system\",\"category\":\"session\",\"action\":\"session.terminated\",\"payload\":{\"sessionId\":\"448bfce1-5b4b-46bc-a8ed-74b38c9d9540\"},\"metadata\":{\"schemaVersion\":\"1.0\",\"source\":\"daemon\"}}\n"
+    },
+    {
+      "op": "open",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2041.0792,
+      "duration_ms": 0.13330000000019027,
+      "error": null
+    },
+    {
+      "op": "handle.sync",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2041.2135,
+      "duration_ms": 4.97810000000004,
+      "error": null
+    },
+    {
+      "op": "handle.close",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2046.1949,
+      "duration_ms": 0.06629999999995562,
+      "error": null
+    },
+    {
+      "op": "readdir",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy",
+      "start_ms": 2046.6906,
+      "duration_ms": 0.22240000000010696,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2046.9412,
+      "duration_ms": 0.31770000000005894,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\state.json",
+      "start_ms": 2047.3624,
+      "duration_ms": 0.11959999999999127,
+      "error": "ENOENT"
+    },
+    {
+      "op": "stat",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2047.4981,
+      "duration_ms": 0.07310000000006767,
+      "error": null
+    },
+    {
+      "op": "appendFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2047.5749,
+      "duration_ms": 0.4156000000000404,
+      "error": null,
+      "synthetic_input": "{\"schema_version\":\"1.0\",\"eventId\":\"01a1c08b-89ee-757d-b2c8-7ea4e2335934\",\"ts\":1794231732718,\"monotonicSeq\":33,\"projectId\":\"c72fb82d\",\"actor\":\"system\",\"category\":\"permission\",\"action\":\"permission.granted\",\"payload\":{\"sessionId\":\"c72fb82d-1941-427b-887d-8ec1aacb8816\",\"resource\":\"resource-cpil2\"},\"metadata\":{\"schemaVersion\":\"1.0\",\"source\":\"daemon\"}}\n"
+    },
+    {
+      "op": "open",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2047.9948,
+      "duration_ms": 0.14010000000007494,
+      "error": null
+    },
+    {
+      "op": "handle.sync",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2048.136,
+      "duration_ms": 3.857300000000123,
+      "error": null
+    },
+    {
+      "op": "handle.close",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2051.9954,
+      "duration_ms": 0.06310000000030414,
+      "error": null
+    },
+    {
+      "op": "readdir",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy",
+      "start_ms": 2052.4312,
+      "duration_ms": 0.21570000000019718,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2052.6712,
+      "duration_ms": 0.3081999999999425,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\state.json",
+      "start_ms": 2053.08,
+      "duration_ms": 0.11509999999998399,
+      "error": "ENOENT"
+    },
+    {
+      "op": "stat",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2053.2107,
+      "duration_ms": 0.07099999999991269,
+      "error": null
+    },
+    {
+      "op": "appendFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2053.2852,
+      "duration_ms": 0.3481000000001586,
+      "error": null,
+      "synthetic_input": "{\"schema_version\":\"1.0\",\"eventId\":\"01a1c08b-89f3-74ac-a5b0-850548606437\",\"ts\":1794231732723,\"monotonicSeq\":34,\"projectId\":\"59cc9b76-6a4d-4f55-a676-a62dd9230252\",\"actor\":\"system\",\"category\":\"workflow\",\"action\":\"project.updated\",\"payload\":{\"projectId\":\"59cc9b76-6a4d-4f55-a676-a62dd9230252\",\"field\":\"updated\",\"value\":\"test\"},\"metadata\":{\"schemaVersion\":\"1.0\",\"source\":\"daemon\"}}\n"
+    },
+    {
+      "op": "open",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2053.6371,
+      "duration_ms": 0.16789999999991778,
+      "error": null
+    },
+    {
+      "op": "handle.sync",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2053.8068,
+      "duration_ms": 3.8491000000003623,
+      "error": null
+    },
+    {
+      "op": "handle.close",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2057.6592,
+      "duration_ms": 0.07960000000002765,
+      "error": null
+    },
+    {
+      "op": "readdir",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy",
+      "start_ms": 2058.0886,
+      "duration_ms": 0.22879999999986467,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2058.3453,
+      "duration_ms": 0.3191999999999098,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\state.json",
+      "start_ms": 2058.7742,
+      "duration_ms": 0.11889999999993961,
+      "error": "ENOENT"
+    },
+    {
+      "op": "stat",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2058.9098,
+      "duration_ms": 0.07439999999996871,
+      "error": null
+    },
+    {
+      "op": "appendFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2058.9877,
+      "duration_ms": 0.3557999999998174,
+      "error": null,
+      "synthetic_input": "{\"schema_version\":\"1.0\",\"eventId\":\"01a1c08b-89f9-7018-a314-d071c39eb1f5\",\"ts\":1794231732729,\"monotonicSeq\":35,\"projectId\":\"e5bd6df1\",\"actor\":\"system\",\"category\":\"session\",\"action\":\"session.terminated\",\"payload\":{\"sessionId\":\"e5bd6df1-1816-48ee-bc41-a7780366df43\"},\"metadata\":{\"schemaVersion\":\"1.0\",\"source\":\"daemon\"}}\n"
+    },
+    {
+      "op": "open",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2059.3475,
+      "duration_ms": 0.1408000000001266,
+      "error": null
+    },
+    {
+      "op": "handle.sync",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2059.4894,
+      "duration_ms": 3.577299999999923,
+      "error": null
+    },
+    {
+      "op": "handle.close",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2063.0699,
+      "duration_ms": 0.0678000000002612,
+      "error": null
+    },
+    {
+      "op": "readdir",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy",
+      "start_ms": 2063.5504,
+      "duration_ms": 0.2199999999997999,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2063.798,
+      "duration_ms": 0.3089000000004489,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\state.json",
+      "start_ms": 2064.2185,
+      "duration_ms": 0.12010000000009313,
+      "error": "ENOENT"
+    },
+    {
+      "op": "stat",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2064.3554,
+      "duration_ms": 0.07690000000002328,
+      "error": null
+    },
+    {
+      "op": "appendFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2064.4359,
+      "duration_ms": 0.3627000000001317,
+      "error": null,
+      "synthetic_input": "{\"schema_version\":\"1.0\",\"eventId\":\"01a1c08b-89ff-7788-8286-8bf8a11816ec\",\"ts\":1794231732735,\"monotonicSeq\":36,\"projectId\":\"default-project\",\"actor\":\"system\",\"category\":\"workflow\",\"action\":\"workitem.updated\",\"payload\":{\"workItemId\":\"426d880a-dd3a-4010-8ed2-a83a30adfb5f\",\"status\":\"completed\"},\"metadata\":{\"schemaVersion\":\"1.0\",\"source\":\"daemon\"}}\n"
+    },
+    {
+      "op": "open",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2064.803,
+      "duration_ms": 0.13599999999996726,
+      "error": null
+    },
+    {
+      "op": "handle.sync",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2064.94,
+      "duration_ms": 3.9854999999997744,
+      "error": null
+    },
+    {
+      "op": "handle.close",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2068.928,
+      "duration_ms": 0.055900000000292493,
+      "error": null
+    },
+    {
+      "op": "readdir",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy",
+      "start_ms": 2069.4469,
+      "duration_ms": 0.28940000000011423,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2069.7685,
+      "duration_ms": 0.31419999999980064,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\state.json",
+      "start_ms": 2070.197,
+      "duration_ms": 0.12609999999995125,
+      "error": "ENOENT"
+    },
+    {
+      "op": "stat",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2070.3409,
+      "duration_ms": 0.07780000000002474,
+      "error": null
+    },
+    {
+      "op": "appendFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2070.4224,
+      "duration_ms": 0.36120000000028085,
+      "error": null,
+      "synthetic_input": "{\"schema_version\":\"1.0\",\"eventId\":\"01a1c08b-8a04-77ad-844a-bdfdb69d283b\",\"ts\":1794231732740,\"monotonicSeq\":37,\"projectId\":\"726c0421-45a4-44a4-94dd-fd1182a0850f\",\"actor\":\"system\",\"category\":\"workflow\",\"action\":\"project.updated\",\"payload\":{\"projectId\":\"726c0421-45a4-44a4-94dd-fd1182a0850f\",\"field\":\"updated\",\"value\":\"test\"},\"metadata\":{\"schemaVersion\":\"1.0\",\"source\":\"daemon\"}}\n"
+    },
+    {
+      "op": "open",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2070.7878,
+      "duration_ms": 0.13779999999997017,
+      "error": null
+    },
+    {
+      "op": "handle.sync",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2070.9268,
+      "duration_ms": 3.4103000000000065,
+      "error": null
+    },
+    {
+      "op": "handle.close",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2074.3405,
+      "duration_ms": 0.07250000000021828,
+      "error": null
+    },
+    {
+      "op": "readdir",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy",
+      "start_ms": 2074.821,
+      "duration_ms": 0.20890000000008513,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2075.0573,
+      "duration_ms": 0.301600000000235,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\state.json",
+      "start_ms": 2075.4998,
+      "duration_ms": 0.12030000000004293,
+      "error": "ENOENT"
+    },
+    {
+      "op": "stat",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2075.6372,
+      "duration_ms": 0.07469999999966603,
+      "error": null
+    },
+    {
+      "op": "appendFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2075.7156,
+      "duration_ms": 0.3524000000002161,
+      "error": null,
+      "synthetic_input": "{\"schema_version\":\"1.0\",\"eventId\":\"01a1c08b-8a0a-762a-b511-6c0360835ccd\",\"ts\":1794231732746,\"monotonicSeq\":38,\"projectId\":\"fa0daf00-5d0c-4e7e-994c-3efabd8d7f2d\",\"actor\":\"system\",\"category\":\"workflow\",\"action\":\"workitem.created\",\"payload\":{\"workItemId\":\"a4f0782a-7aea-4a35-ad2c-72d482060791\",\"projectId\":\"fa0daf00-5d0c-4e7e-994c-3efabd8d7f2d\"},\"metadata\":{\"schemaVersion\":\"1.0\",\"source\":\"daemon\"}}\n"
+    },
+    {
+      "op": "open",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2076.0723,
+      "duration_ms": 0.13210000000026412,
+      "error": null
+    },
+    {
+      "op": "handle.sync",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2076.2055,
+      "duration_ms": 5.470299999999952,
+      "error": null
+    },
+    {
+      "op": "handle.close",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2081.6779,
+      "duration_ms": 0.06259999999974752,
+      "error": null
+    },
+    {
+      "op": "readdir",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy",
+      "start_ms": 2082.1284,
+      "duration_ms": 0.21199999999998909,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2082.3665,
+      "duration_ms": 0.29639999999972133,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\state.json",
+      "start_ms": 2082.7755,
+      "duration_ms": 0.11259999999992942,
+      "error": "ENOENT"
+    },
+    {
+      "op": "stat",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2082.9047,
+      "duration_ms": 0.07569999999986976,
+      "error": null
+    },
+    {
+      "op": "appendFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2082.9841,
+      "duration_ms": 0.32809999999972206,
+      "error": null,
+      "synthetic_input": "{\"schema_version\":\"1.0\",\"eventId\":\"01a1c08b-8a11-7798-8541-84ee841d8173\",\"ts\":1794231732753,\"monotonicSeq\":39,\"projectId\":\"487b40a5-16a2-4de7-908f-f51fdaf5c315\",\"actor\":\"system\",\"category\":\"workflow\",\"action\":\"project.updated\",\"payload\":{\"projectId\":\"487b40a5-16a2-4de7-908f-f51fdaf5c315\",\"field\":\"updated\",\"value\":\"test\"},\"metadata\":{\"schemaVersion\":\"1.0\",\"source\":\"daemon\"}}\n"
+    },
+    {
+      "op": "open",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2083.3162,
+      "duration_ms": 0.1519999999995889,
+      "error": null
+    },
+    {
+      "op": "handle.sync",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2083.4695,
+      "duration_ms": 3.3362999999999374,
+      "error": null
+    },
+    {
+      "op": "handle.close",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2086.8081,
+      "duration_ms": 0.05959999999959109,
+      "error": null
+    },
+    {
+      "op": "readdir",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy",
+      "start_ms": 2087.352,
+      "duration_ms": 0.25900000000001455,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2087.7652,
+      "duration_ms": 0.5006000000003041,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\state.json",
+      "start_ms": 2088.4636,
+      "duration_ms": 0.16480000000001382,
+      "error": "ENOENT"
+    },
+    {
+      "op": "stat",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2088.6478,
+      "duration_ms": 0.11069999999972424,
+      "error": null
+    },
+    {
+      "op": "appendFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2088.7636,
+      "duration_ms": 0.552599999999984,
+      "error": null,
+      "synthetic_input": "{\"schema_version\":\"1.0\",\"eventId\":\"01a1c08b-8a16-76af-809a-9c7a53246cfa\",\"ts\":1794231732758,\"monotonicSeq\":40,\"projectId\":\"default-project\",\"actor\":\"system\",\"category\":\"workflow\",\"action\":\"workitem.updated\",\"payload\":{\"workItemId\":\"e3913433-e734-4e11-8a42-2652a57291b5\",\"status\":\"pending\"},\"metadata\":{\"schemaVersion\":\"1.0\",\"source\":\"daemon\"}}\n"
+    },
+    {
+      "op": "open",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2089.3241,
+      "duration_ms": 0.19600000000036744,
+      "error": null
+    },
+    {
+      "op": "handle.sync",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2089.5223,
+      "duration_ms": 4.315499999999702,
+      "error": null
+    },
+    {
+      "op": "handle.close",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2093.8405,
+      "duration_ms": 0.07320000000026994,
+      "error": null
+    },
+    {
+      "op": "readdir",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy",
+      "start_ms": 2094.401,
+      "duration_ms": 0.18920000000025539,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2094.6162,
+      "duration_ms": 0.3360000000002401,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\state.json",
+      "start_ms": 2095.0897,
+      "duration_ms": 0.11839999999983775,
+      "error": "ENOENT"
+    },
+    {
+      "op": "stat",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2095.2248,
+      "duration_ms": 0.07160000000021682,
+      "error": null
+    },
+    {
+      "op": "appendFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2095.3003,
+      "duration_ms": 0.36380000000008295,
+      "error": null,
+      "synthetic_input": "{\"schema_version\":\"1.0\",\"eventId\":\"01a1c08b-8a1d-7048-8c46-b14c32b93391\",\"ts\":1794231732765,\"monotonicSeq\":41,\"projectId\":\"49f41cfa-bca7-420a-a845-9a3e38837d50\",\"actor\":\"system\",\"category\":\"workflow\",\"action\":\"workitem.created\",\"payload\":{\"workItemId\":\"9d37ddd5-3265-4d7d-bce8-d8732943206a\",\"projectId\":\"49f41cfa-bca7-420a-a845-9a3e38837d50\"},\"metadata\":{\"schemaVersion\":\"1.0\",\"source\":\"daemon\"}}\n"
+    },
+    {
+      "op": "open",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2095.668,
+      "duration_ms": 0.1332999999999629,
+      "error": null
+    },
+    {
+      "op": "handle.sync",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2095.8024,
+      "duration_ms": 3.4452000000001135,
+      "error": null
+    },
+    {
+      "op": "handle.close",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2099.2507,
+      "duration_ms": 0.06919999999990978,
+      "error": null
+    },
+    {
+      "op": "readdir",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy",
+      "start_ms": 2099.6469,
+      "duration_ms": 0.20699999999987995,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2099.8825,
+      "duration_ms": 0.29899999999997817,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\state.json",
+      "start_ms": 2100.3009,
+      "duration_ms": 0.1271999999999025,
+      "error": "ENOENT"
+    },
+    {
+      "op": "stat",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2100.4461,
+      "duration_ms": 0.07379999999966458,
+      "error": null
+    },
+    {
+      "op": "appendFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2100.5236,
+      "duration_ms": 0.3724000000001979,
+      "error": null,
+      "synthetic_input": "{\"schema_version\":\"1.0\",\"eventId\":\"01a1c08b-8a23-70bb-ab64-81af6c84c6b9\",\"ts\":1794231732771,\"monotonicSeq\":42,\"projectId\":\"c6d8ae0f-69ad-4d8e-a882-95e572c27f15\",\"actor\":\"system\",\"category\":\"system\",\"action\":\"config.changed\",\"payload\":{\"projectId\":\"c6d8ae0f-69ad-4d8e-a882-95e572c27f15\",\"key\":\"config-key-9ncgas\",\"value\":\"value\"},\"metadata\":{\"schemaVersion\":\"1.0\",\"source\":\"daemon\"}}\n"
+    },
+    {
+      "op": "open",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2100.9003,
+      "duration_ms": 0.1443000000003849,
+      "error": null
+    },
+    {
+      "op": "handle.sync",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2101.0456,
+      "duration_ms": 3.646099999999933,
+      "error": null
+    },
+    {
+      "op": "handle.close",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2104.6949,
+      "duration_ms": 0.07409999999981665,
+      "error": null
+    },
+    {
+      "op": "readdir",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy",
+      "start_ms": 2105.2766,
+      "duration_ms": 0.25880000000006476,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2105.5644,
+      "duration_ms": 0.31989999999996144,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\state.json",
+      "start_ms": 2106.0127,
+      "duration_ms": 0.12529999999969732,
+      "error": "ENOENT"
+    },
+    {
+      "op": "stat",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2106.1566,
+      "duration_ms": 0.08330000000023574,
+      "error": null
+    },
+    {
+      "op": "appendFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2106.2436,
+      "duration_ms": 0.35210000000006403,
+      "error": null,
+      "synthetic_input": "{\"schema_version\":\"1.0\",\"eventId\":\"01a1c08b-8a28-723f-8904-a60615e02f01\",\"ts\":1794231732776,\"monotonicSeq\":43,\"projectId\":\"a4ec104e-01f7-4e82-b8a4-369532d87421\",\"actor\":\"system\",\"category\":\"workflow\",\"action\":\"project.updated\",\"payload\":{\"projectId\":\"a4ec104e-01f7-4e82-b8a4-369532d87421\",\"field\":\"updated\",\"value\":\"test\"},\"metadata\":{\"schemaVersion\":\"1.0\",\"source\":\"daemon\"}}\n"
+    },
+    {
+      "op": "open",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2106.5997,
+      "duration_ms": 0.14869999999973516,
+      "error": null
+    },
+    {
+      "op": "handle.sync",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2106.7495,
+      "duration_ms": 3.857800000000225,
+      "error": null
+    },
+    {
+      "op": "handle.close",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2110.6098,
+      "duration_ms": 0.06739999999990687,
+      "error": null
+    },
+    {
+      "op": "readdir",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy",
+      "start_ms": 2111.303,
+      "duration_ms": 0.30680000000029395,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2111.7228,
+      "duration_ms": 0.3184999999998581,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\state.json",
+      "start_ms": 2112.1674,
+      "duration_ms": 0.1285000000002583,
+      "error": "ENOENT"
+    },
+    {
+      "op": "stat",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2112.3145,
+      "duration_ms": 0.08060000000023138,
+      "error": null
+    },
+    {
+      "op": "appendFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2112.399,
+      "duration_ms": 0.42530000000033397,
+      "error": null,
+      "synthetic_input": "{\"schema_version\":\"1.0\",\"eventId\":\"01a1c08b-8a2e-7548-b02a-2dd5e914f031\",\"ts\":1794231732782,\"monotonicSeq\":44,\"projectId\":\"088b72b9-0468-4c83-acf3-057bce679738\",\"actor\":\"system\",\"category\":\"workflow\",\"action\":\"project.created\",\"payload\":{\"projectId\":\"088b72b9-0468-4c83-acf3-057bce679738\",\"projectPath\":\"/test/projects/project-qzb876\"},\"metadata\":{\"schemaVersion\":\"1.0\",\"source\":\"daemon\"}}\n"
+    },
+    {
+      "op": "open",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2112.8285,
+      "duration_ms": 0.1639999999997599,
+      "error": null
+    },
+    {
+      "op": "handle.sync",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2112.9937,
+      "duration_ms": 5.135400000000118,
+      "error": null
+    },
+    {
+      "op": "handle.close",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2118.1316,
+      "duration_ms": 0.07339999999976499,
+      "error": null
+    },
+    {
+      "op": "readdir",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy",
+      "start_ms": 2118.6365,
+      "duration_ms": 0.24310000000014043,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2118.9101,
+      "duration_ms": 0.3850999999999658,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\state.json",
+      "start_ms": 2119.4216,
+      "duration_ms": 0.1291999999998552,
+      "error": "ENOENT"
+    },
+    {
+      "op": "stat",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2119.5687,
+      "duration_ms": 0.07420000000001892,
+      "error": null
+    },
+    {
+      "op": "appendFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2119.6464,
+      "duration_ms": 0.36049999999977445,
+      "error": null,
+      "synthetic_input": "{\"schema_version\":\"1.0\",\"eventId\":\"01a1c08b-8a36-7251-9064-ec792a8f6070\",\"ts\":1794231732790,\"monotonicSeq\":45,\"projectId\":\"84356e0c\",\"actor\":\"system\",\"category\":\"permission\",\"action\":\"permission.denied\",\"payload\":{\"sessionId\":\"84356e0c-3fe4-40e9-bf1f-863b2d4c2cfc\",\"resource\":\"resource-wpqt4r\"},\"metadata\":{\"schemaVersion\":\"1.0\",\"source\":\"daemon\"}}\n"
+    },
+    {
+      "op": "open",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2120.0114,
+      "duration_ms": 0.1331000000000131,
+      "error": null
+    },
+    {
+      "op": "handle.sync",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2120.1455,
+      "duration_ms": 3.470800000000054,
+      "error": null
+    },
+    {
+      "op": "handle.close",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2123.6189,
+      "duration_ms": 0.06890000000021246,
+      "error": null
+    },
+    {
+      "op": "readdir",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy",
+      "start_ms": 2124.2002,
+      "duration_ms": 0.24919999999974607,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2124.4738,
+      "duration_ms": 0.27739999999994325,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\state.json",
+      "start_ms": 2124.9211,
+      "duration_ms": 0.12469999999984793,
+      "error": "ENOENT"
+    },
+    {
+      "op": "stat",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2125.064,
+      "duration_ms": 0.07460000000037326,
+      "error": null
+    },
+    {
+      "op": "appendFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2125.1423,
+      "duration_ms": 0.3550000000000182,
+      "error": null,
+      "synthetic_input": "{\"schema_version\":\"1.0\",\"eventId\":\"01a1c08b-8a3b-738c-a88e-adf838ffe501\",\"ts\":1794231732795,\"monotonicSeq\":46,\"projectId\":\"default-project\",\"actor\":\"system\",\"category\":\"workflow\",\"action\":\"workitem.updated\",\"payload\":{\"workItemId\":\"283d3495-b0c0-494d-a190-ae4900a5e32f\",\"status\":\"failed\"},\"metadata\":{\"schemaVersion\":\"1.0\",\"source\":\"daemon\"}}\n"
+    },
+    {
+      "op": "open",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2125.5013,
+      "duration_ms": 0.14130000000022847,
+      "error": null
+    },
+    {
+      "op": "handle.sync",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2125.6436,
+      "duration_ms": 4.050500000000284,
+      "error": null
+    },
+    {
+      "op": "handle.close",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2129.6964,
+      "duration_ms": 0.0706000000000131,
+      "error": null
+    },
+    {
+      "op": "readdir",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy",
+      "start_ms": 2130.5286,
+      "duration_ms": 0.4189000000001215,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2131.0393,
+      "duration_ms": 0.6997000000001208,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\state.json",
+      "start_ms": 2131.8817,
+      "duration_ms": 0.14069999999992433,
+      "error": "ENOENT"
+    },
+    {
+      "op": "stat",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2132.0418,
+      "duration_ms": 0.0830999999998312,
+      "error": null
+    },
+    {
+      "op": "appendFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2132.1291,
+      "duration_ms": 0.40259999999989304,
+      "error": null,
+      "synthetic_input": "{\"schema_version\":\"1.0\",\"eventId\":\"01a1c08b-8a41-745e-86b8-880f2afd337e\",\"ts\":1794231732801,\"monotonicSeq\":47,\"projectId\":\"default-project\",\"actor\":\"system\",\"category\":\"workflow\",\"action\":\"workitem.updated\",\"payload\":{\"workItemId\":\"27e03a18-b9d3-46fb-8e34-5df57d9e3b24\",\"status\":\"failed\"},\"metadata\":{\"schemaVersion\":\"1.0\",\"source\":\"daemon\"}}\n"
+    },
+    {
+      "op": "open",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2132.5361,
+      "duration_ms": 0.14940000000024156,
+      "error": null
+    },
+    {
+      "op": "handle.sync",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2132.6867,
+      "duration_ms": 3.8505999999997584,
+      "error": null
+    },
+    {
+      "op": "handle.close",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2136.541,
+      "duration_ms": 0.07909999999992579,
+      "error": null
+    },
+    {
+      "op": "readdir",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy",
+      "start_ms": 2137.4642,
+      "duration_ms": 0.3765000000003056,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2137.8736,
+      "duration_ms": 0.4911000000001877,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\state.json",
+      "start_ms": 2138.5104,
+      "duration_ms": 0.14550000000008367,
+      "error": "ENOENT"
+    },
+    {
+      "op": "stat",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2138.7082,
+      "duration_ms": 0.08889999999973952,
+      "error": null
+    },
+    {
+      "op": "appendFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2138.8011,
+      "duration_ms": 0.5351000000000568,
+      "error": null,
+      "synthetic_input": "{\"schema_version\":\"1.0\",\"eventId\":\"01a1c08b-8a48-74ea-b493-a8f17f898921\",\"ts\":1794231732808,\"monotonicSeq\":48,\"projectId\":\"default-project\",\"actor\":\"system\",\"category\":\"session\",\"action\":\"session.created\",\"payload\":{\"sessionId\":\"\",\"spawnIntentId\":\"d56355cf-683a-45e5-9073-a26ae3944c9d\",\"agentRole\":\"sf-orchestrator\",\"workflowRole\":\"design-phase-executor\",\"workItemId\":\"2c56f7e3-9e0d-4c50-bbe9-9a4bce10e2e1\"},\"metadata\":{\"schemaVersion\":\"1.0\",\"source\":\"daemon\"}}\n"
+    },
+    {
+      "op": "open",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2139.3425,
+      "duration_ms": 0.15670000000000073,
+      "error": null
+    },
+    {
+      "op": "handle.sync",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2139.5004,
+      "duration_ms": 3.5428000000001703,
+      "error": null
+    },
+    {
+      "op": "handle.close",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2143.0456,
+      "duration_ms": 0.06759999999985666,
+      "error": null
+    },
+    {
+      "op": "readdir",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy",
+      "start_ms": 2143.4972,
+      "duration_ms": 0.23340000000007421,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2143.7593,
+      "duration_ms": 0.31659999999965294,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\state.json",
+      "start_ms": 2144.2131,
+      "duration_ms": 0.12690000000020518,
+      "error": "ENOENT"
+    },
+    {
+      "op": "stat",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2144.3607,
+      "duration_ms": 0.0747999999998683,
+      "error": null
+    },
+    {
+      "op": "appendFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2144.439,
+      "duration_ms": 0.3926000000001295,
+      "error": null,
+      "synthetic_input": "{\"schema_version\":\"1.0\",\"eventId\":\"01a1c08b-8a4e-71ca-8ad0-3ca15344ec4b\",\"ts\":1794231732814,\"monotonicSeq\":49,\"projectId\":\"default-project\",\"actor\":\"system\",\"category\":\"session\",\"action\":\"session.created\",\"payload\":{\"sessionId\":\"\",\"spawnIntentId\":\"5cec6c37-725d-4c87-8166-2eeca33dead9\",\"agentRole\":\"sf-orchestrator\",\"workflowRole\":\"requirements-phase-executor\",\"workItemId\":\"53cc55a1-c91c-4c6d-b3bb-31e250af1e4b\"},\"metadata\":{\"schemaVersion\":\"1.0\",\"source\":\"daemon\"}}\n"
+    },
+    {
+      "op": "open",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2144.8361,
+      "duration_ms": 0.17200000000002547,
+      "error": null
+    },
+    {
+      "op": "handle.sync",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2145.0094,
+      "duration_ms": 3.956300000000283,
+      "error": null
+    },
+    {
+      "op": "handle.close",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2148.9702,
+      "duration_ms": 0.09229999999979555,
+      "error": null
+    },
+    {
+      "op": "readdir",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy",
+      "start_ms": 2149.5245,
+      "duration_ms": 0.28270000000020445,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2149.8467,
+      "duration_ms": 0.42200000000002547,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\state.json",
+      "start_ms": 2150.411,
+      "duration_ms": 0.13760000000002037,
+      "error": "ENOENT"
+    },
+    {
+      "op": "stat",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2150.5681,
+      "duration_ms": 0.08120000000008076,
+      "error": null
+    },
+    {
+      "op": "appendFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2150.6529,
+      "duration_ms": 0.46610000000009677,
+      "error": null,
+      "synthetic_input": "{\"schema_version\":\"1.0\",\"eventId\":\"01a1c08b-8a54-7039-884f-dd45384c17ff\",\"ts\":1794231732820,\"monotonicSeq\":50,\"projectId\":\"d682554b\",\"actor\":\"system\",\"category\":\"session\",\"action\":\"session.activated\",\"payload\":{\"sessionId\":\"d682554b-f1fa-4d12-a2e4-19117ec14c4d\",\"spawnIntentId\":\"4a0d2cca-8e92-482e-b8f0-ecc12aa132fe\"},\"metadata\":{\"schemaVersion\":\"1.0\",\"source\":\"daemon\"}}\n"
+    },
+    {
+      "op": "open",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2151.124,
+      "duration_ms": 0.14720000000033906,
+      "error": null
+    },
+    {
+      "op": "handle.sync",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2151.2723,
+      "duration_ms": 3.9175999999997657,
+      "error": null
+    },
+    {
+      "op": "handle.close",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-zaDNuy\\events.jsonl",
+      "start_ms": 2155.1937,
+      "duration_ms": 0.0781000000001768,
+      "error": null
+    }
+  ]
+}

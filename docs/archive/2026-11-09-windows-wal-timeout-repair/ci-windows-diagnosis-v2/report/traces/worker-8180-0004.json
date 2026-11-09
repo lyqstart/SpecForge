@@ -1,0 +1,21 @@
+{
+  "utc": "2026-11-09T13:42:10.447Z",
+  "stage": "afterEach",
+  "pid": 8180,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "contract integrity formal Trace consumers > blocks Contract deletion without an explicit Trace REMOVE",
+    "start_ms": 444.1342,
+    "duration_ms": 31.011499999999955
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 6,
+    "writeFile": 35,
+    "readFile": 102
+  },
+  "rows": []
+}

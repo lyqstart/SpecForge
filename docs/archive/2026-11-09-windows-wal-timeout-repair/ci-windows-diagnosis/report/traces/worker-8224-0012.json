@@ -1,0 +1,23 @@
+{
+  "utc": "2026-11-09T13:29:59.971Z",
+  "stage": "afterEach",
+  "pid": 8224,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "Design Governance live closure > rejects no_code_change once the authoritative state has entered implementation",
+    "start_ms": 1688.152,
+    "duration_ms": 49.260099999999966
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 317,
+    "writeFile": 338,
+    "readFile": 505,
+    "readdir": 50,
+    "stat": 59
+  },
+  "rows": []
+}

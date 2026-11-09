@@ -1,0 +1,5 @@
+{
+  "windows": "ci-candidate-full-windows",
+  "linux": "ci-candidate-full-linux",
+  "macos": "ci-candidate-full-macos"
+}

@@ -1,0 +1,23 @@
+{
+  "utc": "2026-11-09T13:31:50.722Z",
+  "stage": "afterEach",
+  "pid": 7392,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "RecoverySubsystem > should not throw on saveCheckpoint write failure",
+    "start_ms": 485.0137,
+    "duration_ms": 12.273300000000006
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 8,
+    "readdir": 5,
+    "readFile": 9,
+    "writeFile": 4,
+    "open": 3
+  },
+  "rows": []
+}

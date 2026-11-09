@@ -1,0 +1,22 @@
+{
+  "utc": "2026-11-09T13:32:29.265Z",
+  "stage": "afterEach",
+  "pid": 6688,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "E1 API Endpoints > Session Endpoint > should handle session/list",
+    "start_ms": 1451.4702,
+    "duration_ms": 36.29639999999995
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 20,
+    "open": 10,
+    "writeFile": 10,
+    "readFile": 30
+  },
+  "rows": []
+}

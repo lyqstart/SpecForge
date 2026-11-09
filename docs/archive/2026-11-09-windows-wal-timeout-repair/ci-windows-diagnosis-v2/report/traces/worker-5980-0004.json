@@ -1,0 +1,22 @@
+{
+  "utc": "2026-11-09T13:45:35.190Z",
+  "stage": "afterEach",
+  "pid": 5980,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "acceptance-discovered guard and audit gaps > uses the audit owner and existing recovery owner to retain and resolve a denied probe without expanding permissions",
+    "start_ms": 4906.7192,
+    "duration_ms": 28.19880000000012
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 45,
+    "writeFile": 21,
+    "readFile": 52,
+    "readdir": 1
+  },
+  "rows": []
+}

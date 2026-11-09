@@ -1,0 +1,20 @@
+{
+  "utc": "2026-11-09T13:44:44.733Z",
+  "stage": "afterEach",
+  "pid": 1184,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "Payload Handler > Large payloads (CAS) > should return CAS reference for payload > 64 KiB",
+    "start_ms": 372.2853,
+    "duration_ms": 3.962600000000009
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 2,
+    "writeFile": 1
+  },
+  "rows": []
+}

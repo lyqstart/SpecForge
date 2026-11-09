@@ -1,0 +1,22 @@
+{
+  "utc": "2026-11-09T13:34:05.932Z",
+  "stage": "afterEach",
+  "pid": 2720,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "current knowledge store owner: source > preserves unsupported version 1 on read and on valid replacement",
+    "start_ms": 412.2704,
+    "duration_ms": 4.401400000000024
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "readFile": 21,
+    "mkdir": 7,
+    "writeFile": 10,
+    "readdir": 3
+  },
+  "rows": []
+}

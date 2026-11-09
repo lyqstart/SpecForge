@@ -1,0 +1,25 @@
+{
+  "utc": "2026-11-09T13:30:34.053Z",
+  "stage": "afterEach",
+  "pid": 3384,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "Recovery owner sealed project import > rejects archive raw-byte drift, conflicting live content and an invalid Git binding",
+    "start_ms": 5536.7333,
+    "duration_ms": 419.2628000000004
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 45,
+    "writeFile": 66,
+    "readFile": 359,
+    "readdir": 205,
+    "open": 93,
+    "stat": 39,
+    "appendFile": 22
+  },
+  "rows": []
+}

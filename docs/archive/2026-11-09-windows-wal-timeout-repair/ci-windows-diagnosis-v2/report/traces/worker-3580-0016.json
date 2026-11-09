@@ -1,0 +1,22 @@
+{
+  "utc": "2026-11-09T13:41:46.319Z",
+  "stage": "afterEach",
+  "pid": 3580,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "sf_close_gate handler > recovers a proven-invalid prior closure through a compensating state event",
+    "start_ms": 1005.0956,
+    "duration_ms": 45.238899999999944
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 77,
+    "writeFile": 276,
+    "readFile": 587,
+    "readdir": 22
+  },
+  "rows": []
+}

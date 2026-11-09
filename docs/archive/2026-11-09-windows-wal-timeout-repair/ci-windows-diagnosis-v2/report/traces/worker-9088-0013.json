@@ -1,0 +1,46 @@
+{
+  "utc": "2026-11-09T13:42:13.793Z",
+  "stage": "afterEach",
+  "pid": 9088,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "Property 1: Single Source of Truth > Property 1.5: Session operations produce events > should produce event on session activation",
+    "start_ms": 3120.3246,
+    "duration_ms": 1.9115999999999076
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "readdir": 523,
+    "readFile": 1077,
+    "mkdir": 12,
+    "stat": 460,
+    "appendFile": 460,
+    "open": 460
+  },
+  "rows": [
+    {
+      "op": "readdir",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-5qK2Lo",
+      "start_ms": 3120.7046,
+      "duration_ms": 0.1493000000000393,
+      "error": null
+    },
+    {
+      "op": "readFile",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-5qK2Lo\\state.json",
+      "start_ms": 3120.8728,
+      "duration_ms": 0.1115999999997257,
+      "error": "ENOENT"
+    },
+    {
+      "op": "mkdir",
+      "path": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\sf-wal-ci-profile-dVOi7L\\temp\\specforge-property-1-5qK2Lo",
+      "start_ms": 3120.9919,
+      "duration_ms": 0.2056999999999789,
+      "error": null
+    }
+  ]
+}

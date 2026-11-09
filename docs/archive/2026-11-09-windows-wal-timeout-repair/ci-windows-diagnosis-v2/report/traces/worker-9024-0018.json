@@ -1,0 +1,22 @@
+{
+  "utc": "2026-11-09T13:41:50.278Z",
+  "stage": "afterEach",
+  "pid": 9024,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "C. close_gate negative tests > missing candidate_manifest → close_gate failed",
+    "start_ms": 1000.3819,
+    "duration_ms": 22.727500000000077
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 73,
+    "writeFile": 277,
+    "readFile": 369,
+    "readdir": 18
+  },
+  "rows": []
+}

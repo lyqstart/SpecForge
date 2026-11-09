@@ -1,0 +1,21 @@
+{
+  "utc": "2026-11-09T13:42:09.209Z",
+  "stage": "afterEach",
+  "pid": 560,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "formal version Git closure regressions > does not skip the formal-version close guard when trigger_result lacks impact_scope",
+    "start_ms": 2786.6817,
+    "duration_ms": 11.164600000000064
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 13,
+    "writeFile": 15,
+    "readFile": 10
+  },
+  "rows": []
+}

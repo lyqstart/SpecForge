@@ -1,0 +1,19 @@
+{
+  "owner": "opencode-adapter",
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "test",
+    "--",
+    "--maxWorkers=1",
+    "--reporter=json",
+    "--outputFile=D:\\code\\SpecForge\\docs\\archive\\2026-11-09-windows-wal-timeout-repair\\structured-registration-original\\opencode-adapter.vitest.json"
+  ],
+  "cwd": "D:\\code\\SpecForge\\.wal-original-a01\\packages\\opencode-adapter",
+  "context_sha256": "c6af3d29c66913eed1b7b58c1e4ebe70e1a997198f2aff10bd6f3e0586eaa83a",
+  "started_utc": "2026-11-09T14:09:09.052Z",
+  "finished_utc": "2026-11-09T14:09:43.446Z",
+  "exit": 0,
+  "stdout_sha256": "996c9e1ba9c5e4e41683667ed9c3a332ed8ab03f41dedd60e01e594d6b76fbf6",
+  "stderr_sha256": "db40441e20aa522ba25eb0e2bc0529f9b979f170d92c889f45613a3edf46328b"
+}

@@ -1,0 +1,58 @@
+{
+  "utc": "2026-11-09T14:06:13.488Z",
+  "base": "48fc9057014413bd712c33f710b794f8bf6f273a",
+  "commit": "3262bc6a2caa60dcc6bcb4c22e918af76c297bca",
+  "branch": "codex/windows-wal-candidate",
+  "members": [
+    {
+      "file": "scripts/run-ci-regression.mjs",
+      "sha256": "c89e5950565e574f61aea6807350e5a73c0da47b08fb27b0c45b194bf1d3140d",
+      "bytes": 6078
+    },
+    {
+      "file": "packages/scope-gate/tests/ci-runner-temporary-root.test.ts",
+      "sha256": "3156b32dd249c8964570b7a5c71faf586f16d904670d41c95d3a19c7af345670",
+      "bytes": 5505
+    },
+    {
+      "file": "packages/scope-gate/tests/fixtures/ci-spawn-environment-probe.cjs",
+      "sha256": "def439d5fb5aba95876f65732cbd03a88d145f2f8ab395b4f51a84b6fe526533",
+      "bytes": 1312
+    }
+  ],
+  "unchanged": [
+    {
+      "file": "packages/daemon-core/src/wal/WAL.ts",
+      "sha256": "161b03053fbba36971534a652c611c801415a0d4417831e599ae6cb9c15ae628",
+      "unchanged": true
+    },
+    {
+      "file": "packages/daemon-core/tests/property/property-1.test.ts",
+      "sha256": "b1539d92c971a229764b39c0033e1cf07ee45ecab9080f5e327c7e94a9b78d58",
+      "unchanged": true
+    },
+    {
+      "file": "packages/daemon-core/tests/integration/pbt-state.test.ts",
+      "sha256": "9969f6d72e402cfe5bbf1df3f9bf73cdcb2794dd05f76dbabac600a00d17db41",
+      "unchanged": true
+    },
+    {
+      "file": "packages/daemon-core/vitest.config.ts",
+      "sha256": "ca8dbe0ef7834ad95d34a1a264817cf86ca4c74db14de28fc8f3e33532ee323d",
+      "unchanged": true
+    },
+    {
+      "file": "scripts/test-workspace.ts",
+      "sha256": "b9d8a72f0ae05d3ec27249840f0a69ff917f08a3630fdb9b76e01985a8d99f2d",
+      "unchanged": true
+    },
+    {
+      "file": "bun.lock",
+      "sha256": "3f60323fd1c3303673a8d79d4253257198725d247d3e6551e7648d0826db4438",
+      "unchanged": true
+    }
+  ],
+  "state_manager_unchanged": true,
+  "original_test_budgets_sampling_fsync_unchanged": true,
+  "root_worktree_not_adopted_yet": true
+}

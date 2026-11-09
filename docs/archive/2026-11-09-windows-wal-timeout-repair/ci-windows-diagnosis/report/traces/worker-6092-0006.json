@@ -1,0 +1,19 @@
+{
+  "utc": "2026-11-09T13:32:19.815Z",
+  "stage": "afterEach",
+  "pid": 6092,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "native and shell execution boundaries > does not trust a stale projection after authoritative close",
+    "start_ms": 624.8423,
+    "duration_ms": 8.669199999999933
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "readFile": 20
+  },
+  "rows": []
+}

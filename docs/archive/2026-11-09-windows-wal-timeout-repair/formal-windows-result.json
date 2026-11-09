@@ -1,0 +1,28 @@
+{
+  "utc": "2026-11-09T14:31:30.358Z",
+  "source_commit": "3262bc6a2caa60dcc6bcb4c22e918af76c297bca",
+  "temporary_directory": {
+    "selection_source": "RUNNER_TEMP",
+    "requested": "D:\\a\\_temp",
+    "canonical": "D:\\a\\_temp",
+    "ancestors": [
+      {
+        "path": "D:\\",
+        "kind": "directory"
+      },
+      {
+        "path": "D:\\a",
+        "kind": "directory"
+      },
+      {
+        "path": "D:\\a\\_temp",
+        "kind": "directory"
+      }
+    ]
+  },
+  "unmodified_original_failure_suite": "✓ tests/property/property-1.test.ts (14 tests) 661ms",
+  "suite_duration_ms": 661,
+  "formal_workspace_exit": 0,
+  "all_source_test_budgets_and_samples_unchanged": true,
+  "limits": "Full uninstrumented suite in its original workspace order; elapsed time is a measurement, never an acceptance substitute or a reconstruction of the first failed runner."
+}

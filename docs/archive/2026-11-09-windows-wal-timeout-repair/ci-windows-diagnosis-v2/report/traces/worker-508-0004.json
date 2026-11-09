@@ -1,0 +1,25 @@
+{
+  "utc": "2026-11-09T13:46:22.168Z",
+  "stage": "afterEach",
+  "pid": 508,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "current Runtime persistence boundary > persists the exact WAL tail cursor after a state transition",
+    "start_ms": 383.9412,
+    "duration_ms": 18.65010000000001
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "readFile": 22,
+    "readdir": 6,
+    "mkdir": 4,
+    "writeFile": 3,
+    "open": 4,
+    "stat": 1,
+    "appendFile": 1
+  },
+  "rows": []
+}

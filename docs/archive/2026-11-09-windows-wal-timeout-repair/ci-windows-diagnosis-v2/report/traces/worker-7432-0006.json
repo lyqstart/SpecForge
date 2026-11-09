@@ -1,0 +1,23 @@
+{
+  "utc": "2026-11-09T13:42:18.350Z",
+  "stage": "afterEach",
+  "pid": 7432,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "P0 Contract consumer atomic merge > preserves the established legacy Trace Delta merge path when no governance relation graph exists",
+    "start_ms": 621.2551,
+    "duration_ms": 50.523700000000076
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 97,
+    "writeFile": 119,
+    "readFile": 265,
+    "stat": 92,
+    "readdir": 46
+  },
+  "rows": []
+}

@@ -1,0 +1,22 @@
+{
+  "utc": "2026-11-09T13:31:30.144Z",
+  "stage": "afterEach",
+  "pid": 7396,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "runCloseGate — extension_request.json check (Patch 1 §7.9) > non-blocking: extension_request with blocking_current_flow=false and no status → passes",
+    "start_ms": 742.6328,
+    "duration_ms": 35.163400000000024
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 36,
+    "writeFile": 152,
+    "readFile": 341,
+    "readdir": 9
+  },
+  "rows": []
+}

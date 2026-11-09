@@ -1,0 +1,21 @@
+{
+  "utc": "2026-11-09T13:45:04.418Z",
+  "stage": "afterEach",
+  "pid": 3404,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "v1.1 Work Item Lifecycle（§4） > creates WI directory with required structure",
+    "start_ms": 465.0468,
+    "duration_ms": 11.028099999999995
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 5,
+    "writeFile": 2,
+    "readFile": 2
+  },
+  "rows": []
+}

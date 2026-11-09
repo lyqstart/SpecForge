@@ -1,0 +1,25 @@
+{
+  "utc": "2026-11-09T13:31:28.426Z",
+  "stage": "afterEach",
+  "pid": 820,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "StateManager — CP-3 persistStateFromExternal > CP-3: should sync workItems from external state into in-memory map",
+    "start_ms": 601.7978,
+    "duration_ms": 17.903899999999908
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 15,
+    "readFile": 78,
+    "readdir": 24,
+    "writeFile": 24,
+    "open": 20,
+    "stat": 7,
+    "appendFile": 7
+  },
+  "rows": []
+}

@@ -1,0 +1,21 @@
+{
+  "utc": "2026-11-09T13:29:46.855Z",
+  "stage": "afterEach",
+  "pid": 8136,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "current Work Item metadata owner > persists workflow metadata while advancing lifecycle only through StateManager",
+    "start_ms": 1057.7713,
+    "duration_ms": 21.73109999999997
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 19,
+    "writeFile": 11,
+    "readFile": 6
+  },
+  "rows": []
+}

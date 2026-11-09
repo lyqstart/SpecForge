@@ -1,0 +1,20 @@
+{
+  "utc": "2026-11-09T13:31:25.984Z",
+  "stage": "afterEach",
+  "pid": 6760,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "filesystem-diff > takeSnapshot > captures files in directory",
+    "start_ms": 304.2095,
+    "duration_ms": 9.352399999999989
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "writeFile": 3,
+    "mkdir": 1
+  },
+  "rows": []
+}

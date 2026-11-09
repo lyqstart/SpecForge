@@ -1,0 +1,25 @@
+{
+  "utc": "2026-11-09T13:32:34.405Z",
+  "stage": "afterEach",
+  "pid": 6288,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "RecoverySubsystem + SessionRegistry startupReplay integration > should replay alias_bound events to restore alias table",
+    "start_ms": 526.0909,
+    "duration_ms": 38.440200000000004
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "readFile": 62,
+    "readdir": 23,
+    "mkdir": 8,
+    "writeFile": 4,
+    "open": 11,
+    "stat": 7,
+    "appendFile": 7
+  },
+  "rows": []
+}

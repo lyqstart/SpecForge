@@ -1,0 +1,38 @@
+{
+  "classification": "CORROBORATED_FIXABLE_CI_ENVIRONMENT_CAUSE",
+  "responsibility": "Verification / CI temporary-storage qualification",
+  "confirmed": [
+    "Official CI selected canonical system TEMP on C: through os.tmpdir while runner.temp and raw reports were on D:.",
+    "Same-node same-byte native I/O controls preserved every sync and full content identity.",
+    "First host split append/sync100 samples took2878/2997ms on system temp versus63/53ms on runner temp.",
+    "Reverse-order second host canonical C: and C: short alias had identical dev/ino and similar latency;100-sample canonical C: split took582..685ms versus37..39ms on native runner temp.",
+    "The same diagnostic inputs demonstrate storage placement variance; collapsing two file opens cannot explain or remove this variance.",
+    "WAL source,original failing tests,testTimeout and numRuns have not changed."
+  ],
+  "explanation": "CI implicitly placed durability-heavy test fixtures on the user/system temporary volume instead of its declared runner scratch volume. Per-append synchronous durability and repeated validation accumulate host-storage waits against a fixed10s test budget. Explicitly qualify the runner temporary root at the CI entry and propagate it to all child runtimes.",
+  "not_proven": [
+    "Exact per-operation timing on the first48fc failed runner; it did not capture such a trace.",
+    "Specific physical disk,antivirus or hypervisor implementation responsible for a host's latency.",
+    "A production WAL correctness defect or need to weaken durability."
+  ],
+  "solution_scope_addition": [
+    "scripts/lib/qualification-environment.mjs",
+    "scripts/run-ci-regression.mjs",
+    "packages/daemon-core/tests/unit/ci-temporary-environment.test.ts"
+  ],
+  "product_authority_change": "NONE: developer/CI host qualification only; no runtime/business path,capability or release-surface change.",
+  "required_controls": [
+    "Missing,empty,relative or missing-directory RUNNER_TEMP must fail closed.",
+    "Canonical native root and all TEMP/TMP/TMPDIR child overrides must agree; standalone explicit temp behavior stays compatible.",
+    "Record RUNNER_TEMP as the selected source in raw CI context.",
+    "Original test source,timeout,assertions,samples and production WAL byte identity must remain exact.",
+    "Same-lock isolated full original/patched qualification and all3OS complete raw CI reports; no retry-to-green as root-cause evidence."
+  ],
+  "sources": [
+    "ci-drive-control-v1/download.json",
+    "ci-drive-control-v1/report/drive-comparison.json",
+    "ci-drive-control-v2/download.json",
+    "ci-drive-control-v2/report/drive-comparison.json",
+    "original-failure.json"
+  ]
+}

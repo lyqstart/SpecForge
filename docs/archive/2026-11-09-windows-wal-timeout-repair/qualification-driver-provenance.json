@@ -1,0 +1,6 @@
+{
+  "utc": "2026-11-09T13:28:33.692Z",
+  "original_sha256": "5f8df28f149d90e41722c135fb3ba4faf2df4beedc8e8f952060b9d4aa68ddde",
+  "derived_sha256": "822041c7db0d28f2de9f5fa5188f4d43752301e0c1a314a107a2ade586a69403",
+  "changes": "Owned worktree paths,base48fc and independent profile prefix only; same seven phase commands and failure semantics."
+}

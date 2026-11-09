@@ -1,0 +1,22 @@
+{
+  "utc": "2026-11-09T13:46:37.801Z",
+  "stage": "afterEach",
+  "pid": 5936,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "Runtime verification owner immutable store > rejects envelope mutation of extra",
+    "start_ms": 334.7652,
+    "duration_ms": 11.566500000000019
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "mkdir": 18,
+    "writeFile": 25,
+    "open": 25,
+    "readFile": 7
+  },
+  "rows": []
+}

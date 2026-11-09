@@ -1,0 +1,25 @@
+{
+  "utc": "2026-11-09T13:32:00.089Z",
+  "stage": "afterEach",
+  "pid": 5552,
+  "node": "v24.19.0",
+  "exec_path": "C:\\hostedtoolcache\\windows\\node\\24.19.0\\x64\\node.exe",
+  "bun": null,
+  "hook_sha256": "38b9cded9ebff58b31bb53eca455b572c67492a1d3d4f5155deae8b8cb12acfe",
+  "span": {
+    "test": "E1 PBT State > PBT-ST-02: Idempotency — replay produces same state > should produce identical state on repeated getCurrentState calls",
+    "start_ms": 1599.8239,
+    "duration_ms": 72.43779999999992
+  },
+  "truncated": false,
+  "all_fs_call_counts": {
+    "readFile": 389,
+    "readdir": 126,
+    "mkdir": 32,
+    "writeFile": 53,
+    "open": 95,
+    "stat": 42,
+    "appendFile": 42
+  },
+  "rows": []
+}

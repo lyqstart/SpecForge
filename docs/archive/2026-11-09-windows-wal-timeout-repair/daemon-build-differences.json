@@ -1,0 +1,617 @@
+{
+  "utc": "2026-11-09T14:13:39.222Z",
+  "bytes": 110901760,
+  "total_different_bytes": 10524820,
+  "region_count": 556454,
+  "regions": [
+    {
+      "offset": 208,
+      "bytes": 2,
+      "installed_hex": "d396",
+      "fresh_hex": "65d1"
+    },
+    {
+      "offset": 832,
+      "bytes": 2,
+      "installed_hex": "07b1",
+      "fresh_hex": "ecb0"
+    },
+    {
+      "offset": 98469888,
+      "bytes": 1,
+      "installed_hex": "ff",
+      "fresh_hex": "e4"
+    },
+    {
+      "offset": 99452158,
+      "bytes": 19,
+      "installed_hex": "726567697374726174696f6e2d706174636865",
+      "fresh_hex": "77616c2d706174636865642d6130315c5c6e6f"
+    },
+    {
+      "offset": 99452178,
+      "bytes": 26,
+      "installed_hex": "2d6130315c5c6e6f64655f6d6f64756c65735c5c2e62756e5c5c",
+      "fresh_hex": "655f6d6f64756c65735c5c2e62756e5c5c747970657363726970"
+    },
+    {
+      "offset": 99452205,
+      "bytes": 31,
+      "installed_hex": "79706573637269707440352e392e335c5c6e6f64655f6d6f64756c65735c5c",
+      "fresh_hex": "40352e392e335c5c6e6f64655f6d6f64756c65735c5c747970657363726970"
+    },
+    {
+      "offset": 99452237,
+      "bytes": 35,
+      "installed_hex": "7970657363726970745c5c6c6962222c205f5f66696c656e616d65203d202244",
+      "fresh_hex": "5c5c6c6962222c205f5f66696c656e616d65203d2022443a5c5c636f64655c5c"
+    },
+    {
+      "offset": 99452273,
+      "bytes": 35,
+      "installed_hex": "6f64655c5c53706563466f7267655c5c2e726567697374726174696f6e2d7061",
+      "fresh_hex": "466f7267655c5c2e77616c2d706174636865642d6130315c5c6e6f64655f6d6f"
+    },
+    {
+      "offset": 99452309,
+      "bytes": 21,
+      "installed_hex": "642d6130315c5c6e6f64655f6d6f64756c65735c5c",
+      "fresh_hex": "735c5c2e62756e5c5c747970657363726970744035"
+    },
+    {
+      "offset": 99452331,
+      "bytes": 3,
+      "installed_hex": "62756e",
+      "fresh_hex": "392e33"
+    },
+    {
+      "offset": 99452336,
+      "bytes": 3,
+      "installed_hex": "747970",
+      "fresh_hex": "6e6f64"
+    },
+    {
+      "offset": 99452340,
+      "bytes": 26,
+      "installed_hex": "73637269707440352e392e335c5c6e6f64655f6d6f64756c6573",
+      "fresh_hex": "5f6d6f64756c65735c5c747970657363726970745c5c6c69625c"
+    },
+    {
+      "offset": 99452367,
+      "bytes": 37,
+      "installed_hex": "5c747970657363726970745c5c6c69625c5c747970657363726970742e6a7322",
+      "fresh_hex": "747970657363726970742e6a73223b0a20202f2a21202a2a2a2a2a2a2a2a2a2a"
+    },
+    {
+      "offset": 99452405,
+      "bytes": 2,
+      "installed_hex": "2120",
+      "fresh_hex": "2a2a"
+    },
+    {
+      "offset": 99452466,
+      "bytes": 61,
+      "installed_hex": "2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a0a2020436f707972696768742028",
+      "fresh_hex": "0a2020436f7079726967687420286329204d6963726f736f667420436f72706f"
+    },
+    {
+      "offset": 99452528,
+      "bytes": 13,
+      "installed_hex": "72696768747320726573657276",
+      "fresh_hex": "204c6963656e73656420756e64"
+    },
+    {
+      "offset": 99452542,
+      "bytes": 11,
+      "installed_hex": "642e0a20204c6963656e73",
+      "fresh_hex": "7220746865204170616368"
+    },
+    {
+      "offset": 99452554,
+      "bytes": 25,
+      "installed_hex": "6420756e6465722074686520417061636865204c6963656e73",
+      "fresh_hex": "204c6963656e73652c2056657273696f6e20322e3020287468"
+    },
+    {
+      "offset": 99452580,
+      "bytes": 30,
+      "installed_hex": "2c2056657273696f6e20322e30202874686520224c6963656e736522293b",
+      "fresh_hex": "20224c6963656e736522293b20796f75206d6179206e6f74207573650a20"
+    },
+    {
+      "offset": 99452611,
+      "bytes": 16,
+      "installed_hex": "796f75206d6179206e6f74207573650a",
+      "fresh_hex": "746869732066696c6520657863657074"
+    },
+    {
+      "offset": 99452628,
+      "bytes": 16,
+      "installed_hex": "20746869732066696c65206578636570",
+      "fresh_hex": "696e20636f6d706c69616e6365207769"
+    },
+    {
+      "offset": 99452645,
+      "bytes": 14,
+      "installed_hex": "20696e20636f6d706c69616e6365",
+      "fresh_hex": "6820746865204c6963656e73652e"
+    },
+    {
+      "offset": 99452660,
+      "bytes": 13,
+      "installed_hex": "7769746820746865204c696365",
+      "fresh_hex": "596f75206d6179206f62746169"
+    },
+    {
+      "offset": 99452674,
+      "bytes": 7,
+      "installed_hex": "73652e20596f75",
+      "fresh_hex": "206120636f7079"
+    },
+    {
+      "offset": 99452682,
+      "bytes": 21,
+      "installed_hex": "6d6179206f627461696e206120636f7079206f6620",
+      "fresh_hex": "6f66207468650a20204c6963656e73652061742068"
+    },
+    {
+      "offset": 99452704,
+      "bytes": 48,
+      "installed_hex": "68650a20204c6963656e736520617420687474703a2f2f7777772e6170616368",
+      "fresh_hex": "74703a2f2f7777772e6170616368652e6f72672f6c6963656e7365732f4c4943"
+    },
+    {
+      "offset": 99452753,
+      "bytes": 24,
+      "installed_hex": "43454e53452d322e300a20200a20205448495320434f4445",
+      "fresh_hex": "5320434f44452049532050524f5649444544204f4e20414e"
+    },
+    {
+      "offset": 99452778,
+      "bytes": 14,
+      "installed_hex": "49532050524f5649444544204f4e",
+      "fresh_hex": "2a41532049532a2042415349532c"
+    },
+    {
+      "offset": 99452793,
+      "bytes": 12,
+      "installed_hex": "414e202a41532049532a2042",
+      "fresh_hex": "574954484f55542057415252"
+    },
+    {
+      "offset": 99452806,
+      "bytes": 52,
+      "installed_hex": "5349532c20574954484f55542057415252414e54494553204f5220434f4e4449",
+      "fresh_hex": "4e54494553204f5220434f4e444954494f4e53204f4620414e590a20204b494e"
+    },
+    {
+      "offset": 99452859,
+      "bytes": 26,
+      "installed_hex": "4549544845522045585052455353204f5220494d504c4945442c",
+      "fresh_hex": "494d504c4945442c20494e434c5544494e4720574954484f5554"
+    },
+    {
+      "offset": 99452886,
+      "bytes": 18,
+      "installed_hex": "494e434c5544494e4720574954484f555420",
+      "fresh_hex": "4c494d49544154494f4e20414e5920494d50"
+    },
+    {
+      "offset": 99452906,
+      "bytes": 9,
+      "installed_hex": "4d49544154494f4e20",
+      "fresh_hex": "45440a202057415252"
+    },
+    {
+      "offset": 99452917,
+      "bytes": 30,
+      "installed_hex": "5920494d504c4945440a202057415252414e54494553204f5220434f4e44",
+      "fresh_hex": "54494553204f5220434f4e444954494f4e53204f46205449544c452c2046"
+    },
+    {
+      "offset": 99452949,
+      "bytes": 3,
+      "installed_hex": "494f4e",
+      "fresh_hex": "4e4553"
+    },
+    {
+      "offset": 99452954,
+      "bytes": 45,
+      "installed_hex": "4f46205449544c452c204649544e45535320464f52204120504152544943554c",
+      "fresh_hex": "464f52204120504152544943554c415220505552504f53452c0a20204d455243"
+    },
+    {
+      "offset": 99453000,
+      "bytes": 37,
+      "installed_hex": "4d45524348414e5441424c495459204f52204e4f4e2d494e4652494e47454d45",
+      "fresh_hex": "4e4f4e2d494e4652494e47454d454e542e0a20200a2020536565207468652041"
+    },
+    {
+      "offset": 99453038,
+      "bytes": 14,
+      "installed_hex": "0a20205365652074686520417061",
+      "fresh_hex": "56657273696f6e20322e30204c69"
+    },
+    {
+      "offset": 99453053,
+      "bytes": 26,
+      "installed_hex": "68652056657273696f6e20322e30204c6963656e736520666f72",
+      "fresh_hex": "656e736520666f72207370656369666963206c616e6775616765"
+    },
+    {
+      "offset": 99453080,
+      "bytes": 6,
+      "installed_hex": "737065636966",
+      "fresh_hex": "676f7665726e"
+    },
+    {
+      "offset": 99453087,
+      "bytes": 18,
+      "installed_hex": "63206c616e677561676520676f7665726e69",
+      "fresh_hex": "6e67207065726d697373696f6e730a202061"
+    },
+    {
+      "offset": 99453106,
+      "bytes": 1,
+      "installed_hex": "67",
+      "fresh_hex": "64"
+    },
+    {
+      "offset": 99453108,
+      "bytes": 7,
+      "installed_hex": "7065726d697373",
+      "fresh_hex": "6c696d69746174"
+    },
+    {
+      "offset": 99453119,
+      "bytes": 6,
+      "installed_hex": "0a2020616e64",
+      "fresh_hex": "20756e646572"
+    },
+    {
+      "offset": 99453126,
+      "bytes": 33,
+      "installed_hex": "6c696d69746174696f6e7320756e64657220746865204c6963656e73652e0a20",
+      "fresh_hex": "746865204c6963656e73652e0a20202a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a"
+    },
+    {
+      "offset": 99453218,
+      "bytes": 1,
+      "installed_hex": "2a",
+      "fresh_hex": "20"
+    },
+    {
+      "offset": 99453220,
+      "bytes": 34,
+      "installed_hex": "2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a202a2f0a2020766172207473203d207b",
+      "fresh_hex": "2f0a2020766172207473203d207b7d3b0a202028286d6f64756c653229203d3e"
+    },
+    {
+      "offset": 99453257,
+      "bytes": 16,
+      "installed_hex": "28286d6f64756c653229203d3e207b0a",
+      "fresh_hex": "2020766172205f5f64656650726f7032"
+    },
+    {
+      "offset": 99453274,
+      "bytes": 1,
+      "installed_hex": "20",
+      "fresh_hex": "3d"
+    },
+    {
+      "offset": 99453276,
+      "bytes": 7,
+      "installed_hex": "20766172205f5f",
+      "fresh_hex": "4f626a6563742e"
+    },
+    {
+      "offset": 99453286,
+      "bytes": 38,
+      "installed_hex": "50726f7032203d204f626a6563742e646566696e6550726f70657274793b0a20",
+      "fresh_hex": "696e6550726f70657274793b0a20202020766172205f5f6765744f776e50726f"
+    },
+    {
+      "offset": 99453325,
+      "bytes": 113,
+      "installed_hex": "5f5f6765744f776e50726f704465736332203d204f626a6563742e6765744f77",
+      "fresh_hex": "3d204f626a6563742e6765744f776e50726f706572747944657363726970746f"
+    },
+    {
+      "offset": 99453439,
+      "bytes": 54,
+      "installed_hex": "766172205f5f6861734f776e50726f7032203d204f626a6563742e70726f746f",
+      "fresh_hex": "3d204f626a6563742e70726f746f747970652e6861734f776e50726f70657274"
+    },
+    {
+      "offset": 99453494,
+      "bytes": 38,
+      "installed_hex": "2020766172205f5f6578706f727432203d20287461726765742c20616c6c2920",
+      "fresh_hex": "287461726765742c20616c6c29203d3e207b0a202020202020666f7220287661"
+    },
+    {
+      "offset": 99453533,
+      "bytes": 2,
+      "installed_hex": "2020",
+      "fresh_hex": "696e"
+    },
+    {
+      "offset": 99453536,
+      "bytes": 9,
+      "installed_hex": "20666f722028766172",
+      "fresh_hex": "616c6c290a20202020"
+    },
+    {
+      "offset": 99453546,
+      "bytes": 32,
+      "installed_hex": "6e616d6520696e20616c6c290a20202020202020205f5f64656650726f703228",
+      "fresh_hex": "2020205f5f64656650726f7032287461726765742c206e616d652c207b206765"
+    },
+    {
+      "offset": 99453579,
+      "bytes": 11,
+      "installed_hex": "61726765742c206e616d65",
+      "fresh_hex": "3a20616c6c5b6e616d655d"
+    },
+    {
+      "offset": 99453592,
+      "bytes": 8,
+      "installed_hex": "7b206765743a2061",
+      "fresh_hex": "656e756d65726162"
+    },
+    {
+      "offset": 99453601,
+      "bytes": 20,
+      "installed_hex": "6c5b6e616d655d2c20656e756d657261626c653a",
+      "fresh_hex": "653a2074727565207d293b0a202020207d3b0a20"
+    },
+    {
+      "offset": 99453622,
+      "bytes": 17,
+      "installed_hex": "74727565207d293b0a202020207d3b0a20",
+      "fresh_hex": "2020766172205f5f636f707950726f7073"
+    },
+    {
+      "offset": 99453640,
+      "bytes": 1,
+      "installed_hex": "20",
+      "fresh_hex": "3d"
+    },
+    {
+      "offset": 99453642,
+      "bytes": 7,
+      "installed_hex": "766172205f5f63",
+      "fresh_hex": "28746f2c206672"
+    },
+    {
+      "offset": 99453650,
+      "bytes": 47,
+      "installed_hex": "707950726f7073203d2028746f2c2066726f6d2c206578636570742c20646573",
+      "fresh_hex": "6d2c206578636570742c206465736329203d3e207b0a20202020202069662028"
+    },
+    {
+      "offset": 99453698,
+      "bytes": 16,
+      "installed_hex": "202866726f6d20262620747970656f66",
+      "fresh_hex": "726f6d203d3d3d20226f626a65637422"
+    },
+    {
+      "offset": 99453715,
+      "bytes": 36,
+      "installed_hex": "66726f6d203d3d3d20226f626a65637422207c7c20747970656f662066726f6d",
+      "fresh_hex": "7c7c20747970656f662066726f6d203d3d3d202266756e6374696f6e2229207b"
+    },
+    {
+      "offset": 99453752,
+      "bytes": 16,
+      "installed_hex": "2266756e6374696f6e2229207b0a2020",
+      "fresh_hex": "20202020666f7220286c6574206b6579"
+    },
+    {
+      "offset": 99453769,
+      "bytes": 2,
+      "installed_hex": "2020",
+      "fresh_hex": "6f66"
+    },
+    {
+      "offset": 99453772,
+      "bytes": 37,
+      "installed_hex": "2020666f7220286c6574206b6579206f66205f5f6765744f776e50726f704e61",
+      "fresh_hex": "5f5f6765744f776e50726f704e616d6573322866726f6d29290a202020202020"
+    },
+    {
+      "offset": 99453810,
+      "bytes": 45,
+      "installed_hex": "726f6d29290a2020202020202020202069662028215f5f6861734f776e50726f",
+      "fresh_hex": "2028215f5f6861734f776e50726f70322e63616c6c28746f2c206b6579292026"
+    },
+    {
+      "offset": 99453856,
+      "bytes": 5,
+      "installed_hex": "7929202626",
+      "fresh_hex": "7074290a20"
+    },
+    {
+      "offset": 99453862,
+      "bytes": 3,
+      "installed_hex": "6b6579",
+      "fresh_hex": "202020"
+    },
+    {
+      "offset": 99453866,
+      "bytes": 3,
+      "installed_hex": "213d3d",
+      "fresh_hex": "202020"
+    },
+    {
+      "offset": 99453870,
+      "bytes": 16,
+      "installed_hex": "657863657074290a2020202020202020",
+      "fresh_hex": "20205f5f64656650726f703228746f2c"
+    },
+    {
+      "offset": 99453887,
+      "bytes": 17,
+      "installed_hex": "2020205f5f64656650726f703228746f2c",
+      "fresh_hex": "6b65792c207b206765743a202829203d3e"
+    },
+    {
+      "offset": 99453905,
+      "bytes": 98,
+      "installed_hex": "6b65792c207b206765743a202829203d3e2066726f6d5b6b65795d2c20656e75",
+      "fresh_hex": "66726f6d5b6b65795d2c20656e756d657261626c653a20212864657363203d20"
+    },
+    {
+      "offset": 99454004,
+      "bytes": 6,
+      "installed_hex": "7d293b0a2020",
+      "fresh_hex": "72657475726e"
+    },
+    {
+      "offset": 99454011,
+      "bytes": 5,
+      "installed_hex": "2020207d0a",
+      "fresh_hex": "746f3b0a20"
+    },
+    {
+      "offset": 99454019,
+      "bytes": 24,
+      "installed_hex": "20202072657475726e20746f3b0a202020207d3b0a202020",
+      "fresh_hex": "7d3b0a20202020766172205f5f746f436f6d6d6f6e4a5332"
+    },
+    {
+      "offset": 99454044,
+      "bytes": 37,
+      "installed_hex": "766172205f5f746f436f6d6d6f6e4a5332203d20286d6f6429203d3e20285f5f",
+      "fresh_hex": "3d20286d6f6429203d3e20285f5f636f707950726f70732c206d6f64293b0a20"
+    },
+    {
+      "offset": 99454082,
+      "bytes": 81,
+      "installed_hex": "6f70732c206d6f64293b0a2020202076617220747970657363726970745f6578",
+      "fresh_hex": "20747970657363726970745f6578706f727473203d207b7d3b0a202020205f5f"
+    },
+    {
+      "offset": 99454164,
+      "bytes": 2,
+      "installed_hex": "2020",
+      "fresh_hex": "3d3e"
+    },
+    {
+      "offset": 99454167,
+      "bytes": 11,
+      "installed_hex": "20414e4f4e594d4f55533a",
+      "fresh_hex": "414e4f4e594d4f55532c0a"
+    },
+    {
+      "offset": 99454179,
+      "bytes": 2,
+      "installed_hex": "2829",
+      "fresh_hex": "2020"
+    },
+    {
+      "offset": 99454182,
+      "bytes": 14,
+      "installed_hex": "3d3e20414e4f4e594d4f55532c0a",
+      "fresh_hex": "2020416363657373466c6167733a"
+    },
+    {
+      "offset": 99454197,
+      "bytes": 2,
+      "installed_hex": "2020",
+      "fresh_hex": "2829"
+    },
+    {
+      "offset": 99454200,
+      "bytes": 4,
+      "installed_hex": "20204163",
+      "fresh_hex": "3d3e2041"
+    },
+    {
+      "offset": 99454205,
+      "bytes": 2,
+      "installed_hex": "6573",
+      "fresh_hex": "6365"
+    },
+    {
+      "offset": 99454208,
+      "bytes": 9,
+      "installed_hex": "466c6167733a202829",
+      "fresh_hex": "73466c6167732c0a20"
+    },
+    {
+      "offset": 99454218,
+      "bytes": 2,
+      "installed_hex": "3d3e",
+      "fresh_hex": "2020"
+    },
+    {
+      "offset": 99454221,
+      "bytes": 16,
+      "installed_hex": "416363657373466c6167732c0a202020",
+      "fresh_hex": "20417373657274696f6e4c6576656c3a"
+    },
+    {
+      "offset": 99454238,
+      "bytes": 23,
+      "installed_hex": "2020417373657274696f6e4c6576656c3a202829203d3e",
+      "fresh_hex": "2829203d3e20417373657274696f6e4c6576656c2c0a20"
+    },
+    {
+      "offset": 99454262,
+      "bytes": 27,
+      "installed_hex": "417373657274696f6e4c6576656c2c0a2020202020204173736967",
+      "fresh_hex": "2020202041737369676e6d656e744465636c61726174696f6e4b69"
+    },
+    {
+      "offset": 99454290,
+      "bytes": 12,
+      "installed_hex": "6d656e744465636c61726174",
+      "fresh_hex": "643a202829203d3e20417373"
+    },
+    {
+      "offset": 99454303,
+      "bytes": 1,
+      "installed_hex": "6f",
+      "fresh_hex": "67"
+    },
+    {
+      "offset": 99454305,
+      "bytes": 2,
+      "installed_hex": "4b69",
+      "fresh_hex": "6d65"
+    },
+    {
+      "offset": 99454308,
+      "bytes": 14,
+      "installed_hex": "643a202829203d3e204173736967",
+      "fresh_hex": "744465636c61726174696f6e4b69"
+    },
+    {
+      "offset": 99454323,
+      "bytes": 12,
+      "installed_hex": "6d656e744465636c61726174",
+      "fresh_hex": "642c0a202020202020417373"
+    },
+    {
+      "offset": 99454336,
+      "bytes": 1,
+      "installed_hex": "6f",
+      "fresh_hex": "67"
+    },
+    {
+      "offset": 99454338,
+      "bytes": 2,
+      "installed_hex": "4b69",
+      "fresh_hex": "6d65"
+    }
+  ],
+  "complete_region_inventory": false,
+  "pe_offset": 120,
+  "coff_timestamp_offset": 128,
+  "optional_checksum_offset": 208,
+  "sha256": {
+    "installed": "4dc257c7a50ca8859e0b86ffcebfcb826960376f5d2511981f568a9891e3a015",
+    "fresh": "5116a1a173e1a09a18dc9e84c1d286706617e807116d1a4b41b6eff7399e1d85"
+  },
+  "limits": "Byte locations only; no claim that unspecified differences are metadata."
+}
