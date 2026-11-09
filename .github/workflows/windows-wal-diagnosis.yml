@@ -1,0 +1,33 @@
+name: Windows WAL diagnosis
+on:
+  push:
+    branches: [codex/windows-wal-diagnosis]
+permissions:
+  contents: read
+env:
+  GIT_CONFIG_COUNT: '1'
+  GIT_CONFIG_KEY_0: core.longpaths
+  GIT_CONFIG_VALUE_0: 'true'
+jobs:
+  diagnose:
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.19.0'
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: '1.3.14'
+      - run: bun install --frozen-lockfile
+      - name: Collect original budget and I/O controls
+        env:
+          SF_WAL_DIAGNOSTIC_OUTPUT: ${{ runner.temp }}/wal-diagnosis
+        run: node scripts/ci/run-wal-diagnosis.mjs
+      - name: Upload original raw diagnosis
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-wal-diagnosis
+          path: ${{ runner.temp }}/wal-diagnosis
