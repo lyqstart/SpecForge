@@ -1,0 +1,29 @@
+{
+  "utc": "2026-11-09T12:24:20.501Z",
+  "run_id": "CODEX-SF-20261109-DOCUMENTATION-A01",
+  "base": "b8bf67362fa0ab537d194719b908a1410a2f172a",
+  "resolved": [
+    "ASSESS-STATE-01",
+    "ASSESS-TEXT-01"
+  ],
+  "evidence": [
+    "verification.json",
+    "commands/0002.json",
+    "commands/0003.json",
+    "commands/0005.json"
+  ],
+  "tests_passed": 19,
+  "behavior_change": false,
+  "installed_files_unchanged": 117,
+  "product_specification_changed": false,
+  "authority_registry_changed": false,
+  "old_archive_unchanged": true,
+  "failed_verifier": {
+    "receipt": "commands/0004.json",
+    "source": "failed-verifier-0004.cjs",
+    "classification": "Verifier lacked parser context; corrected AST proof plus exact single comment difference passed."
+  },
+  "delivery_receipt_directory": "docs/archive/2026-11-09-plugin-registration-recovery/publication-live/documentation-reconciliation",
+  "delivery_contract": "Exact frozen targets and archive staged/verified before commit; local main fast-forward and nonforce push; post-push live equality and clean READY recorded independently, never as a self-referencing current status.",
+  "limits": "Published baseline all3OS evidence retained; no new full regression/native matrix/model/WI execution claim."
+}

@@ -1,0 +1,33 @@
+{
+  "utc": "2026-11-09T12:23:39.687Z",
+  "conclusion": "PASS_DOCUMENTATION_RECONCILIATION",
+  "base": "b8bf67362fa0ab537d194719b908a1410a2f172a",
+  "source_executable_tokens_equal": true,
+  "status_schema2_valid": true,
+  "required_status_fields_preserved": true,
+  "next_action_no_completed_publication_repeated": true,
+  "ledger_append_only": true,
+  "existing_tests_passed": 19,
+  "old_archive_unchanged": true,
+  "installed_files_unchanged": 117,
+  "authority_and_contracts_unchanged": true,
+  "no_deployment_required": "Only a non-executable source comment and execution/history documents changed.",
+  "members": [
+    {
+      "file": "docs/project-status.md",
+      "sha256": "c6e8240305e4587b36f7067c4e9478cb1ab38e2024184f4928d159cbc1e1d18d",
+      "size": 6648
+    },
+    {
+      "file": "packages/daemon-core/src/project/ProjectManager.ts",
+      "sha256": "b014f75aa7fd35690e25aa18e60b89d12f812bb482b974783d329ce077c7e0ad",
+      "size": 22460
+    },
+    {
+      "file": "docs/rule/specforge-development-error-ledger-and-experience.md",
+      "sha256": "70769280a846ee07052618f9bf44b2a711bfd1d7a2d89ef77a833d76b4c8d1e4",
+      "size": 4547176
+    }
+  ],
+  "limits": "Published baseline all3OS evidence retained; no new full regression/native matrix/model/WI execution claim."
+}

@@ -1,0 +1,29 @@
+{
+  "run_id": "CODEX-SF-20261109-DOCUMENTATION-A01",
+  "mode": "CODEX_DIRECT",
+  "attempt_id": "DOC-RECONCILIATION-01",
+  "started_utc": "2026-11-09T12:20:48.198Z",
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "freeze-documentation-plan",
+  "expected_writes": "New evidence snapshots/plan only; no product edits",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-09-documentation-reconciliation/prepare.cjs"
+  ],
+  "carrier_sha256": "d143cc2e058294ae86bbfc9187086367bf41c4cb16eab5e60e460f9f2191ae0f",
+  "entry_sources": [
+    {
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-09-documentation-reconciliation\\prepare.cjs",
+      "sha256": "f305df037c7dbbda5316ccce563c5d8ac56fea167060a28786ec87c1fec3e297"
+    }
+  ],
+  "before_status_base64": "Pz8gZG9jcy9hcmNoaXZlLzIwMjYtMTEtMDktZG9jdW1lbnRhdGlvbi1yZWNvbmNpbGlhdGlvbi9wcmVwYXJlLmNqcwA/PyBkb2NzL2FyY2hpdmUvMjAyNi0xMS0wOS1kb2N1bWVudGF0aW9uLXJlY29uY2lsaWF0aW9uL3J1bi5janMA",
+  "finished_utc": "2026-11-09T12:20:49.601Z",
+  "carrier_exit_code": 0,
+  "inner_exit_code": 0,
+  "numeric_exit_available": true,
+  "spawn_error": null,
+  "stdout_base64": "eyJiYXNlIjoiYjhiZjY3MzYyZmEwYWI1MzdkMTk0NzE5YjkwOGExNDEwYTJmMTcyYSIsInRhcmdldHMiOjMsInJ1bGVfaGFzaGVzX3ZlcmlmaWVkIjo1fQo=",
+  "stderr_base64": "",
+  "after_status_base64": "Pz8gZG9jcy9hcmNoaXZlLzIwMjYtMTEtMDktZG9jdW1lbnRhdGlvbi1yZWNvbmNpbGlhdGlvbi9wbGFuLmpzb24APz8gZG9jcy9hcmNoaXZlLzIwMjYtMTEtMDktZG9jdW1lbnRhdGlvbi1yZWNvbmNpbGlhdGlvbi9wcmVwYXJlLmNqcwA/PyBkb2NzL2FyY2hpdmUvMjAyNi0xMS0wOS1kb2N1bWVudGF0aW9uLXJlY29uY2lsaWF0aW9uL3ByaW9yLWZpbmFsLWFjY2VwdGFuY2UuanNvbgA/PyBkb2NzL2FyY2hpdmUvMjAyNi0xMS0wOS1kb2N1bWVudGF0aW9uLXJlY29uY2lsaWF0aW9uL3ByaW9yLW1haW4tY2ktYWNjZXB0YW5jZS5qc29uAD8/IGRvY3MvYXJjaGl2ZS8yMDI2LTExLTA5LWRvY3VtZW50YXRpb24tcmVjb25jaWxpYXRpb24vcHJpb3ItcmVhc3Nlc3NtZW50Lmpzb24APz8gZG9jcy9hcmNoaXZlLzIwMjYtMTEtMDktZG9jdW1lbnRhdGlvbi1yZWNvbmNpbGlhdGlvbi9ydW4uY2pzAA=="
+}

@@ -1,0 +1,71 @@
+{
+  "utc": "2026-11-09T10:52:26.888Z",
+  "commit": "b8bf67362fa0ab537d194719b908a1410a2f172a",
+  "stage": "main",
+  "conclusion": "PASS_FINAL_MAIN_THREE_PLATFORM_REGRESSION_AND_RELEASE",
+  "all_jobs_success": 12,
+  "platforms": [
+    {
+      "platform": "win32",
+      "arch": "x64",
+      "artifact_id": 13667560604,
+      "artifact_digest": "sha256:f2a06b8e6ddfcd2748ec986c6516e15f125a7b118f2f4b4ac3acd8e89578152b",
+      "report_location": "ci-main-full-windows",
+      "all_four_numeric_phase_exits": 0,
+      "root_passed": 753,
+      "workspace_owners": 11,
+      "lint_files": 631,
+      "lint_errors": 0,
+      "lint_warnings": 0,
+      "helper_typecheck_step": "success"
+    },
+    {
+      "platform": "linux",
+      "arch": "x64",
+      "artifact_id": 13666248541,
+      "artifact_digest": "sha256:a1ed14a48fd888b4d27faf2ae6b902b070358c5cf92c61ada5c2189271b83ff7",
+      "report_location": "ci-main-full-linux",
+      "all_four_numeric_phase_exits": 0,
+      "root_passed": 753,
+      "workspace_owners": 11,
+      "lint_files": 631,
+      "lint_errors": 0,
+      "lint_warnings": 0,
+      "helper_typecheck_step": "success"
+    },
+    {
+      "platform": "darwin",
+      "arch": "arm64",
+      "artifact_id": 13666991168,
+      "artifact_digest": "sha256:428f36be532798b2308ff636cd68d6e06f89cdc7e111e4f041d640db9aacc75b",
+      "report_location": "ci-main-full-macos",
+      "all_four_numeric_phase_exits": 0,
+      "root_passed": 753,
+      "workspace_owners": 11,
+      "lint_files": 631,
+      "lint_errors": 0,
+      "lint_warnings": 0,
+      "helper_typecheck_step": "success"
+    }
+  ],
+  "runs": [
+    {
+      "id": 42602177023,
+      "name": "Distribution Smoke Tests",
+      "url": "https://github.com/lyqstart/SpecForge/actions/runs/42602177023",
+      "status": "completed",
+      "conclusion": "success",
+      "run_attempt": 1
+    },
+    {
+      "id": 42602177043,
+      "name": "Code Quality",
+      "url": "https://github.com/lyqstart/SpecForge/actions/runs/42602177043",
+      "status": "completed",
+      "conclusion": "success",
+      "run_attempt": 1
+    }
+  ],
+  "historical_nonpassing_attempt": null,
+  "limits": "Latest successful immutable-source reports are accepted; earlier failure is preserved, never relabeled. Raw numeric four-phase reports reverified. Helper typecheck and official release lifecycle use primary GitHub successful job/step conclusions and archived workflow, separate from local numeric receipts. No provider/model or original business execution."
+}

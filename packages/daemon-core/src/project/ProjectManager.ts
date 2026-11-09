@@ -353,7 +353,7 @@ export class ProjectManager {
       return existing;
     }
 
-    // Current releases register only the authoritative V6 Project Spec layout.
+    // Current releases register only the current Project Spec layout.
     // A root manifest belongs to the retired auto-detection path and must not
     // be used to infer, repair, or register a project.
     const specDir = path.join(projectPath, SPEC_DIR_NAME);

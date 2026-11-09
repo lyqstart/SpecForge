@@ -1,0 +1,35 @@
+{
+  "utc": "2026-11-09T10:53:11.950Z",
+  "conclusion": "PASS_PLUGIN_REPAIR_DEPLOYED_MAIN_PUBLISHED_AND_FINAL_CI_ACCEPTED",
+  "head": "b8bf67362fa0ab537d194719b908a1410a2f172a",
+  "final_main_ci_jobs": 12,
+  "final_main_attempt": 1,
+  "bootstrap": "READY",
+  "worktree": "CLEAN",
+  "live_main_equal": true,
+  "managed_files_exact": 117,
+  "bound_evidence_sha256": {
+    "main-ci/acceptance.json": "535c5b0822d063eb241c018b3f9fc5452533f549f664c48a5f918eb1d1449288",
+    "main-ci/runs.json": "4dfb50a6f510af8683f0c211de717cca1bd83f06c24f1bbb4437ee3397725f62",
+    "main-ci/quality-jobs.json": "ea64985b943be3647a47e26704eaacf9722db8d4177173f240bc45418d9be257",
+    "main-ci/distribution-jobs.json": "c4ef2562aa1e19d729e8b830bd4f85e68e9b9b4e8fd434cf98a74e1256a38c68",
+    "main-ci/quality-artifacts.json": "785303d7388341e8f7170048058ca33bc0868761b70fe800f0408b4e6d336c0a",
+    "main-publication.json": "ccbbd4c74d5b1dfc3f99a8883a6bb32a859ab2ed028e9acfd2b33e81ea6ba90c",
+    "publication-identity.json": "e7ea4f6c41876f588104c7c2e40f2fcdc3c97d81e5fa709a925590c7841a671d",
+    "commands/0015.result.json": "761b8a9958927bd0c47d71bf68234735afc02ca74ced08064ac371f03fa8bba8"
+  },
+  "prior_candidate_windows_timeout": "Preserved in immutable parent archive; unchanged rerun passed; root cause INSUFFICIENT_EVIDENCE. Final main all12 jobs passed attempt1.",
+  "publication_verifier_failures": [
+    {
+      "receipt": "0004.result.json",
+      "exit": 2,
+      "purpose": "final-main-readonly-bootstrap"
+    },
+    {
+      "receipt": "0006.result.json",
+      "exit": 1,
+      "purpose": "final-publication-source-seal-deployment-identity"
+    }
+  ],
+  "user_next_action": "Restart existing OpenCode process to load installed helper revision; uninitialized project still requires controlled sf_project_init."
+}

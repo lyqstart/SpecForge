@@ -1,0 +1,37 @@
+{
+  "run_id": "CODEX-SF-20261109-DOCUMENTATION-A01",
+  "mode": "CODEX_DIRECT",
+  "attempt_id": "DOC-RECONCILIATION-01",
+  "started_utc": "2026-11-09T12:21:26.484Z",
+  "cwd": "D:\\code\\SpecForge\\packages\\daemon-core",
+  "purpose": "existing-bootstrap-and-state-diagnostic-regressions",
+  "expected_writes": "Test-owned temporary fixtures and ignored caches; no deployment or business state writes",
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "test",
+    "--",
+    "tests/unit/project-session-bootstrap.test.ts",
+    "tests/unit/work-item-status-authority-diagnostic.test.ts"
+  ],
+  "carrier_sha256": "d143cc2e058294ae86bbfc9187086367bf41c4cb16eab5e60e460f9f2191ae0f",
+  "entry_sources": [
+    {
+      "path": "D:\\code\\SpecForge\\packages\\daemon-core\\tests\\unit\\project-session-bootstrap.test.ts",
+      "sha256": "953333db3438970c7ebe7f96a0dcbf7b41a23dbb1b6f2207e4466efb92d2b704"
+    },
+    {
+      "path": "D:\\code\\SpecForge\\packages\\daemon-core\\tests\\unit\\work-item-status-authority-diagnostic.test.ts",
+      "sha256": "26a8be3c3f1c7ea1ac1013dbcd19bf25d4845140094db667f0690eb366946108"
+    }
+  ],
+  "before_status_base64": "IE0gZG9jcy9ydWxlL3NwZWNmb3JnZS1kZXZlbG9wbWVudC1lcnJvci1sZWRnZXItYW5kLWV4cGVyaWVuY2UubWQAIE0gcGFja2FnZXMvZGFlbW9uLWNvcmUvc3JjL3Byb2plY3QvUHJvamVjdE1hbmFnZXIudHMAPz8gZG9jcy9hcmNoaXZlLzIwMjYtMTEtMDktZG9jdW1lbnRhdGlvbi1yZWNvbmNpbGlhdGlvbi9jb21tYW5kcy8wMDAxLmpzb24APz8gZG9jcy9hcmNoaXZlLzIwMjYtMTEtMDktZG9jdW1lbnRhdGlvbi1yZWNvbmNpbGlhdGlvbi9jb21tYW5kcy8wMDAxLmpzb24uc2VhbC5qc29uAD8/IGRvY3MvYXJjaGl2ZS8yMDI2LTExLTA5LWRvY3VtZW50YXRpb24tcmVjb25jaWxpYXRpb24vcGxhbi5qc29uAD8/IGRvY3MvYXJjaGl2ZS8yMDI2LTExLTA5LWRvY3VtZW50YXRpb24tcmVjb25jaWxpYXRpb24vcHJlcGFyZS5janMAPz8gZG9jcy9hcmNoaXZlLzIwMjYtMTEtMDktZG9jdW1lbnRhdGlvbi1yZWNvbmNpbGlhdGlvbi9wcmlvci1maW5hbC1hY2NlcHRhbmNlLmpzb24APz8gZG9jcy9hcmNoaXZlLzIwMjYtMTEtMDktZG9jdW1lbnRhdGlvbi1yZWNvbmNpbGlhdGlvbi9wcmlvci1tYWluLWNpLWFjY2VwdGFuY2UuanNvbgA/PyBkb2NzL2FyY2hpdmUvMjAyNi0xMS0wOS1kb2N1bWVudGF0aW9uLXJlY29uY2lsaWF0aW9uL3ByaW9yLXJlYXNzZXNzbWVudC5qc29uAD8/IGRvY3MvYXJjaGl2ZS8yMDI2LTExLTA5LWRvY3VtZW50YXRpb24tcmVjb25jaWxpYXRpb24vcnVuLmNqcwA=",
+  "finished_utc": "2026-11-09T12:21:32.111Z",
+  "carrier_exit_code": 0,
+  "inner_exit_code": 0,
+  "numeric_exit_available": true,
+  "spawn_error": null,
+  "stdout_base64": "CiBSVU4gIHYzLjIuNCBEOi9jb2RlL1NwZWNGb3JnZS9wYWNrYWdlcy9kYWVtb24tY29yZQoKIOKckyB0ZXN0cy91bml0L3dvcmstaXRlbS1zdGF0dXMtYXV0aG9yaXR5LWRpYWdub3N0aWMudGVzdC50cyAoMiB0ZXN0cykgNG1zCiDinJMgdGVzdHMvdW5pdC9wcm9qZWN0LXNlc3Npb24tYm9vdHN0cmFwLnRlc3QudHMgKDE1IHRlc3RzKSA3NTNtcwogICDinJMgcHJvamVjdCBzZXNzaW9uIGJvb3RzdHJhcCBjb250cmFjdCA+IGtlZXBzIGJvb3RzdHJhcCBibG9ja2VkIHdoZW4gR2l0IGNhbm5vdCBwcm92aWRlIHRoZSBpbnZlbnRvcnkgIDM3M21zCgogVGVzdCBGaWxlcyAgMiBwYXNzZWQgKDIpCiAgICAgIFRlc3RzICAxNyBwYXNzZWQgKDE3KQogICBTdGFydCBhdCAgMjA6MjE6MjkKICAgRHVyYXRpb24gIDEuOTBzICh0cmFuc2Zvcm0gNDU4bXMsIHNldHVwIDBtcywgY29sbGVjdCA3ODVtcywgdGVzdHMgNzU3bXMsIGVudmlyb25tZW50IDFtcywgcHJlcGFyZSAxLjEwcykKCg==",
+  "stderr_base64": "JCB2aXRlc3QgcnVuIHRlc3RzL3VuaXQvcHJvamVjdC1zZXNzaW9uLWJvb3RzdHJhcC50ZXN0LnRzIHRlc3RzL3VuaXQvd29yay1pdGVtLXN0YXR1cy1hdXRob3JpdHktZGlhZ25vc3RpYy50ZXN0LnRzChtbMzNtVGhlIENKUyBidWlsZCBvZiBWaXRlJ3MgTm9kZSBBUEkgaXMgZGVwcmVjYXRlZC4gU2VlIGh0dHBzOi8vdml0ZS5kZXYvZ3VpZGUvdHJvdWJsZXNob290aW5nLmh0bWwjdml0ZS1janMtbm9kZS1hcGktZGVwcmVjYXRlZCBmb3IgbW9yZSBkZXRhaWxzLhtbMzltCg==",
+  "after_status_base64": "IE0gZG9jcy9ydWxlL3NwZWNmb3JnZS1kZXZlbG9wbWVudC1lcnJvci1sZWRnZXItYW5kLWV4cGVyaWVuY2UubWQAIE0gcGFja2FnZXMvZGFlbW9uLWNvcmUvc3JjL3Byb2plY3QvUHJvamVjdE1hbmFnZXIudHMAPz8gZG9jcy9hcmNoaXZlLzIwMjYtMTEtMDktZG9jdW1lbnRhdGlvbi1yZWNvbmNpbGlhdGlvbi9jb21tYW5kcy8wMDAxLmpzb24APz8gZG9jcy9hcmNoaXZlLzIwMjYtMTEtMDktZG9jdW1lbnRhdGlvbi1yZWNvbmNpbGlhdGlvbi9jb21tYW5kcy8wMDAxLmpzb24uc2VhbC5qc29uAD8/IGRvY3MvYXJjaGl2ZS8yMDI2LTExLTA5LWRvY3VtZW50YXRpb24tcmVjb25jaWxpYXRpb24vcGxhbi5qc29uAD8/IGRvY3MvYXJjaGl2ZS8yMDI2LTExLTA5LWRvY3VtZW50YXRpb24tcmVjb25jaWxpYXRpb24vcHJlcGFyZS5janMAPz8gZG9jcy9hcmNoaXZlLzIwMjYtMTEtMDktZG9jdW1lbnRhdGlvbi1yZWNvbmNpbGlhdGlvbi9wcmlvci1maW5hbC1hY2NlcHRhbmNlLmpzb24APz8gZG9jcy9hcmNoaXZlLzIwMjYtMTEtMDktZG9jdW1lbnRhdGlvbi1yZWNvbmNpbGlhdGlvbi9wcmlvci1tYWluLWNpLWFjY2VwdGFuY2UuanNvbgA/PyBkb2NzL2FyY2hpdmUvMjAyNi0xMS0wOS1kb2N1bWVudGF0aW9uLXJlY29uY2lsaWF0aW9uL3ByaW9yLXJlYXNzZXNzbWVudC5qc29uAD8/IGRvY3MvYXJjaGl2ZS8yMDI2LTExLTA5LWRvY3VtZW50YXRpb24tcmVjb25jaWxpYXRpb24vcnVuLmNqcwA="
+}

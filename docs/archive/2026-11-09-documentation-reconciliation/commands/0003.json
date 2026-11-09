@@ -1,0 +1,32 @@
+{
+  "run_id": "CODEX-SF-20261109-DOCUMENTATION-A01",
+  "mode": "CODEX_DIRECT",
+  "attempt_id": "DOC-RECONCILIATION-01",
+  "started_utc": "2026-11-09T12:21:44.751Z",
+  "cwd": "D:\\code\\SpecForge\\packages\\scope-gate",
+  "purpose": "existing-current-authority-source-regression",
+  "expected_writes": "Existing authority-source regression; test caches only, no deployment or product behavior changes",
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "test",
+    "--",
+    "tests/current-standard-authority-source.test.ts"
+  ],
+  "carrier_sha256": "d143cc2e058294ae86bbfc9187086367bf41c4cb16eab5e60e460f9f2191ae0f",
+  "entry_sources": [
+    {
+      "path": "D:\\code\\SpecForge\\packages\\scope-gate\\tests\\current-standard-authority-source.test.ts",
+      "sha256": "6be933c4ecb5c96bc026da904c29853d2aa1d14fa3c9967ccd5e95d5f2896b25"
+    }
+  ],
+  "before_status_base64": "IE0gZG9jcy9ydWxlL3NwZWNmb3JnZS1kZXZlbG9wbWVudC1lcnJvci1sZWRnZXItYW5kLWV4cGVyaWVuY2UubWQAIE0gcGFja2FnZXMvZGFlbW9uLWNvcmUvc3JjL3Byb2plY3QvUHJvamVjdE1hbmFnZXIudHMAPz8gZG9jcy9hcmNoaXZlLzIwMjYtMTEtMDktZG9jdW1lbnRhdGlvbi1yZWNvbmNpbGlhdGlvbi9jb21tYW5kcy8wMDAxLmpzb24APz8gZG9jcy9hcmNoaXZlLzIwMjYtMTEtMDktZG9jdW1lbnRhdGlvbi1yZWNvbmNpbGlhdGlvbi9jb21tYW5kcy8wMDAxLmpzb24uc2VhbC5qc29uAD8/IGRvY3MvYXJjaGl2ZS8yMDI2LTExLTA5LWRvY3VtZW50YXRpb24tcmVjb25jaWxpYXRpb24vY29tbWFuZHMvMDAwMi5qc29uAD8/IGRvY3MvYXJjaGl2ZS8yMDI2LTExLTA5LWRvY3VtZW50YXRpb24tcmVjb25jaWxpYXRpb24vY29tbWFuZHMvMDAwMi5qc29uLnNlYWwuanNvbgA/PyBkb2NzL2FyY2hpdmUvMjAyNi0xMS0wOS1kb2N1bWVudGF0aW9uLXJlY29uY2lsaWF0aW9uL3BsYW4uanNvbgA/PyBkb2NzL2FyY2hpdmUvMjAyNi0xMS0wOS1kb2N1bWVudGF0aW9uLXJlY29uY2lsaWF0aW9uL3ByZXBhcmUuY2pzAD8/IGRvY3MvYXJjaGl2ZS8yMDI2LTExLTA5LWRvY3VtZW50YXRpb24tcmVjb25jaWxpYXRpb24vcHJpb3ItZmluYWwtYWNjZXB0YW5jZS5qc29uAD8/IGRvY3MvYXJjaGl2ZS8yMDI2LTExLTA5LWRvY3VtZW50YXRpb24tcmVjb25jaWxpYXRpb24vcHJpb3ItbWFpbi1jaS1hY2NlcHRhbmNlLmpzb24APz8gZG9jcy9hcmNoaXZlLzIwMjYtMTEtMDktZG9jdW1lbnRhdGlvbi1yZWNvbmNpbGlhdGlvbi9wcmlvci1yZWFzc2Vzc21lbnQuanNvbgA/PyBkb2NzL2FyY2hpdmUvMjAyNi0xMS0wOS1kb2N1bWVudGF0aW9uLXJlY29uY2lsaWF0aW9uL3J1bi5janMA",
+  "finished_utc": "2026-11-09T12:21:49.311Z",
+  "carrier_exit_code": 0,
+  "inner_exit_code": 0,
+  "numeric_exit_available": true,
+  "spawn_error": null,
+  "stdout_base64": "CiBSVU4gIHYxLjYuMSBEOi9jb2RlL1NwZWNGb3JnZS9wYWNrYWdlcy9zY29wZS1nYXRlCgog4pyTIHRlc3RzL2N1cnJlbnQtc3RhbmRhcmQtYXV0aG9yaXR5LXNvdXJjZS50ZXN0LnRzICAoMiB0ZXN0cykgMzJtcwoKIFRlc3QgRmlsZXMgIDEgcGFzc2VkICgxKQogICAgICBUZXN0cyAgMiBwYXNzZWQgKDIpCiAgIFN0YXJ0IGF0ICAyMDoyMTo0NwogICBEdXJhdGlvbiAgMS40NXMgKHRyYW5zZm9ybSA0Nm1zLCBzZXR1cCAwbXMsIGNvbGxlY3QgNTdtcywgdGVzdHMgMzJtcywgZW52aXJvbm1lbnQgMG1zLCBwcmVwYXJlIDg5M21zKQoK",
+  "stderr_base64": "JCB2aXRlc3QgcnVuIHRlc3RzL2N1cnJlbnQtc3RhbmRhcmQtYXV0aG9yaXR5LXNvdXJjZS50ZXN0LnRzCg==",
+  "after_status_base64": "IE0gZG9jcy9ydWxlL3NwZWNmb3JnZS1kZXZlbG9wbWVudC1lcnJvci1sZWRnZXItYW5kLWV4cGVyaWVuY2UubWQAIE0gcGFja2FnZXMvZGFlbW9uLWNvcmUvc3JjL3Byb2plY3QvUHJvamVjdE1hbmFnZXIudHMAPz8gZG9jcy9hcmNoaXZlLzIwMjYtMTEtMDktZG9jdW1lbnRhdGlvbi1yZWNvbmNpbGlhdGlvbi9jb21tYW5kcy8wMDAxLmpzb24APz8gZG9jcy9hcmNoaXZlLzIwMjYtMTEtMDktZG9jdW1lbnRhdGlvbi1yZWNvbmNpbGlhdGlvbi9jb21tYW5kcy8wMDAxLmpzb24uc2VhbC5qc29uAD8/IGRvY3MvYXJjaGl2ZS8yMDI2LTExLTA5LWRvY3VtZW50YXRpb24tcmVjb25jaWxpYXRpb24vY29tbWFuZHMvMDAwMi5qc29uAD8/IGRvY3MvYXJjaGl2ZS8yMDI2LTExLTA5LWRvY3VtZW50YXRpb24tcmVjb25jaWxpYXRpb24vY29tbWFuZHMvMDAwMi5qc29uLnNlYWwuanNvbgA/PyBkb2NzL2FyY2hpdmUvMjAyNi0xMS0wOS1kb2N1bWVudGF0aW9uLXJlY29uY2lsaWF0aW9uL3BsYW4uanNvbgA/PyBkb2NzL2FyY2hpdmUvMjAyNi0xMS0wOS1kb2N1bWVudGF0aW9uLXJlY29uY2lsaWF0aW9uL3ByZXBhcmUuY2pzAD8/IGRvY3MvYXJjaGl2ZS8yMDI2LTExLTA5LWRvY3VtZW50YXRpb24tcmVjb25jaWxpYXRpb24vcHJpb3ItZmluYWwtYWNjZXB0YW5jZS5qc29uAD8/IGRvY3MvYXJjaGl2ZS8yMDI2LTExLTA5LWRvY3VtZW50YXRpb24tcmVjb25jaWxpYXRpb24vcHJpb3ItbWFpbi1jaS1hY2NlcHRhbmNlLmpzb24APz8gZG9jcy9hcmNoaXZlLzIwMjYtMTEtMDktZG9jdW1lbnRhdGlvbi1yZWNvbmNpbGlhdGlvbi9wcmlvci1yZWFzc2Vzc21lbnQuanNvbgA/PyBkb2NzL2FyY2hpdmUvMjAyNi0xMS0wOS1kb2N1bWVudGF0aW9uLXJlY29uY2lsaWF0aW9uL3J1bi5janMA"
+}

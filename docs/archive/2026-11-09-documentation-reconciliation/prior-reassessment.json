@@ -1,0 +1,226 @@
+{
+  "utc": "2026-11-09T12:10:26.050Z",
+  "finished_utc": "2026-11-09T12:10:30.082Z",
+  "execution_mode": "CODEX_DIRECT",
+  "run_id": "CODEX-SF-20261109-PLUGIN-REGISTRATION-A01",
+  "attempt_id": "REASSESSMENT-20261109T121026050Z",
+  "head": "b8bf67362fa0ab537d194719b908a1410a2f172a",
+  "branch": "main",
+  "live_remote_equal": true,
+  "worktree": "CLEAN",
+  "rule_read_evidence": [
+    {
+      "file": "docs/rule/specforge-active-development-rules.md",
+      "raw_sha256": "e7a3d5d648851bd2052ef0746a3ef83a422ee20284213291814974b3963e31a5",
+      "total_lines": 2668,
+      "normalized_reconstruction_equal": true,
+      "chunks": [
+        {
+          "first_line": 1,
+          "last_line": 400,
+          "sha256": "9d6fdc7d7a2d1f6e611985559f55d124bb7c2eaff5935e5c947d6bf5f6ed50f9"
+        },
+        {
+          "first_line": 401,
+          "last_line": 800,
+          "sha256": "6aca57fb0c25a107c999d010678a80391b3e3df8862a928c5004a1a947b4f84b"
+        },
+        {
+          "first_line": 801,
+          "last_line": 1200,
+          "sha256": "9e124026537dc57657e07ddc54552c193b58619e38a91c35bc2d71f2e8e21786"
+        },
+        {
+          "first_line": 1201,
+          "last_line": 1600,
+          "sha256": "e6f3f82eed5b31315568cf787cf9e324e40f35b287bb467357555dca6a78e9cc"
+        },
+        {
+          "first_line": 1601,
+          "last_line": 2000,
+          "sha256": "6881dedc487e8ca10ad72bf310cb8124aaecb3b59986ceed6527186c846e6397"
+        },
+        {
+          "first_line": 2001,
+          "last_line": 2400,
+          "sha256": "bb4cda048d47ee453f34ba1f403642c27c2e19ac1150b83a02bd4cd9dfa80721"
+        },
+        {
+          "first_line": 2401,
+          "last_line": 2668,
+          "sha256": "41a60520f2ead65db41c9e2818953f54e6d9bcf45025ca309c8adbc835934508"
+        }
+      ]
+    },
+    {
+      "file": "docs/product-specification/specforge-product-specification.md",
+      "raw_sha256": "37b52eca9e7f32787bff3ef529c955a712d4cd6c97969e5002f8d3c080ae6052",
+      "total_lines": 1696,
+      "normalized_reconstruction_equal": true,
+      "chunks": [
+        {
+          "first_line": 1,
+          "last_line": 400,
+          "sha256": "90f5eee0b8d55fb749bebcf7fa42fc0a98b29bd61d8f8bf74df5e632ae327d7b"
+        },
+        {
+          "first_line": 401,
+          "last_line": 800,
+          "sha256": "9f7f7e209a0c86a95d6993d57e7b24a1f05ab67d4dfabba98eabc398199b99e3"
+        },
+        {
+          "first_line": 801,
+          "last_line": 1200,
+          "sha256": "23c35b61737d7cdf69f5b4ed70efa7e797cff8e43a747a18f0793c37937f747d"
+        },
+        {
+          "first_line": 1201,
+          "last_line": 1600,
+          "sha256": "dc0e6119a001ea19aed1a404ce3e175bb1380250d268f63fc869dd32a44b735d"
+        },
+        {
+          "first_line": 1601,
+          "last_line": 1696,
+          "sha256": "de821c4dc7bfa6659356748ca4f75732cb576b7415b5a174e90eb98b66d89d62"
+        }
+      ]
+    },
+    {
+      "file": "docs/product-specification/authority-registry.md",
+      "raw_sha256": "5ba13ce20545eb660aa8556097f2d5cbdea0a018c46ce60674985784e87d9a1e",
+      "total_lines": 145,
+      "normalized_reconstruction_equal": true,
+      "chunks": [
+        {
+          "first_line": 1,
+          "last_line": 145,
+          "sha256": "f96c255c4c0a0e32380862f6573d8e6d35d8422924a0d9728afb360f4b5b06f7"
+        }
+      ]
+    },
+    {
+      "file": "docs/design/SpecForge架构一致性治理最终实施方案.md",
+      "raw_sha256": "956df3943a44d1b99636790a32e9b2a0dc266b7116f50b60b7b8c6f2614423ac",
+      "total_lines": 233,
+      "normalized_reconstruction_equal": true,
+      "chunks": [
+        {
+          "first_line": 1,
+          "last_line": 233,
+          "sha256": "634dd431a58c972e6059e86aee47524e16a0dea45f666ea6dbee71b2de0d4879"
+        }
+      ]
+    },
+    {
+      "file": "docs/rule/specforge-execution-mode-and-evidence-protocol.md",
+      "raw_sha256": "166db21aecece99aa7787bc62978a1bdb89c8b17750182ea1030fedd17a063ef",
+      "total_lines": 183,
+      "normalized_reconstruction_equal": true,
+      "chunks": [
+        {
+          "first_line": 1,
+          "last_line": 183,
+          "sha256": "ad5805c4d203c5f3aba8cf506fff83c7b2aa8bb6a38ea4e871b49c1414895ba7"
+        }
+      ]
+    }
+  ],
+  "experience_rules": [
+    "EXP-001",
+    "EXP-004",
+    "EXP-007",
+    "EXP-008",
+    "EXP-017",
+    "EXP-026",
+    "EXP-033",
+    "EXP-035",
+    "EXP-037",
+    "EXP-086",
+    "EXP-261",
+    "EXP-276",
+    "EXP-282",
+    "EXP-287"
+  ],
+  "historical_ledger_search": [
+    "EXP-121",
+    "EXP-122",
+    "ERR-2106",
+    "ERR-2107",
+    "ERR-2108"
+  ],
+  "public_seal_members_revalidated": 1312,
+  "qualified_source_unchanged": true,
+  "platform_reports": [
+    {
+      "host": "windows",
+      "all_four_numeric_exits": 0,
+      "workspace_owners": 11,
+      "root_tests": 753,
+      "artifact_id": 13667560604
+    },
+    {
+      "host": "linux",
+      "all_four_numeric_exits": 0,
+      "workspace_owners": 11,
+      "root_tests": 753,
+      "artifact_id": 13666248541
+    },
+    {
+      "host": "macos",
+      "all_four_numeric_exits": 0,
+      "workspace_owners": 11,
+      "root_tests": 753,
+      "artifact_id": 13666991168
+    }
+  ],
+  "managed_files_exact": 117,
+  "health": {
+    "status": "ok",
+    "pid": 39204,
+    "version": "1.0.25"
+  },
+  "findings": [
+    {
+      "id": "ASSESS-STATE-01",
+      "classification": "CONFIRMED",
+      "responsibility": "Execution status projection",
+      "file": "docs/project-status.md",
+      "problem": "Current phase and next legal action still describe already completed publication and final CI.",
+      "requirements": [
+        "SPS22.2",
+        "EXP-033",
+        "EXP-035",
+        "EXP-037",
+        "GOV-CONT-001"
+      ],
+      "effect": "Stale resume instruction; not proof of daemon failure."
+    },
+    {
+      "id": "ASSESS-TEXT-01",
+      "classification": "CONFIRMED",
+      "responsibility": "Derived source comment",
+      "file": "packages/daemon-core/src/project/ProjectManager.ts",
+      "problem": "Current layout comment still labels it authoritative V6, while executable path is current project/spec_manifest.json.",
+      "requirements": [
+        "SPS0.1",
+        "SPS19.19",
+        "EXP-026"
+      ],
+      "effect": "Misleading maintenance text; no observed layout behavior divergence."
+    }
+  ],
+  "runtime_conclusion": "SUPPORTED_AND_CURRENTLY_HEALTHY_WITHIN_DECLARED_RELEASE_SCOPE",
+  "overall_conformance": "NOT_UNQUALIFIED_PASS_TWO_DOCUMENTATION_DEVIATIONS",
+  "limits": [
+    "No new model-driven business workflow or interactive UI acceptance executed.",
+    "User existing OpenCode process reload cannot be inferred from installed file identity.",
+    "Prior candidate WAL timeout cause remains INSUFFICIENT_EVIDENCE; final main all jobs succeeded on attempt1.",
+    "D23 is Windows x64 fixed single-process readonly Node; arbitrary shell/build/third-party tests are intentionally unsupported."
+  ],
+  "writes": {
+    "truth_source": [],
+    "tracked_repository": [],
+    "runtime_observer": "Read-only health may emit autonomous daemon diagnostics; no restart, model, business tool or initialization.",
+    "external_evidence": "Ignored publication-live reassessment driver/result and command receipt only."
+  }
+}
