@@ -1,0 +1,26 @@
+name: Windows WAL temp drive control
+on:
+  push:
+    branches: [codex/windows-wal-drive-diagnosis]
+permissions:
+  contents: read
+jobs:
+  compare:
+    runs-on: windows-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: scripts/ci
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.19.0'
+      - name: Compare system and runner temporary filesystems
+        env:
+          SF_WAL_DRIVE_OUTPUT: ${{ runner.temp }}/wal-drive-control
+        run: node scripts/ci/wal-drive-control.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: windows-wal-drive-control
+          path: ${{ runner.temp }}/wal-drive-control
