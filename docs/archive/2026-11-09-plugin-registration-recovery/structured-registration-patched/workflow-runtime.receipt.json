@@ -1,0 +1,20 @@
+{
+  "owner": "workflow-runtime",
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "test",
+    "--",
+    "--maxWorkers=1",
+    "--minWorkers=1",
+    "--reporter=json",
+    "--outputFile=D:\\code\\SpecForge\\docs\\archive\\2026-11-09-plugin-registration-recovery\\structured-registration-patched\\workflow-runtime.vitest.json"
+  ],
+  "cwd": "D:\\code\\SpecForge\\.registration-patched-a01\\packages\\workflow-runtime",
+  "context_sha256": "65233dc92b4b90f25a8f647f3daa49d91d0a841fe4611f06ce054cf73cce24eb",
+  "started_utc": "2026-11-09T09:28:54.881Z",
+  "finished_utc": "2026-11-09T09:29:39.539Z",
+  "exit": 0,
+  "stdout_sha256": "91969c33d8c0c8ff7ed55ff064da8361af7f53a62ecbde36668050d6478369d7",
+  "stderr_sha256": "324a656786085d9c78b327338504697298c65dea8e9f7e7f6f3918fd2886fb95"
+}

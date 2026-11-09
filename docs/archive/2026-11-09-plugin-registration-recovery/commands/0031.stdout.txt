@@ -1,0 +1,1 @@
+{"label":"ci-b6-full-windows","entries":25,"uncompressed_bytes":3973504,"result":"EXTRACTED_WITHOUT_EXECUTING_CONTENT"}

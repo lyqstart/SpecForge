@@ -1,0 +1,17 @@
+{
+  "utc": "2026-11-09T07:11:10.242Z",
+  "classification": "EXPECTED_COLLECTED_REGRESSION_FAILURE_ON_UNPATCHED_SOURCE",
+  "reports": [
+    {
+      "name": "first-start",
+      "exit": 1,
+      "failed_cases": 6
+    },
+    {
+      "name": "transport",
+      "exit": 1,
+      "failed_cases": 12
+    }
+  ],
+  "production_sources_unchanged": true
+}

@@ -1,0 +1,20 @@
+{
+  "phase": "workspace",
+  "cwd": "D:\\a\\SpecForge\\SpecForge",
+  "executable": "C:\\Users\\runneradmin\\.bun\\bin\\bun.exe",
+  "args": [
+    "scripts/test-workspace.ts"
+  ],
+  "started_utc": "2026-11-09T09:50:01.282Z",
+  "context_sha256": "312efd771658fb9aac041f44615a20ed51bca8fc4d923b810eb99b572f385173",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES:build/test outputs;EXTERNAL_EVIDENCE_WRITES:owned runner-temp report;no tracked source changes",
+  "finished_utc": "2026-11-09T09:59:28.799Z",
+  "inner_exit_code": 0,
+  "carrier_exit_code": 0,
+  "success": true,
+  "signal": null,
+  "spawn_error": null,
+  "source_unchanged": true,
+  "stdout_sha256": "97f151c8e8c7a03dc7cb940b6aa9d98e690c3bb683d0ce473ad0b278ed22d851",
+  "stderr_sha256": "ecdd8ae7fcc6219442b027951d03e3aed207eb49250419aa2da765cfc794d16f"
+}

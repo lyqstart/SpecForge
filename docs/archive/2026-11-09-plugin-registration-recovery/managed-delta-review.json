@@ -1,0 +1,178 @@
+{
+  "utc": "2026-11-09T09:53:26.136Z",
+  "candidate": "commit-b6e07d014828d0bc77af83ba3f1a6d4e57dcad80",
+  "changed": 21,
+  "template_eol_only": 16,
+  "semantic_template_changes": 0,
+  "rows": [
+    {
+      "target": "sf-user/bin/specforged.exe",
+      "classification": "QUALIFIED_PLUGIN_OR_CONSUMING_DAEMON_RUNTIME",
+      "before_sha256": "15161310e87c9d09502bcf442754b3906c54e77b0f0176ce10e7656ee77375f7",
+      "after_sha256": "4dc257c7a50ca8859e0b86ffcebfcb826960376f5d2511981f568a9891e3a015",
+      "before_bytes": 110901760,
+      "after_bytes": 110901760
+    },
+    {
+      "target": "sf-user/bin/verification/assets.json",
+      "classification": "UNCHANGED_VERIFICATION_PROGRAM_AND_ASSET_HASH_METADATA",
+      "before_sha256": "b8af4a75af3c659d99fa2211359bf4a632c4b212695e538c774e5b9178cd598d",
+      "after_sha256": "0fa01fb8e7afbabe6748317ea4dcf0ddb7cc09c1b0b8f7fab98b68781c49cdbf",
+      "before_bytes": 494,
+      "after_bytes": 494
+    },
+    {
+      "target": "sf-user/bin/verification/specforge-verify.exe",
+      "classification": "UNCHANGED_VERIFICATION_PROGRAM_AND_ASSET_HASH_METADATA",
+      "before_sha256": "f567c0e6f3254afbdf6f5a86eee2017acc88ff28ff54d8ba2639cadf82ba9306",
+      "after_sha256": "994e4c2ef024d25e8efc51f757df4cd3939baba04c228617c95d1a017fa60336",
+      "before_bytes": 343040,
+      "after_bytes": 343040
+    },
+    {
+      "target": "sf-user/lib/sf_plugin_client.ts",
+      "classification": "QUALIFIED_PLUGIN_OR_CONSUMING_DAEMON_RUNTIME",
+      "before_sha256": "50ad4f1f2d463046b4c542f228b8be2220a9d21820eca616dc2d5c7d6f0d0c39",
+      "after_sha256": "90063425b7460834d8ae6f23d537960be6ed173ac3adeb227b7e8d87008931ee",
+      "before_bytes": 15712,
+      "after_bytes": 17181
+    },
+    {
+      "target": "sf-user/lib/sf_thin_plugin.ts",
+      "classification": "QUALIFIED_PLUGIN_OR_CONSUMING_DAEMON_RUNTIME",
+      "before_sha256": "f7e392aaf2022cb0595c05dc262736f99b3ec3bcf1fc7b804145256f93c7c8c6",
+      "after_sha256": "f1d4016bc986f79432dba9fd25ed713c6e86a579cabf818244a314b530735d12",
+      "before_bytes": 7811,
+      "after_bytes": 10521
+    },
+    {
+      "target": "sf-user/templates/project-rules/_BASE.md",
+      "classification": "EXACT_TEXT_EQUAL_AFTER_CRLF_LF_NORMALIZATION",
+      "before_sha256": "7ca607ad261434bb1d4c8915af44d1cc5e7753cbad7b6bac865fd4c4308a57c3",
+      "after_sha256": "b59b32172530786936ded2b8c7971cf721b37fb285a93910b9fc809628109bcc",
+      "before_bytes": 5894,
+      "after_bytes": 6044
+    },
+    {
+      "target": "sf-user/templates/project-rules/databases/mongodb.md",
+      "classification": "EXACT_TEXT_EQUAL_AFTER_CRLF_LF_NORMALIZATION",
+      "before_sha256": "d61ace659d17221ea37aaa7aa6fc4c2a95c204ffd8570d55f132cad81aac01aa",
+      "after_sha256": "d95fe2002ba78a6548a40fce6ee3ed927b7fc831bab19a6d367556279cf7a611",
+      "before_bytes": 1374,
+      "after_bytes": 1420
+    },
+    {
+      "target": "sf-user/templates/project-rules/databases/mysql.md",
+      "classification": "EXACT_TEXT_EQUAL_AFTER_CRLF_LF_NORMALIZATION",
+      "before_sha256": "067f34917f9198974365c94d75f773eec16eba01a972f75e8623e49049924b83",
+      "after_sha256": "028f6858560a83623ec3ff60fbc5e5d02479278704623808783571496dfe3c46",
+      "before_bytes": 1533,
+      "after_bytes": 1578
+    },
+    {
+      "target": "sf-user/templates/project-rules/databases/postgresql.md",
+      "classification": "EXACT_TEXT_EQUAL_AFTER_CRLF_LF_NORMALIZATION",
+      "before_sha256": "93236c5c7c8c9c917d286a8146b83952f7d1e4134c106ae52587ec3a847e70f9",
+      "after_sha256": "0a6f4178b7ffed1208ee708f9c11a1c886f09626ed419b36984b59e88ece5273",
+      "before_bytes": 2484,
+      "after_bytes": 2555
+    },
+    {
+      "target": "sf-user/templates/project-rules/databases/redis.md",
+      "classification": "EXACT_TEXT_EQUAL_AFTER_CRLF_LF_NORMALIZATION",
+      "before_sha256": "deec6933e953ea43e0a8c4b89407e6585dc89cc25a7599d4f17dc4f229537792",
+      "after_sha256": "7cdba9795de44df074305465c084d27641ccca85c493ddc9b19702ffe65fa232",
+      "before_bytes": 1616,
+      "after_bytes": 1664
+    },
+    {
+      "target": "sf-user/templates/project-rules/databases/sqlite.md",
+      "classification": "EXACT_TEXT_EQUAL_AFTER_CRLF_LF_NORMALIZATION",
+      "before_sha256": "84b7c182b186f9cc6a093c71bafdd114995394c69104baba9171abbdd68317b3",
+      "after_sha256": "74d65173f1bc11ce3f95d742b11e8b8faf1df353456d86434ad14a812e305bf0",
+      "before_bytes": 1608,
+      "after_bytes": 1661
+    },
+    {
+      "target": "sf-user/templates/project-rules/frameworks/fastapi.md",
+      "classification": "EXACT_TEXT_EQUAL_AFTER_CRLF_LF_NORMALIZATION",
+      "before_sha256": "ec62d06a7c42f9528642b098fc652cf9f8c79b193f2ae0ed7c62909a5d843fa5",
+      "after_sha256": "1277b6df338b552702d181bf02e40059f16ac2642831d486f12188835c923156",
+      "before_bytes": 2014,
+      "after_bytes": 2061
+    },
+    {
+      "target": "sf-user/templates/project-rules/frameworks/react.md",
+      "classification": "EXACT_TEXT_EQUAL_AFTER_CRLF_LF_NORMALIZATION",
+      "before_sha256": "f3a6604d5ddceadb2e0f032ae77cb1d12df6fb60caa9ecf7a3ce118f4794a767",
+      "after_sha256": "196d78f67e6f503cda32d5361f1836956751e4e7aba7277e80e5fe82131c181b",
+      "before_bytes": 2501,
+      "after_bytes": 2568
+    },
+    {
+      "target": "sf-user/templates/project-rules/frameworks/spring-boot.md",
+      "classification": "EXACT_TEXT_EQUAL_AFTER_CRLF_LF_NORMALIZATION",
+      "before_sha256": "265316f3e0f7645595d7298a7c208cc0dc06ad56d8c34050afc04314c1e9c2dc",
+      "after_sha256": "8158a8c5e67b9a55d88b583b3fa329d4e91b830c6b4ebd9894236ee494d89e10",
+      "before_bytes": 2100,
+      "after_bytes": 2153
+    },
+    {
+      "target": "sf-user/templates/project-rules/frameworks/vue.md",
+      "classification": "EXACT_TEXT_EQUAL_AFTER_CRLF_LF_NORMALIZATION",
+      "before_sha256": "668bdd5f4758431833176339e88bb3e49a24e4f0debdd0729cce213675f4e21b",
+      "after_sha256": "c49451da047b8957682fe9fc8ce69de499df1db2c8a54fbaa200601afa6f2199",
+      "before_bytes": 2055,
+      "after_bytes": 2111
+    },
+    {
+      "target": "sf-user/templates/project-rules/infra/ci-github-actions.md",
+      "classification": "EXACT_TEXT_EQUAL_AFTER_CRLF_LF_NORMALIZATION",
+      "before_sha256": "00d8441a3ca5fce99e536ceb322ebb45bde575d9b2430f20672998362c5236f7",
+      "after_sha256": "681478fef262dae33418cac12ca162d161fbb86014fa6d418365f8e1a524c243",
+      "before_bytes": 1830,
+      "after_bytes": 1886
+    },
+    {
+      "target": "sf-user/templates/project-rules/infra/docker.md",
+      "classification": "EXACT_TEXT_EQUAL_AFTER_CRLF_LF_NORMALIZATION",
+      "before_sha256": "2cd8d263809d1f09320a95f9bd998671acb5f2ee0726f1a7611a923e57cf0f3b",
+      "after_sha256": "f5c6418bb834e1b5204c5bb064e1c8be5ebf83537ed9d8e61f9c502ce75509b8",
+      "before_bytes": 1876,
+      "after_bytes": 1938
+    },
+    {
+      "target": "sf-user/templates/project-rules/languages/go.md",
+      "classification": "EXACT_TEXT_EQUAL_AFTER_CRLF_LF_NORMALIZATION",
+      "before_sha256": "1d337356d0a1e54658a8be3b51e69a8c6c06c169d7d15b4a73177e709f6319e9",
+      "after_sha256": "9f62df0b38d81a784d62de58b21878ce1c038d06454bd877e015438af2010d35",
+      "before_bytes": 3096,
+      "after_bytes": 3200
+    },
+    {
+      "target": "sf-user/templates/project-rules/languages/java.md",
+      "classification": "EXACT_TEXT_EQUAL_AFTER_CRLF_LF_NORMALIZATION",
+      "before_sha256": "7621be9820a06b46b2be2a54bac773107e76418ffccafb70040258f78539f5d3",
+      "after_sha256": "1e6794350ffd08c1028f6e3dc3092034f880f8dd3ab9e9282bd498a416e72da3",
+      "before_bytes": 3462,
+      "after_bytes": 3570
+    },
+    {
+      "target": "sf-user/templates/project-rules/languages/nodejs.md",
+      "classification": "EXACT_TEXT_EQUAL_AFTER_CRLF_LF_NORMALIZATION",
+      "before_sha256": "0592f8ecf0625d60490ac9d7e7d75a583db902f8ff381696568b1a4e7fe9b739",
+      "after_sha256": "899c5c9a6bdaf26a0edb656add578ef61d73f2c8a06aefa86c3dc6e75e141ef2",
+      "before_bytes": 4319,
+      "after_bytes": 4445
+    },
+    {
+      "target": "sf-user/templates/project-rules/languages/python.md",
+      "classification": "EXACT_TEXT_EQUAL_AFTER_CRLF_LF_NORMALIZATION",
+      "before_sha256": "9a04679b1df16689cf712beb7146925cee513971dbaf325e10df1fadc44b8eaa",
+      "after_sha256": "60fb2aaaceeeebf9eec2eeb0d4a34aa441920b5dac68b321912b0fcba06312ba",
+      "before_bytes": 4281,
+      "after_bytes": 4410
+    }
+  ],
+  "contract": "Official same-version upgrade --force repairs the complete qualified117-file platform payload. Platform checkout CRLF/LF differences are explicitly reviewed, not mistaken for authored template edits. Private/unmanaged/user-modified files remain excluded and guarded."
+}

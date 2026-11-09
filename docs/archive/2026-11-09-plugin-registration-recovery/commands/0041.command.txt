@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261109-PLUGIN-REGISTRATION-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-09-plugin-registration-recovery/prepare-deployment-readiness.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "prepare-exact-qualified-deployment-readiness",
+  "expected_writes": "Read-only exact adopted source/current117/source117/native lineage/user-drift checks; immutable reviewed readiness only",
+  "started_utc": "2026-11-09T10:09:47.557Z",
+  "carrier_source_sha256": "0d4cc1c05dd2ab6f7802fdddb69880fc5464ffe4c397c123505511b207c327c0",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-09-plugin-registration-recovery\\prepare-deployment-readiness.cjs",
+      "sha256": "12eb769846ab6e0d14bca213a08f09612e5adbf09a58d4b947001e5160c6888e",
+      "size": 2388,
+      "extension": ".cjs"
+    }
+  ]
+}

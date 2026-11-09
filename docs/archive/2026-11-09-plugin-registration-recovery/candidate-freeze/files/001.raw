@@ -1,0 +1,179 @@
+name: Code Quality
+
+# 触发时机：main 与 codex 工作分支推送；保留已有平台事件兼容配置
+on:
+  push:
+    branches: [main, 'codex/**']
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+env:
+  GIT_CONFIG_COUNT: '1'
+  GIT_CONFIG_KEY_0: core.longpaths
+  GIT_CONFIG_VALUE_0: 'true'
+
+jobs:
+  # ─── Windows 源码行尾治理 ────────────────────────────────────────────────────
+  windows-line-ending-governance:
+    name: Windows 源码 LF 检出治理
+    runs-on: windows-latest
+    timeout-minutes: 5
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 验证源码在索引和 Windows 工作树中均为 LF
+        shell: pwsh
+        run: |
+          $patterns = @(
+            '*.ts',
+            '*.tsx',
+            '*.mts',
+            '*.cts',
+            '*.js',
+            '*.jsx',
+            '*.mjs',
+            '*.cjs'
+          )
+
+          $eolState = git ls-files --eol -- $patterns ':(exclude)docs/archive/**' ':(exclude).patch-backups/**' ':(exclude).specforge/**'
+          $violations = @(
+            $eolState | Where-Object {
+              $_ -notmatch '^i/lf\s+w/lf\s+attr/text eol=lf\s+'
+            }
+          )
+
+          if ($violations.Count -gt 0) {
+            Write-Error '以下源码文件未同时满足 index=LF、Windows worktree=LF、attribute=eol=lf：'
+            $violations | ForEach-Object { Write-Error $_ }
+            exit 1
+          }
+
+          Write-Host "Validated $($eolState.Count) source files: index=LF, worktree=LF, attribute=eol=lf."
+
+  # ─── 异步资源规范审查 ────────────────────────────────────────────────────────
+  async-resource-audit:
+    name: 异步资源规范审查
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+      - name: 安装 Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: '1.3.14'
+      - name: 安装依赖
+        run: bun install --frozen-lockfile
+      - name: 运行异步资源规范审查
+        run: bun run scripts/audit-async-resources.ts
+        # 脚本发现 error 级别问题时返回 exit code 1，GitHub Actions 自动标记失败
+
+  # ─── 工作流文档同步检查 ──────────────────────────────────────────────────────
+  workflow-docs-sync:
+    name: 工作流文档同步检查
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+      - name: 安装 Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: '1.3.14'
+      - name: 安装依赖
+        run: bun install --frozen-lockfile
+      - name: Verify workflow docs in sync with JSON
+        run: bun run check-workflows
+
+  # Actual full regression and complete lint on every supported host.
+  test:
+    name: Full lint/build/regression (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+      - name: 安装 Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24.19.0'
+      - name: 安装 Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: '1.3.14'
+      - name: Bind pinned Windows verification Node
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: '"SPECFORGE_VERIFICATION_NODE_SOURCE=$((Get-Command node).Source)" >> $env:GITHUB_ENV'
+      - name: 安装依赖
+        run: bun install --frozen-lockfile
+      - name: 构建当前发布 workspace
+        env:
+          SPECFORGE_CI_REPORT_DIR: ${{ runner.temp }}/specforge-full-regression
+        run: node scripts/run-ci-regression.mjs build
+      - name: 完整 ESLint
+        env:
+          SPECFORGE_CI_REPORT_DIR: ${{ runner.temp }}/specforge-full-regression
+        run: node scripts/run-ci-regression.mjs lint
+      - name: Typecheck deployable Thin Plugin helpers
+        run: bun run typecheck:plugin-client
+      - name: 运行当前发布 workspace 测试
+        env:
+          SPECFORGE_CI_REPORT_DIR: ${{ runner.temp }}/specforge-full-regression
+        run: node scripts/run-ci-regression.mjs workspace
+      - name: 运行当前 Root 测试
+        env:
+          SPECFORGE_CI_REPORT_DIR: ${{ runner.temp }}/specforge-full-regression
+        run: node scripts/run-ci-regression.mjs root
+      - name: Upload complete raw regression evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: full-regression-evidence-${{ matrix.os }}
+          path: ${{ runner.temp }}/specforge-full-regression
+          if-no-files-found: error
+          retention-days: 14
+
+  # ─── 硬编码路径 Lint ────────────────────────────────────────────────────────
+  lint-hardcoded-paths:
+    name: 硬编码路径 Lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+      - name: 安装 Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: '1.3.14'
+      - name: 安装依赖
+        run: bun install --frozen-lockfile
+      - name: 运行硬编码路径 Lint
+        run: bun run scripts/lint/check-hardcoded-paths.ts
+
+  # ─── 目录布局一致性检查 ──────────────────────────────────────────────────────
+  render-layout-consistency:
+    name: 目录布局一致性检查
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+      - name: 安装 Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: '1.3.14'
+      - name: 安装依赖
+        run: bun install --frozen-lockfile
+      - name: 生成目录布局
+        run: bun run scripts/render-layout.ts
+      - name: 检查生成物与提交一致
+        run: git diff --exit-code -- README.md AGENTS.md docs/conventions/directory-layout.md

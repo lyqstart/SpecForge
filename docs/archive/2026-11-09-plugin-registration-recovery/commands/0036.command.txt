@@ -1,0 +1,24 @@
+{
+  "run_id": "CODEX-SF-20261109-PLUGIN-REGISTRATION-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-09-plugin-registration-recovery/verify-platform-ci.cjs",
+    "candidate",
+    "b6e07d014828d0bc77af83ba3f1a6d4e57dcad80"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "verify-frozen-candidate-three-platform-primary-evidence",
+  "expected_writes": "Read-only source/runtime/lock/GitHub job/raw report SHA/numeric phase verification; earlier timeout remains explicitly preserved",
+  "started_utc": "2026-11-09T10:06:13.910Z",
+  "carrier_source_sha256": "0d4cc1c05dd2ab6f7802fdddb69880fc5464ffe4c397c123505511b207c327c0",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-09-plugin-registration-recovery\\verify-platform-ci.cjs",
+      "sha256": "7fd8967ae18d777e9ef93d81467a308ff653e7d1ed456ff0eb506def9cbe6f02",
+      "size": 5145,
+      "extension": ".cjs"
+    }
+  ]
+}

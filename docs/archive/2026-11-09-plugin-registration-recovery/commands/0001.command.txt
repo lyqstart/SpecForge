@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261109-PLUGIN-REGISTRATION-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-09-plugin-registration-recovery/activate-phase.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "activate-authorized-plugin-repair-phase",
+  "expected_writes": "Only scoped execution metadata, archive-delivery/ignore rules and EXP008/ERR2106 governance record; no product implementation writes",
+  "started_utc": "2026-11-09T07:04:30.495Z",
+  "carrier_source_sha256": "0d4cc1c05dd2ab6f7802fdddb69880fc5464ffe4c397c123505511b207c327c0",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-09-plugin-registration-recovery\\activate-phase.cjs",
+      "sha256": "41953a5ac2bfc8e18844b804b395386dbbc898c4ad0d72dbd8c58c50cc010b3e",
+      "size": 5579,
+      "extension": ".cjs"
+    }
+  ]
+}

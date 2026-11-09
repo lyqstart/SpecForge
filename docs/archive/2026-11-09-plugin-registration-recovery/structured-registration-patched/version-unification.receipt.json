@@ -1,0 +1,19 @@
+{
+  "owner": "version-unification",
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "test",
+    "--",
+    "--maxWorkers=1",
+    "--reporter=json",
+    "--outputFile=D:\\code\\SpecForge\\docs\\archive\\2026-11-09-plugin-registration-recovery\\structured-registration-patched\\version-unification.vitest.json"
+  ],
+  "cwd": "D:\\code\\SpecForge\\.registration-patched-a01\\packages\\version-unification",
+  "context_sha256": "65233dc92b4b90f25a8f647f3daa49d91d0a841fe4611f06ce054cf73cce24eb",
+  "started_utc": "2026-11-09T09:26:54.243Z",
+  "finished_utc": "2026-11-09T09:26:54.998Z",
+  "exit": 0,
+  "stdout_sha256": "af2f5b040a18f49d1eb4c1e0f6e0a8e74a1ab2c9f59502f0a551cfd4a6fcf5bc",
+  "stderr_sha256": "b25edb1ddfc6a72cf1255bd2dfd6e1a2306e909dbdfed04a7fafba2c6afd137f"
+}

@@ -1,0 +1,113 @@
+{
+  "utc": "2026-11-09T10:09:17.177Z",
+  "commit": "051ad5bff26e5398240fa97694ac5e349e6f9ad8",
+  "qualified_runtime_source": "b6e07d014828d0bc77af83ba3f1a6d4e57dcad80",
+  "files": [
+    ".gitattributes",
+    ".github/workflows/code-quality.yml",
+    ".gitignore",
+    "docs/product-specification/specforge-product-specification.md",
+    "docs/project-status.md",
+    "docs/rule/specforge-active-development-rules.md",
+    "docs/rule/specforge-development-error-ledger-and-experience.md",
+    "package.json",
+    "packages/daemon-core/tests/integration/thin-plugin-first-start-http.test.ts",
+    "packages/scope-gate/tests/thin-plugin-first-start-recovery.test.ts",
+    "packages/service-management/src/plugin/reconnecting-daemon-client.ts",
+    "packages/service-management/tests/unit/registration-error-contract.test.ts",
+    "scripts/tsconfig.plugin-client.json",
+    "setup/userlevel-opencode/scripts/lib/sf_plugin_client.ts",
+    "setup/userlevel-opencode/scripts/lib/sf_thin_plugin.ts"
+  ],
+  "commands": [
+    {
+      "args": [
+        "branch",
+        "--show-current"
+      ],
+      "utc": "2026-11-09T10:09:15.863Z",
+      "exit": 0,
+      "stdout": "codex/plugin-registration-recovery-delivery\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "rev-parse",
+        "HEAD"
+      ],
+      "utc": "2026-11-09T10:09:15.916Z",
+      "exit": 0,
+      "stdout": "68acd63c98137abfbbf7f189e91093ba8f32814c\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "diff",
+        "--cached",
+        "--name-only"
+      ],
+      "utc": "2026-11-09T10:09:15.976Z",
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "add",
+        "--",
+        ".gitattributes",
+        ".github/workflows/code-quality.yml",
+        ".gitignore",
+        "docs/product-specification/specforge-product-specification.md",
+        "docs/project-status.md",
+        "docs/rule/specforge-active-development-rules.md",
+        "docs/rule/specforge-development-error-ledger-and-experience.md",
+        "package.json",
+        "packages/daemon-core/tests/integration/thin-plugin-first-start-http.test.ts",
+        "packages/scope-gate/tests/thin-plugin-first-start-recovery.test.ts",
+        "packages/service-management/src/plugin/reconnecting-daemon-client.ts",
+        "packages/service-management/tests/unit/registration-error-contract.test.ts",
+        "scripts/tsconfig.plugin-client.json",
+        "setup/userlevel-opencode/scripts/lib/sf_plugin_client.ts",
+        "setup/userlevel-opencode/scripts/lib/sf_thin_plugin.ts"
+      ],
+      "utc": "2026-11-09T10:09:16.243Z",
+      "exit": 0,
+      "stdout": "",
+      "stderr": "warning: in the working copy of '.gitignore', LF will be replaced by CRLF the next time Git touches it\nwarning: in the working copy of 'docs/product-specification/specforge-product-specification.md', LF will be replaced by CRLF the next time Git touches it\nwarning: in the working copy of 'docs/rule/specforge-active-development-rules.md', LF will be replaced by CRLF the next time Git touches it\nwarning: in the working copy of 'docs/rule/specforge-development-error-ledger-and-experience.md', LF will be replaced by CRLF the next time Git touches it\nwarning: in the working copy of 'scripts/tsconfig.plugin-client.json', LF will be replaced by CRLF the next time Git touches it\n"
+    },
+    {
+      "args": [
+        "diff",
+        "--cached",
+        "--name-only"
+      ],
+      "utc": "2026-11-09T10:09:16.304Z",
+      "exit": 0,
+      "stdout": ".gitattributes\n.github/workflows/code-quality.yml\n.gitignore\ndocs/product-specification/specforge-product-specification.md\ndocs/project-status.md\ndocs/rule/specforge-active-development-rules.md\ndocs/rule/specforge-development-error-ledger-and-experience.md\npackage.json\npackages/daemon-core/tests/integration/thin-plugin-first-start-http.test.ts\npackages/scope-gate/tests/thin-plugin-first-start-recovery.test.ts\npackages/service-management/src/plugin/reconnecting-daemon-client.ts\npackages/service-management/tests/unit/registration-error-contract.test.ts\nscripts/tsconfig.plugin-client.json\nsetup/userlevel-opencode/scripts/lib/sf_plugin_client.ts\nsetup/userlevel-opencode/scripts/lib/sf_thin_plugin.ts\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "commit",
+        "-m",
+        "fix(plugin): prevent uninitialized registration storms and recover after init"
+      ],
+      "utc": "2026-11-09T10:09:17.126Z",
+      "exit": 0,
+      "stdout": "[codex/plugin-registration-recovery-delivery 051ad5bf] fix(plugin): prevent uninitialized registration storms and recover after init\n 15 files changed, 607 insertions(+), 64 deletions(-)\n create mode 100644 packages/daemon-core/tests/integration/thin-plugin-first-start-http.test.ts\n create mode 100644 packages/scope-gate/tests/thin-plugin-first-start-recovery.test.ts\n create mode 100644 packages/service-management/tests/unit/registration-error-contract.test.ts\n create mode 100644 scripts/tsconfig.plugin-client.json\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "rev-parse",
+        "HEAD"
+      ],
+      "utc": "2026-11-09T10:09:17.177Z",
+      "exit": 0,
+      "stdout": "051ad5bff26e5398240fa97694ac5e349e6f9ad8\n",
+      "stderr": ""
+    }
+  ],
+  "publication": "LOCAL_ONLY; archive/evidence closure and deployment still pending"
+}

@@ -1,0 +1,21 @@
+{
+  "utc": "2026-11-09T07:11:30.573Z",
+  "files": [
+    {
+      "file": "setup/userlevel-opencode/scripts/lib/sf_thin_plugin.ts",
+      "sha256": "f1d4016bc986f79432dba9fd25ed713c6e86a579cabf818244a314b530735d12"
+    },
+    {
+      "file": "setup/userlevel-opencode/scripts/lib/sf_plugin_client.ts",
+      "sha256": "41d36735b5a4912ae3a121681600fbc7b352225efb62fb0fad62b0e5fdd1b396"
+    },
+    {
+      "file": "packages/service-management/src/plugin/reconnecting-daemon-client.ts",
+      "sha256": "44ea4fc98f27574e9cbefe7cca3dd3aeebf8e73b92e8a8413dda814546115471"
+    },
+    {
+      "file": "docs/product-specification/specforge-product-specification.md",
+      "sha256": "37b52eca9e7f32787bff3ef529c955a712d4cd6c97969e5002f8d3c080ae6052"
+    }
+  ]
+}

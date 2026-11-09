@@ -1,0 +1,56 @@
+{
+  "utc": "2026-11-09T10:28:49.795Z",
+  "run_id": "CODEX-SF-20261109-PLUGIN-REGISTRATION-A01",
+  "classification": "PASS_PLUGIN_FIRST_START_REGISTRATION_AND_CONTROLLED_INIT_RECOVERY_DEPLOYED",
+  "qualified_source": "b6e07d014828d0bc77af83ba3f1a6d4e57dcad80",
+  "root_product_commit": "051ad5bff26e5398240fa97694ac5e349e6f9ad8",
+  "product_version": "1.0.25",
+  "same_version_managed_repair": true,
+  "targets_passed": 42,
+  "lint_files": 631,
+  "comparable_files": 542,
+  "added_incomparable_files": 3,
+  "all_candidate_cases_independently_passed": true,
+  "all_three_platforms_current_accepted": true,
+  "installed_files_exact": 117,
+  "daemon_pid": 39204,
+  "actual_deployed_probe": {
+    "uninitialized_events": 100,
+    "initial_registration_requests": 1,
+    "total_registration_requests": 2,
+    "controlled_init_requests": 1,
+    "notifications": 2
+  },
+  "actual_opencode_loader": {
+    "agents": 10,
+    "skills": 8,
+    "tools": 45,
+    "first_start_init_notice": 1,
+    "owned_process_exit_proved": true
+  },
+  "owner_key_content_read": false,
+  "private_owner_during_install_preserved": true,
+  "original_project_installer_writes": "NONE",
+  "native_qualification": "Same normalized executable program and unchanged C# sources; prior native matrix reused, not rerun.",
+  "historical_windows_timeout": {
+    "preserved": true,
+    "cause": "INSUFFICIENT_EVIDENCE",
+    "unchanged_attempt2": "PASS",
+    "code_timeout_assertions_numRuns_unchanged": true
+  },
+  "limits": "Controlled installed entrypoints/real daemon/Project Init owner and actual fresh OpenCode metadata; runtime completion fixture disclosed. No new model-generated tool invocation, original application/WI execution, or all-test-source semantic tsc claim. Final main publication/CI is a separate post-seal operation.",
+  "sources": {
+    "candidate-freeze/manifest.json": "86a792b026cd3da33ab3efa11f4c48fbd3e89122b755d40a77f7612f3dcd1099",
+    "qualification-comparison.json": "d46c00a915305c4c2f543c0d9120ecf68c880dade7d6e749e583dbb4588c8aa4",
+    "candidate-ci/acceptance.json": "90f24e195438669b121d41895db637af32f5f3d3ffab68bb5e9ceae2f6474d41",
+    "green-03/result.json": "3aef64da6fe9e9263f121ba940d67f6c3b18c0e3aee94c9f2fbd41e30349b1df",
+    "root-adoption/result.json": "2f8400af7eb16dcdbf2ee2a1d3c97b23a015c29327e06c8638a72accb12c975a",
+    "root-product-commit.json": "abcf27a746445a8160315decdf26ea4f0aa4ca844eedd1f2fc1e0f2d8472ca9f",
+    "managed-delta-review.json": "6829ab377db895eebf04905e0e3ff893ed31d8dbd1ecd26d25b3dfa5fe6341c1",
+    "native-program-lineage-final/result.json": "23187f2342e2ca5cf4d1f6d335a9a5390786c757fcb5e7bfd5d54fe43c5d52ef",
+    "user-upgrade-02/result.json": "673e28062fa2c59e3c966e1a211fc77f4ec4933c5adf4a5d7aa5dad1e37e02eb",
+    "new-daemon-start/result.json": "0696478caf86806d11e43351765141d19fe2f1173e12bf7ed90951f58f970fb6",
+    "deployed-registration-probe/result.json": "77de214907691a18ad83dc7e7d8b1b301505a5a0c93f3ae2090c1fcd14b01667",
+    "fresh-loader-plugin-01/result.json": "2ee4de218560413b1d30f80797d90d949e9ec9f9ca8b4e4b1ce079f1c4714658"
+  }
+}

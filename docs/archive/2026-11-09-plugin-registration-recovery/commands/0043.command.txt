@@ -1,0 +1,32 @@
+{
+  "run_id": "CODEX-SF-20261109-PLUGIN-REGISTRATION-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-09-plugin-registration-recovery/run-isolated-tool.cjs",
+    "native-lineage-final-01",
+    "node",
+    "D:/code/SpecForge/docs/archive/2026-11-09-plugin-registration-recovery/verify-final-native-lineage.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "verify-final-derived-native-program-after-installer-qualification",
+  "expected_writes": "Read-only final derived program/source structural comparison and bounded invalid argv; immutable final lineage after all generators; no user installation writes",
+  "started_utc": "2026-11-09T10:11:33.339Z",
+  "carrier_source_sha256": "0d4cc1c05dd2ab6f7802fdddb69880fc5464ffe4c397c123505511b207c327c0",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-09-plugin-registration-recovery\\run-isolated-tool.cjs",
+      "sha256": "9aabb7768a8cca28f007beb323ec426a2d06a6a65a4e5990336760da87e8c85d",
+      "size": 1784,
+      "extension": ".cjs"
+    },
+    {
+      "argument_index": 3,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-09-plugin-registration-recovery\\verify-final-native-lineage.cjs",
+      "sha256": "f4e3c288c1b80c47e4b380440eba70d8505a2cb47fbae0035f7363b10337ea90",
+      "size": 4582,
+      "extension": ".cjs"
+    }
+  ]
+}

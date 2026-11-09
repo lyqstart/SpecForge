@@ -1,0 +1,20 @@
+{
+  "run_id": "CODEX-SF-20261109-PLUGIN-REGISTRATION-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "git",
+  "args": [
+    "-c",
+    "core.longpaths=true",
+    "worktree",
+    "add",
+    "--detach",
+    "D:/code/SpecForge/.registration-original-a01",
+    "68acd63c98137abfbbf7f189e91093ba8f32814c"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "create-exact-original-worktree",
+  "expected_writes": "Owned .registration-original-a01 checkout and Git worktree metadata only; no root implementation changes",
+  "started_utc": "2026-11-09T07:04:51.756Z",
+  "carrier_source_sha256": "0d4cc1c05dd2ab6f7802fdddb69880fc5464ffe4c397c123505511b207c327c0",
+  "entry_sources": []
+}

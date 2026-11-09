@@ -1,0 +1,4040 @@
+{
+  "utc": "2026-11-09T09:38:40.041Z",
+  "classification": "PASS_SYMMETRIC_SAME_LOCK_OFFICIAL_AND_CASE_LEVEL_QUALIFICATION",
+  "original": "68acd63c98137abfbbf7f189e91093ba8f32814c",
+  "patched": "b6e07d014828d0bc77af83ba3f1a6d4e57dcad80",
+  "comparable_files": 542,
+  "incomparable_files": 3,
+  "rows": [
+    {
+      "file": "cli:packages/cli/tests/AuthManager.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "cli:packages/cli/tests/BlobHandler.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "cli:packages/cli/tests/DaemonClient.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "cli:packages/cli/tests/JobTracker.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "cli:packages/cli/tests/OutputFormatter.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "cli:packages/cli/tests/async-command-property-18.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "cli:packages/cli/tests/blob-handler-property-17.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "cli:packages/cli/tests/blob-integration.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "cli:packages/cli/tests/cli-async-parser-regression.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "cli:packages/cli/tests/commands/daemon.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "cli:packages/cli/tests/commands/doctor.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "cli:packages/cli/tests/commands/plugin.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "cli:packages/cli/tests/commands/spec.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "cli:packages/cli/tests/commands/version.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "cli:packages/cli/tests/commands/workflow.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "cli:packages/cli/tests/comprehensive-error-handling.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "cli:packages/cli/tests/cross-platform.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "cli:packages/cli/tests/current-release-installer-root.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "cli:packages/cli/tests/current-release-project-layout.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "cli:packages/cli/tests/current-release-shared-directory-layout.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "cli:packages/cli/tests/errors.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "cli:packages/cli/tests/help-command.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "cli:packages/cli/tests/help-system.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "cli:packages/cli/tests/job-wait.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "cli:packages/cli/tests/mode-switch.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "cli:packages/cli/tests/performance/BlobOptimizer.perf.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "cli:packages/cli/tests/performance/performance-validation.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "cli:packages/cli/tests/progress-indicator.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "cli:packages/cli/tests/simple-progress.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "cli:packages/cli/tests/unit/JobPoller.performance.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "cli:packages/cli/tests/unit/JobPoller.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "cli:packages/cli/tests/unit/dependency-rewriter.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "cli:packages/cli/tests/unit/json-ansi-boundary.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "cli:packages/cli/tests/unit/package-validator.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "cli:packages/cli/tests/unit/path-resolver.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "cli:packages/cli/tests/unit/schema-version-manager.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "cli:packages/cli/tests/unit/services-cli.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "cli:packages/cli/tests/unit/terminal-states.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "cli:packages/cli/tests/unit/version-cmd.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "cli:packages/cli/tests/unit/version-command.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "cli:packages/cli/tests/user-level-path-boundary.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "configuration:packages/configuration/tests/accepted-config-regression.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "configuration:packages/configuration/tests/config-access.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "configuration:packages/configuration/tests/config-loader.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "configuration:packages/configuration/tests/config-merge.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "configuration:packages/configuration/tests/config-validator.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "configuration:packages/configuration/tests/hot-reload.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "configuration:packages/configuration/tests/index.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "configuration:packages/configuration/tests/integration.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "configuration:packages/configuration/tests/logger-output-contract.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "configuration:packages/configuration/tests/merge-engine.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "configuration:packages/configuration/tests/project-schema-descriptor.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "configuration:packages/configuration/tests/property/property-11.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "configuration:packages/configuration/tests/property/property-19.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/src/event-bus/EventBus.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/src/http/HTTPServer.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/src/project/ProjectManager.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/src/recovery/RecoverySubsystem.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/src/session/SessionRegistry.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/src/state/StateManager.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/src/tools/lib/architecture-governance-regression.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/src/tools/lib/architecture-governance-v7-regression.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/src/tools/lib/contract-integrity.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/src/tools/lib/new-project-governance-bootstrap.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/src/tools/lib/project-governance-fresh04-module-consumer.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/src/tools/lib/project-governance-greenfield-code-permission.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/src/tools/lib/project-governance-greenfield-premerge.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/src/tools/lib/project-governance-task-scope.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/src/tools/lib/project-governance-v2.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/src/tools/lib/sf_project_init_core.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/src/tools/lib/sf_trace_matrix_core.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/src/types.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/candidate-approval-state-governance.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/candidate-directory-layout.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/candidate-phase-classification-gates.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/close-gate-fresh04-regression.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/close-gate-governance-fixes.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/code-permission-state-order-regression.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/current-observability-config-contract.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/current-observability-owner.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/current-risk-policy-boundary.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/design-governance-architecture-carrier.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/design-governance-contract.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/design-governance-gate.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/design-governance-live-closure.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/design-governance-orchestrator-closure.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/hard-stop-recovery-protocol.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/integration/api-endpoints.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/integration/chaos-recovery.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/integration/daemon-integration.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/integration/daemon-lifecycle.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/integration/opencode-event-routing.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/integration/p0-governance-regression-flow.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/integration/pbt-state.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/integration/personal-mode-e2e.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/integration/thin-plugin-first-start-http.test.ts",
+      "classification": "AB_INCOMPARABLE",
+      "new_failures": null
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/integration/wal-singleton-e2e.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/investigation-artifact-gates.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/investigation-semantic-closure.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/merge-runner-extension-registry-version-sync.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/performance.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/plugin-hard-stop-identity-contract.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/production-daemon-startup-recovery-e2e.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/project-init-module-registry-normalization.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/property/ingest-nonblocking.property.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/property/path-resolver.property.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/property/property-1.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/property/property-2.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/property/property-20.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/property/property-21.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/property/property-22.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/property/property-30.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/property/property-5.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/property/property-6.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/property/property-7.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/property/register-idempotent.property.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/property/sf-state-read-p15.property.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/section-matcher-real-title-regression.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/task-artifact-contract-governance.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/acceptance-guard-audit-regression.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/active-development-rules-contract.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/ascii-control-boundary.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/atomic-spec-merge-write-provenance.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/authoritative-work-item-reader.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/bash-guard.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/bootstrap-active-rules-enforcement.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/candidate-gate-historical-attempt-reconcile.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/candidate-gate-retry-state-recovery.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/candidate-gate-trace-phase-inference.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/candidate-generation-integrity.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/candidate-manifest-schema-owner.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/candidate-runtime-truth-contract.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/candidate-seal-boundary.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/cas.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/classification-driven-candidate-gates.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/close-gate-closure.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/close-gate-extension-request.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/close-gate-no-code-audit.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/close-gate-semantic-closure.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/close-gate-waiver-follow-up.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/code-contract-verifier.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/code-only-close-gate-overlay.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/config.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/configuration-activation-boundary.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/configuration-activation-loss.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/contract-authoring-cumulative.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/contract-authoring.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/contract-integrity.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/contract-repair-compatibility-mode.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/contracts-registry.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/control-plane-write-provenance-owner.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/current-contract-register-owner.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/current-doc-lint-authority.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/current-document-role-contract.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/current-operating-examples.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/current-project-layout-boundary.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/current-project-module-schema-boundary.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/current-release-extension-boundary.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/current-release-tool-registry.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/current-runtime-persistence-boundary.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/current-thin-plugin-boundary.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/current-work-item-metadata-owner.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/daemon-startup-readme-contract.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/daemon-wiring.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/daemon.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/err155-159-contract-governance-recovery.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/err417-authoritative-state-read-no-projection.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/event-adapter.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/evidence-manifest-schema-owner.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/execution-evidence-consumer.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/execution-mode-evidence-protocol.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/filesystem-diff.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/formal-version-git-closure-regression.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/gate-attempt-contract.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/gate-attempt-history.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/git-detached-bootstrap.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/git-detached-filter-exclusion.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/governance-closure-core.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/governance-closure-e2e.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/governance-trace-model.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/handshake-ownership.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/http-server-handleOpenCodeEvent.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/http-timeout-cleanup.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/http.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/input-boundary-contracts.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/invalid-merged-spec-closure-recovery.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/invocation-lease.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/knowledge-store-schema.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/legacy-filesystem-mode-recovery.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/manifest-compatibility.unit.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/merge-report-owner.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/merge-workflow-projection.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/native-hardlink-boundary.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/no-code-changed-files-audit.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/node-command-contract.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/node-command-proof-boundary.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/optional-file-lock-owner.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/p0-contract-consumer-merge.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/path-resolver.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/payload-handler.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/phase11-agent-guidance-contract.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/phase11-first-wi-governance-regression.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/phase11-fresh03-governance-regression.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/phase11-fresh04-module-code-path-bootstrap-regression.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/phase11-impact-scope-field-kind-contract.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/phase11-module-definition-candidate-contract.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/phase12-hard-enforcement.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/phase12-unborn-git-bootstrap.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/post-close-git-merge-governance.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/project-archive-dispatch-exclusion.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/project-archive-restore.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/project-config-owner.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/project-governance-reverification-merge-history.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/project-init-reconstruction.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/project-session-bootstrap.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/project.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/recovery-paths.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/recovery-session-replay.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/registered-current-workflow-boundary.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/registration-no-initialization.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/retained-tool-library-boundary.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/runtime-history-integrity.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/safe-bash-caller-role.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/scope-revision-governance.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/semantic-closure-builder.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/semantic-closure-contract-alignment.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/semantic-closure-core.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/semantic-closure-fj1-regression.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/semantic-closure-producer-governance.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/semantic-closure-provenance.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/session-registry-alias.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/session.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/sf-doctor-initialization.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/sf-safe-bash-windows-invocation.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/sf-semantic-closure-run.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/sf-state-transition.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/sf-v11-close-gate.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/sf-v11-work-item-create-project-spec-version.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/shell-readonly-boundary.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/six-conformance-boundaries.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/source-structure-contract.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/spec-consistency-gate.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/specforge-closed-loop-governance-contract.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/specforge-development-err088.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/specforge-development-err125.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/specforge-development-experience-gate.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/specforge-p0-phase-boundary.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/specforged-entry.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/stage-execution-authority-contract.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/state-concurrency.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/state.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/state_machine_completeness.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/static-task-command.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/t2-pilot-governance-recovery.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/tool-dispatcher-rbac.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/tools/handlers/sf-state-read.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/user-decision-public-boundaries.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/user-decision-schema-owner.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/user-level-path-boundary.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/v11-hard-stop-artifact-closure.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/v11-tool-registry-writeguard.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/verification-evidence-integrity.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/verification-evidence-producer.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/verification-gate-historical-attempt-reconcile.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/verification-governance-contract.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/verification-owner-store.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/verification-rejection-diagnostic.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/verification-runtime-plan.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/verification-source-snapshot.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/verifier-guidance-execution-boundary.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/wal.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/work-item-artifact-authority-contract.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/work-item-artifact-owner.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/work-item-id-consumer-consistency.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/work-item-metadata-schema-descriptor.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/work-item-status-authority-diagnostic.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/write-guard-authorization-enforcement.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/write-guard-authorization-owner.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/unit/write-guard-rbac.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/v11-agent-skill-contract-alignment.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/v11-daemon-e2e-http.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/v11-daemon-opencode-writeguard-e2e.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/v11-e2e-test.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/v11-final-governance-regression.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/v11-full-daemon-startup-writeguard-e2e.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/v11-governance-http-e2e.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/v11-install-deployment-consistency.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/v11-live-daemon-protocol-prototype.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/v11-runtime-integration.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/v11-section21-acceptance.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/v11-workflow-path-mapping.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/v12-candidate-manifest-gate-inference-hotfix.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/v12-empty-wi-hardstop-regression.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/v12-hardstop-scope-regression.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/v12-integration-rc.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/v12-merge-runner-module-registry-hotfix.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/v12-project-spec-module-routing-hotfix.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/v12-report-path-write-guard-regression.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/v12-stable-final-live-regression.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/v12-stable-final-transaction-closure.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/v12-write-guard-control-plane-hardening.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/v6-authority-consumer-alignment.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/validator-governance-contract-kernel.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "daemon-core:packages/daemon-core/tests/verification-report-contract-delegation.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "host-profile:packages/host-profile/src/scanner.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "observability:packages/observability/tests/property/property-30-event-schema-multisync.pbt.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "observability:packages/observability/tests/property/property-30-event-schema-multisync.property.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "observability:packages/observability/tests/property/property-30-event-schema-simple.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "observability:packages/observability/tests/unit/event-schema.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "observability:packages/observability/tests/unit/project-structure.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "opencode-adapter:packages/opencode-adapter/tests/CapabilityTranslator.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "opencode-adapter:packages/opencode-adapter/tests/ContextTranslator.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "opencode-adapter:packages/opencode-adapter/tests/DiagnosticsLogger.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "opencode-adapter:packages/opencode-adapter/tests/EventLogger.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "opencode-adapter:packages/opencode-adapter/tests/EventTranslator.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "opencode-adapter:packages/opencode-adapter/tests/OpenCodeAdapter.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "opencode-adapter:packages/opencode-adapter/tests/OpenCodeHttpRuntimeClient.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "opencode-adapter:packages/opencode-adapter/tests/OpenCodeToolInvocation.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "opencode-adapter:packages/opencode-adapter/tests/SessionBinding.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "opencode-adapter:packages/opencode-adapter/tests/SessionRegistry.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "opencode-adapter:packages/opencode-adapter/tests/SubscribeEvents.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "opencode-adapter:packages/opencode-adapter/tests/ThinPluginClient.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "opencode-adapter:packages/opencode-adapter/tests/ToolTranslator.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "opencode-adapter:packages/opencode-adapter/tests/capability-evidence-boundary.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "opencode-adapter:packages/opencode-adapter/tests/compatibility-matrix.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "opencode-adapter:packages/opencode-adapter/tests/configuration.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "opencode-adapter:packages/opencode-adapter/tests/errors.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "opencode-adapter:packages/opencode-adapter/tests/getCapabilities.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "opencode-adapter:packages/opencode-adapter/tests/integration/error-handling.integration.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "opencode-adapter:packages/opencode-adapter/tests/integration/session-lifecycle.integration.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "opencode-adapter:packages/opencode-adapter/tests/integration/thin-plugin-integration.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "opencode-adapter:packages/opencode-adapter/tests/integration/version-compatibility.integration.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "opencode-adapter:packages/opencode-adapter/tests/property/AdapterEncapsulation.property.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "opencode-adapter:packages/opencode-adapter/tests/property/ContextTranslator.property.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "opencode-adapter:packages/opencode-adapter/tests/property/VersionAlignment.property.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "opencode-adapter:packages/opencode-adapter/tests/real-capability-discovery.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "opencode-adapter:packages/opencode-adapter/tests/sendPrompt.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "opencode-adapter:packages/opencode-adapter/tests/unit/adapter-methods.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "opencode-adapter:packages/opencode-adapter/tests/unit/error-classifier.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "opencode-adapter:packages/opencode-adapter/tests/unit/error-handling.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "opencode-adapter:packages/opencode-adapter/tests/unit/opaque-error-boundary.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "opencode-adapter:packages/opencode-adapter/tests/unit/translators.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "opencode-adapter:packages/opencode-adapter/tests/unit/version-checker.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "opencode-adapter:packages/opencode-adapter/tests/version-checker.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "opencode-adapter:packages/opencode-adapter/tests/version/VersionChecker.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "permission-engine:packages/permission-engine/tests/integration/crash-recovery.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "permission-engine:packages/permission-engine/tests/integration/e2e-permission-flow.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "permission-engine:packages/permission-engine/tests/integration/plugin-loading-integration.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "permission-engine:packages/permission-engine/tests/integration/remote-access-integration.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "permission-engine:packages/permission-engine/tests/property/bearer-token-enforcement-property-16.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "permission-engine:packages/permission-engine/tests/property/hard-rule-immutability-simple.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "permission-engine:packages/permission-engine/tests/property/performance-validation-property.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "permission-engine:packages/permission-engine/tests/property/permission-decision-traceability-property-10.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "permission-engine:packages/permission-engine/tests/property/plugin-permission-gate-property-28.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "permission-engine:packages/permission-engine/tests/property/remote-access-guard-property-26.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "permission-engine:packages/permission-engine/tests/unit/api-key-manager.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "permission-engine:packages/permission-engine/tests/unit/bearer-token-validator.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "permission-engine:packages/permission-engine/tests/unit/daemon-integration.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "permission-engine:packages/permission-engine/tests/unit/event-logging.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "permission-engine:packages/permission-engine/tests/unit/permission-engine.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "permission-engine:packages/permission-engine/tests/unit/plugin-loader-integration.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "permission-engine:packages/permission-engine/tests/unit/plugin-permission-validator.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "permission-engine:packages/permission-engine/tests/unit/static-api-checker.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "permission-engine:packages/permission-engine/tests/unit/static-permission-logger-owner.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "permission-engine:packages/permission-engine/tests/unit/two-step-confirmation.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "permission-engine:packages/permission-engine/tests/unit/unknown-permission-boundary.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "permission-engine:packages/permission-engine/tests/unit/user-binding.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "permission-engine:packages/permission-engine/tests/unit/write-decision.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "root:tests/architecture/directory-layout.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "root:tests/e2e/feature-spec-e2e.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "root:tests/e2e/installer_reconcile_e2e.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "root:tests/e2e/tool-dispatcher-e2e.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "root:tests/e2e/tool-http-shells.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "root:tests/helpers/generators.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "root:tests/integration/cli-daemon-integration.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "root:tests/integration/cli_flow.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "root:tests/integration/service-management/dependency-order-real.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "root:tests/integration/service-management/graceful-shutdown-real.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "root:tests/integration/service-management/precheck-blocking.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "root:tests/integration/service-management/upgrade-restart-cycle.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "root:tests/integration/version-guard-1000-files.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "root:tests/property/atomic.property.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "root:tests/property/intent_routing.property.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "root:tests/property/manifest.property.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "root:tests/property/opencode_merge.property.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "root:tests/property/planner.property.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "root:tests/property/semver.property.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "root:tests/property/version-unification-property-14.property.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "root:tests/property/version-unification-property-18.property.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "root:tests/unit/ci-workflow-trigger.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "root:tests/unit/current-product-version-contract.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "root:tests/unit/installer/atomic.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "root:tests/unit/installer/canonicalize.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "root:tests/unit/installer/cli_args.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "root:tests/unit/installer/cmdInstall.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "root:tests/unit/installer/cmdVerify.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "root:tests/unit/installer/command_path.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "root:tests/unit/installer/commit.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "root:tests/unit/installer/deploy-version-unification.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "root:tests/unit/installer/installer_manifest_path_contract.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "root:tests/unit/installer/manifest_canonical_location.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "root:tests/unit/installer/manifest_validate.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "root:tests/unit/installer/manifest_write.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "root:tests/unit/installer/opencode_merge.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "root:tests/unit/installer/opencode_merge_v2.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "root:tests/unit/installer/opencode_verify.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "root:tests/unit/installer/orphan-skill-discovery.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "root:tests/unit/installer/parseArgs.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "root:tests/unit/installer/paths.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "root:tests/unit/installer/preflight.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "root:tests/unit/installer/semver.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "root:tests/unit/installer/state.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "root:tests/unit/installer/state_pending_deletes.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "root:tests/unit/installer/upgrade.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "root:tests/unit/installer/verify-tool-schemas.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "root:tests/unit/installer/verify.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "root:tests/unit/installer/verify_new.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "root:tests/unit/verification-consumer-http.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "root:tests/unit/verifier-evidence-manifest-example.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "scope-gate:packages/scope-gate/tests/current-clean-boundary.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "scope-gate:packages/scope-gate/tests/current-cli-no-legacy-deployment.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "scope-gate:packages/scope-gate/tests/current-crossplatform-ci-contract.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "scope-gate:packages/scope-gate/tests/current-daemon-http-doc-contract.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "scope-gate:packages/scope-gate/tests/current-installer-backup-lifecycle.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "scope-gate:packages/scope-gate/tests/current-installer-lock-owner.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "scope-gate:packages/scope-gate/tests/current-operating-doc-contract.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "scope-gate:packages/scope-gate/tests/current-permission-write-guard-boundary.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "scope-gate:packages/scope-gate/tests/current-release-authority-projection.integration.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "scope-gate:packages/scope-gate/tests/current-release-entry-interop.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "scope-gate:packages/scope-gate/tests/current-release-installer-manifest-boundary.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "scope-gate:packages/scope-gate/tests/current-release-no-runtime-scope-surface.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "scope-gate:packages/scope-gate/tests/current-release-path-projections.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "scope-gate:packages/scope-gate/tests/current-release-runtime-version-boundary.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "scope-gate:packages/scope-gate/tests/current-repository-formal-release-precheck.integration.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "scope-gate:packages/scope-gate/tests/current-repository-installer-manifest-consumption.integration.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "scope-gate:packages/scope-gate/tests/current-repository-owner-snapshot.integration.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "scope-gate:packages/scope-gate/tests/current-repository-package-build-surfaces.integration.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "scope-gate:packages/scope-gate/tests/current-repository-release-manifest-runtime.integration.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "scope-gate:packages/scope-gate/tests/current-runtime-daemon-dependency-direction.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "scope-gate:packages/scope-gate/tests/current-standard-authority-source.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "scope-gate:packages/scope-gate/tests/current-thin-plugin.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "scope-gate:packages/scope-gate/tests/current-upgrade-journal-transaction.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "scope-gate:packages/scope-gate/tests/eslint-runtime-binding-contract.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "scope-gate:packages/scope-gate/tests/node-release-surface-producers.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "scope-gate:packages/scope-gate/tests/owner-snapshot-surface-producers.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "scope-gate:packages/scope-gate/tests/release-artifact-inventory-builder.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "scope-gate:packages/scope-gate/tests/release-authority-projection.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "scope-gate:packages/scope-gate/tests/release-evidence-normalizer.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "scope-gate:packages/scope-gate/tests/release-manifest-and-runtime-entry-producers.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "scope-gate:packages/scope-gate/tests/release-owner-snapshot.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "scope-gate:packages/scope-gate/tests/release-runtime-artifact-producer.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "scope-gate:packages/scope-gate/tests/release-set-validator.property.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "scope-gate:packages/scope-gate/tests/release-set-validator.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "scope-gate:packages/scope-gate/tests/root-test-role-registry.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "scope-gate:packages/scope-gate/tests/scope-release-precheck.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "scope-gate:packages/scope-gate/tests/source-policy-audit.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "scope-gate:packages/scope-gate/tests/thin-plugin-first-start-recovery.test.ts",
+      "classification": "AB_INCOMPARABLE",
+      "new_failures": null
+    },
+    {
+      "file": "service-management:packages/service-management/tests/property/service-management-property-1-startup-order-preservation.property.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "service-management:packages/service-management/tests/property/service-management-property-2-idempotent-operations.property.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "service-management:packages/service-management/tests/property/service-management-property-4-graceful-shutdown-no-event-loss.property.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "service-management:packages/service-management/tests/unit/error-codes.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "service-management:packages/service-management/tests/unit/exit-code-map.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "service-management:packages/service-management/tests/unit/graceful-shutdown-handler.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "service-management:packages/service-management/tests/unit/handshake-consumers.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "service-management:packages/service-management/tests/unit/handshake-validator.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "service-management:packages/service-management/tests/unit/healthcheck-request-timer.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "service-management:packages/service-management/tests/unit/precheck.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "service-management:packages/service-management/tests/unit/reconnect-timer-ownership.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "service-management:packages/service-management/tests/unit/reconnecting-daemon-client.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "service-management:packages/service-management/tests/unit/registration-error-contract.test.ts",
+      "classification": "AB_INCOMPARABLE",
+      "new_failures": null
+    },
+    {
+      "file": "service-management:packages/service-management/tests/unit/service-error.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "service-management:packages/service-management/tests/unit/service-lifecycle-orchestrator.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "service-management:packages/service-management/tests/unit/service-unit-generator.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "service-management:packages/service-management/tests/unit/systemd-service-manager.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "service-management:packages/service-management/tests/unit/user-level-path-boundary.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "version-unification:packages/version-unification/tests/unit/current-release-no-legacy-surface.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "workflow-runtime:packages/workflow-runtime/tests/acceptance.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "workflow-runtime:packages/workflow-runtime/tests/engine/WorkflowInstance.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "workflow-runtime:packages/workflow-runtime/tests/engine/WorkflowLoader.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "workflow-runtime:packages/workflow-runtime/tests/event-filter.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "workflow-runtime:packages/workflow-runtime/tests/event-subscription.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "workflow-runtime:packages/workflow-runtime/tests/integration/agent-runner.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "workflow-runtime:packages/workflow-runtime/tests/integration/event-integration.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "workflow-runtime:packages/workflow-runtime/tests/integration/event-publisher.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "workflow-runtime:packages/workflow-runtime/tests/integration/workflow-e2e-property-29.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "workflow-runtime:packages/workflow-runtime/tests/performance/workflow-performance.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "workflow-runtime:packages/workflow-runtime/tests/property/composite-gate-parallel.property.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "workflow-runtime:packages/workflow-runtime/tests/property/composite-gate-property-3.sequential-execution.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "workflow-runtime:packages/workflow-runtime/tests/property/composite-gate-property-4.parallel-execution.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "workflow-runtime:packages/workflow-runtime/tests/property/composite-gate-property-5.fail-fast-parallel.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "workflow-runtime:packages/workflow-runtime/tests/property/error-handling-property.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "workflow-runtime:packages/workflow-runtime/tests/property/fail-fast-parallel.property.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "workflow-runtime:packages/workflow-runtime/tests/property/framework-verification.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "workflow-runtime:packages/workflow-runtime/tests/property/gate-property-2.determinism.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "workflow-runtime:packages/workflow-runtime/tests/property/workflow-property-1.state-machine-consistency.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "workflow-runtime:packages/workflow-runtime/tests/property/workflow-property-6.event-ordering.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "workflow-runtime:packages/workflow-runtime/tests/unit/AgentGateRunner.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "workflow-runtime:packages/workflow-runtime/tests/unit/AgentWorkflowEngine.evidence-guard.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "workflow-runtime:packages/workflow-runtime/tests/unit/AgentWorkflowEngine.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "workflow-runtime:packages/workflow-runtime/tests/unit/BasicGates.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "workflow-runtime:packages/workflow-runtime/tests/unit/CompositeGateCancellation.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "workflow-runtime:packages/workflow-runtime/tests/unit/CompositeGateResultAggregation.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "workflow-runtime:packages/workflow-runtime/tests/unit/CompositeGateSerializer.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "workflow-runtime:packages/workflow-runtime/tests/unit/EventPublisher.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "workflow-runtime:packages/workflow-runtime/tests/unit/GateDefinition.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "workflow-runtime:packages/workflow-runtime/tests/unit/GateResult.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "workflow-runtime:packages/workflow-runtime/tests/unit/GateRunner.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "workflow-runtime:packages/workflow-runtime/tests/unit/GateRunnerErrorHandling.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "workflow-runtime:packages/workflow-runtime/tests/unit/WorkflowDefinitionLoader.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "workflow-runtime:packages/workflow-runtime/tests/unit/WorkflowEngine.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "workflow-runtime:packages/workflow-runtime/tests/unit/WorkflowErrorHandling.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "workflow-runtime:packages/workflow-runtime/tests/unit/WorkflowInstance.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "workflow-runtime:packages/workflow-runtime/tests/unit/composite-observation.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "workflow-runtime:packages/workflow-runtime/tests/unit/current-definition-schema-boundary.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "workflow-runtime:packages/workflow-runtime/tests/unit/current-release-builtin-workflow.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "workflow-runtime:packages/workflow-runtime/tests/unit/current-workflow-engine-owner.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "workflow-runtime:packages/workflow-runtime/tests/unit/delay-timer-owner.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "workflow-runtime:packages/workflow-runtime/tests/unit/engine.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "workflow-runtime:packages/workflow-runtime/tests/unit/error-handler.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "workflow-runtime:packages/workflow-runtime/tests/unit/error-propagation.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "workflow-runtime:packages/workflow-runtime/tests/unit/evidence-guard-v11.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "workflow-runtime:packages/workflow-runtime/tests/unit/persistence-owner-boundary.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "workflow-runtime:packages/workflow-runtime/tests/unit/production-lint-boundaries.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "workflow-runtime:packages/workflow-runtime/tests/unit/promise-from-sync-contract.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "workflow-runtime:packages/workflow-runtime/tests/unit/rbac/AuthorizationAuditLogger.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "workflow-runtime:packages/workflow-runtime/tests/unit/rbac/FileAuthorizationPolicy.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "workflow-runtime:packages/workflow-runtime/tests/unit/rbac/PrincipalResolver.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "workflow-runtime:packages/workflow-runtime/tests/unit/rbac/ProtectedFileMatcher.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "workflow-runtime:packages/workflow-runtime/tests/unit/rbac/RBACEngine-RoundB.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "workflow-runtime:packages/workflow-runtime/tests/unit/rbac/RBACEngine.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "workflow-runtime:packages/workflow-runtime/tests/unit/rbac/TransitionAuthorizer.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "workflow-runtime:packages/workflow-runtime/tests/unit/rbac/seal-transitions.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "workflow-runtime:packages/workflow-runtime/tests/unit/rbac/state-advancement-subjects.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "workflow-runtime:packages/workflow-runtime/tests/unit/retry.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "workflow-runtime:packages/workflow-runtime/tests/unit/scalar-json-boundary.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "workflow-runtime:packages/workflow-runtime/tests/unit/user-decision-schema-boundary.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "workflow-runtime:packages/workflow-runtime/tests/unit/work-item-artifact-authority.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "workflow-runtime:packages/workflow-runtime/tests/v11/e2e/v11-code-only-filesystem-e2e.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "workflow-runtime:packages/workflow-runtime/tests/v11/property/parsers.property.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "workflow-runtime:packages/workflow-runtime/tests/v11/property/path-validation.property.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "workflow-runtime:packages/workflow-runtime/tests/v11/unit/close-gate.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "workflow-runtime:packages/workflow-runtime/tests/v11/unit/json-parser.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "workflow-runtime:packages/workflow-runtime/tests/v11/unit/path-policy-permissions.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "workflow-runtime:packages/workflow-runtime/tests/v11/unit/path-policy.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    },
+    {
+      "file": "workflow-runtime:packages/workflow-runtime/tests/v11/unit/path-service.test.ts",
+      "classification": "CASE_LEVEL_COMPARABLE",
+      "new_failures": [],
+      "baseline_failures": [],
+      "patched_failures": []
+    }
+  ],
+  "owners": {
+    "original": [
+      {
+        "owner": "version-unification",
+        "files": 1,
+        "collected": 2,
+        "passed": 2,
+        "pending": 0,
+        "sha256": "7faf108be67b1c25acc2800558085835f8a82ddb068fc60248e7de7c9c429c67"
+      },
+      {
+        "owner": "configuration",
+        "files": 13,
+        "collected": 198,
+        "passed": 198,
+        "pending": 0,
+        "sha256": "8252de84dad8f4ad6b1cc876015c27bb443070319983aee3db066272f5256624"
+      },
+      {
+        "owner": "service-management",
+        "files": 17,
+        "collected": 236,
+        "passed": 236,
+        "pending": 0,
+        "sha256": "5a4607041efea3b26403b1b71a12b42ab95f11b0d48663410a11b98891097d6a"
+      },
+      {
+        "owner": "host-profile",
+        "files": 1,
+        "collected": 2,
+        "passed": 2,
+        "pending": 0,
+        "sha256": "91ad33255415318eeb0f475b564b6a82154c22eb1b0fdf03d35aa36aa78aeb0a"
+      },
+      {
+        "owner": "observability",
+        "files": 5,
+        "collected": 60,
+        "passed": 60,
+        "pending": 0,
+        "sha256": "7be97c23e19651960747e41791d8959b8dfed43d820a8ff645d6e85f2e49a549"
+      },
+      {
+        "owner": "permission-engine",
+        "files": 23,
+        "collected": 379,
+        "passed": 379,
+        "pending": 0,
+        "sha256": "6d39765eb86b7475ddfbbd3efe3955ca8926df13b0a9b0b49446e6bab3fe7551"
+      },
+      {
+        "owner": "opencode-adapter",
+        "files": 35,
+        "collected": 940,
+        "passed": 940,
+        "pending": 0,
+        "sha256": "2bb124ecc8659e02a24b5890e3a26dc751e5a395bf99e794b1a0d131d5282155"
+      },
+      {
+        "owner": "scope-gate",
+        "files": 37,
+        "collected": 166,
+        "passed": 166,
+        "pending": 0,
+        "sha256": "298b12e422e6a2761387184b5eca0db60ccaa6ad30920418979c7fd15277a306"
+      },
+      {
+        "owner": "workflow-runtime",
+        "files": 69,
+        "collected": 1390,
+        "passed": 1390,
+        "pending": 0,
+        "sha256": "76a2e70e697724888ab3b557092760553561f306c077b55eeeb4e35fe2343b94"
+      },
+      {
+        "owner": "cli",
+        "files": 41,
+        "collected": 794,
+        "passed": 794,
+        "pending": 0,
+        "sha256": "9463e05474013f72907fd45aeaded5567cf8d9c7030a9a0b72e2c840ebbd32ef"
+      },
+      {
+        "owner": "daemon-core",
+        "files": 249,
+        "collected": 2454,
+        "passed": 2454,
+        "pending": 0,
+        "sha256": "57781a40280ba895fefdd40fd64ad59dcf4e5854000b8c0a35cf6594d2c141c4"
+      },
+      {
+        "owner": "root",
+        "files": 51,
+        "collected": 753,
+        "passed": 753,
+        "pending": 0,
+        "sha256": "e8807028eeb1b964a2e7d1527e008f9ae51dfcf5c66eb7aa28c258028cfce19f"
+      }
+    ],
+    "patched": [
+      {
+        "owner": "version-unification",
+        "files": 1,
+        "collected": 2,
+        "passed": 2,
+        "pending": 0,
+        "sha256": "77d765bac298297d06ec4fcf0a0dcca4d66c70dab0d2f18c52fb72d1396838b2"
+      },
+      {
+        "owner": "configuration",
+        "files": 13,
+        "collected": 198,
+        "passed": 198,
+        "pending": 0,
+        "sha256": "c27ced1ae033f97a94ca1d99144e5a6b1072766a95bdaf693dc4110aec2705e2"
+      },
+      {
+        "owner": "service-management",
+        "files": 18,
+        "collected": 263,
+        "passed": 263,
+        "pending": 0,
+        "sha256": "be43d76974f535fe4888cdfba8558030a82a0beb640e1d9827c934879aadc086"
+      },
+      {
+        "owner": "host-profile",
+        "files": 1,
+        "collected": 2,
+        "passed": 2,
+        "pending": 0,
+        "sha256": "5ff5bf5587e824b9cabaa391d5ed94139e1fd8ded3879ea8c14ab864218aee66"
+      },
+      {
+        "owner": "observability",
+        "files": 5,
+        "collected": 60,
+        "passed": 60,
+        "pending": 0,
+        "sha256": "1a4f725750ae950fa5ffbb521b199e85dc6ff708551c53f964625756646e1aa2"
+      },
+      {
+        "owner": "permission-engine",
+        "files": 23,
+        "collected": 379,
+        "passed": 379,
+        "pending": 0,
+        "sha256": "4877e41c3e217d05c9d8b8980d15648373df11f67b7b0353fde44ca0f9f19450"
+      },
+      {
+        "owner": "opencode-adapter",
+        "files": 35,
+        "collected": 940,
+        "passed": 940,
+        "pending": 0,
+        "sha256": "6229210a62d006af8c7f31c85d0b80b78e28776cac9eda0e30662d7e411c41ef"
+      },
+      {
+        "owner": "scope-gate",
+        "files": 38,
+        "collected": 175,
+        "passed": 175,
+        "pending": 0,
+        "sha256": "566d38d181c0de96a6015536fbae1236e0324fec3ba82a7a46d3f28fbc3e98af"
+      },
+      {
+        "owner": "workflow-runtime",
+        "files": 69,
+        "collected": 1390,
+        "passed": 1390,
+        "pending": 0,
+        "sha256": "0c90f42fd60b6a04ef015194fee3994493f02489f58d0cd3fa83bd27c1684a7b"
+      },
+      {
+        "owner": "cli",
+        "files": 41,
+        "collected": 794,
+        "passed": 794,
+        "pending": 0,
+        "sha256": "8c81e0bad03f5343ec8d0ba6d1fb829fed4230279b1d52fc5931b9535ea08408"
+      },
+      {
+        "owner": "daemon-core",
+        "files": 250,
+        "collected": 2455,
+        "passed": 2455,
+        "pending": 0,
+        "sha256": "0da34fb627728bd9bddebd9b5a5b10b9ca098026512e975512e5215aed617d67"
+      },
+      {
+        "owner": "root",
+        "files": 51,
+        "collected": 753,
+        "passed": 753,
+        "pending": 0,
+        "sha256": "be483e88c76388b0b037d135725d11f64cc5c840b7f378924c87c2d40bf9806d"
+      }
+    ]
+  },
+  "historical_granularity_canaries": {
+    "sources": [
+      {
+        "sha256": "32047ac2658604a52f09db89c1c32d1c35c1d38a991f23e741926c03a4c6eb38",
+        "path": "previous_archive/commands/0082.stderr.txt"
+      },
+      {
+        "sha256": "f3ff48ca7d560379e8beb4a4082caf867ca3ce7141ec2f8aab187612118321b5",
+        "path": "previous_archive/commands/0136.stderr.txt"
+      }
+    ],
+    "results": [
+      {
+        "classification": "AB_INCOMPARABLE",
+        "new_failures": null
+      },
+      {
+        "classification": "AB_INCOMPARABLE",
+        "new_failures": null
+      }
+    ]
+  },
+  "limits": "Only identical collected case-name multisets compare failure sets. New or changed collections remain incomparable with null new-failure count; all candidate cases are independently passing. No original business/model execution."
+}

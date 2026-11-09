@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261109-PLUGIN-REGISTRATION-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-09-plugin-registration-recovery/run-red-regression.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "prove-red-first-start-and-registration-contract",
+  "expected_writes": "Owned red private environment and patched-worktree baseline build; only added test files; source bytes frozen unchanged; expected individual test failures retained",
+  "started_utc": "2026-11-09T07:10:05.265Z",
+  "carrier_source_sha256": "0d4cc1c05dd2ab6f7802fdddb69880fc5464ffe4c397c123505511b207c327c0",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-09-plugin-registration-recovery\\run-red-regression.cjs",
+      "sha256": "a5fa26b6ea2640ab4b603c8e68e057a072b05c01750ff90374c76a28b23613c8",
+      "size": 3728,
+      "extension": ".cjs"
+    }
+  ]
+}

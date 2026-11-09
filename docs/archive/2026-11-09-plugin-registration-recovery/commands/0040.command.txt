@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261109-PLUGIN-REGISTRATION-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-09-plugin-registration-recovery/commit-qualified-root.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "commit-qualified-product-and-governance-locally",
+  "expected_writes": "Exactly15 approved source/governance files staged and committed on local delivery branch; evidence remains untracked until final closure; no main/remote/PR",
+  "started_utc": "2026-11-09T10:09:15.370Z",
+  "carrier_source_sha256": "0d4cc1c05dd2ab6f7802fdddb69880fc5464ffe4c397c123505511b207c327c0",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-09-plugin-registration-recovery\\commit-qualified-root.cjs",
+      "sha256": "3355f4758e4d2e2095a93e56925e8dec3a51db2cc50fb28c04e39b27af1f2e6d",
+      "size": 1852,
+      "extension": ".cjs"
+    }
+  ]
+}

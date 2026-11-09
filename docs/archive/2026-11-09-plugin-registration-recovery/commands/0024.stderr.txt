@@ -1,0 +1,6 @@
+remote: 
+remote: Create a pull request for 'codex/plugin-registration-recovery' on GitHub by visiting:        
+remote:      https://github.com/lyqstart/SpecForge/pull/new/codex/plugin-registration-recovery        
+remote: 
+To https://github.com/lyqstart/SpecForge.git
+ * [new branch]        HEAD -> codex/plugin-registration-recovery

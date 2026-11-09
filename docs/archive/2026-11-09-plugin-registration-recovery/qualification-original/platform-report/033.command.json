@@ -1,0 +1,14 @@
+{
+  "number": "033",
+  "name": "installed-version",
+  "executable": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-registration-A01-original\\temp\\sf-platform-acceptance-sGEI3E\\opencode\\sf-user\\bin\\specforge.exe",
+  "args": [
+    "--version",
+    "--json"
+  ],
+  "started_utc": "2026-11-09T09:07:51.222Z",
+  "finished_utc": "2026-11-09T09:07:51.377Z",
+  "inner_exit_code": 0,
+  "signal": null,
+  "spawn_error": null
+}

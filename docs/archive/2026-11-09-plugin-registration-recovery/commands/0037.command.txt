@@ -1,0 +1,18 @@
+{
+  "run_id": "CODEX-SF-20261109-PLUGIN-REGISTRATION-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "git",
+  "args": [
+    "-c",
+    "core.longpaths=true",
+    "switch",
+    "-c",
+    "codex/plugin-registration-recovery-delivery"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "create-local-qualified-delivery-branch",
+  "expected_writes": "Create codex/plugin-registration-recovery-delivery from unchanged main68; preserve all classified metadata/evidence; no PR",
+  "started_utc": "2026-11-09T10:06:47.425Z",
+  "carrier_source_sha256": "0d4cc1c05dd2ab6f7802fdddb69880fc5464ffe4c397c123505511b207c327c0",
+  "entry_sources": []
+}

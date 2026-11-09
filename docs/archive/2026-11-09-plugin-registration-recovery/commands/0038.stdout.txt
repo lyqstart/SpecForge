@@ -1,0 +1,1 @@
+{"candidate":"b6e07d014828d0bc77af83ba3f1a6d4e57dcad80","adopted":10,"exact":true}

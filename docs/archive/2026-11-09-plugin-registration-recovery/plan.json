@@ -1,0 +1,16 @@
+{
+  "run_id": "CODEX-SF-20261109-PLUGIN-REGISTRATION-A01",
+  "mode": "CODEX_DIRECT",
+  "attempt_id": "CODEX-SF-20261109-PLUGIN-REGISTRATION-A01-EXEC01",
+  "user_request": "继续修改，把插件反复重试刷屏的问题修好，补齐未初始化项目首次启动和初始化后恢复的回归测试，再部署验证。",
+  "baseline": "68acd63c98137abfbbf7f189e91093ba8f32814c",
+  "classification": "RUNTIME_DEFECT: registration rejection is conflated with transport failure in the global Thin Plugin",
+  "confirmed_evidence": "User screenshot, missing t5 current manifest, identical installed/source helper SHA and sealed prior bounded reproduction commands0028/0029. Ten events caused ten extra409 requests and notices.",
+  "architecture": "ProjectManager owns initialization/schema validation; authenticated project/ensure is the independent Project Init owner; Thin Plugin only associates project context, forwards runtime events and awaits native write guard; Service Management owns transport errors. Registration must not initialize projects.",
+  "scope": ["setup/userlevel-opencode/scripts/lib/sf_thin_plugin.ts", "setup/userlevel-opencode/scripts/lib/sf_plugin_client.ts", "packages/service-management/src/plugin/**", "packages/service-management/tests/**", "packages/scope-gate/tests/current-thin-plugin.test.ts", "packages/daemon-core/tests/**", "docs/product-specification/specforge-product-specification.md", "docs/product-specification/authority-registry.md if normative registration recovery contract needs an authority index entry", "docs/rule/**", "docs/project-status.md", "docs/archive/2026-11-09-plugin-registration-recovery/**", ".gitignore", ".gitattributes"],
+  "implementation": "Preserve structured HTTP registration status/code; distinguish waiting-for-initialization; suppress ordinary-event retries and repeated notices; coalesce concurrent registration; retry only after a completed controlled initialization runtime event, with daemon validation remaining authoritative. Validate failure, duplicate/concurrent event and successful recovery paths.",
+  "qualification": "Exact detached baseline and isolated patch worktrees; fixed Bun1.3.14/Node24.19, same lock, separate HOME/TEMP/APPDATA/config outside Git. Red regression, targeted/full A/B, TypeScript/build/lint, isolated official installer and deployed synthetic-project recovery. Real user t5 remains uninitialized and unchanged.",
+  "delivery": "Use existing version1.0.25 repair contract with an exact new candidate commit and file hashes; official installer upgrade --force explicitly supports same-version managed-file repair. No new release tag or dependency/toolchain change.",
+  "writes": {"TRUTH_SOURCE_WRITES": "Execution status and normative product contract only; no business project truth writes", "REPOSITORY_TRACKED_WRITES": "Qualified product packet after isolated verification; scoped metadata/evidence before it", "RUNTIME_OBSERVER_WRITES": "Owned test/build caches, isolated temporary fixtures and explicit official deployment lifecycle logs", "EXTERNAL_EVIDENCE_WRITES": "New immutable raw command receipts, snapshots and reports under this archive"},
+  "stop": "Regression and deployment recovery accepted with clean local/live main equality, or a concrete evidenced blocker. No self Work Item/Workflow/Candidate/Gate/Decision; no t2 reads, no t3 or t5 mutations, no original application/model execution, no PR."
+}

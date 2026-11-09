@@ -1,0 +1,20 @@
+{
+  "owner": "scope-gate",
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "test",
+    "--",
+    "--maxWorkers=1",
+    "--minWorkers=1",
+    "--reporter=json",
+    "--outputFile=D:\\code\\SpecForge\\docs\\archive\\2026-11-09-plugin-registration-recovery\\structured-registration-patched\\scope-gate.vitest.json"
+  ],
+  "cwd": "D:\\code\\SpecForge\\.registration-patched-a01\\packages\\scope-gate",
+  "context_sha256": "65233dc92b4b90f25a8f647f3daa49d91d0a841fe4611f06ce054cf73cce24eb",
+  "started_utc": "2026-11-09T09:28:04.478Z",
+  "finished_utc": "2026-11-09T09:28:54.879Z",
+  "exit": 0,
+  "stdout_sha256": "3a969f6385351d6a73a9a67274084ff22e397ada49b218eab98b4a74b2532cfc",
+  "stderr_sha256": "91d1c545b6d5f3d9427750766bb8bc7d68d5a157be0a0a5a1ac83906f4d9781f"
+}

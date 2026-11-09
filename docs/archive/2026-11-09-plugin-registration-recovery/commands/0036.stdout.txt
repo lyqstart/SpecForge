@@ -1,0 +1,1 @@
+{"stage":"candidate","commit":"b6e07d014828d0bc77af83ba3f1a6d4e57dcad80","conclusion":"PASS_CANDIDATE_THREE_PLATFORM_REGRESSION_AND_RELEASE","jobs":12,"platforms":3,"lint":631}

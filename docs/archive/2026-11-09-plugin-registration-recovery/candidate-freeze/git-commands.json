@@ -1,0 +1,118 @@
+[
+  {
+    "args": [
+      "rev-parse",
+      "HEAD"
+    ],
+    "utc": "2026-11-09T09:08:57.602Z",
+    "inner_exit_code": 0,
+    "stdout_sha256": "84026e6b1344c9ccca71b77fcf3271273be6c082dd1973f10a166fc1cab97542",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "args": [
+      "diff",
+      "--name-only"
+    ],
+    "utc": "2026-11-09T09:08:57.968Z",
+    "inner_exit_code": 0,
+    "stdout_sha256": "399389656d88d4fa9654ba33db96c17948a9019022b755ce79e20f2e4e434b3a",
+    "stderr_sha256": "246d82648fc47cdf1c9b9cef591baaf7822fdebf240c8c89ca6ac0ea515d30c1"
+  },
+  {
+    "args": [
+      "ls-files",
+      "--others",
+      "--exclude-standard"
+    ],
+    "utc": "2026-11-09T09:08:58.262Z",
+    "inner_exit_code": 0,
+    "stdout_sha256": "027028f317790f84797b4506621fcc0729abdbf9179699d3d35cc033bef46526",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "args": [
+      "switch",
+      "-c",
+      "codex/plugin-registration-recovery"
+    ],
+    "utc": "2026-11-09T09:08:58.335Z",
+    "inner_exit_code": 0,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_sha256": "d7a216b3b4af87716c4accdd2adf47d69f67c4497cd7e7a30eae8282cf15aa16"
+  },
+  {
+    "args": [
+      "add",
+      "--",
+      ".github/workflows/code-quality.yml",
+      "docs/product-specification/specforge-product-specification.md",
+      "package.json",
+      "packages/daemon-core/tests/integration/thin-plugin-first-start-http.test.ts",
+      "packages/scope-gate/tests/thin-plugin-first-start-recovery.test.ts",
+      "packages/service-management/src/plugin/reconnecting-daemon-client.ts",
+      "packages/service-management/tests/unit/registration-error-contract.test.ts",
+      "scripts/tsconfig.plugin-client.json",
+      "setup/userlevel-opencode/scripts/lib/sf_plugin_client.ts",
+      "setup/userlevel-opencode/scripts/lib/sf_thin_plugin.ts"
+    ],
+    "utc": "2026-11-09T09:08:58.464Z",
+    "inner_exit_code": 0,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_sha256": "43e28364317234048d702a49569725da53c7f62f743c0432ff2024e708365f84"
+  },
+  {
+    "args": [
+      "diff",
+      "--cached",
+      "--name-only"
+    ],
+    "utc": "2026-11-09T09:08:58.545Z",
+    "inner_exit_code": 0,
+    "stdout_sha256": "a5fcfb1cf3220331df7d221baaff6d1a4566518b050bc07925e481286b80847e",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "args": [
+      "commit",
+      "-m",
+      "fix(plugin): wait for controlled initialization before retrying registration"
+    ],
+    "utc": "2026-11-09T09:08:58.797Z",
+    "inner_exit_code": 0,
+    "stdout_sha256": "b389b4292638108a3c1e7b07f836f3b79b402d2249dd33986f70fcdd2fa67de3",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "args": [
+      "rev-parse",
+      "HEAD"
+    ],
+    "utc": "2026-11-09T09:08:58.859Z",
+    "inner_exit_code": 0,
+    "stdout_sha256": "c081a1e184bec9069c308ad7c72582d41b61097d1a3b66847776ca787439039d",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "args": [
+      "status",
+      "--porcelain=v1"
+    ],
+    "utc": "2026-11-09T09:08:59.113Z",
+    "inner_exit_code": 0,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "args": [
+      "diff",
+      "--binary",
+      "68acd63c98137abfbbf7f189e91093ba8f32814c",
+      "b6e07d014828d0bc77af83ba3f1a6d4e57dcad80"
+    ],
+    "utc": "2026-11-09T09:09:00.307Z",
+    "inner_exit_code": 0,
+    "stdout_sha256": "35c4358b840bf0750397abd88ef7ca429f0137a2e5fcc6cb80c9541923d30e8b",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+]

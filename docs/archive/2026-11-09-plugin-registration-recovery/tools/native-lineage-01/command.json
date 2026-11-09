@@ -1,0 +1,9 @@
+{
+  "utc": "2026-11-09T09:14:52.878Z",
+  "executable": "node",
+  "args": [
+    "D:/code/SpecForge/docs/archive/2026-11-09-plugin-registration-recovery/verify-native-lineage.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge\\.registration-patched-a01",
+  "environment_context_sha256": "9e46f360e001602da02371bd5387277b2a561f61c814b76d38448459a6a22b1d"
+}

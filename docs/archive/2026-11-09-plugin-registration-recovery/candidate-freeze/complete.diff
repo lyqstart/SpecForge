@@ -1,0 +1,796 @@
+diff --git a/.github/workflows/code-quality.yml b/.github/workflows/code-quality.yml
+index 319ac8d4..d52d3c36 100644
+--- a/.github/workflows/code-quality.yml
++++ b/.github/workflows/code-quality.yml
+@@ -123,6 +123,8 @@ jobs:
+         env:
+           SPECFORGE_CI_REPORT_DIR: ${{ runner.temp }}/specforge-full-regression
+         run: node scripts/run-ci-regression.mjs lint
++      - name: Typecheck deployable Thin Plugin helpers
++        run: bun run typecheck:plugin-client
+       - name: 运行当前发布 workspace 测试
+         env:
+           SPECFORGE_CI_REPORT_DIR: ${{ runner.temp }}/specforge-full-regression
+diff --git a/docs/product-specification/specforge-product-specification.md b/docs/product-specification/specforge-product-specification.md
+index 95587a07..9400a2a2 100644
+--- a/docs/product-specification/specforge-product-specification.md
++++ b/docs/product-specification/specforge-product-specification.md
+@@ -763,6 +763,10 @@ Thin Plugin 不等于第三方 Plugin Loader。
+ 
+ 插件注册不得隐式执行项目初始化；必须先通过 ProjectManager 的布局与 Schema 检查。被拒绝的注册不得创建或规范化 Project Spec。
+ 
++注册返回 `409 PROJECT_NOT_INITIALIZED` 表示服务已响应但项目等待受控初始化，不得标记为 Daemon 不可达。传输层必须保留可验证的 HTTP 状态和结构化业务码，不能从自由文本猜测该状态或把原始响应正文写入普通诊断。Thin Plugin 只提示一次初始化入口；等待期间普通 runtime events 与 compaction 不得反复注册或刷屏，Write Guard 仍须等待原 owner 的明确裁决。
++
++当前宿主发出 `sf_project_init` 的已完成工具事件后，Thin Plugin 可重新请求注册；同一 session/call 完成通知须去重，并发请求共享一次注册。完成信号只触发复核，不代表初始化成功或授予权限；ProjectManager 仍执行同一布局与 Schema 检查，继续拒绝时保持等待，允许后续新的初始化完成调用再次恢复。较新的完成信号若与较早的拒绝请求交错，不得丢失恢复；注册获准后才转发后续事件。该恢复不启动 Daemon、不自动初始化项目、不创建 Work Item。
++
+ 对于旧布局注册在拒绝前已产生初始化写入的历史事故，Project Init owner 可通过显式 `reconstruct_git_baseline` 动作执行受控基线重建。此动作必须绑定不可变事故快照的 SHA-256、完整 Git 提交身份和操作者明确接受“Git 内容重建而非历史原始字节还原”的原话；仅允许处理初始化 owner 拥有的文件，保留当前字节与审计记录，逐文件核对事故快照哈希。已跟踪文件必须由本地 Git 对象复核基线；新建文件必须不在基线提交中且仍匹配初始化模板，移入恢复归档。链接、范围外路径、哈希漂移、缺失基线或并发恢复必须失败关闭。重试只能接受已归档计划记录的原状态或目标状态，不得覆盖后续变更。此动作不注册旧布局、不迁移布局、不推进 Work Item、不解除 HardStop；恢复失败必须保留计划与已完成步骤供同一 owner 恢复。
+ 
+ 部署边界：
+diff --git a/package.json b/package.json
+index fbdefd38..23a9b28d 100644
+--- a/package.json
++++ b/package.json
+@@ -19,6 +19,7 @@
+     "typecheck:validator-contract": "tsc --noEmit -p scripts/tsconfig.validation-contract.json",
+     "typecheck:release-owner-snapshot": "tsc --noEmit -p scripts/tsconfig.release-owner-snapshot.json",
+     "typecheck:installer": "tsc --noEmit -p scripts/tsconfig.installer.json",
++    "typecheck:plugin-client": "tsc --noEmit -p scripts/tsconfig.plugin-client.json",
+     "build:release-runtimes": "bun scripts/build-release-runtime-artifacts.ts",
+     "build:release-manifest": "bun scripts/build-release-manifest.ts",
+     "precheck:release": "bun scripts/run-current-release-precheck.ts",
+diff --git a/packages/daemon-core/tests/integration/thin-plugin-first-start-http.test.ts b/packages/daemon-core/tests/integration/thin-plugin-first-start-http.test.ts
+new file mode 100644
+index 00000000..fc177d96
+--- /dev/null
++++ b/packages/daemon-core/tests/integration/thin-plugin-first-start-http.test.ts
+@@ -0,0 +1,112 @@
++import { describe, expect, it, vi } from 'vitest';
++import * as fs from 'node:fs/promises';
++import { join } from 'node:path';
++import { tmpdir } from 'node:os';
++import { HTTPServer } from '../../src/http/HTTPServer';
++import { DaemonConfig } from '../../src/daemon/DaemonConfig';
++import { PersonalPathResolver } from '../../src/daemon/path-resolver';
++import { EventBus } from '../../src/event-bus/EventBus';
++import { ProjectManager } from '../../src/project/ProjectManager';
++import { ReconnectingDaemonClient } from '../../../../setup/userlevel-opencode/scripts/lib/sf_plugin_client';
++import { createSpecForgeThinPlugin } from '../../../../setup/userlevel-opencode/scripts/lib/sf_thin_plugin';
++
++describe('Thin Plugin first start through real HTTP and Project Init owner', () => {
++  it('leaves an uninitialized project untouched, permits controlled init, then registers once and resumes events', async () => {
++    const owned = await fs.mkdtemp(join(tmpdir(), 'sf-plugin-first-start-http-'));
++    const project = join(owned, 'project'),
++      runtime = join(owned, 'private');
++    await fs.mkdir(project);
++    await fs.mkdir(runtime);
++    const resolver = new PersonalPathResolver();
++    resolver.resolveProjectRuntimeDir = () => join(runtime, 'runtime');
++    resolver.resolveDaemonJsonPath = () => join(runtime, 'daemon.json');
++    const bus = new EventBus(),
++      manager = new ProjectManager(bus, resolver, undefined);
++    const sessionRegistry = {
++      registerPluginSession: vi.fn(async () => ({
++        sessionId: 'owned-session',
++        projectId: 'owned-project',
++      })),
++      handleOpenCodeEvent: vi.fn(async () => undefined),
++      getProjectPath: () => project,
++    };
++    const server = new HTTPServer({
++      config: new DaemonConfig(),
++      eventBus: bus,
++      projectManager: manager,
++      sessionRegistry,
++    } as never);
++    const token = 'owned-synthetic-http-token';
++    server.setToken(token);
++    let client: ReconnectingDaemonClient | undefined;
++    try {
++      const { port } = await server.start();
++      const handshake = join(runtime, 'handshake.json');
++      await fs.writeFile(
++        handshake,
++        JSON.stringify({
++          schema_version: '1.0',
++          pid: 1,
++          port,
++          token,
++          bound_to: '127.0.0.1',
++          startedAt: 0,
++          version: '1.0.25',
++          serviceMode: false,
++          artifact_contract_versions: { task_document: 'task-document/v1' },
++        })
++      );
++      client = new ReconnectingDaemonClient({ handshakePath: handshake });
++      const register = vi.spyOn(client, 'register'),
++        post = vi.spyOn(client, 'postEvent'),
++        notify = vi.fn();
++      const hooks = await createSpecForgeThinPlugin({ directory: project }, { client, notify });
++      await Promise.all(
++        Array.from({ length: 50 }, () => hooks.event({ event: { type: 'session.updated' } }))
++      );
++      expect(register).toHaveBeenCalledTimes(1);
++      expect(notify).toHaveBeenCalledTimes(1);
++      expect(await fs.readdir(project)).toEqual([]);
++      expect(sessionRegistry.registerPluginSession).not.toHaveBeenCalled();
++      await hooks['tool.execute.before']({ tool: 'sf_project_init' }, { args: {} });
++      const response = await fetch(`http://127.0.0.1:${port}/api/v1/project/ensure`, {
++        method: 'POST',
++        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
++        body: JSON.stringify({ projectPath: project }),
++      });
++      expect(response.status).toBe(200);
++      expect((await response.json()).success).toBe(true);
++      const completion = {
++        event: {
++          type: 'message.part.updated',
++          properties: {
++            part: {
++              type: 'tool',
++              tool: 'sf_project_init',
++              sessionID: 'owned-oc',
++              callID: 'owned-init',
++              state: { status: 'completed' },
++            },
++          },
++        },
++      };
++      await hooks.event(completion);
++      await hooks.event(completion);
++      await hooks.event({ event: { type: 'session.updated' } });
++      expect(register).toHaveBeenCalledTimes(2);
++      expect(sessionRegistry.registerPluginSession).toHaveBeenCalledTimes(1);
++      expect(post).toHaveBeenCalledTimes(3);
++      expect(notify).toHaveBeenCalledTimes(2);
++      expect(
++        JSON.parse(
++          await fs.readFile(join(project, '.specforge/project/spec_manifest.json'), 'utf8')
++        ).schema_version
++      ).toBe('1.0');
++    } finally {
++      client?.dispose();
++      await server.stop();
++      manager.stop();
++      await fs.rm(owned, { recursive: true, force: true });
++    }
++  });
++});
+diff --git a/packages/scope-gate/tests/thin-plugin-first-start-recovery.test.ts b/packages/scope-gate/tests/thin-plugin-first-start-recovery.test.ts
+new file mode 100644
+index 00000000..725d76db
+--- /dev/null
++++ b/packages/scope-gate/tests/thin-plugin-first-start-recovery.test.ts
+@@ -0,0 +1,167 @@
++import { describe, expect, it, vi } from 'vitest';
++
++import { createSpecForgeThinPlugin, type ThinPluginHooks } from '../../../setup/userlevel-opencode/scripts/lib/sf_thin_plugin';
++
++const registration = { sessionId: 'session-1', projectId: 'project-1', mode: 'personal' as const };
++const refusal = (): Error & { status: number; code: string } =>
++  Object.assign(new Error('Register failed: HTTP 409'), {
++    status: 409,
++    code: 'PROJECT_NOT_INITIALIZED',
++  });
++const ordinary = { event: { type: 'message.updated' } };
++function completed(callID = 'init-1', status = 'completed', tool = 'sf_project_init'): Parameters<ThinPluginHooks['event']>[0] {
++  return {
++    event: {
++      type: 'message.part.updated',
++      properties: { part: { type: 'tool', sessionID: 'oc-1', callID, tool, state: { status } } },
++    },
++  };
++}
++async function setup(register = vi.fn(async () => registration)): Promise<{
++  hooks: ThinPluginHooks;
++  register: ReturnType<typeof vi.fn>;
++  notify: ReturnType<typeof vi.fn>;
++  postEvent: ReturnType<typeof vi.fn>;
++  checkNativeTool: ReturnType<typeof vi.fn>;
++}> {
++  const notify = vi.fn(),
++    postEvent = vi.fn(async () => ({ ok: true, dropped: false, reason: 'success' as const }));
++  const checkNativeTool = vi.fn(async () => undefined);
++  const hooks = await createSpecForgeThinPlugin(
++    { directory: 'D:/owned/synthetic-project' },
++    { client: { register, postEvent, checkNativeTool }, notify }
++  );
++  return { hooks, register, notify, postEvent, checkNativeTool };
++}
++
++describe('uninitialized global plugin first-start and recovery', () => {
++  it('emits one initialization notice and no registration/event storm for 100 concurrent ordinary events', async () => {
++    const s = await setup(vi.fn().mockRejectedValue(refusal()));
++    await Promise.all(Array.from({ length: 100 }, () => s.hooks.event(ordinary)));
++    expect(s.register).toHaveBeenCalledTimes(1);
++    expect(s.notify).toHaveBeenCalledTimes(1);
++    expect(s.notify.mock.calls[0][0]).toContain('sf_project_init');
++    expect(s.notify.mock.calls[0][0]).not.toMatch(/unavailable|reconnecting/);
++    expect(s.postEvent).not.toHaveBeenCalled();
++  });
++
++  it('keeps the awaited native guard available for controlled initialization while waiting', async () => {
++    const s = await setup(vi.fn().mockRejectedValue(refusal()));
++    await s.hooks['tool.execute.before']({ tool: 'sf_project_init' }, { args: {} });
++    expect(s.checkNativeTool).toHaveBeenCalledWith(
++      'D:/owned/synthetic-project',
++      'sf_project_init',
++      {}
++    );
++    expect(s.register).toHaveBeenCalledTimes(1);
++  });
++
++  it('registers after completed initialization and forwards later ordinary events through the accepted session', async () => {
++    const s = await setup(vi.fn().mockRejectedValueOnce(refusal()).mockResolvedValue(registration));
++    await s.hooks.event(completed());
++    await s.hooks.event(ordinary);
++    expect(s.register).toHaveBeenCalledTimes(2);
++    expect(s.notify).toHaveBeenCalledTimes(2);
++    expect(s.postEvent).toHaveBeenLastCalledWith(
++      'session-1',
++      'opencode.message.updated',
++      expect.objectContaining({ projectPath: 'D:/owned/synthetic-project' })
++    );
++  });
++
++  it('does not interpret failed, pending, unrelated or incomplete tool events as initialization completion', async () => {
++    const s = await setup(vi.fn().mockRejectedValue(refusal()));
++    for (const event of [
++      completed('a', 'error'),
++      completed('b', 'running'),
++      completed('c', 'completed', 'sf_safe_bash'),
++      {
++        event: {
++          type: 'message.part.updated',
++          properties: { part: { tool: 'sf_project_init', state: { status: 'completed' } } },
++        },
++      },
++    ])
++      await s.hooks.event(event);
++    expect(s.register).toHaveBeenCalledTimes(1);
++    expect(s.notify).toHaveBeenCalledTimes(1);
++  });
++
++  it('treats completion as a recovery trigger, not authority to bypass a repeated daemon refusal', async () => {
++    const s = await setup(vi.fn().mockRejectedValue(refusal()));
++    await s.hooks.event(completed());
++    await Promise.all(Array.from({ length: 50 }, () => s.hooks.event(completed())));
++    await s.hooks.event(ordinary);
++    expect(s.register).toHaveBeenCalledTimes(2);
++    expect(s.notify).toHaveBeenCalledTimes(1);
++    expect(s.postEvent).not.toHaveBeenCalled();
++    s.register.mockResolvedValue(registration);
++    await s.hooks.event(completed('init-2'));
++    expect(s.register).toHaveBeenCalledTimes(3);
++    expect(s.postEvent).toHaveBeenCalledTimes(1);
++  });
++
++  it('coalesces duplicate concurrent completion events into a single recovery registration', async () => {
++    let finish!: (value: typeof registration) => void;
++    const register = vi
++      .fn()
++      .mockRejectedValueOnce(refusal())
++      .mockImplementation(
++        () =>
++          new Promise((resolve) => {
++            finish = resolve;
++          })
++      );
++    const s = await setup(register);
++    const events = Array.from({ length: 30 }, () => s.hooks.event(completed()));
++    await Promise.resolve();
++    expect(register).toHaveBeenCalledTimes(2);
++    finish(registration);
++    await Promise.all(events);
++    expect(register).toHaveBeenCalledTimes(2);
++    expect(s.notify).toHaveBeenCalledTimes(2);
++  });
++
++  it('does not lose a newer init completion while an older refused registration is in flight', async () => {
++    let fail!: (error: Error) => void;
++    const register = vi
++      .fn()
++      .mockRejectedValueOnce(refusal())
++      .mockImplementationOnce(
++        () =>
++          new Promise((_resolve, reject) => {
++            fail = reject;
++          })
++      )
++      .mockResolvedValue(registration);
++    const s = await setup(register);
++    const first = s.hooks.event(completed('init-1'));
++    await Promise.resolve();
++    const second = s.hooks.event(completed('init-2'));
++    fail(refusal());
++    await Promise.all([first, second]);
++    expect(register).toHaveBeenCalledTimes(3);
++    expect(s.notify).toHaveBeenCalledTimes(2);
++    expect(s.postEvent).toHaveBeenCalled();
++  });
++
++  it('does not classify arbitrary error text or a different structured status as project initialization refusal', async () => {
++    for (const error of [
++      new Error('PROJECT_NOT_INITIALIZED'),
++      Object.assign(new Error('bad'), { status: 503, code: 'PROJECT_NOT_INITIALIZED' }),
++    ]) {
++      const s = await setup(vi.fn().mockRejectedValueOnce(error).mockResolvedValue(registration));
++      await s.hooks.event(ordinary);
++      expect(s.register).toHaveBeenCalledTimes(2);
++      expect(s.postEvent).toHaveBeenCalledTimes(1);
++    }
++  });
++
++  it('does not turn compaction into another registration retry while the project is uninitialized', async () => {
++    const s = await setup(vi.fn().mockRejectedValue(refusal()));
++    await s.hooks['experimental.session.compacting']({ sessionID: 'oc-1' });
++    expect(s.register).toHaveBeenCalledTimes(1);
++    expect(s.notify).toHaveBeenCalledTimes(1);
++    expect(s.postEvent).not.toHaveBeenCalled();
++  });
++});
+diff --git a/packages/service-management/src/plugin/reconnecting-daemon-client.ts b/packages/service-management/src/plugin/reconnecting-daemon-client.ts
+index 97343388..3322f8ea 100644
+--- a/packages/service-management/src/plugin/reconnecting-daemon-client.ts
++++ b/packages/service-management/src/plugin/reconnecting-daemon-client.ts
+@@ -147,6 +147,21 @@ async function checkDaemonHealth(url: string): Promise<boolean> {
+  * Implements Disposable + Symbol.asyncDispose for proper resource cleanup.
+  * Constructor has NO side effects - all async operations happen in postEvent.
+  */
++function isResponseObject(value: unknown): value is Record<string, unknown> {
++  return typeof value === 'object' && value !== null && !Array.isArray(value);
++}
++
++function parseRegistrationResponse(value: unknown): RegisterResponse {
++  if (!isResponseObject(value) || value.success !== true || !isResponseObject(value.data))
++    throw new Error('Register returned unexpected response');
++  const data = value.data;
++  if (typeof data.sessionId !== 'string' || !data.sessionId ||
++      typeof data.projectId !== 'string' || !data.projectId ||
++      (data.mode !== 'personal' && data.mode !== 'enterprise'))
++    throw new Error('Register returned unexpected response');
++  return { sessionId: data.sessionId, projectId: data.projectId, mode: data.mode };
++}
++
+ export class ReconnectingDaemonClient implements Disposable {
+   private readonly options: Required<ReconnectingDaemonClientOptions>;
+   private disposed = false;
+@@ -482,21 +497,44 @@ export class ReconnectingDaemonClient implements Disposable {
+     });
+ 
+     if (!response.ok) {
+-      const errorBody = await response.text().catch(() => '');
+-      throw new Error(
+-        `Register failed: ${response.status} ${response.statusText}${errorBody ? ' - ' + errorBody : ''}`,
++      let code = "REGISTER_FAILED";
++      try {
++        const body: unknown = JSON.parse(await response.text());
++        if (typeof body === "object" && body !== null && !Array.isArray(body)) {
++          const error = (body as Record<string, unknown>).error;
++          const candidate =
++            typeof error === "string"
++              ? error
++              : typeof error === "object" &&
++                  error !== null &&
++                  !Array.isArray(error)
++                ? (error as Record<string, unknown>).code
++                : undefined;
++          if (
++            typeof candidate === "string" &&
++            /^[A-Z][A-Z0-9_]{0,79}$/.test(candidate)
++          )
++            code = candidate;
++        }
++      } catch {
++        /* Preserve HTTP identity even when the refusal body is invalid. */
++      }
++      throw Object.assign(
++        new Error(`Register failed: HTTP ${response.status} (${code})`),
++        {
++          name: "DaemonRegistrationError",
++          status: response.status,
++          code,
++        },
+       );
+     }
+ 
+-    const body = await response.json();
+-    if (!body.success || !body.data) {
+-      throw new Error(`Register returned unexpected response: ${JSON.stringify(body)}`);
+-    }
++    const registration = parseRegistrationResponse(await response.json());
+ 
+     // Store project path for write guard requests
+     this.registeredProjectPath = projectPath;
+ 
+-    return body.data as RegisterResponse;
++    return registration;
+   }
+ 
+   /**
+diff --git a/packages/service-management/tests/unit/registration-error-contract.test.ts b/packages/service-management/tests/unit/registration-error-contract.test.ts
+new file mode 100644
+index 00000000..9d9f3717
+--- /dev/null
++++ b/packages/service-management/tests/unit/registration-error-contract.test.ts
+@@ -0,0 +1,110 @@
++import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
++import { mkdtemp, rm, writeFile } from "node:fs/promises";
++import { tmpdir } from "node:os";
++import { join } from "node:path";
++import { ReconnectingDaemonClient as WorkspaceClient } from "../../src/plugin/reconnecting-daemon-client";
++import { ReconnectingDaemonClient as DeployedClient } from "../../../../setup/userlevel-opencode/scripts/lib/sf_plugin_client";
++
++describe.each([
++  ["workspace", WorkspaceClient],
++  ["deployable", DeployedClient],
++] as const)("%s registration refusal contract", (_label, Client) => {
++  let directory: string, client: InstanceType<typeof Client>;
++  beforeEach(async () => {
++    directory = await mkdtemp(join(tmpdir(), "sf-register-error-"));
++    const handshake = join(directory, "handshake.json");
++    await writeFile(
++      handshake,
++      JSON.stringify({
++        schema_version: "1.0",
++        pid: 1,
++        port: 9,
++        token: "synthetic-secret-never-log",
++        bound_to: "127.0.0.1",
++        startedAt: 0,
++        version: "1.0.25",
++        serviceMode: false,
++        artifact_contract_versions: { task_document: "task-document/v1" },
++      }),
++    );
++    client = new Client({ handshakePath: handshake });
++  });
++  afterEach(async () => {
++    client.dispose();
++    vi.unstubAllGlobals();
++    await rm(directory, { recursive: true, force: true });
++  });
++
++  it.each([
++    { error: "PROJECT_NOT_INITIALIZED" },
++    { error: { code: "PROJECT_NOT_INITIALIZED" } },
++  ])(
++    "preserves status and a validated structured business code",
++    async (body) => {
++      const fetch = vi.fn(
++        async () => new Response(JSON.stringify(body), { status: 409 }),
++      );
++      vi.stubGlobal("fetch", fetch);
++      await expect(client.register("/owned/synthetic")).rejects.toMatchObject({
++        name: "DaemonRegistrationError",
++        status: 409,
++        code: "PROJECT_NOT_INITIALIZED",
++      });
++      expect(fetch).toHaveBeenCalledTimes(1);
++    },
++  );
++
++  it.each([401, 429, 503])(
++    "preserves HTTP%s without inventing an initialization refusal",
++    async (status) => {
++      vi.stubGlobal(
++        "fetch",
++        async () => new Response("unstructured failure", { status }),
++      );
++      await expect(client.register("/owned/synthetic")).rejects.toMatchObject({
++        status,
++        code: "REGISTER_FAILED",
++      });
++    },
++  );
++
++  it.each([null, [], { success: true, data: {} }, { success: true, data: { sessionId: 1, projectId: "p", mode: "personal" } }, { success: true, data: { sessionId: "s", projectId: "p", mode: "unknown" } }])("rejects malformed registration success bodies without exposing raw data", async body => {
++    vi.stubGlobal("fetch", async () => new Response(JSON.stringify(body)));
++    await expect(client.register("/owned/synthetic")).rejects.toThrow("Register returned unexpected response");
++  });
++
++  it("accepts the exact owner registration identity", async () => {
++    const identity = { sessionId: "accepted", projectId: "owned-project", mode: "personal" };
++    vi.stubGlobal("fetch", async () => new Response(JSON.stringify({ success: true, data: identity })));
++    await expect(client.register("/owned/synthetic")).resolves.toEqual(identity);
++  });
++
++  if (_label === "deployable") {
++    it.each([null, {}, { success: true, data: { allowed: "true" } }])("fails closed for malformed native guard responses", async body => {
++      vi.stubGlobal("fetch", async () => new Response(JSON.stringify(body)));
++      if (!("checkNativeTool" in client)) throw new Error("DEPLOYABLE_GUARD_REQUIRED");
++      await expect(client.checkNativeTool("/owned/synthetic", "write", {})).rejects.toThrow("WRITE_GUARD_DENIED");
++    });
++  }
++
++  it("does not echo raw response bodies or unvalidated codes into diagnostic errors", async () => {
++    vi.stubGlobal(
++      "fetch",
++      async () =>
++        new Response(
++          JSON.stringify({
++            error: "BAD\nCODE synthetic-secret-never-log",
++            details: "synthetic-secret-never-log",
++          }),
++          { status: 409 },
++        ),
++    );
++    try {
++      await client.register("/owned/synthetic");
++      throw new Error("EXPECTED_REFUSAL");
++    } catch (error) {
++      expect(error).toMatchObject({ code: "REGISTER_FAILED", status: 409 });
++      expect(String(error)).not.toContain("synthetic-secret-never-log");
++    }
++  });
++});
+diff --git a/scripts/tsconfig.plugin-client.json b/scripts/tsconfig.plugin-client.json
+new file mode 100644
+index 00000000..f656b3a6
+--- /dev/null
++++ b/scripts/tsconfig.plugin-client.json
+@@ -0,0 +1,16 @@
++{
++  "extends": "../tsconfig.json",
++  "compilerOptions": {
++    "noEmit": true,
++    "declaration": false,
++    "declarationMap": false,
++    "sourceMap": false,
++    "types": ["node"],
++    "ignoreDeprecations": "6.0"
++  },
++  "include": [
++    "../setup/userlevel-opencode/scripts/lib/sf_thin_plugin.ts",
++    "../setup/userlevel-opencode/scripts/lib/sf_plugin_client.ts"
++  ],
++  "exclude": ["../node_modules", "../dist"]
++}
+diff --git a/setup/userlevel-opencode/scripts/lib/sf_plugin_client.ts b/setup/userlevel-opencode/scripts/lib/sf_plugin_client.ts
+index a04c9501..746a5e07 100644
+--- a/setup/userlevel-opencode/scripts/lib/sf_plugin_client.ts
++++ b/setup/userlevel-opencode/scripts/lib/sf_plugin_client.ts
+@@ -152,6 +152,21 @@ async function checkDaemonHealth(url: string): Promise<boolean> {
+ 
+ // ── ReconnectingDaemonClient ──
+ 
++function isResponseObject(value: unknown): value is Record<string, unknown> {
++  return typeof value === 'object' && value !== null && !Array.isArray(value);
++}
++
++function parseRegistrationResponse(value: unknown): RegisterResponse {
++  if (!isResponseObject(value) || value.success !== true || !isResponseObject(value.data))
++    throw new Error('Register returned unexpected response');
++  const data = value.data;
++  if (typeof data.sessionId !== 'string' || !data.sessionId ||
++      typeof data.projectId !== 'string' || !data.projectId ||
++      (data.mode !== 'personal' && data.mode !== 'enterprise'))
++    throw new Error('Register returned unexpected response');
++  return { sessionId: data.sessionId, projectId: data.projectId, mode: data.mode };
++}
++
+ export class ReconnectingDaemonClient implements Disposable {
+   private readonly options: Required<ReconnectingDaemonClientOptions>;
+   private disposed = false;
+@@ -242,22 +257,29 @@ export class ReconnectingDaemonClient implements Disposable {
+     });
+ 
+     if (!response.ok) {
+-      const errorBody = await response.text().catch(() => "");
+-      throw new Error(
+-        `Register failed: ${response.status} ${response.statusText}${errorBody ? " - " + errorBody : ""}`
+-      );
++      let code = 'REGISTER_FAILED';
++      try {
++        const body: unknown = JSON.parse(await response.text());
++        if (typeof body === 'object' && body !== null && !Array.isArray(body)) {
++          const error = (body as Record<string, unknown>).error;
++          const candidate = typeof error === 'string' ? error :
++            typeof error === 'object' && error !== null && !Array.isArray(error)
++              ? (error as Record<string, unknown>).code : undefined;
++          if (typeof candidate === 'string' && /^[A-Z][A-Z0-9_]{0,79}$/.test(candidate)) code = candidate;
++        }
++      } catch { /* Preserve HTTP identity even when the refusal body is invalid. */ }
++      throw Object.assign(new Error(`Register failed: HTTP ${response.status} (${code})`), {
++        name: 'DaemonRegistrationError', status: response.status, code,
++      });
+     }
+ 
+-    const body = await response.json();
+-    if (!body.success || !body.data) {
+-      throw new Error(`Register returned unexpected response: ${JSON.stringify(body)}`);
+-    }
++    const registration = parseRegistrationResponse(await response.json());
+ 
+     // Keep postEvent on the exact daemon instance that accepted this project
+     // binding. Without this refresh, a daemon restart can leave a stale cached
+     // token/port between register() and the following checkpoint event.
+     this.cachedHandshake = handshake;
+-    return body.data as RegisterResponse;
++    return registration;
+   }
+ 
+   isDegraded(): boolean {
+@@ -275,9 +297,11 @@ export class ReconnectingDaemonClient implements Disposable {
+       signal: AbortSignal.timeout(5000),
+     });
+     if (!response.ok) throw new Error(`WRITE_GUARD_UNAVAILABLE: HTTP ${response.status}`);
+-    const result = await response.json();
+-    if (result?.success !== true || result?.data?.allowed !== true) {
+-      throw new Error(`WRITE_GUARD_DENIED: ${result?.data?.reason ?? 'authorization unavailable'}`);
++    const result: unknown = await response.json();
++    const data = isResponseObject(result) && isResponseObject(result.data) ? result.data : undefined;
++    if (!isResponseObject(result) || result.success !== true || data?.allowed !== true) {
++      const reason = typeof data?.reason === 'string' ? data.reason : 'authorization unavailable';
++      throw new Error(`WRITE_GUARD_DENIED: ${reason}`);
+     }
+   }
+ 
+diff --git a/setup/userlevel-opencode/scripts/lib/sf_thin_plugin.ts b/setup/userlevel-opencode/scripts/lib/sf_thin_plugin.ts
+index 0839d8cc..9b72e0c1 100644
+--- a/setup/userlevel-opencode/scripts/lib/sf_thin_plugin.ts
++++ b/setup/userlevel-opencode/scripts/lib/sf_thin_plugin.ts
+@@ -42,7 +42,7 @@ export interface ThinPluginHooks {
+   'experimental.session.compacting'(input: { sessionID?: string }): Promise<void>;
+ }
+ 
+-type ConnectionState = 'disconnected' | 'connected' | 'degraded';
++type ConnectionState = 'disconnected' | 'connected' | 'degraded' | 'awaiting-initialization';
+ const COMPACTION_BRIDGE_TIMEOUT_MS = 6000;
+ 
+ function resolveOpenCodeConfigRoot(): string {
+@@ -100,6 +100,24 @@ async function awaitWithTimeout<T>(
+   }
+ }
+ 
++function isRecord(value: unknown): value is Record<string, unknown> {
++  return typeof value === 'object' && value !== null && !Array.isArray(value);
++}
++
++function isInitializationRefusal(error: unknown): boolean {
++  return isRecord(error) && error.status === 409 && error.code === 'PROJECT_NOT_INITIALIZED';
++}
++
++function completedInitializationKey(event: Record<string, unknown>): string | undefined {
++  if (event.type !== 'message.part.updated' || !isRecord(event.properties)) return;
++  const part = event.properties.part;
++  if (!isRecord(part) || part.type !== 'tool' || part.tool !== 'sf_project_init' ||
++      !isRecord(part.state) || part.state.status !== 'completed' ||
++      typeof part.sessionID !== 'string' || !part.sessionID ||
++      typeof part.callID !== 'string' || !part.callID) return;
++  return JSON.stringify([part.sessionID, part.callID]);
++}
++
+ export async function createSpecForgeThinPlugin(
+   input: PluginInputLike,
+   dependencies: ThinPluginDependencies,
+@@ -109,10 +127,46 @@ export async function createSpecForgeThinPlugin(
+   const daemonClient = dependencies.client;
+   let daemonSessionId: string | undefined;
+   let state: ConnectionState = 'disconnected';
++  let registering: Promise<boolean> | undefined;
++  let recoveryRevision = 0;
++  const completedInitializations = new Set<string>();
+ 
+-  const register = async (): Promise<void> => {
+-    const registration = await dependencies.client.register(projectPath);
+-    daemonSessionId = registration.sessionId;
++  function registrationFailed(error: unknown): void {
++    const waiting = isInitializationRefusal(error);
++    const next = waiting ? 'awaiting-initialization' : 'degraded';
++    const previous = state;
++    state = next;
++    if (waiting) daemonSessionId = undefined;
++    if (previous === next) return;
++    dependencies.notify(waiting
++      ? '项目尚未初始化；请切换到 sf-orchestrator 并调用 sf_project_init。初始化完成后会自动重新注册。'
++      : `Daemon unavailable; lifecycle is externally managed: ${error instanceof Error ? error.message : String(error)}`);
++  }
++
++  const register = async (): Promise<boolean> => {
++    if (registering) return registering;
++    const attempt = (async (): Promise<boolean> => {
++      for (;;) {
++        const revision = recoveryRevision;
++        try {
++          const registration = await daemonClient.register(projectPath);
++          daemonSessionId = registration.sessionId;
++          const previous = state;
++          state = 'connected';
++          if (previous !== 'connected') dependencies.notify(previous === 'disconnected'
++            ? 'Daemon connected.' : 'Daemon connection recovered.');
++          return true;
++        } catch (error) {
++          registrationFailed(error);
++          // A newer completed init may race an older request rejected before
++          // that init. One shared registration owner consumes the new revision.
++          if (revision === recoveryRevision) return false;
++        }
++      }
++    })();
++    registering = attempt;
++    try { return await attempt; }
++    finally { if (registering === attempt) registering = undefined; }
+   };
+ 
+   async function forwardCompactionCheckpoint(
+@@ -154,19 +208,7 @@ export async function createSpecForgeThinPlugin(
+     if (!result.ok) throw new Error(`daemon rejected checkpoint event: ${result.reason}`);
+   }
+ 
+-  const bootstrap = async (): Promise<void> => {
+-    await register();
+-    dependencies.notify('Daemon connected.');
+-  };
+-
+-  try {
+-    await bootstrap();
+-  } catch (error) {
+-    state = 'degraded';
+-    dependencies.notify(
+-      `Daemon unavailable; lifecycle is externally managed: ${error instanceof Error ? error.message : String(error)}`,
+-    );
+-  }
++  await register();
+ 
+   return {
+     'tool.execute.before': async (toolInput, output): Promise<void> => {
+@@ -176,26 +218,23 @@ export async function createSpecForgeThinPlugin(
+     },
+     async event({ event }): Promise<void> {
+       if (!event?.type) return;
++      const completed = completedInitializationKey(event);
++      if (completed && !completedInitializations.has(completed)) {
++        completedInitializations.add(completed);
++        // Only retain bounded runtime delivery identities, never business state.
++        if (completedInitializations.size > 128) completedInitializations.delete(completedInitializations.values().next().value!);
++        recoveryRevision++;
++        if (!daemonSessionId && !(await register())) return;
++      }
+       if (!daemonSessionId) {
+-        try {
+-          await register();
+-        } catch (error) {
+-          state = 'degraded';
+-          dependencies.notify(
+-            `Daemon reconnecting: ${error instanceof Error ? error.message : String(error)}`,
+-          );
+-          return;
+-        }
++        if (state === 'awaiting-initialization') return;
++        if (!(await register())) return;
+       }
+ 
+-      const result = await dependencies.client.postEvent(
+-        daemonSessionId,
++      const result = await daemonClient.postEvent(
++        daemonSessionId!,
+         `opencode.${event.type}`,
+-        {
+-          schema_version: '1.0',
+-          projectPath,
+-          ...event,
+-        },
++        { schema_version: '1.0', projectPath, ...event },
+       );
+       if (!result.ok) {
+         if (state !== 'degraded') dependencies.notify(`Daemon reconnecting: ${result.reason}.`);
+@@ -207,6 +246,10 @@ export async function createSpecForgeThinPlugin(
+     },
+     'experimental.session.compacting': async ({ sessionID }): Promise<void> => {
+       const opencodeSessionId = String(sessionID ?? '').trim();
++      if (state === 'awaiting-initialization') {
++        appendCompactionBridgeEvent('compaction.hook.skipped', { projectDir, opencodeSessionId, reason: 'project_initialization_required' });
++        return;
++      }
+       appendCompactionBridgeEvent('compaction.hook.received', {
+         projectDir,
+         opencodeSessionId,
+@@ -234,6 +277,7 @@ export async function createSpecForgeThinPlugin(
+           opencodeSessionId,
+           error: error instanceof Error ? error.message : String(error),
+         });
++        if (isInitializationRefusal(error)) { registrationFailed(error); return; }
+         // Checkpoint persistence must never fail OpenCode compaction.
+         dependencies.notify(
+           `Compaction checkpoint forwarding failed: ${error instanceof Error ? error.message : String(error)}`,

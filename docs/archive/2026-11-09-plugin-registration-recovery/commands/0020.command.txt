@@ -1,0 +1,23 @@
+{
+  "run_id": "CODEX-SF-20261109-PLUGIN-REGISTRATION-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-09-plugin-registration-recovery/collect-structured.cjs",
+    "original"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "collect-original-case-level-ab-evidence",
+  "expected_writes": "Reporter-only same official scripts/workers on already-built exact original isolated leg; own temp/config and structured evidence only",
+  "started_utc": "2026-11-09T09:11:08.824Z",
+  "carrier_source_sha256": "0d4cc1c05dd2ab6f7802fdddb69880fc5464ffe4c397c123505511b207c327c0",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-09-plugin-registration-recovery\\collect-structured.cjs",
+      "sha256": "34b50eed0b13ee22f98dfa0c411c137d73affad4737e95e08e3371aa46f1a132",
+      "size": 2773,
+      "extension": ".cjs"
+    }
+  ]
+}

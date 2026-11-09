@@ -1,0 +1,20 @@
+{
+  "started_utc": "2026-11-09T08:57:46.294Z",
+  "utc": "2026-11-09T08:57:48.262Z",
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "test",
+    "--",
+    "tests/thin-plugin-first-start-recovery.test.ts",
+    "tests/current-thin-plugin.test.ts",
+    "--maxWorkers=1",
+    "--minWorkers=1",
+    "--reporter=json",
+    "--outputFile=D:\\code\\SpecForge\\docs\\archive\\2026-11-09-plugin-registration-recovery\\green-02\\first-start.vitest.json"
+  ],
+  "cwd": "D:\\code\\SpecForge\\.registration-patched-a01\\packages\\scope-gate",
+  "inner_exit_code": 0,
+  "stdout_sha256": "341d8813625ea0fe826bce991650859492c54e08553464a7b96acdc6ff9246e8",
+  "stderr_sha256": "a1c6290999b89930f3c477f1d5f0e1a7554f31cd3ec1564c185b8dc3b2d14158"
+}

@@ -1,0 +1,20 @@
+{
+  "owner": "cli",
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "test",
+    "--",
+    "--maxWorkers=1",
+    "--minWorkers=1",
+    "--reporter=json",
+    "--outputFile=D:\\code\\SpecForge\\docs\\archive\\2026-11-09-plugin-registration-recovery\\structured-registration-original\\cli.vitest.json"
+  ],
+  "cwd": "D:\\code\\SpecForge\\.registration-original-a01\\packages\\cli",
+  "context_sha256": "7bd1b33be9cdb1904c542a4e7a77fa2adfb3f544b9af4f35b241c239656b2437",
+  "started_utc": "2026-11-09T09:14:20.480Z",
+  "finished_utc": "2026-11-09T09:15:09.346Z",
+  "exit": 0,
+  "stdout_sha256": "11afcff75ae6a1ec6540a75a62787052dde9febfd7cd3d23fb43c78fad124b5a",
+  "stderr_sha256": "4636c4da506a51fa4407bfdca11d83314f6922c102e8cd4e0ea7aa01e6b96823"
+}

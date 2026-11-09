@@ -1,0 +1,20 @@
+{
+  "owner": "permission-engine",
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "test",
+    "--",
+    "--maxWorkers=1",
+    "--minWorkers=1",
+    "--reporter=json",
+    "--outputFile=D:\\code\\SpecForge\\docs\\archive\\2026-11-09-plugin-registration-recovery\\structured-registration-original\\permission-engine.vitest.json"
+  ],
+  "cwd": "D:\\code\\SpecForge\\.registration-original-a01\\packages\\permission-engine",
+  "context_sha256": "7bd1b33be9cdb1904c542a4e7a77fa2adfb3f544b9af4f35b241c239656b2437",
+  "started_utc": "2026-11-09T09:11:32.408Z",
+  "finished_utc": "2026-11-09T09:11:55.525Z",
+  "exit": 0,
+  "stdout_sha256": "9a9464d7495726b3f406a72d41443fcfa6d7d15bb2c2a50323c6f70ca653f3e4",
+  "stderr_sha256": "c83078a30a839274ec70e920f40000990bd28bf22e8fbc3a0e7157dbc524a3b6"
+}

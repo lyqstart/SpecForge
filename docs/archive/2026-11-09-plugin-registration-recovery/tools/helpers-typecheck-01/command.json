@@ -1,0 +1,22 @@
+{
+  "utc": "2026-11-09T09:01:27.491Z",
+  "executable": "node",
+  "args": [
+    "node_modules/typescript/bin/tsc",
+    "--noEmit",
+    "--strict",
+    "--skipLibCheck",
+    "--target",
+    "ES2022",
+    "--module",
+    "ESNext",
+    "--moduleResolution",
+    "bundler",
+    "--lib",
+    "ESNext,DOM",
+    "setup/userlevel-opencode/scripts/lib/sf_thin_plugin.ts",
+    "setup/userlevel-opencode/scripts/lib/sf_plugin_client.ts"
+  ],
+  "cwd": "D:\\code\\SpecForge\\.registration-patched-a01",
+  "environment_context_sha256": "9e46f360e001602da02371bd5387277b2a561f61c814b76d38448459a6a22b1d"
+}

@@ -1,0 +1,23 @@
+{
+  "run_id": "CODEX-SF-20261109-PLUGIN-REGISTRATION-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-09-plugin-registration-recovery/download-ci-artifact.cjs",
+    "docs/archive/2026-11-09-plugin-registration-recovery/local-assets/b6-windows-transport.json"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "capture-windows-candidate-full-regression-artifact",
+  "expected_writes": "Preserve failed Windows candidate raw report with official digest; ignored transport URL only",
+  "started_utc": "2026-11-09T09:41:06.422Z",
+  "carrier_source_sha256": "0d4cc1c05dd2ab6f7802fdddb69880fc5464ffe4c397c123505511b207c327c0",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-09-plugin-registration-recovery\\download-ci-artifact.cjs",
+      "sha256": "aa52bd82acb2198965e8a6eb1d770d81328dde42c61b71d7ab714cd475d5ffee",
+      "size": 1277,
+      "extension": ".cjs"
+    }
+  ]
+}

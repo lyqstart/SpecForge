@@ -1,0 +1,12 @@
+{
+  "phase": "lint",
+  "cwd": "/Users/runner/work/SpecForge/SpecForge",
+  "executable": "/Users/runner/.bun/bin/bun",
+  "args": [
+    "run",
+    "lint"
+  ],
+  "started_utc": "2026-11-09T09:28:45.170Z",
+  "context_sha256": "a42b8b85955c5e0f55bf31bf623aeb2bc72542f2ef6b5c3c7ce46ae48834ad9f",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES:build/test outputs;EXTERNAL_EVIDENCE_WRITES:owned runner-temp report;no tracked source changes"
+}

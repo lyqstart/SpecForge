@@ -1,0 +1,9 @@
+
+D:\code\SpecForge\.registration-patched-a01\packages\scope-gate\tests\thin-plugin-first-start-recovery.test.ts
+   6:20  error  Missing return type on function  @typescript-eslint/explicit-function-return-type
+  12:1   error  Missing return type on function  @typescript-eslint/explicit-function-return-type
+  20:1   error  Missing return type on function  @typescript-eslint/explicit-function-return-type
+
+✖ 3 problems (3 errors, 0 warnings)
+
+[lint-package] scope-gate: files=47 errors=3 warnings=0

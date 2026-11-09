@@ -1,0 +1,99 @@
+{
+  "utc": "2026-11-09T09:09:00.308Z",
+  "base": "68acd63c98137abfbbf7f189e91093ba8f32814c",
+  "commit": "b6e07d014828d0bc77af83ba3f1a6d4e57dcad80",
+  "branch": "codex/plugin-registration-recovery",
+  "product_version": "1.0.25",
+  "lock_sha256": "3f60323fd1c3303673a8d79d4253257198725d247d3e6551e7648d0826db4438",
+  "members": [
+    {
+      "file": ".github/workflows/code-quality.yml",
+      "storage_file": "files/001.raw",
+      "sha256": "a2453c9681eb413df74faed477165a49dc2f7f14370fa6407e685e157a6013a3",
+      "size": 6746,
+      "before": {
+        "storage_file": "files/001.before.raw",
+        "sha256": "7b543bd4bc073a73e61336d74f00b095f1eae84dc6a70e32c6a403c4980576cb"
+      }
+    },
+    {
+      "file": "docs/product-specification/specforge-product-specification.md",
+      "storage_file": "files/002.raw",
+      "sha256": "37b52eca9e7f32787bff3ef529c955a712d4cd6c97969e5002f8d3c080ae6052",
+      "size": 90752,
+      "before": {
+        "storage_file": "files/002.before.raw",
+        "sha256": "d6035c93e2ea528185d44fb436b45806529089b66d46ada2fc35778c49bad9ca"
+      }
+    },
+    {
+      "file": "package.json",
+      "storage_file": "files/003.raw",
+      "sha256": "80659155fe160e5162ba4821fe7418fd48fd990082055d6e64504969474343d9",
+      "size": 3058,
+      "before": {
+        "storage_file": "files/003.before.raw",
+        "sha256": "ba7bd86ab7189e737e37dab6512e0123dae32d898e5290ea1c1ecd627a45461b"
+      }
+    },
+    {
+      "file": "packages/daemon-core/tests/integration/thin-plugin-first-start-http.test.ts",
+      "storage_file": "files/004.raw",
+      "sha256": "d2ee49d8e0e61c32e363675612c84680ebb0cade927933f09e7420b767677538",
+      "size": 4614,
+      "before": null
+    },
+    {
+      "file": "packages/scope-gate/tests/thin-plugin-first-start-recovery.test.ts",
+      "storage_file": "files/005.raw",
+      "sha256": "a3eef862efd83fff9467738b705ca12ef2374aed489ada6cc4f5bd163c96e6a3",
+      "size": 6966,
+      "before": null
+    },
+    {
+      "file": "packages/service-management/src/plugin/reconnecting-daemon-client.ts",
+      "storage_file": "files/006.raw",
+      "sha256": "e6c9f7fa1a7de2b0ced0dfbc2d2a69f4048fe6db8891d7b2819bc9d2733d0a3e",
+      "size": 26604,
+      "before": {
+        "storage_file": "files/006.before.raw",
+        "sha256": "ce71af1dc2237ac5f92124ea75d30eb9d1ff729a43f3bb733c9fee131965a74d"
+      }
+    },
+    {
+      "file": "packages/service-management/tests/unit/registration-error-contract.test.ts",
+      "storage_file": "files/007.raw",
+      "sha256": "75d8b11d4d56632f72c11827805e667262e37cd0c8c1817ed42e07c705adc3c4",
+      "size": 4338,
+      "before": null
+    },
+    {
+      "file": "scripts/tsconfig.plugin-client.json",
+      "storage_file": "files/008.raw",
+      "sha256": "8c335c3371ca4b27543fb3da12f08bf8b4e12ffdd980849a95d481dc2df9fc70",
+      "size": 414,
+      "before": null
+    },
+    {
+      "file": "setup/userlevel-opencode/scripts/lib/sf_plugin_client.ts",
+      "storage_file": "files/009.raw",
+      "sha256": "90063425b7460834d8ae6f23d537960be6ed173ac3adeb227b7e8d87008931ee",
+      "size": 17181,
+      "before": {
+        "storage_file": "files/009.before.raw",
+        "sha256": "50ad4f1f2d463046b4c542f228b8be2220a9d21820eca616dc2d5c7d6f0d0c39"
+      }
+    },
+    {
+      "file": "setup/userlevel-opencode/scripts/lib/sf_thin_plugin.ts",
+      "storage_file": "files/010.raw",
+      "sha256": "f1d4016bc986f79432dba9fd25ed713c6e86a579cabf818244a314b530735d12",
+      "size": 10521,
+      "before": {
+        "storage_file": "files/010.before.raw",
+        "sha256": "f7e392aaf2022cb0595c05dc262736f99b3ec3bcf1fc7b804145256f93c7c8c6"
+      }
+    }
+  ],
+  "qualification": "Frozen source, not final acceptance. Full cold A/B and official installer still required."
+}

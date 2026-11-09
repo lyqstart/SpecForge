@@ -1,0 +1,19 @@
+{
+  "owner": "daemon-core",
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "test",
+    "--",
+    "--maxWorkers=1",
+    "--reporter=json",
+    "--outputFile=D:\\code\\SpecForge\\docs\\archive\\2026-11-09-plugin-registration-recovery\\structured-registration-patched\\daemon-core.vitest.json"
+  ],
+  "cwd": "D:\\code\\SpecForge\\.registration-patched-a01\\packages\\daemon-core",
+  "context_sha256": "65233dc92b4b90f25a8f647f3daa49d91d0a841fe4611f06ce054cf73cce24eb",
+  "started_utc": "2026-11-09T09:30:22.628Z",
+  "finished_utc": "2026-11-09T09:37:10.694Z",
+  "exit": 0,
+  "stdout_sha256": "6cab29c91d94f23d965171624d44840a6d241baa2f954120450f10a3847eec81",
+  "stderr_sha256": "142869544b88b985b0e3c12c59b6e6984cf2902f40e8b1db18faf480929cb531"
+}

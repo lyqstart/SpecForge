@@ -1,0 +1,11 @@
+{
+  "classification": "CONFIRMED_SINGLE_EXISTING_WAL_PROPERTY_TEST_TIMEOUT; ROOT_CAUSE_INSUFFICIENT_EVIDENCE",
+  "source_commit": "b6e07d014828d0bc77af83ba3f1a6d4e57dcad80",
+  "job_id": 129080653282,
+  "case": "pbt-state.test.ts / PBT-ST-01 matching event count between WAL and applied transitions",
+  "actual": "Vitest10000ms timeout,10268ms observed; one case failed,2454 daemon-core cases passed; root phase not run because official workspace phase failed.",
+  "source_checks": "Git diff68..b6 is empty for pbt-state fixture, StateManager, WAL and daemon Vitest config. Same-lock local cold original and patched full runs passed; first property461ms/543ms respectively; case-level supplements independently passed too.",
+  "hypotheses": "Runner/filesystem latency or random property workload; neither is proven. Original random seed/chain was not captured by the timed-out run, so exact input replay is unavailable.",
+  "next_evidence": "One unchanged failed-job rerun with the same original timeout/assertions/numRuns; preserve attempt1, collect a separate attempt2 artifact and record provider attempt identity. A passing rerun is a new successful execution, not a retroactive repair or explanation of attempt1.",
+  "prohibited_shortcuts": "No timeout increase, skipped test, reduced runs or WAL durability change; no root product adoption/deployment while platform qualification is incomplete."
+}

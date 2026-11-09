@@ -1,0 +1,23 @@
+{
+  "run_id": "CODEX-SF-20261109-PLUGIN-REGISTRATION-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-09-plugin-registration-recovery/run-targeted.cjs",
+    "green-02"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "green-real-http-controlled-init-and-first-start",
+  "expected_writes": "Private isolated environment only; real local HTTP server and Project Init owner operate on a newly owned synthetic project; no real user project/init/model call",
+  "started_utc": "2026-11-09T08:57:45.849Z",
+  "carrier_source_sha256": "0d4cc1c05dd2ab6f7802fdddb69880fc5464ffe4c397c123505511b207c327c0",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-09-plugin-registration-recovery\\run-targeted.cjs",
+      "sha256": "576aaf3a3c3c35fa94cc53611fd6e104fc90c13b6b96c34ecee95ec681c815d0",
+      "size": 2411,
+      "extension": ".cjs"
+    }
+  ]
+}

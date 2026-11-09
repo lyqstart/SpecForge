@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261109-PLUGIN-REGISTRATION-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-09-plugin-registration-recovery/upgrade-user-installation-02.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "official-guarded-same-version-user-upgrade-attempt02",
+  "expected_writes": "Verified readiness0044 succeeded; authorized official old-daemon stop and upgrade --force/verify exact117 qualified managed files; preserve original/owner/key; no business init or model",
+  "started_utc": "2026-11-09T10:12:05.318Z",
+  "carrier_source_sha256": "0d4cc1c05dd2ab6f7802fdddb69880fc5464ffe4c397c123505511b207c327c0",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-09-plugin-registration-recovery\\upgrade-user-installation-02.cjs",
+      "sha256": "85ccc57290810e697ea54788b81af43ebf1d8b60e653226d1f5830fb849675fe",
+      "size": 8210,
+      "extension": ".cjs"
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "utc": "2026-11-09T07:10:05.937Z",
+  "privateRoot": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-registration-red-XWGPkF",
+  "repository": "D:\\code\\SpecForge\\.registration-patched-a01",
+  "before": {
+    "setup/userlevel-opencode/scripts/lib/sf_thin_plugin.ts": "f7e392aaf2022cb0595c05dc262736f99b3ec3bcf1fc7b804145256f93c7c8c6",
+    "setup/userlevel-opencode/scripts/lib/sf_plugin_client.ts": "50ad4f1f2d463046b4c542f228b8be2220a9d21820eca616dc2d5c7d6f0d0c39",
+    "packages/service-management/src/plugin/reconnecting-daemon-client.ts": "ce71af1dc2237ac5f92124ea75d30eb9d1ff729a43f3bb733c9fee131965a74d"
+  },
+  "environment": {
+    "HOME": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-registration-red-XWGPkF\\home",
+    "TEMP": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-registration-red-XWGPkF\\temp",
+    "APPDATA": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-registration-red-XWGPkF\\roaming",
+    "LOCALAPPDATA": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-registration-red-XWGPkF\\local",
+    "OPENCODE_CONFIG_DIR": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-registration-red-XWGPkF\\opencode",
+    "SPECFORGE_VERIFICATION_NODE_SOURCE": "C:\\Program Files\\nodejs\\node.exe"
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "run_id": "CODEX-SF-20261109-PLUGIN-REGISTRATION-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "git",
+  "args": [
+    "-c",
+    "core.longpaths=true",
+    "-C",
+    "D:/code/SpecForge/.registration-patched-a01",
+    "push",
+    "origin",
+    "HEAD:refs/heads/codex/plugin-registration-recovery"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "publish-validated-candidate-for-platform-ci",
+  "expected_writes": "Push only frozen locally qualified codex/plugin-registration-recovery b6e07d0 for three-host CI; no main update or PR",
+  "started_utc": "2026-11-09T09:27:09.893Z",
+  "carrier_source_sha256": "0d4cc1c05dd2ab6f7802fdddb69880fc5464ffe4c397c123505511b207c327c0",
+  "entry_sources": []
+}

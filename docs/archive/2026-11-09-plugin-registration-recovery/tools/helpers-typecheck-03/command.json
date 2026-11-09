@@ -1,0 +1,10 @@
+{
+  "utc": "2026-11-09T09:03:09.837Z",
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "typecheck:plugin-client"
+  ],
+  "cwd": "D:\\code\\SpecForge\\.registration-patched-a01",
+  "environment_context_sha256": "9e46f360e001602da02371bd5387277b2a561f61c814b76d38448459a6a22b1d"
+}

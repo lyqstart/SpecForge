@@ -1,0 +1,241 @@
+{
+  "leg": "patched",
+  "passed": true,
+  "results": [
+    {
+      "owner": "version-unification",
+      "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+      "args": [
+        "run",
+        "test",
+        "--",
+        "--maxWorkers=1",
+        "--reporter=json",
+        "--outputFile=D:\\code\\SpecForge\\docs\\archive\\2026-11-09-plugin-registration-recovery\\structured-registration-patched\\version-unification.vitest.json"
+      ],
+      "cwd": "D:\\code\\SpecForge\\.registration-patched-a01\\packages\\version-unification",
+      "context_sha256": "65233dc92b4b90f25a8f647f3daa49d91d0a841fe4611f06ce054cf73cce24eb",
+      "started_utc": "2026-11-09T09:26:54.243Z",
+      "finished_utc": "2026-11-09T09:26:54.998Z",
+      "exit": 0,
+      "stdout_sha256": "af2f5b040a18f49d1eb4c1e0f6e0a8e74a1ab2c9f59502f0a551cfd4a6fcf5bc",
+      "stderr_sha256": "b25edb1ddfc6a72cf1255bd2dfd6e1a2306e909dbdfed04a7fafba2c6afd137f"
+    },
+    {
+      "owner": "configuration",
+      "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+      "args": [
+        "run",
+        "test",
+        "--",
+        "--maxWorkers=1",
+        "--minWorkers=1",
+        "--reporter=json",
+        "--outputFile=D:\\code\\SpecForge\\docs\\archive\\2026-11-09-plugin-registration-recovery\\structured-registration-patched\\configuration.vitest.json"
+      ],
+      "cwd": "D:\\code\\SpecForge\\.registration-patched-a01\\packages\\configuration",
+      "context_sha256": "65233dc92b4b90f25a8f647f3daa49d91d0a841fe4611f06ce054cf73cce24eb",
+      "started_utc": "2026-11-09T09:26:55.002Z",
+      "finished_utc": "2026-11-09T09:27:01.549Z",
+      "exit": 0,
+      "stdout_sha256": "9441923c14c306e88e73f40b3528c7808ffbc4a48d42825827ae2fd865a97d12",
+      "stderr_sha256": "344180eccf2795c7c352cd2fac2b86bb80fb670d00213003851e6d4a98e5bf22"
+    },
+    {
+      "owner": "service-management",
+      "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+      "args": [
+        "run",
+        "test",
+        "--",
+        "--maxWorkers=1",
+        "--reporter=json",
+        "--outputFile=D:\\code\\SpecForge\\docs\\archive\\2026-11-09-plugin-registration-recovery\\structured-registration-patched\\service-management.vitest.json"
+      ],
+      "cwd": "D:\\code\\SpecForge\\.registration-patched-a01\\packages\\service-management",
+      "context_sha256": "65233dc92b4b90f25a8f647f3daa49d91d0a841fe4611f06ce054cf73cce24eb",
+      "started_utc": "2026-11-09T09:27:01.552Z",
+      "finished_utc": "2026-11-09T09:27:09.130Z",
+      "exit": 0,
+      "stdout_sha256": "448e37f7b95c8ef31e0eaeaffeffe375a288b2ef99909446ba7f2d43360c9e54",
+      "stderr_sha256": "54b8bb09eb67785618d4d5d05691d14811dd458db0230299e87a36d941b8c3cb"
+    },
+    {
+      "owner": "host-profile",
+      "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+      "args": [
+        "run",
+        "test",
+        "--",
+        "--maxWorkers=1",
+        "--reporter=json",
+        "--outputFile=D:\\code\\SpecForge\\docs\\archive\\2026-11-09-plugin-registration-recovery\\structured-registration-patched\\host-profile.vitest.json"
+      ],
+      "cwd": "D:\\code\\SpecForge\\.registration-patched-a01\\packages\\host-profile",
+      "context_sha256": "65233dc92b4b90f25a8f647f3daa49d91d0a841fe4611f06ce054cf73cce24eb",
+      "started_utc": "2026-11-09T09:27:09.133Z",
+      "finished_utc": "2026-11-09T09:27:10.120Z",
+      "exit": 0,
+      "stdout_sha256": "7f149ed4a2d4fa01750437622546f900edec04dc588a298f308594f8904dcd17",
+      "stderr_sha256": "077c9a825bd707196146a93d286527ec2942ac421847bcfa5d2acdc46470da25"
+    },
+    {
+      "owner": "observability",
+      "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+      "args": [
+        "run",
+        "test",
+        "--",
+        "--maxWorkers=1",
+        "--minWorkers=1",
+        "--reporter=json",
+        "--outputFile=D:\\code\\SpecForge\\docs\\archive\\2026-11-09-plugin-registration-recovery\\structured-registration-patched\\observability.vitest.json"
+      ],
+      "cwd": "D:\\code\\SpecForge\\.registration-patched-a01\\packages\\observability",
+      "context_sha256": "65233dc92b4b90f25a8f647f3daa49d91d0a841fe4611f06ce054cf73cce24eb",
+      "started_utc": "2026-11-09T09:27:10.122Z",
+      "finished_utc": "2026-11-09T09:27:14.163Z",
+      "exit": 0,
+      "stdout_sha256": "d1545b2491c2743890a3c91cad0cf01fc58298ef24b9d6ff4b147f58f2fb968f",
+      "stderr_sha256": "3e30a575b6fe595f214c6e58dc64dbc39a70eef9eacba2a4ed79dc803ca04880"
+    },
+    {
+      "owner": "permission-engine",
+      "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+      "args": [
+        "run",
+        "test",
+        "--",
+        "--maxWorkers=1",
+        "--minWorkers=1",
+        "--reporter=json",
+        "--outputFile=D:\\code\\SpecForge\\docs\\archive\\2026-11-09-plugin-registration-recovery\\structured-registration-patched\\permission-engine.vitest.json"
+      ],
+      "cwd": "D:\\code\\SpecForge\\.registration-patched-a01\\packages\\permission-engine",
+      "context_sha256": "65233dc92b4b90f25a8f647f3daa49d91d0a841fe4611f06ce054cf73cce24eb",
+      "started_utc": "2026-11-09T09:27:14.166Z",
+      "finished_utc": "2026-11-09T09:27:35.735Z",
+      "exit": 0,
+      "stdout_sha256": "89c2d10ca6ae0edabe92ec7ae90300337d9c73c34063d9b88dc175d99e4c2efb",
+      "stderr_sha256": "ddc73b68e60ed343fe36168f2a54f4d00732b86a1213cf12332afd8226bbf732"
+    },
+    {
+      "owner": "opencode-adapter",
+      "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+      "args": [
+        "run",
+        "test",
+        "--",
+        "--maxWorkers=1",
+        "--reporter=json",
+        "--outputFile=D:\\code\\SpecForge\\docs\\archive\\2026-11-09-plugin-registration-recovery\\structured-registration-patched\\opencode-adapter.vitest.json"
+      ],
+      "cwd": "D:\\code\\SpecForge\\.registration-patched-a01\\packages\\opencode-adapter",
+      "context_sha256": "65233dc92b4b90f25a8f647f3daa49d91d0a841fe4611f06ce054cf73cce24eb",
+      "started_utc": "2026-11-09T09:27:35.738Z",
+      "finished_utc": "2026-11-09T09:28:04.475Z",
+      "exit": 0,
+      "stdout_sha256": "f6159f714e35c92429bc95d83fa25b85745b5eb26345aab240ad35c8ce3d82bf",
+      "stderr_sha256": "9f7d02aad7beceb498838d00f7a56e117837f8b96f114eaa62f34689dd9d38eb"
+    },
+    {
+      "owner": "scope-gate",
+      "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+      "args": [
+        "run",
+        "test",
+        "--",
+        "--maxWorkers=1",
+        "--minWorkers=1",
+        "--reporter=json",
+        "--outputFile=D:\\code\\SpecForge\\docs\\archive\\2026-11-09-plugin-registration-recovery\\structured-registration-patched\\scope-gate.vitest.json"
+      ],
+      "cwd": "D:\\code\\SpecForge\\.registration-patched-a01\\packages\\scope-gate",
+      "context_sha256": "65233dc92b4b90f25a8f647f3daa49d91d0a841fe4611f06ce054cf73cce24eb",
+      "started_utc": "2026-11-09T09:28:04.478Z",
+      "finished_utc": "2026-11-09T09:28:54.879Z",
+      "exit": 0,
+      "stdout_sha256": "3a969f6385351d6a73a9a67274084ff22e397ada49b218eab98b4a74b2532cfc",
+      "stderr_sha256": "91d1c545b6d5f3d9427750766bb8bc7d68d5a157be0a0a5a1ac83906f4d9781f"
+    },
+    {
+      "owner": "workflow-runtime",
+      "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+      "args": [
+        "run",
+        "test",
+        "--",
+        "--maxWorkers=1",
+        "--minWorkers=1",
+        "--reporter=json",
+        "--outputFile=D:\\code\\SpecForge\\docs\\archive\\2026-11-09-plugin-registration-recovery\\structured-registration-patched\\workflow-runtime.vitest.json"
+      ],
+      "cwd": "D:\\code\\SpecForge\\.registration-patched-a01\\packages\\workflow-runtime",
+      "context_sha256": "65233dc92b4b90f25a8f647f3daa49d91d0a841fe4611f06ce054cf73cce24eb",
+      "started_utc": "2026-11-09T09:28:54.881Z",
+      "finished_utc": "2026-11-09T09:29:39.539Z",
+      "exit": 0,
+      "stdout_sha256": "91969c33d8c0c8ff7ed55ff064da8361af7f53a62ecbde36668050d6478369d7",
+      "stderr_sha256": "324a656786085d9c78b327338504697298c65dea8e9f7e7f6f3918fd2886fb95"
+    },
+    {
+      "owner": "cli",
+      "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+      "args": [
+        "run",
+        "test",
+        "--",
+        "--maxWorkers=1",
+        "--minWorkers=1",
+        "--reporter=json",
+        "--outputFile=D:\\code\\SpecForge\\docs\\archive\\2026-11-09-plugin-registration-recovery\\structured-registration-patched\\cli.vitest.json"
+      ],
+      "cwd": "D:\\code\\SpecForge\\.registration-patched-a01\\packages\\cli",
+      "context_sha256": "65233dc92b4b90f25a8f647f3daa49d91d0a841fe4611f06ce054cf73cce24eb",
+      "started_utc": "2026-11-09T09:29:39.542Z",
+      "finished_utc": "2026-11-09T09:30:22.624Z",
+      "exit": 0,
+      "stdout_sha256": "fc5bed9cf73fd7f62b365c4a7eb03ea051658b54822b1fd0c159a31dc41516ce",
+      "stderr_sha256": "9b58bdd18964eeee2f10792d7eecbbfc324b4bce8d87ac4dd290044f3d888084"
+    },
+    {
+      "owner": "daemon-core",
+      "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+      "args": [
+        "run",
+        "test",
+        "--",
+        "--maxWorkers=1",
+        "--reporter=json",
+        "--outputFile=D:\\code\\SpecForge\\docs\\archive\\2026-11-09-plugin-registration-recovery\\structured-registration-patched\\daemon-core.vitest.json"
+      ],
+      "cwd": "D:\\code\\SpecForge\\.registration-patched-a01\\packages\\daemon-core",
+      "context_sha256": "65233dc92b4b90f25a8f647f3daa49d91d0a841fe4611f06ce054cf73cce24eb",
+      "started_utc": "2026-11-09T09:30:22.628Z",
+      "finished_utc": "2026-11-09T09:37:10.694Z",
+      "exit": 0,
+      "stdout_sha256": "6cab29c91d94f23d965171624d44840a6d241baa2f954120450f10a3847eec81",
+      "stderr_sha256": "142869544b88b985b0e3c12c59b6e6984cf2902f40e8b1db18faf480929cb531"
+    },
+    {
+      "owner": "root",
+      "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+      "args": [
+        "run",
+        "test:root",
+        "--",
+        "--maxWorkers=1",
+        "--reporter=json",
+        "--outputFile=D:\\code\\SpecForge\\docs\\archive\\2026-11-09-plugin-registration-recovery\\structured-registration-patched\\root.vitest.json"
+      ],
+      "cwd": "D:\\code\\SpecForge\\.registration-patched-a01",
+      "context_sha256": "65233dc92b4b90f25a8f647f3daa49d91d0a841fe4611f06ce054cf73cce24eb",
+      "started_utc": "2026-11-09T09:37:10.697Z",
+      "finished_utc": "2026-11-09T09:37:37.789Z",
+      "exit": 0,
+      "stdout_sha256": "080420f13820018a3bc2c46facd69ca3f2e552a479584d64cc26d75a59ee96c8",
+      "stderr_sha256": "06b5186adf81bc260d80da63e8dacfc95e19de1604b6e994331a209dd9c36605"
+    }
+  ],
+  "role": "Additional equal reporter-only full collection supplement; does not replace the cold-build official entry runs."
+}

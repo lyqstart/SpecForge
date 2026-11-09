@@ -1,0 +1,19 @@
+{
+  "owner": "root",
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "test:root",
+    "--",
+    "--maxWorkers=1",
+    "--reporter=json",
+    "--outputFile=D:\\code\\SpecForge\\docs\\archive\\2026-11-09-plugin-registration-recovery\\structured-registration-patched\\root.vitest.json"
+  ],
+  "cwd": "D:\\code\\SpecForge\\.registration-patched-a01",
+  "context_sha256": "65233dc92b4b90f25a8f647f3daa49d91d0a841fe4611f06ce054cf73cce24eb",
+  "started_utc": "2026-11-09T09:37:10.697Z",
+  "finished_utc": "2026-11-09T09:37:37.789Z",
+  "exit": 0,
+  "stdout_sha256": "080420f13820018a3bc2c46facd69ca3f2e552a479584d64cc26d75a59ee96c8",
+  "stderr_sha256": "06b5186adf81bc260d80da63e8dacfc95e19de1604b6e994331a209dd9c36605"
+}

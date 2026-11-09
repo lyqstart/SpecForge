@@ -1,0 +1,2 @@
+$ vitest run tests/thin-plugin-first-start-recovery.test.ts "--maxWorkers=1" "--minWorkers=1" "--reporter=json" "--outputFile=D:\\code\\SpecForge\\docs\\archive\\2026-11-09-plugin-registration-recovery\\red-regression\\first-start.vitest.json"
+error: script "test" exited with code 1

@@ -1,0 +1,5 @@
+{
+  "windows": "ci-b6-full-windows-retry",
+  "linux": "ci-b6-full-linux",
+  "macos": "ci-b6-full-macos"
+}

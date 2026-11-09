@@ -1,0 +1,24 @@
+{
+  "run_id": "CODEX-SF-20261109-PLUGIN-REGISTRATION-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-09-plugin-registration-recovery/run-isolated-qualification.cjs",
+    "original",
+    "D:/code/SpecForge/.registration-original-a01"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "qualify-exact-original-leg",
+  "expected_writes": "Only exact original isolated worktree dependencies/build/tests plus own HOME/TEMP/config and official installer fixture; no real user installation or business mutation",
+  "started_utc": "2026-11-09T07:08:17.377Z",
+  "carrier_source_sha256": "0d4cc1c05dd2ab6f7802fdddb69880fc5464ffe4c397c123505511b207c327c0",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-09-plugin-registration-recovery\\run-isolated-qualification.cjs",
+      "sha256": "5f8df28f149d90e41722c135fb3ba4faf2df4beedc8e8f952060b9d4aa68ddde",
+      "size": 7080,
+      "extension": ".cjs"
+    }
+  ]
+}

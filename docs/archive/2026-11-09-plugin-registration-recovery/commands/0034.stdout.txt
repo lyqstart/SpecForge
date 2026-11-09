@@ -1,0 +1,1 @@
+{"artifact_id":13664137245,"sha256":"a9cdc325537bf88a33b499b8b9a8dcb7a35cae635dbeb590ab75291464bb8f34","bytes":178594,"dir":"D:\\code\\SpecForge\\docs\\archive\\2026-11-09-plugin-registration-recovery\\ci-b6-full-windows-retry"}

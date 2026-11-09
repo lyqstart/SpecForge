@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261109-PLUGIN-REGISTRATION-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-09-plugin-registration-recovery/close-acceptance.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "close-actual-plugin-deployment-acceptance",
+  "expected_writes": "Read-only exact source/install and accepted primary facts; finalize current execution governance/EXP013/023/ERR2106/2108 and archive report; no further product code/state writes",
+  "started_utc": "2026-11-09T10:28:48.376Z",
+  "carrier_source_sha256": "0d4cc1c05dd2ab6f7802fdddb69880fc5464ffe4c397c123505511b207c327c0",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-09-plugin-registration-recovery\\close-acceptance.cjs",
+      "sha256": "ff7a2f1bdf5cb48174583b61d613dabad3bfbade2805a821b6b41c4634385a5c",
+      "size": 12810,
+      "extension": ".cjs"
+    }
+  ]
+}

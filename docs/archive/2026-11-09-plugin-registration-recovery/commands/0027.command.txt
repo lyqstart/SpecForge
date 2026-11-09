@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261109-PLUGIN-REGISTRATION-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-09-plugin-registration-recovery/compare-qualification.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "compare-same-lock-complete-case-collections",
+  "expected_writes": "Read-only full cold and reporter JSON comparison; real historical suite-vs-case granularity canaries; qualified comparison JSON only",
+  "started_utc": "2026-11-09T09:38:39.121Z",
+  "carrier_source_sha256": "0d4cc1c05dd2ab6f7802fdddb69880fc5464ffe4c397c123505511b207c327c0",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-09-plugin-registration-recovery\\compare-qualification.cjs",
+      "sha256": "c99d72a7fd527f3f3f28d1e77c9d4479282b290ead888941319d07ca89501fe7",
+      "size": 5365,
+      "extension": ".cjs"
+    }
+  ]
+}

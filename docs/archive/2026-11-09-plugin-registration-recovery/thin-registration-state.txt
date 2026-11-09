@@ -1,0 +1,42 @@
+  let state: ConnectionState = 'disconnected';
+  let registering: Promise<boolean> | undefined;
+  let recoveryRevision = 0;
+  const completedInitializations = new Set<string>();
+
+  function registrationFailed(error: unknown): void {
+    const waiting = isInitializationRefusal(error);
+    const next = waiting ? 'awaiting-initialization' : 'degraded';
+    const previous = state;
+    state = next;
+    if (waiting) daemonSessionId = undefined;
+    if (previous === next) return;
+    dependencies.notify(waiting
+      ? '项目尚未初始化；请切换到 sf-orchestrator 并调用 sf_project_init。初始化完成后会自动重新注册。'
+      : `Daemon unavailable; lifecycle is externally managed: ${error instanceof Error ? error.message : String(error)}`);
+  }
+
+  const register = async (): Promise<boolean> => {
+    if (registering) return registering;
+    const attempt = (async (): Promise<boolean> => {
+      for (;;) {
+        const revision = recoveryRevision;
+        try {
+          const registration = await daemonClient.register(projectPath);
+          daemonSessionId = registration.sessionId;
+          const previous = state;
+          state = 'connected';
+          if (previous !== 'connected') dependencies.notify(previous === 'disconnected'
+            ? 'Daemon connected.' : 'Daemon connection recovered.');
+          return true;
+        } catch (error) {
+          registrationFailed(error);
+          // A newer completed init may race an older request rejected before
+          // that init. One shared registration owner consumes the new revision.
+          if (revision === recoveryRevision) return false;
+        }
+      }
+    })();
+    registering = attempt;
+    try { return await attempt; }
+    finally { if (registering === attempt) registering = undefined; }
+  };

@@ -1,0 +1,6 @@
+[codex/plugin-registration-recovery b6e07d01] fix(plugin): wait for controlled initialization before retrying registration
+ 10 files changed, 571 insertions(+), 53 deletions(-)
+ create mode 100644 packages/daemon-core/tests/integration/thin-plugin-first-start-http.test.ts
+ create mode 100644 packages/scope-gate/tests/thin-plugin-first-start-recovery.test.ts
+ create mode 100644 packages/service-management/tests/unit/registration-error-contract.test.ts
+ create mode 100644 scripts/tsconfig.plugin-client.json

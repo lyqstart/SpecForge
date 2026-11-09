@@ -1,0 +1,14 @@
+{"leg":"original","phase":"install","status":"STARTED","utc":"2026-11-09T07:08:18.552Z"}
+{"leg":"original","phase":"install","status":"FINISHED","exit":0,"utc":"2026-11-09T07:08:32.229Z"}
+{"leg":"original","phase":"clean","status":"STARTED","utc":"2026-11-09T07:08:32.232Z"}
+{"leg":"original","phase":"clean","status":"FINISHED","exit":0,"utc":"2026-11-09T07:08:32.394Z"}
+{"leg":"original","phase":"build","status":"STARTED","utc":"2026-11-09T07:08:32.396Z"}
+{"leg":"original","phase":"build","status":"FINISHED","exit":0,"utc":"2026-11-09T07:09:34.893Z"}
+{"leg":"original","phase":"lint","status":"STARTED","utc":"2026-11-09T07:09:34.898Z"}
+{"leg":"original","phase":"lint","status":"FINISHED","exit":0,"utc":"2026-11-09T08:54:45.184Z"}
+{"leg":"original","phase":"workspace","status":"STARTED","utc":"2026-11-09T08:54:45.187Z"}
+{"leg":"original","phase":"workspace","status":"FINISHED","exit":0,"utc":"2026-11-09T09:07:11.574Z"}
+{"leg":"original","phase":"root","status":"STARTED","utc":"2026-11-09T09:07:11.580Z"}
+{"leg":"original","phase":"root","status":"FINISHED","exit":0,"utc":"2026-11-09T09:07:26.518Z"}
+{"leg":"original","phase":"installer","status":"STARTED","utc":"2026-11-09T09:07:26.523Z"}
+{"leg":"original","phase":"installer","status":"FINISHED","exit":0,"utc":"2026-11-09T09:07:55.333Z"}

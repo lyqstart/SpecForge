@@ -1,0 +1,15 @@
+{
+  "number": "011",
+  "name": "current-help",
+  "executable": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-registration-A01-patched\\temp\\sf-platform-acceptance-9iNLWg\\opencode\\sf-user\\bin\\specforge.exe",
+  "args": [
+    "doctor",
+    "--help",
+    "--json"
+  ],
+  "started_utc": "2026-11-09T09:25:50.088Z",
+  "finished_utc": "2026-11-09T09:25:50.241Z",
+  "inner_exit_code": 0,
+  "signal": null,
+  "spawn_error": null
+}

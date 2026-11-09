@@ -1,0 +1,12 @@
+{
+  "utc": "2026-11-09T10:12:58.893Z",
+  "args": [
+    "scripts/sf-installer.ts",
+    "upgrade",
+    "--force"
+  ],
+  "status": 0,
+  "stdout": "🔄 正在升级 SpecForge 共享组件...\n   目标目录: C:\\Users\\lyq\\.config\\opencode\n\n   已升级: 117 个文件\n   已跳过: 0 个文件（无变化）\n\n✅ 升级完成\n   已部署: 117 个共享组件文件\n   OpenCode 配置根: C:\\Users\\lyq\\.config\\opencode\n   CLI 命令目录: C:\\Users\\lyq\\.config\\opencode\\sf-user\\bin\n   CLI 可用: 当前 shell 可直接运行 specforge\n   提示: 需要重启 OpenCode 才能加载新版 Plugin\n",
+  "stderr": "",
+  "error": null
+}

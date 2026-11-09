@@ -1,0 +1,7 @@
+{
+  "utc": "2026-11-09T09:20:11.794Z",
+  "source": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-eslint-macos-full-acceptance\\final-user-upgrade-01\\driver-source.cjs",
+  "source_sha256": "991931f6b38986a0b07c5c2fc1ff43edd7a7371461df2a60418635ab6e853f32",
+  "derived_sha256": "ff9ed9a2a6904bc1907345f57fb5b85ee113e064085cd7358e4fd8b40e2db23d",
+  "changes": "Qualified candidate cwd, distinct evidence output/readiness, same-version125 managed repair using official upgrade --force. Preserves original stop/owner-key metadata/no user-project installer write guards. No key content read."
+}

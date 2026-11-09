@@ -1,0 +1,24 @@
+[root-task] Bun executable: C:\Users\runneradmin\.bun\bin\bun.exe
+[root-task] Bun version: 1.3.14
+[root-task] C:\Users\runneradmin\.bun\bin\bun.exe scripts/render-workflow-docs.ts --check
+Loaded 1 current workflow definition.
+
+Checking markdown files match JSON definitions...
+
+  OK: setup\userlevel-opencode\skills\sf-workflow-feature-spec\SKILL.md [phase-table]
+
+All files are in sync.
+[root-task] C:\Users\runneradmin\.bun\bin\bun.exe scripts/lint-workspace.ts
+[lint-package] types: files=31 errors=0 warnings=0
+[lint-package] version-unification: files=2 errors=0 warnings=0
+[lint-package] configuration: files=13 errors=0 warnings=0
+[lint-package] service-management: files=32 errors=0 warnings=0
+[lint-package] host-profile: files=9 errors=0 warnings=0
+[lint-package] observability: files=10 errors=0 warnings=0
+[lint-package] permission-engine: files=48 errors=0 warnings=0
+[lint-package] opencode-adapter: files=21 errors=0 warnings=0
+[lint-package] scope-gate: files=47 errors=0 warnings=0
+[lint-package] workflow-runtime: files=124 errors=0 warnings=0
+[lint-package] cli: files=63 errors=0 warnings=0
+[lint-package] daemon-core: files=231 errors=0 warnings=0
+[root-task] Complete: lint

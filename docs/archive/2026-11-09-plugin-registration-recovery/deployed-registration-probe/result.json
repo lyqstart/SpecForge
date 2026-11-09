@@ -1,0 +1,165 @@
+{
+  "utc": "2026-11-09T10:17:34.796Z",
+  "classification": "PASS_ACTUAL_INSTALLED_ENTRYPOINT_REAL_DAEMON_CONTROLLED_OWNER_RECOVERY",
+  "version": "1.0.25",
+  "candidate": "commit-b6e07d014828d0bc77af83ba3f1a6d4e57dcad80",
+  "installed_files_exact": 117,
+  "owned_fixture": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-plugin-deployed-Yhxttg\\project",
+  "daemon_pid": 39204,
+  "ordinary_preinit_events": 100,
+  "initial_registration_requests": 1,
+  "total_registration_requests": 2,
+  "controlled_init_requests": 1,
+  "notifications": [
+    "[sf:specforge] 项目尚未初始化；请切换到 sf-orchestrator 并调用 sf_project_init。初始化完成后会自动重新注册。",
+    "[sf:specforge] Daemon connection recovered."
+  ],
+  "requests": [
+    {
+      "path": "/api/v1/ingest/register",
+      "utc": "2026-11-09T10:17:34.147Z"
+    },
+    {
+      "path": "/api/v1/v11/write-guard/native",
+      "utc": "2026-11-09T10:17:34.547Z"
+    },
+    {
+      "path": "/api/v1/project/ensure",
+      "utc": "2026-11-09T10:17:34.557Z"
+    },
+    {
+      "path": "/api/v1/ingest/register",
+      "utc": "2026-11-09T10:17:34.630Z"
+    },
+    {
+      "path": "/api/v1/ingest/event",
+      "utc": "2026-11-09T10:17:34.744Z"
+    },
+    {
+      "path": "/api/v1/ingest/event",
+      "utc": "2026-11-09T10:17:34.756Z"
+    },
+    {
+      "path": "/api/v1/ingest/event",
+      "utc": "2026-11-09T10:17:34.756Z"
+    },
+    {
+      "path": "/api/v1/ingest/event",
+      "utc": "2026-11-09T10:17:34.756Z"
+    },
+    {
+      "path": "/api/v1/ingest/event",
+      "utc": "2026-11-09T10:17:34.756Z"
+    },
+    {
+      "path": "/api/v1/ingest/event",
+      "utc": "2026-11-09T10:17:34.756Z"
+    },
+    {
+      "path": "/api/v1/ingest/event",
+      "utc": "2026-11-09T10:17:34.756Z"
+    },
+    {
+      "path": "/api/v1/ingest/event",
+      "utc": "2026-11-09T10:17:34.756Z"
+    },
+    {
+      "path": "/api/v1/ingest/event",
+      "utc": "2026-11-09T10:17:34.756Z"
+    },
+    {
+      "path": "/api/v1/ingest/event",
+      "utc": "2026-11-09T10:17:34.756Z"
+    },
+    {
+      "path": "/api/v1/ingest/event",
+      "utc": "2026-11-09T10:17:34.756Z"
+    },
+    {
+      "path": "/api/v1/ingest/event",
+      "utc": "2026-11-09T10:17:34.756Z"
+    },
+    {
+      "path": "/api/v1/ingest/event",
+      "utc": "2026-11-09T10:17:34.756Z"
+    },
+    {
+      "path": "/api/v1/ingest/event",
+      "utc": "2026-11-09T10:17:34.756Z"
+    },
+    {
+      "path": "/api/v1/ingest/event",
+      "utc": "2026-11-09T10:17:34.756Z"
+    },
+    {
+      "path": "/api/v1/ingest/event",
+      "utc": "2026-11-09T10:17:34.756Z"
+    },
+    {
+      "path": "/api/v1/ingest/event",
+      "utc": "2026-11-09T10:17:34.756Z"
+    },
+    {
+      "path": "/api/v1/ingest/event",
+      "utc": "2026-11-09T10:17:34.757Z"
+    },
+    {
+      "path": "/api/v1/ingest/event",
+      "utc": "2026-11-09T10:17:34.757Z"
+    },
+    {
+      "path": "/api/v1/ingest/event",
+      "utc": "2026-11-09T10:17:34.757Z"
+    },
+    {
+      "path": "/api/v1/ingest/event",
+      "utc": "2026-11-09T10:17:34.757Z"
+    },
+    {
+      "path": "/api/v1/ingest/event",
+      "utc": "2026-11-09T10:17:34.757Z"
+    },
+    {
+      "path": "/api/v1/ingest/event",
+      "utc": "2026-11-09T10:17:34.757Z"
+    },
+    {
+      "path": "/api/v1/ingest/event",
+      "utc": "2026-11-09T10:17:34.757Z"
+    },
+    {
+      "path": "/api/v1/ingest/event",
+      "utc": "2026-11-09T10:17:34.757Z"
+    },
+    {
+      "path": "/api/v1/ingest/event",
+      "utc": "2026-11-09T10:17:34.757Z"
+    },
+    {
+      "path": "/api/v1/ingest/event",
+      "utc": "2026-11-09T10:17:34.757Z"
+    },
+    {
+      "path": "/api/v1/ingest/event",
+      "utc": "2026-11-09T10:17:34.757Z"
+    },
+    {
+      "path": "/api/v1/ingest/event",
+      "utc": "2026-11-09T10:17:34.757Z"
+    },
+    {
+      "path": "/api/v1/ingest/event",
+      "utc": "2026-11-09T10:17:34.757Z"
+    },
+    {
+      "path": "/api/v1/ingest/event",
+      "utc": "2026-11-09T10:17:34.757Z"
+    },
+    {
+      "path": "/api/v1/ingest/event",
+      "utc": "2026-11-09T10:17:34.789Z"
+    }
+  ],
+  "real_network": "Only current local daemon API; no provider or model endpoint allowed",
+  "limits": "Actual installed plugin and tool entrypoints plus real owner/HTTP. Completed runtime-event fixture follows installed SDK contract; not a new model-generated tool invocation or full UI acceptance. Synthetic project retained; t5/t2/t3/original application untouched."
+}

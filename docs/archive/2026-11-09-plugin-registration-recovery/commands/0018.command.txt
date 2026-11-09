@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261109-PLUGIN-REGISTRATION-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-09-plugin-registration-recovery/freeze-candidate.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "freeze-local-plugin-registration-candidate",
+  "expected_writes": "Only isolated worktree Git branch/index/commit and complete ten-file source evidence; no root implementation or remote publication",
+  "started_utc": "2026-11-09T09:08:57.167Z",
+  "carrier_source_sha256": "0d4cc1c05dd2ab6f7802fdddb69880fc5464ffe4c397c123505511b207c327c0",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-09-plugin-registration-recovery\\freeze-candidate.cjs",
+      "sha256": "70e8ff08a4164ba4ef5a10b495dd593d9fec52e1dd7cd64ca5eb14fa80b5af28",
+      "size": 4133,
+      "extension": ".cjs"
+    }
+  ]
+}

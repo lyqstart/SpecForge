@@ -1,0 +1,53 @@
+{
+  "run_id": "CODEX-SF-20261109-PLUGIN-REGISTRATION-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-09-plugin-registration-recovery/run-isolated-tool.cjs",
+    "helpers-typecheck-02",
+    "node",
+    "node_modules/typescript/bin/tsc",
+    "--ignoreConfig",
+    "--noEmit",
+    "--strict",
+    "--skipLibCheck",
+    "--target",
+    "ES2022",
+    "--module",
+    "ESNext",
+    "--moduleResolution",
+    "bundler",
+    "--lib",
+    "ESNext,DOM",
+    "setup/userlevel-opencode/scripts/lib/sf_thin_plugin.ts",
+    "setup/userlevel-opencode/scripts/lib/sf_plugin_client.ts"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "typecheck-deployable-registration-helpers-explicit-config",
+  "expected_writes": "Isolated TypeScript6 ignoreConfig plus explicit strict compiler settings; noEmit only; prior TS5112 invocation error retained",
+  "started_utc": "2026-11-09T09:02:06.999Z",
+  "carrier_source_sha256": "0d4cc1c05dd2ab6f7802fdddb69880fc5464ffe4c397c123505511b207c327c0",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-09-plugin-registration-recovery\\run-isolated-tool.cjs",
+      "sha256": "9aabb7768a8cca28f007beb323ec426a2d06a6a65a4e5990336760da87e8c85d",
+      "size": 1784,
+      "extension": ".cjs"
+    },
+    {
+      "argument_index": 16,
+      "path": "D:\\code\\SpecForge\\setup\\userlevel-opencode\\scripts\\lib\\sf_thin_plugin.ts",
+      "sha256": "f7e392aaf2022cb0595c05dc262736f99b3ec3bcf1fc7b804145256f93c7c8c6",
+      "size": 7811,
+      "extension": ".ts"
+    },
+    {
+      "argument_index": 17,
+      "path": "D:\\code\\SpecForge\\setup\\userlevel-opencode\\scripts\\lib\\sf_plugin_client.ts",
+      "sha256": "50ad4f1f2d463046b4c542f228b8be2220a9d21820eca616dc2d5c7d6f0d0c39",
+      "size": 15712,
+      "extension": ".ts"
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261109-PLUGIN-REGISTRATION-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-09-plugin-registration-recovery/adopt-qualified-source.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "adopt-ten-fully-qualified-product-files",
+  "expected_writes": "Only ten source/spec/test/developer-check files whose exact candidate bytes passed full symmetric/platform acceptance; metadata/evidence preserved",
+  "started_utc": "2026-11-09T10:06:49.131Z",
+  "carrier_source_sha256": "0d4cc1c05dd2ab6f7802fdddb69880fc5464ffe4c397c123505511b207c327c0",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-09-plugin-registration-recovery\\adopt-qualified-source.cjs",
+      "sha256": "e63527d23aaab2e1127d73d4752b5f8dfd10a8b584058e05cfd237a6fcc0c6ea",
+      "size": 4018,
+      "extension": ".cjs"
+    }
+  ]
+}

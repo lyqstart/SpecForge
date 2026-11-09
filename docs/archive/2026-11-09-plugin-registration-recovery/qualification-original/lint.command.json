@@ -1,0 +1,13 @@
+{
+  "leg": "original",
+  "phase": "lint",
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "lint"
+  ],
+  "cwd": "D:\\code\\SpecForge\\.registration-original-a01",
+  "started_utc": "2026-11-09T07:09:34.898Z",
+  "context_sha256": "7bd1b33be9cdb1904c542a4e7a77fa2adfb3f544b9af4f35b241c239656b2437",
+  "expected_writes": "Owned isolated dependencies/build/test/install roots and sealed reports; no real business project or user configuration writes"
+}

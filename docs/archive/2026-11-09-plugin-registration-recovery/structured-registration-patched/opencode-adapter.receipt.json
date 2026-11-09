@@ -1,0 +1,19 @@
+{
+  "owner": "opencode-adapter",
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "test",
+    "--",
+    "--maxWorkers=1",
+    "--reporter=json",
+    "--outputFile=D:\\code\\SpecForge\\docs\\archive\\2026-11-09-plugin-registration-recovery\\structured-registration-patched\\opencode-adapter.vitest.json"
+  ],
+  "cwd": "D:\\code\\SpecForge\\.registration-patched-a01\\packages\\opencode-adapter",
+  "context_sha256": "65233dc92b4b90f25a8f647f3daa49d91d0a841fe4611f06ce054cf73cce24eb",
+  "started_utc": "2026-11-09T09:27:35.738Z",
+  "finished_utc": "2026-11-09T09:28:04.475Z",
+  "exit": 0,
+  "stdout_sha256": "f6159f714e35c92429bc95d83fa25b85745b5eb26345aab240ad35c8ce3d82bf",
+  "stderr_sha256": "9f7d02aad7beceb498838d00f7a56e117837f8b96f114eaa62f34689dd9d38eb"
+}

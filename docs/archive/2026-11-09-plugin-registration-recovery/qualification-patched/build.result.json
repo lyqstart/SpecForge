@@ -1,0 +1,18 @@
+{
+  "leg": "patched",
+  "phase": "build",
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "scripts/prepare-current-release.ts"
+  ],
+  "cwd": "D:\\code\\SpecForge\\.registration-patched-a01",
+  "started_utc": "2026-11-09T09:09:32.410Z",
+  "context_sha256": "65233dc92b4b90f25a8f647f3daa49d91d0a841fe4611f06ce054cf73cce24eb",
+  "expected_writes": "Owned isolated dependencies/build/test/install roots and sealed reports; no real business project or user configuration writes",
+  "finished_utc": "2026-11-09T09:10:16.703Z",
+  "inner_exit_code": 0,
+  "signal": null,
+  "spawn_error": null,
+  "stdout_sha256": "094562138f2cb2708bf3960bbaeeef6c3b22cbbb4f4c6accfacc7d950c08a8dd",
+  "stderr_sha256": "42580806f72966c011a56229da3d32784afbef0b7cde7cfe7d94dfef7da3aee9"
+}

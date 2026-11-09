@@ -1,0 +1,1 @@
+{"artifact_id":13662548873,"sha256":"1203e9ad2a2b184af63f333e6d7070f046c36ffcc49e2fb4ceb9d6530dd10ed7","bytes":167985,"dir":"D:\\code\\SpecForge\\docs\\archive\\2026-11-09-plugin-registration-recovery\\ci-b6-full-linux"}

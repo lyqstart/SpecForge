@@ -1,0 +1,1 @@
+{"label":"ci-b6-full-linux","entries":33,"uncompressed_bytes":3961480,"result":"EXTRACTED_WITHOUT_EXECUTING_CONTENT"}

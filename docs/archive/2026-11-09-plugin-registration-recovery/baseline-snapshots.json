@@ -1,0 +1,108 @@
+{
+  "utc": "2026-11-09T07:03:19.715Z",
+  "run_id": "CODEX-SF-20261109-PLUGIN-REGISTRATION-A01",
+  "baseline": "68acd63c98137abfbbf7f189e91093ba8f32814c",
+  "entries": [
+    {
+      "file": "AGENTS.md",
+      "snapshot": "AGENTS.md.raw",
+      "sha256": "eeb90f36dfda4f25285728c53048413ef3be2bd562b5f5eb4758c9435c03bffc",
+      "size": 11675
+    },
+    {
+      "file": ".gitignore",
+      "snapshot": ".gitignore.raw",
+      "sha256": "99f0a9646fd0e370f66a5cf4cdfcccc7824f33e80c303a62cf50b7e2ceffa6ab",
+      "size": 4366
+    },
+    {
+      "file": ".gitattributes",
+      "snapshot": ".gitattributes.raw",
+      "sha256": "af52cc9fbbc68d9505a2ba494571a27d6c11c238c7b8f9fe8d946efaf211c0be",
+      "size": 3482
+    },
+    {
+      "file": "docs/project-status.md",
+      "snapshot": "docs__project-status.md.raw",
+      "sha256": "e1882446cefaddb0c411c4c26e11d4d840ad75bc961864c247d1089e9d377f12",
+      "size": 7424
+    },
+    {
+      "file": "docs/rule/specforge-active-development-rules.md",
+      "snapshot": "docs__rule__specforge-active-development-rules.md.raw",
+      "sha256": "ca4e06e247572f2d3c7efc2832f0d1e07fcc12988844d48deb76d37797a36830",
+      "size": 176838
+    },
+    {
+      "file": "docs/rule/specforge-development-error-ledger-and-experience.md",
+      "snapshot": "docs__rule__specforge-development-error-ledger-and-experience.md.raw",
+      "sha256": "52f56f676f4f0f2f46663fb6acc754ce8a12511975816fe17c0476a51dd3749d",
+      "size": 4540113
+    },
+    {
+      "file": "docs/product-specification/authority-registry.md",
+      "snapshot": "docs__product-specification__authority-registry.md.raw",
+      "sha256": "5ba13ce20545eb660aa8556097f2d5cbdea0a018c46ce60674985784e87d9a1e",
+      "size": 19052
+    },
+    {
+      "file": "docs/product-specification/specforge-product-specification.md",
+      "snapshot": "docs__product-specification__specforge-product-specification.md.raw",
+      "sha256": "b03174778f6bd1efb72227708152c422b7b0102e4cf8129a5a4d9d5e752afff0",
+      "size": 89704
+    },
+    {
+      "file": "docs/design/SpecForge架构一致性治理最终实施方案.md",
+      "snapshot": "docs__design__SpecForge架构一致性治理最终实施方案.md.raw",
+      "sha256": "956df3943a44d1b99636790a32e9b2a0dc266b7116f50b60b7b8c6f2614423ac",
+      "size": 15676
+    },
+    {
+      "file": "setup/userlevel-opencode/scripts/lib/sf_plugin_client.ts",
+      "snapshot": "setup__userlevel-opencode__scripts__lib__sf_plugin_client.ts.raw",
+      "sha256": "50ad4f1f2d463046b4c542f228b8be2220a9d21820eca616dc2d5c7d6f0d0c39",
+      "size": 15712
+    },
+    {
+      "file": "setup/userlevel-opencode/scripts/lib/sf_thin_plugin.ts",
+      "snapshot": "setup__userlevel-opencode__scripts__lib__sf_thin_plugin.ts.raw",
+      "sha256": "f7e392aaf2022cb0595c05dc262736f99b3ec3bcf1fc7b804145256f93c7c8c6",
+      "size": 7811
+    },
+    {
+      "file": "packages/service-management/src/plugin/reconnecting-daemon-client.ts",
+      "snapshot": "packages__service-management__src__plugin__reconnecting-daemon-client.ts.raw",
+      "sha256": "ce71af1dc2237ac5f92124ea75d30eb9d1ff729a43f3bb733c9fee131965a74d",
+      "size": 25128
+    },
+    {
+      "file": "packages/service-management/src/plugin/index.ts",
+      "snapshot": "packages__service-management__src__plugin__index.ts.raw",
+      "sha256": "f45cb51ca229ec11931f4dd36f580a809ff687f9180e24d04abd6fdf543c5232",
+      "size": 266
+    },
+    {
+      "file": "packages/scope-gate/tests/current-thin-plugin.test.ts",
+      "snapshot": "packages__scope-gate__tests__current-thin-plugin.test.ts.raw",
+      "sha256": "5e919050100c0ae9c8bac4bb67427bc079cda470b411e330ed7947b11b047d04",
+      "size": 4051
+    },
+    {
+      "file": "bun.lock",
+      "snapshot": "bun.lock.raw",
+      "sha256": "3f60323fd1c3303673a8d79d4253257198725d247d3e6551e7648d0826db4438",
+      "size": 268290
+    },
+    {
+      "file": "user supplied screenshot",
+      "snapshot": "user-screenshot.png",
+      "sha256": "b1c59166ccf54c88dd912462c606ef5b4572ec051d6e2055f10336ea6e18fa29"
+    }
+  ],
+  "experience": {
+    "full_reads_reused_only_after_hash_identity_check": true,
+    "applicable": "EXP-001/004/007/008/011/017/026/031/121/122",
+    "ledger": "PROJECT_NOT_INITIALIZED; ERR1191; EXP121/122 passages; observed source/installed bounded409 repro",
+    "repeated_error_check": "PASS"
+  }
+}

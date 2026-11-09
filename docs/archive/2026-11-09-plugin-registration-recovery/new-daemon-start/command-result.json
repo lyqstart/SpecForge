@@ -1,0 +1,16 @@
+{
+  "utc": "2026-11-09T10:15:03.386Z",
+  "started": "2026-11-09T10:15:02.869Z",
+  "file": "C:\\Users\\lyq\\.config\\opencode\\sf-user\\bin\\specforge.exe",
+  "args": [
+    "daemon",
+    "start",
+    "--detach",
+    "--json"
+  ],
+  "cwd": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-plugin-cli-start-aOxZTg",
+  "exit": 0,
+  "error": null,
+  "stdout_sha256": "476daee2b907cdc912535dfc44c4ddbd59f038ab74d384b653f25902b91a4ebb",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

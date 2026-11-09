@@ -1,0 +1,8 @@
+{
+  "reason": "Before candidate freeze, strict validation exposed that deployable helpers lacked an independent Node-host typecheck. Temporary compiler invocations TS5112/missing host types are tooling errors; the owner config then directly exposed unknown response dereferences. Existing production contract requires verified registration identity and explicit guard allow.",
+  "additional_scope": ["package.json: one typecheck script only", "scripts/tsconfig.plugin-client.json: formal strict noEmit Node-host helper check", ".github/workflows/code-quality.yml: run the same helper check on all three hosts"],
+  "additional_validation": "Malformed registration success envelopes fail closed; native guard unknown/malformed bodies never become allow; no raw refusal bodies in normal diagnostics. Response identity remains three formal fields with the same personal/enterprise modes.",
+  "dependency_or_product_version_change": false,
+  "lock_requirement": "Original and patched physical bun.lock must remain exact3f60323fd1c3303673a8d79d4253257198725d247d3e6551e7648d0826db4438.",
+  "history": "Initial plan and all failed tool/config invocations preserved; root product files remain untouched until full qualification. First host green invocation was not launched because automatic approval review timed out; one permitted retry succeeded."
+}

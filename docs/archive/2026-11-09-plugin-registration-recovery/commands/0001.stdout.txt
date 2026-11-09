@@ -1,0 +1,1 @@
+{"phase":"ISOLATED_IMPLEMENTATION_AND_REGRESSION","run_id":"CODEX-SF-20261109-PLUGIN-REGISTRATION-A01","product_source_writes":0,"governance_files":5,"utc":"2026-11-09T07:04:31.848Z"}

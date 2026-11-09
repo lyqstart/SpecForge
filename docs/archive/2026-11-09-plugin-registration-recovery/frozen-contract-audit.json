@@ -1,0 +1,12 @@
+{
+  "utc": "2026-11-09T09:23:31.065Z",
+  "candidate": "b6e07d014828d0bc77af83ba3f1a6d4e57dcad80",
+  "members": 10,
+  "root_manifest_change": "One developer-only noEmit helper typecheck script; all other JSON fields identical",
+  "runtime_dependencies_unchanged": true,
+  "version_unchanged": true,
+  "lock_unchanged": true,
+  "workspace_and_deployable_response_contract_same_bytes": true,
+  "authority": "Existing Registry remains the unique pointer to SPS. SPS10.1 clarifies existing registration/initialization/lifecycle ownership; no new capability, module, actor or business authority introduced.",
+  "limits": "Behavior proven by red/green and real HTTP owner regressions, not these source assertions. Cold/full/installer qualification and case-level comparison remain separate."
+}

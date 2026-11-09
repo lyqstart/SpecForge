@@ -1,0 +1,1 @@
+{"label":"service-lint-01","inner_exit_code":0}

@@ -1,0 +1,28 @@
+    async event({ event }): Promise<void> {
+      if (!event?.type) return;
+      const completed = completedInitializationKey(event);
+      if (completed && !completedInitializations.has(completed)) {
+        completedInitializations.add(completed);
+        // Only retain bounded runtime delivery identities, never business state.
+        if (completedInitializations.size > 128) completedInitializations.delete(completedInitializations.values().next().value!);
+        recoveryRevision++;
+        if (!daemonSessionId && !(await register())) return;
+      }
+      if (!daemonSessionId) {
+        if (state === 'awaiting-initialization') return;
+        if (!(await register())) return;
+      }
+
+      const result = await daemonClient.postEvent(
+        daemonSessionId!,
+        `opencode.${event.type}`,
+        { schema_version: '1.0', projectPath, ...event },
+      );
+      if (!result.ok) {
+        if (state !== 'degraded') dependencies.notify(`Daemon reconnecting: ${result.reason}.`);
+        state = 'degraded';
+        return;
+      }
+      if (state === 'degraded') dependencies.notify('Daemon connection recovered.');
+      state = 'connected';
+    },

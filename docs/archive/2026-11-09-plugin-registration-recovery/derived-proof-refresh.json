@@ -1,0 +1,27 @@
+{
+  "utc": "2026-11-09T10:11:26.041Z",
+  "cause": "Official installer qualification prepares/rebuilds release assets after initial native lineage was captured. Source unchanged; final manifest broker994e4c differed from earlier lineage450f30. Readiness stopped, and next guarded upgrade invocation stopped at missing readiness before any stop/install.",
+  "final_installer_finished": "2026-11-09T09:25:57.507Z",
+  "old_lineage_utc": "2026-11-09T09:14:56.173Z",
+  "files": [
+    {
+      "source": "verify-native-lineage.cjs",
+      "sha256": "6a26fa172ac76ffda7a47d1ad5b122d2745409a3a0c0f321441952c78a723b32",
+      "derived": "verify-final-native-lineage.cjs",
+      "changes": "Distinct immutable output folder only"
+    },
+    {
+      "source": "prepare-deployment-readiness.cjs",
+      "sha256": "12eb769846ab6e0d14bca213a08f09612e5adbf09a58d4b947001e5160c6888e",
+      "derived": "prepare-final-deployment-readiness.cjs",
+      "changes": "Consume final independently verified native lineage; preserve all guards"
+    },
+    {
+      "source": "upgrade-user-installation.cjs",
+      "sha256": "ff9ed9a2a6904bc1907345f57fb5b85ee113e064085cd7358e4fd8b40e2db23d",
+      "derived": "upgrade-user-installation-02.cjs",
+      "changes": "Distinct immutable attempt directory only; no guard removal"
+    }
+  ],
+  "future_sequence": "Execute final lineage after all build/installer generators complete, then guarded readiness; launch upgrade only if readiness process exit0. Do not invoke a dependent write command after a failed precondition."
+}

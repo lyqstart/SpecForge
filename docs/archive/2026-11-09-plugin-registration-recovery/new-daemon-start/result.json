@@ -1,0 +1,23 @@
+{
+  "utc": "2026-11-09T10:16:27.677Z",
+  "health": {
+    "schema_version": "1.0",
+    "status": "ok",
+    "pid": 39204,
+    "version": "1.0.25",
+    "startedAt": 1794219303771,
+    "uptimeSec": 83,
+    "activeClients": 0,
+    "pendingEvents": 4,
+    "lastEventTs": 1794219303798
+  },
+  "old_pid": 41980,
+  "old_identity_exit_proved": true,
+  "source_candidate": "commit-b6e07d014828d0bc77af83ba3f1a6d4e57dcad80",
+  "daemon_image_sha256": "4dc257c7a50ca8859e0b86ffcebfcb826960376f5d2511981f568a9891e3a015",
+  "token_disclosed": false,
+  "cli_exit": 0,
+  "observations": [],
+  "duplicate_start_executed": false,
+  "note": "Original CLI reported process started, not health ready. Immediate verifier46 hit handshake publication timing; preserve that failure and verify same successful pid instead of repeating start."
+}

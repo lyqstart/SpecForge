@@ -1,0 +1,206 @@
+# SpecForge 项目协作规则
+
+## 外部执行模式门禁（AR-DEC-05）
+
+对 SpecForge 仓库的任何外部执行会话，必须先声明并遵守两种且仅两种执行模式之一：
+
+```text
+CODEX_DIRECT           # Codex 同时负责规划、执行与验证
+WORKBUDDY_COORDINATED  # Codex=Planner/Auditor；WorkBuddy=Executor/Evidence Producer；用户=转交与产品决策
+```
+
+模式判定与证据要求（RUN_ID、EVIDENCE_ROOT、命令四件套、数字退出码、写入四分类、停点）的唯一依据：
+
+```text
+docs/rule/specforge-execution-mode-and-evidence-protocol.md
+```
+
+任何新会话必须先读取该协议，再运行 Bootstrap；当前模式、RUN_ID、EVIDENCE_ROOT 与停点由 `PROJECT_STATUS_SCHEMA=2` 的 `docs/project-status.md` 提供并由 Bootstrap 校验。最新明确用户指令可切换模式；无明确切换时继承 project-status；阶段中途不得静默切换。WORKBUDDY_COORDINATED 模式下，WorkBuddy 自述不能替代 Codex 独立审核。
+
+## SpecForge 产品开发经验前置门禁
+
+在分析、设计或修改 SpecForge 的代码、测试、文档、配置、脚本、命令、补丁、安装器、验证流程或 Git 操作前，必须先完整读取当前活动规则文件：
+
+```text
+docs/rule/specforge-active-development-rules.md
+```
+
+并按任务关键词、涉及模块和适用 EXP 对历史错误账本执行定向检索：
+
+```text
+docs/rule/specforge-development-error-ledger-and-experience.md
+```
+
+历史账本保留历史错误、审计与经验演化证据，不再要求每会话全文读取。记录：
+
+```text
+EXPERIENCE_FILE_READ=YES
+APPLICABLE_EXPERIENCE_RULES=EXP-...（至少一项）
+REPEATED_ERROR_CHECK=PASS
+ACTIVE_EXPERIENCE_RULES_FILE_READ=YES
+HISTORICAL_LEDGER_SEARCH=关键词及命中 EXP/ERR，或 NONE_WITH_JUSTIFICATION
+```
+
+无法读取活动规则文件、没有适用规则或不能完成重复错误检查时，必须 fail closed，不得修改文件或生成写操作命令。
+
+本门禁只约束 SpecForge 产品自身的直接开发；不得启动 SpecForge 自身的 Work Item、Workflow、Candidate、Gate、User Decision、Merge Runner、Code Permission 或 Close 流程。
+
+## 新会话与恢复前置门禁
+
+仓库根 `AGENTS.md` 是所有新会话的稳定入口，不承载动态项目状态。任何新会话在分析、诊断、修改或验证前，必须先运行只读 Bootstrap：
+
+```text
+node scripts/project-session-bootstrap.mjs
+```
+
+随后必须完整读取 Bootstrap 输出的 `REQUIRED_RULES`，并从唯一状态文件：
+
+```text
+docs/project-status.md
+```
+
+所记录的 `NEXT_LEGAL_ACTION` 恢复。`BOOTSTRAP_STATUS=BLOCKED`、远端 `main` 不可核验、本地与远端 HEAD 不一致、存在未分类工作树变更、必需规则缺失或出现并行当前状态文件时，必须 fail closed。工作树有变化时必须先区分用户已有变化与当前任务变化，未经确认不得覆盖。
+
+禁止创建新的 handoff、current-status、recovery-status 或按会话命名的当前状态文件。动态历史进入 Git 与 `docs/archive/`；产品裁决必须进入 Product Specification 与 Authority Registry，不得只保存在聊天、状态文件、实现或测试中。
+
+当前产品需求、架构、发布范围、模块去留、用户级路径和 daemon 生命周期的唯一产品依据为：
+
+```text
+docs/product-specification/authority-registry.md
+docs/product-specification/specforge-product-specification.md
+```
+
+`.kiro/` 不是当前产品权威目录并应从仓库根退役；旧测试、README、handoff、实施方案、历史标准或现有代码不得单独决定产品行为。冲突必须报告为 `AUTHORITY_CONFLICT`，证据不足必须报告为 `INSUFFICIENT_EVIDENCE`。
+
+## 证据先行与结论可追溯原则
+
+本项目中的事实判断、架构判断、根因判断和解决方案，必须以用户提供的证据或可复核的一手证据为依据。不得把经验、可能性、相似案例、未验证推断或“很可能”表述当作事实和结论。
+
+证据不足时，结论必须是 `INSUFFICIENT_EVIDENCE`。此时可以提出用于指导取证的假设，但必须明确标记为“待验证假设”，同时说明所缺证据、获取方法以及不同结果分别支持或排除什么判断；在完成验证前，不得据此推进会改变项目状态的修复。
+
+证据获取遵循以下顺序：
+
+1. 已有证据：先完整检查用户提供的文件、日志、命令输出、源码、配置和运行记录，不重复索取已经存在的材料。
+2. 自主取证：知道获取方法且具有权限时，优先通过只读、可复核、尽量无观察者影响的方式自行获取。
+3. 用户协助取证：知道获取方法但缺少目标环境、权限或工具时，向用户提供准确、安全、只读优先的操作步骤，并说明需要返回的完整输出、脱敏要求和取证目的。
+4. 共同设计取证：尚不知道如何获取时，明确说明未知点，向用户询问环境、入口或可用观测手段；不得用猜测填补证据缺口。
+
+每个关键结论都必须能够回答：证据是什么、证据来自哪里、证据直接证明什么、哪些部分仍未证明。间接证据只能支持相应强度的判断；“未发现证据”不得直接等同于“证明不存在”，除非已证明取证范围完整且检验方法有效。
+
+## 架构归属优先与最小治理扩展原则
+
+处理本项目中的任何问题或任务前，必须先依据已经验证、来源明确、可复核的真实代码、配置、运行状态和原始证据重建实际架构，确定问题或任务在现有治理体系中的责任归属，并判断现有能力能否形成合法闭环。
+
+若现有体系不能合法、完整地容纳该问题或任务，必须先对所属治理层实施最小但完整、可验证、可审计、可恢复的架构扩展。扩展通过验证后，再从原 Work Item 的合法断点继续处理原任务。
+
+禁止以手工修改真相源、旁路工具、角色越权、产物冒充、硬编码单个 Work Item、忽略 HardStop 或降低治理要求来代替架构能力。
+
+## 强制处理顺序
+
+所有分析、诊断、修复和功能开发都遵循以下顺序：
+
+```text
+核验证据并固化事实
+→ 重建实际架构
+→ 对照设计架构
+→ 定位治理归属
+→ 判断现有能力是否足够
+→ 必要时最小扩展架构
+→ 验证扩展闭环
+→ 恢复并处理原任务
+```
+
+### 1. 固化事实
+
+在创建 Work Item、推进状态、执行可能改变现场的实验或修改文件前，保存或确认：
+
+- 用户原始问题和完成标准；
+- 当前 Git 版本、工作区和部署版本；
+- Runtime 权威状态与活动 Work Item；
+- 原始日志、错误、配置、文件系统现场和时间线；
+- 已存在的治理产物、Gate、HardStop、审批、权限与审计记录；
+- 调查动作可能产生的观察者影响。
+
+必须区分并显式标注：
+
+- `CONFIRMED`：一手证据直接支持；
+- `CORROBORATED`：多项相互独立的证据共同支持，但仍包含有限推断；
+- `HYPOTHESIS`：仅用于规划下一步取证，尚不能作为结论；
+- `INSUFFICIENT_EVIDENCE`：现有证据不足以判断。
+
+证据记录至少应保留来源环境、采集命令或方法、采集时间、相关版本/提交、原始输出和必要的脱敏说明。引用日志或会话记录时，必须区分“记录证明当时出现了什么”与“记录中的 Agent 自述声称了什么”；后者不能自动证明其内容真实。
+
+### 2. 重建实际架构
+
+不得只依据 README、设计文档、历史报告或 Agent 摘要作出判断。必须核对真实入口、调用链、状态权威、数据流、产物所有权、工具执行层、权限边界、Gate、Merge、Audit、Close、恢复机制以及仓库源码与实际部署副本。
+
+设计标准描述“系统应当怎样工作”；代码、配置和运行证据描述“系统当前怎样工作”。两者不一致时，该差异本身就是待定位的缺陷。
+
+### 3. 定位治理归属
+
+至少在以下层级中确定首次偏离点和责任层：
+
+```text
+Standard
+Contract
+Workflow Skill
+Agent
+Tool Schema
+Tool Handler
+Runtime / State
+Permission / Write Guard
+Gate
+Merge / Audit / Close
+Deployment
+Business Project
+```
+
+不得把所有问题默认交给 Executor，也不得用下游补丁掩盖上游契约或 Runtime 缺陷。
+
+### 4. 判断现有能力
+
+处理原任务前，应形成有证据支持的能力判断：
+
+- `SUPPORTED`：现有架构存在完整合法路径；
+- `SUPPORTED_WITH_RECOVERY`：能力存在，只需按权威状态恢复；
+- `PARTIALLY_SUPPORTED`：存在部分能力，但闭环不完整；
+- `UNSUPPORTED`：没有合法表达或执行路径；
+- `CONTRACT_CONFLICT`：不同治理层互相矛盾；
+- `RUNTIME_DEFECT`：设计支持，但实现未落实；
+- `INSUFFICIENT_EVIDENCE`：证据不足，暂时不能判断。
+
+只有能力已经受支持，或必要的恢复/扩展已经完成并通过验证后，才能进入原任务实施。
+
+### 5. 最小但完整的架构扩展
+
+“最小变更”指最小的完整治理闭环，不等同于最少代码行或局部特例。必要扩展应按风险包含：
+
+- 权威入口与 Schema / Contract；
+- 清晰的 Agent 和产物所有权；
+- 受控 Tool 与 Runtime 执行路径；
+- 权限、Write Guard 和 HardStop 边界；
+- 状态推进、Gate、Evidence、Audit、Merge 与 Close；
+- 失败恢复、迁移和向后兼容；
+- 单元、属性、集成和端到端验证；
+- 仓库源码、用户级部署副本和安装器的一致性。
+
+### 6. 恢复原任务
+
+扩展或修复治理能力后，优先恢复原 Work Item，不创建重复 Work Item。必须重新读取权威状态，保留历史失败和 HardStop，使因产物、范围或基础版本变化而失效的审批失效，并从合法断点继续；不得重复已成功步骤或伪造状态。
+
+## 证据与实施纪律
+
+- 历史报告和其他 Agent 结论只能作为线索，关键结论必须回到源码、配置、原始日志、Git 对象、StateManager 事件或可复核运行结果。
+- 分析必须首先使用用户已经提供的证据；材料不足时先提出补充证据要求，不得补写推测性事实。
+- 向用户请求取证时，必须说明取证对象、只读命令或操作、预期返回内容、脱敏项，以及该证据将验证或排除的具体判断。
+- 所有报告必须将事实、证据解释、待验证假设和最终结论分开表达，并为关键结论建立可追溯的证据对应关系。
+- 诊断任务只确定原因和责任层；未经明确要求，不直接实施修复。
+- 实施任务必须同时检查核心源码、部署模板、安装器和相关测试是否需要同步。
+- 遇到治理死锁时停止原任务并修复能力缺口，不得要求用户通过终端代替受控工具修改 `.specforge/project/**` 等真相源。
+- 用户授权表示同意目标或风险，不自动授权违反项目治理边界的实现方式。
+
+## Git 协作方式
+
+- 本项目当前由单一维护者使用，不创建 Pull Request，也不把 PR 作为提交、审查、合并或部署的前置条件。
+- 已验证的变更在本地分支完成并保持提交可追溯后，直接合并到本地 `main`，复核结果，再推送远程 `main`。
+- 除非用户以后明确改变本规则，否则不得建议、创建或要求用户创建 PR。

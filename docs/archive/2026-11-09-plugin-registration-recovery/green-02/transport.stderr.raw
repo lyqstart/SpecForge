@@ -1,0 +1,2 @@
+$ vitest run tests/unit/registration-error-contract.test.ts "--maxWorkers=1" "--minWorkers=1" "--reporter=json" "--outputFile=D:\\code\\SpecForge\\docs\\archive\\2026-11-09-plugin-registration-recovery\\green-02\\transport.vitest.json"
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m

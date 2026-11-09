@@ -1,0 +1,1 @@
+{"artifact_id":13663530195,"sha256":"00dfd5644a6078c804af5b076ec386d8c4af3af35ddd1d5baeed8f5f250d6b09","bytes":173566,"dir":"D:\\code\\SpecForge\\docs\\archive\\2026-11-09-plugin-registration-recovery\\ci-b6-full-macos"}

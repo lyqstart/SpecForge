@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261109-PLUGIN-REGISTRATION-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-09-plugin-registration-recovery/prepare-final-deployment-readiness.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "prepare-final-exact-qualified-deployment-readiness",
+  "expected_writes": "Read-only all117 source/installed identities and final post-installer native proof; immutable readiness only; do not launch upgrade on nonzero",
+  "started_utc": "2026-11-09T10:11:45.846Z",
+  "carrier_source_sha256": "0d4cc1c05dd2ab6f7802fdddb69880fc5464ffe4c397c123505511b207c327c0",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-09-plugin-registration-recovery\\prepare-final-deployment-readiness.cjs",
+      "sha256": "d13283a25dba7ca4d7d5f039e23aa8540a192b2f010873bf3aa115ec96ac6be4",
+      "size": 2394,
+      "extension": ".cjs"
+    }
+  ]
+}

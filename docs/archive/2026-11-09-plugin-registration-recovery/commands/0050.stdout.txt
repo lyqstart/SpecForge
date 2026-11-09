@@ -1,0 +1,1 @@
+{"accepted":true,"source":"b6e07d014828d0bc77af83ba3f1a6d4e57dcad80","targets":42,"installed":117,"daemon":39204,"actual_loader":"10/8/45","publication":"PENDING_INDEPENDENT_POST_SEAL_RECEIPTS"}

@@ -1,0 +1,26 @@
+{
+  "run_id": "CODEX-SF-20261109-PLUGIN-REGISTRATION-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "C:/Users/lyq/.cache/codex-runtimes/codex-primary-runtime/dependencies/native/powershell/pwsh.exe",
+  "args": [
+    "-NoProfile",
+    "-File",
+    "docs/archive/2026-11-09-plugin-registration-recovery/extract-ci-artifact-tree.ps1",
+    "-Label",
+    "ci-b6-full-linux"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "extract-linux-candidate-full-regression-artifact",
+  "expected_writes": "Safe traversal/symlink/budget-checked ZIP extraction only; no execution of downloaded content",
+  "started_utc": "2026-11-09T09:38:13.594Z",
+  "carrier_source_sha256": "0d4cc1c05dd2ab6f7802fdddb69880fc5464ffe4c397c123505511b207c327c0",
+  "entry_sources": [
+    {
+      "argument_index": 2,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-09-plugin-registration-recovery\\extract-ci-artifact-tree.ps1",
+      "sha256": "b4ddfddd0d041996a92a4cadb6cc1fd472123cf1f119946a8b39d93cdc15b07c",
+      "size": 1906,
+      "extension": ".ps1"
+    }
+  ]
+}

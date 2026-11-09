@@ -1,0 +1,20 @@
+{
+  "started_utc": "2026-11-09T09:07:26.828Z",
+  "utc": "2026-11-09T09:07:32.897Z",
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "test",
+    "--",
+    "tests/integration/thin-plugin-first-start-http.test.ts",
+    "tests/unit/registration-no-initialization.test.ts",
+    "--maxWorkers=1",
+    "--minWorkers=1",
+    "--reporter=json",
+    "--outputFile=D:\\code\\SpecForge\\docs\\archive\\2026-11-09-plugin-registration-recovery\\green-03\\http.vitest.json"
+  ],
+  "cwd": "D:\\code\\SpecForge\\.registration-patched-a01\\packages\\daemon-core",
+  "inner_exit_code": 0,
+  "stdout_sha256": "453a05b6d92e41c7419e9a848d95138e83259881fea482da6625cbb94de7bcb7",
+  "stderr_sha256": "6dc492d7cf5b99056c4d3f56cd8893e9eafe42bef1d8132edd98209134ffcc1c"
+}

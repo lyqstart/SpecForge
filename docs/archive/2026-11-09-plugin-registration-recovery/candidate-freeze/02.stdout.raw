@@ -1,0 +1,6 @@
+.github/workflows/code-quality.yml
+docs/product-specification/specforge-product-specification.md
+package.json
+packages/service-management/src/plugin/reconnecting-daemon-client.ts
+setup/userlevel-opencode/scripts/lib/sf_plugin_client.ts
+setup/userlevel-opencode/scripts/lib/sf_thin_plugin.ts

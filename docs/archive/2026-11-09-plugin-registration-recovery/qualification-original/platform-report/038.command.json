@@ -1,0 +1,14 @@
+{
+  "number": "038",
+  "name": "official-post-upgrade-verify",
+  "executable": "C:\\Users\\lyq\\AppData\\Roaming\\npm\\node_modules\\bun\\bin\\bun.exe",
+  "args": [
+    "scripts/sf-installer.ts",
+    "verify"
+  ],
+  "started_utc": "2026-11-09T09:07:54.529Z",
+  "finished_utc": "2026-11-09T09:07:55.094Z",
+  "inner_exit_code": 0,
+  "signal": null,
+  "spawn_error": null
+}

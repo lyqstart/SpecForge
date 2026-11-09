@@ -1,0 +1,18 @@
+{
+  "utc": "2026-11-09T08:57:58.766Z",
+  "passed": true,
+  "phases": [
+    {
+      "cwd": "D:\\code\\SpecForge\\.registration-patched-a01\\packages\\scope-gate",
+      "exit": 0
+    },
+    {
+      "cwd": "D:\\code\\SpecForge\\.registration-patched-a01\\packages\\service-management",
+      "exit": 0
+    },
+    {
+      "cwd": "D:\\code\\SpecForge\\.registration-patched-a01\\packages\\daemon-core",
+      "exit": 0
+    }
+  ]
+}

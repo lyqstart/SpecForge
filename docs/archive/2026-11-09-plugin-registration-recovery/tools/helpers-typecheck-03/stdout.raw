@@ -1,0 +1,6 @@
+setup/userlevel-opencode/scripts/lib/sf_plugin_client.ts(262,10): error TS18046: 'body' is of type 'unknown'.
+setup/userlevel-opencode/scripts/lib/sf_plugin_client.ts(262,27): error TS18046: 'body' is of type 'unknown'.
+setup/userlevel-opencode/scripts/lib/sf_plugin_client.ts(270,12): error TS18046: 'body' is of type 'unknown'.
+setup/userlevel-opencode/scripts/lib/sf_plugin_client.ts(289,17): error TS2339: Property 'success' does not exist on type '{}'.
+setup/userlevel-opencode/scripts/lib/sf_plugin_client.ts(289,45): error TS2339: Property 'data' does not exist on type '{}'.
+setup/userlevel-opencode/scripts/lib/sf_plugin_client.ts(290,54): error TS2339: Property 'data' does not exist on type '{}'.

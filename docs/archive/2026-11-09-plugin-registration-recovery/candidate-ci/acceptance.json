@@ -1,0 +1,81 @@
+{
+  "utc": "2026-11-09T10:06:15.208Z",
+  "commit": "b6e07d014828d0bc77af83ba3f1a6d4e57dcad80",
+  "stage": "candidate",
+  "conclusion": "PASS_CANDIDATE_THREE_PLATFORM_REGRESSION_AND_RELEASE",
+  "all_jobs_success": 12,
+  "platforms": [
+    {
+      "platform": "win32",
+      "arch": "x64",
+      "artifact_id": 13664137245,
+      "artifact_digest": "sha256:a9cdc325537bf88a33b499b8b9a8dcb7a35cae635dbeb590ab75291464bb8f34",
+      "report_location": "ci-b6-full-windows-retry",
+      "all_four_numeric_phase_exits": 0,
+      "root_passed": 753,
+      "workspace_owners": 11,
+      "lint_files": 631,
+      "lint_errors": 0,
+      "lint_warnings": 0,
+      "helper_typecheck_step": "success"
+    },
+    {
+      "platform": "linux",
+      "arch": "x64",
+      "artifact_id": 13662548873,
+      "artifact_digest": "sha256:1203e9ad2a2b184af63f333e6d7070f046c36ffcc49e2fb4ceb9d6530dd10ed7",
+      "report_location": "ci-b6-full-linux",
+      "all_four_numeric_phase_exits": 0,
+      "root_passed": 753,
+      "workspace_owners": 11,
+      "lint_files": 631,
+      "lint_errors": 0,
+      "lint_warnings": 0,
+      "helper_typecheck_step": "success"
+    },
+    {
+      "platform": "darwin",
+      "arch": "arm64",
+      "artifact_id": 13663530195,
+      "artifact_digest": "sha256:00dfd5644a6078c804af5b076ec386d8c4af3af35ddd1d5baeed8f5f250d6b09",
+      "report_location": "ci-b6-full-macos",
+      "all_four_numeric_phase_exits": 0,
+      "root_passed": 753,
+      "workspace_owners": 11,
+      "lint_files": 631,
+      "lint_errors": 0,
+      "lint_warnings": 0,
+      "helper_typecheck_step": "success"
+    }
+  ],
+  "runs": [
+    {
+      "id": 42593545056,
+      "name": "Distribution Smoke Tests",
+      "url": "https://github.com/lyqstart/SpecForge/actions/runs/42593545056",
+      "status": "completed",
+      "conclusion": "success",
+      "run_attempt": 1
+    },
+    {
+      "id": 42593545059,
+      "name": "Code Quality",
+      "url": "https://github.com/lyqstart/SpecForge/actions/runs/42593545059",
+      "status": "completed",
+      "conclusion": "success",
+      "run_attempt": 2
+    }
+  ],
+  "historical_nonpassing_attempt": {
+    "classification": "CONFIRMED_SINGLE_EXISTING_WAL_PROPERTY_TEST_TIMEOUT; ROOT_CAUSE_INSUFFICIENT_EVIDENCE",
+    "source_commit": "b6e07d014828d0bc77af83ba3f1a6d4e57dcad80",
+    "job_id": 129080653282,
+    "case": "pbt-state.test.ts / PBT-ST-01 matching event count between WAL and applied transitions",
+    "actual": "Vitest10000ms timeout,10268ms observed; one case failed,2454 daemon-core cases passed; root phase not run because official workspace phase failed.",
+    "source_checks": "Git diff68..b6 is empty for pbt-state fixture, StateManager, WAL and daemon Vitest config. Same-lock local cold original and patched full runs passed; first property461ms/543ms respectively; case-level supplements independently passed too.",
+    "hypotheses": "Runner/filesystem latency or random property workload; neither is proven. Original random seed/chain was not captured by the timed-out run, so exact input replay is unavailable.",
+    "next_evidence": "One unchanged failed-job rerun with the same original timeout/assertions/numRuns; preserve attempt1, collect a separate attempt2 artifact and record provider attempt identity. A passing rerun is a new successful execution, not a retroactive repair or explanation of attempt1.",
+    "prohibited_shortcuts": "No timeout increase, skipped test, reduced runs or WAL durability change; no root product adoption/deployment while platform qualification is incomplete."
+  },
+  "limits": "Latest successful immutable-source reports are accepted; earlier failure is preserved, never relabeled. Raw numeric four-phase reports reverified. Helper typecheck and official release lifecycle use primary GitHub successful job/step conclusions and archived workflow, separate from local numeric receipts. No provider/model or original business execution."
+}

@@ -1,0 +1,53 @@
+{
+  "utc": "2026-11-09T09:51:23.657Z",
+  "current_version": "1.0.25",
+  "managed_files_verified": 117,
+  "current_health": {
+    "schema_version": "1.0",
+    "status": "ok",
+    "pid": 41980,
+    "version": "1.0.25",
+    "startedAt": 1794144670649,
+    "uptimeSec": 73213,
+    "activeClients": 0,
+    "pendingEvents": 4,
+    "lastEventTs": 1794144670675
+  },
+  "managed_file_user_drift": false,
+  "candidate": "commit-b6e07d014828d0bc77af83ba3f1a6d4e57dcad80",
+  "candidate_delta": [
+    "sf-user/bin/specforged.exe",
+    "sf-user/bin/verification/assets.json",
+    "sf-user/bin/verification/specforge-verify.exe",
+    "sf-user/lib/sf_plugin_client.ts",
+    "sf-user/lib/sf_thin_plugin.ts",
+    "sf-user/templates/project-rules/_BASE.md",
+    "sf-user/templates/project-rules/databases/mongodb.md",
+    "sf-user/templates/project-rules/databases/mysql.md",
+    "sf-user/templates/project-rules/databases/postgresql.md",
+    "sf-user/templates/project-rules/databases/redis.md",
+    "sf-user/templates/project-rules/databases/sqlite.md",
+    "sf-user/templates/project-rules/frameworks/fastapi.md",
+    "sf-user/templates/project-rules/frameworks/react.md",
+    "sf-user/templates/project-rules/frameworks/spring-boot.md",
+    "sf-user/templates/project-rules/frameworks/vue.md",
+    "sf-user/templates/project-rules/infra/ci-github-actions.md",
+    "sf-user/templates/project-rules/infra/docker.md",
+    "sf-user/templates/project-rules/languages/go.md",
+    "sf-user/templates/project-rules/languages/java.md",
+    "sf-user/templates/project-rules/languages/nodejs.md",
+    "sf-user/templates/project-rules/languages/python.md"
+  ],
+  "owner_key": {
+    "content_read": false,
+    "size": 32,
+    "ino": 5629499534862573,
+    "dev": 2591198719,
+    "nlink": 1,
+    "mtimeMs": 1794029934344.0676,
+    "birthtimeMs": 1794029934344.0676
+  },
+  "t5_current_manifest_exists": false,
+  "prohibited_project_access": "No t2 or t3 access; t5 existence query only",
+  "deployment_performed": false
+}

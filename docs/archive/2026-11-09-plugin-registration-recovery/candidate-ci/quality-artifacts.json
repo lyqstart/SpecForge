@@ -1,0 +1,80 @@
+{
+  "artifacts": [
+    {
+      "id": 13664137245,
+      "name": "full-regression-evidence-windows-latest",
+      "size_in_bytes": 178594,
+      "url": "https://api.github.com/repos/lyqstart/SpecForge/actions/artifacts/13664137245",
+      "archive_download_url": "https://api.github.com/repos/lyqstart/SpecForge/actions/artifacts/13664137245/zip",
+      "expired": false,
+      "created_at": "2026-11-09T09:59:46Z",
+      "expires_at": "2026-11-23T09:59:45Z",
+      "updated_at": "2026-11-09T09:59:46Z",
+      "digest": "sha256:a9cdc325537bf88a33b499b8b9a8dcb7a35cae635dbeb590ab75291464bb8f34",
+      "workflow_run": {
+        "id": 42593545059,
+        "repository_id": 1227888514,
+        "head_repository_id": 1227888514,
+        "head_branch": "codex/plugin-registration-recovery",
+        "head_sha": "b6e07d014828d0bc77af83ba3f1a6d4e57dcad80"
+      }
+    },
+    {
+      "id": 13663530195,
+      "name": "full-regression-evidence-macos-latest",
+      "size_in_bytes": 173566,
+      "url": "https://api.github.com/repos/lyqstart/SpecForge/actions/artifacts/13663530195",
+      "archive_download_url": "https://api.github.com/repos/lyqstart/SpecForge/actions/artifacts/13663530195/zip",
+      "expired": false,
+      "created_at": "2026-11-09T09:37:43Z",
+      "expires_at": "2026-11-23T09:37:41Z",
+      "updated_at": "2026-11-09T09:37:43Z",
+      "digest": "sha256:00dfd5644a6078c804af5b076ec386d8c4af3af35ddd1d5baeed8f5f250d6b09",
+      "workflow_run": {
+        "id": 42593545059,
+        "repository_id": 1227888514,
+        "head_repository_id": 1227888514,
+        "head_branch": "codex/plugin-registration-recovery",
+        "head_sha": "b6e07d014828d0bc77af83ba3f1a6d4e57dcad80"
+      }
+    },
+    {
+      "id": 13663067307,
+      "name": "full-regression-evidence-windows-latest",
+      "size_in_bytes": 171163,
+      "url": "https://api.github.com/repos/lyqstart/SpecForge/actions/artifacts/13663067307",
+      "archive_download_url": "https://api.github.com/repos/lyqstart/SpecForge/actions/artifacts/13663067307/zip",
+      "expired": false,
+      "created_at": "2026-11-09T09:39:23Z",
+      "expires_at": "2026-11-23T09:39:22Z",
+      "updated_at": "2026-11-09T09:39:23Z",
+      "digest": "sha256:8e1502d91555e25d34f89771da2eadc4b035dcb3a464ab2e38acdbcd62a0685c",
+      "workflow_run": {
+        "id": 42593545059,
+        "repository_id": 1227888514,
+        "head_repository_id": 1227888514,
+        "head_branch": "codex/plugin-registration-recovery",
+        "head_sha": "b6e07d014828d0bc77af83ba3f1a6d4e57dcad80"
+      }
+    },
+    {
+      "id": 13662548873,
+      "name": "full-regression-evidence-ubuntu-latest",
+      "size_in_bytes": 167985,
+      "url": "https://api.github.com/repos/lyqstart/SpecForge/actions/artifacts/13662548873",
+      "archive_download_url": "https://api.github.com/repos/lyqstart/SpecForge/actions/artifacts/13662548873/zip",
+      "expired": false,
+      "created_at": "2026-11-09T09:32:42Z",
+      "expires_at": "2026-11-23T09:32:41Z",
+      "updated_at": "2026-11-09T09:32:42Z",
+      "digest": "sha256:1203e9ad2a2b184af63f333e6d7070f046c36ffcc49e2fb4ceb9d6530dd10ed7",
+      "workflow_run": {
+        "id": 42593545059,
+        "repository_id": 1227888514,
+        "head_repository_id": 1227888514,
+        "head_branch": "codex/plugin-registration-recovery",
+        "head_sha": "b6e07d014828d0bc77af83ba3f1a6d4e57dcad80"
+      }
+    }
+  ]
+}

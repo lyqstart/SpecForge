@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261109-PLUGIN-REGISTRATION-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-09-plugin-registration-recovery/review-managed-delta.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "review-actual-managed-file-delta",
+  "expected_writes": "Read-only installed/candidate bytes and exact text-normalized template comparisons; archive review only; no upgrade",
+  "started_utc": "2026-11-09T09:53:24.286Z",
+  "carrier_source_sha256": "0d4cc1c05dd2ab6f7802fdddb69880fc5464ffe4c397c123505511b207c327c0",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-09-plugin-registration-recovery\\review-managed-delta.cjs",
+      "sha256": "24d6ab7ea26bb5835667bb632df66359e73524d1387cea33d84260dec319d6ec",
+      "size": 2393,
+      "extension": ".cjs"
+    }
+  ]
+}
