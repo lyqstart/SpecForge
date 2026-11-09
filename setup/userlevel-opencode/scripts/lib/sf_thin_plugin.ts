@@ -42,7 +42,7 @@ export interface ThinPluginHooks {
   'experimental.session.compacting'(input: { sessionID?: string }): Promise<void>;
 }
 
-type ConnectionState = 'disconnected' | 'connected' | 'degraded';
+type ConnectionState = 'disconnected' | 'connected' | 'degraded' | 'awaiting-initialization';
 const COMPACTION_BRIDGE_TIMEOUT_MS = 6000;
 
 function resolveOpenCodeConfigRoot(): string {
@@ -100,6 +100,24 @@ async function awaitWithTimeout<T>(
   }
 }
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function isInitializationRefusal(error: unknown): boolean {
+  return isRecord(error) && error.status === 409 && error.code === 'PROJECT_NOT_INITIALIZED';
+}
+
+function completedInitializationKey(event: Record<string, unknown>): string | undefined {
+  if (event.type !== 'message.part.updated' || !isRecord(event.properties)) return;
+  const part = event.properties.part;
+  if (!isRecord(part) || part.type !== 'tool' || part.tool !== 'sf_project_init' ||
+      !isRecord(part.state) || part.state.status !== 'completed' ||
+      typeof part.sessionID !== 'string' || !part.sessionID ||
+      typeof part.callID !== 'string' || !part.callID) return;
+  return JSON.stringify([part.sessionID, part.callID]);
+}
+
 export async function createSpecForgeThinPlugin(
   input: PluginInputLike,
   dependencies: ThinPluginDependencies,
@@ -109,10 +127,46 @@ export async function createSpecForgeThinPlugin(
   const daemonClient = dependencies.client;
   let daemonSessionId: string | undefined;
   let state: ConnectionState = 'disconnected';
+  let registering: Promise<boolean> | undefined;
+  let recoveryRevision = 0;
+  const completedInitializations = new Set<string>();
 
-  const register = async (): Promise<void> => {
-    const registration = await dependencies.client.register(projectPath);
-    daemonSessionId = registration.sessionId;
+  function registrationFailed(error: unknown): void {
+    const waiting = isInitializationRefusal(error);
+    const next = waiting ? 'awaiting-initialization' : 'degraded';
+    const previous = state;
+    state = next;
+    if (waiting) daemonSessionId = undefined;
+    if (previous === next) return;
+    dependencies.notify(waiting
+      ? '项目尚未初始化；请切换到 sf-orchestrator 并调用 sf_project_init。初始化完成后会自动重新注册。'
+      : `Daemon unavailable; lifecycle is externally managed: ${error instanceof Error ? error.message : String(error)}`);
+  }
+
+  const register = async (): Promise<boolean> => {
+    if (registering) return registering;
+    const attempt = (async (): Promise<boolean> => {
+      for (;;) {
+        const revision = recoveryRevision;
+        try {
+          const registration = await daemonClient.register(projectPath);
+          daemonSessionId = registration.sessionId;
+          const previous = state;
+          state = 'connected';
+          if (previous !== 'connected') dependencies.notify(previous === 'disconnected'
+            ? 'Daemon connected.' : 'Daemon connection recovered.');
+          return true;
+        } catch (error) {
+          registrationFailed(error);
+          // A newer completed init may race an older request rejected before
+          // that init. One shared registration owner consumes the new revision.
+          if (revision === recoveryRevision) return false;
+        }
+      }
+    })();
+    registering = attempt;
+    try { return await attempt; }
+    finally { if (registering === attempt) registering = undefined; }
   };
 
   async function forwardCompactionCheckpoint(
@@ -154,19 +208,7 @@ export async function createSpecForgeThinPlugin(
     if (!result.ok) throw new Error(`daemon rejected checkpoint event: ${result.reason}`);
   }
 
-  const bootstrap = async (): Promise<void> => {
-    await register();
-    dependencies.notify('Daemon connected.');
-  };
-
-  try {
-    await bootstrap();
-  } catch (error) {
-    state = 'degraded';
-    dependencies.notify(
-      `Daemon unavailable; lifecycle is externally managed: ${error instanceof Error ? error.message : String(error)}`,
-    );
-  }
+  await register();
 
   return {
     'tool.execute.before': async (toolInput, output): Promise<void> => {
@@ -176,26 +218,23 @@ export async function createSpecForgeThinPlugin(
     },
     async event({ event }): Promise<void> {
       if (!event?.type) return;
+      const completed = completedInitializationKey(event);
+      if (completed && !completedInitializations.has(completed)) {
+        completedInitializations.add(completed);
+        // Only retain bounded runtime delivery identities, never business state.
+        if (completedInitializations.size > 128) completedInitializations.delete(completedInitializations.values().next().value!);
+        recoveryRevision++;
+        if (!daemonSessionId && !(await register())) return;
+      }
       if (!daemonSessionId) {
-        try {
-          await register();
-        } catch (error) {
-          state = 'degraded';
-          dependencies.notify(
-            `Daemon reconnecting: ${error instanceof Error ? error.message : String(error)}`,
-          );
-          return;
-        }
+        if (state === 'awaiting-initialization') return;
+        if (!(await register())) return;
       }
 
-      const result = await dependencies.client.postEvent(
-        daemonSessionId,
+      const result = await daemonClient.postEvent(
+        daemonSessionId!,
         `opencode.${event.type}`,
-        {
-          schema_version: '1.0',
-          projectPath,
-          ...event,
-        },
+        { schema_version: '1.0', projectPath, ...event },
       );
       if (!result.ok) {
         if (state !== 'degraded') dependencies.notify(`Daemon reconnecting: ${result.reason}.`);
@@ -207,6 +246,10 @@ export async function createSpecForgeThinPlugin(
     },
     'experimental.session.compacting': async ({ sessionID }): Promise<void> => {
       const opencodeSessionId = String(sessionID ?? '').trim();
+      if (state === 'awaiting-initialization') {
+        appendCompactionBridgeEvent('compaction.hook.skipped', { projectDir, opencodeSessionId, reason: 'project_initialization_required' });
+        return;
+      }
       appendCompactionBridgeEvent('compaction.hook.received', {
         projectDir,
         opencodeSessionId,
@@ -234,6 +277,7 @@ export async function createSpecForgeThinPlugin(
           opencodeSessionId,
           error: error instanceof Error ? error.message : String(error),
         });
+        if (isInitializationRefusal(error)) { registrationFailed(error); return; }
         // Checkpoint persistence must never fail OpenCode compaction.
         dependencies.notify(
           `Compaction checkpoint forwarding failed: ${error instanceof Error ? error.message : String(error)}`,

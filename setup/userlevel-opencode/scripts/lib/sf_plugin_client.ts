@@ -152,6 +152,21 @@ async function checkDaemonHealth(url: string): Promise<boolean> {
 
 // ── ReconnectingDaemonClient ──
 
+function isResponseObject(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function parseRegistrationResponse(value: unknown): RegisterResponse {
+  if (!isResponseObject(value) || value.success !== true || !isResponseObject(value.data))
+    throw new Error('Register returned unexpected response');
+  const data = value.data;
+  if (typeof data.sessionId !== 'string' || !data.sessionId ||
+      typeof data.projectId !== 'string' || !data.projectId ||
+      (data.mode !== 'personal' && data.mode !== 'enterprise'))
+    throw new Error('Register returned unexpected response');
+  return { sessionId: data.sessionId, projectId: data.projectId, mode: data.mode };
+}
+
 export class ReconnectingDaemonClient implements Disposable {
   private readonly options: Required<ReconnectingDaemonClientOptions>;
   private disposed = false;
@@ -242,22 +257,29 @@ export class ReconnectingDaemonClient implements Disposable {
     });
 
     if (!response.ok) {
-      const errorBody = await response.text().catch(() => "");
-      throw new Error(
-        `Register failed: ${response.status} ${response.statusText}${errorBody ? " - " + errorBody : ""}`
-      );
+      let code = 'REGISTER_FAILED';
+      try {
+        const body: unknown = JSON.parse(await response.text());
+        if (typeof body === 'object' && body !== null && !Array.isArray(body)) {
+          const error = (body as Record<string, unknown>).error;
+          const candidate = typeof error === 'string' ? error :
+            typeof error === 'object' && error !== null && !Array.isArray(error)
+              ? (error as Record<string, unknown>).code : undefined;
+          if (typeof candidate === 'string' && /^[A-Z][A-Z0-9_]{0,79}$/.test(candidate)) code = candidate;
+        }
+      } catch { /* Preserve HTTP identity even when the refusal body is invalid. */ }
+      throw Object.assign(new Error(`Register failed: HTTP ${response.status} (${code})`), {
+        name: 'DaemonRegistrationError', status: response.status, code,
+      });
     }
 
-    const body = await response.json();
-    if (!body.success || !body.data) {
-      throw new Error(`Register returned unexpected response: ${JSON.stringify(body)}`);
-    }
+    const registration = parseRegistrationResponse(await response.json());
 
     // Keep postEvent on the exact daemon instance that accepted this project
     // binding. Without this refresh, a daemon restart can leave a stale cached
     // token/port between register() and the following checkpoint event.
     this.cachedHandshake = handshake;
-    return body.data as RegisterResponse;
+    return registration;
   }
 
   isDegraded(): boolean {
@@ -275,9 +297,11 @@ export class ReconnectingDaemonClient implements Disposable {
       signal: AbortSignal.timeout(5000),
     });
     if (!response.ok) throw new Error(`WRITE_GUARD_UNAVAILABLE: HTTP ${response.status}`);
-    const result = await response.json();
-    if (result?.success !== true || result?.data?.allowed !== true) {
-      throw new Error(`WRITE_GUARD_DENIED: ${result?.data?.reason ?? 'authorization unavailable'}`);
+    const result: unknown = await response.json();
+    const data = isResponseObject(result) && isResponseObject(result.data) ? result.data : undefined;
+    if (!isResponseObject(result) || result.success !== true || data?.allowed !== true) {
+      const reason = typeof data?.reason === 'string' ? data.reason : 'authorization unavailable';
+      throw new Error(`WRITE_GUARD_DENIED: ${reason}`);
     }
   }
 

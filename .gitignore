@@ -111,3 +111,9 @@ packages/observability/test-data/observability-req-[0-9]*/
 /.lint-shortpath-a01/
 /.lint-signal-a01/
 
+
+# Owned isolated plugin registration qualification.
+/.registration-original-a01/
+/.registration-patched-a01/
+/docs/archive/2026-11-09-plugin-registration-recovery/local-assets/
+/docs/archive/2026-11-09-plugin-registration-recovery/publication-live/

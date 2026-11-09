@@ -123,6 +123,8 @@ jobs:
         env:
           SPECFORGE_CI_REPORT_DIR: ${{ runner.temp }}/specforge-full-regression
         run: node scripts/run-ci-regression.mjs lint
+      - name: Typecheck deployable Thin Plugin helpers
+        run: bun run typecheck:plugin-client
       - name: 运行当前发布 workspace 测试
         env:
           SPECFORGE_CI_REPORT_DIR: ${{ runner.temp }}/specforge-full-regression

@@ -1,0 +1,16 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "declaration": false,
+    "declarationMap": false,
+    "sourceMap": false,
+    "types": ["node"],
+    "ignoreDeprecations": "6.0"
+  },
+  "include": [
+    "../setup/userlevel-opencode/scripts/lib/sf_thin_plugin.ts",
+    "../setup/userlevel-opencode/scripts/lib/sf_plugin_client.ts"
+  ],
+  "exclude": ["../node_modules", "../dist"]
+}

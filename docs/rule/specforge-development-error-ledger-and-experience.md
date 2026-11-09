@@ -33245,3 +33245,18 @@ Candidate 字节完整性不能替代内容事实完整性。进入候选编制�
 
 - publication-live/0003在commit前逐blob核验失败：归档CRLF锁的原始对象应为9e6e86b，却因后续bun.lock text eol=lf basename规则被规范化为e9d65f；Git check-attr直接显示archive锁text=set。没有提交或推送不一致证据。独立0004只把原有当前archive -text/-diff规则在末尾重复，逐字证明33723个非当前archive路径的text/eol/diff属性不变、其余526源码不变、根锁仍3f；归档raw hash-object随后匹配封存值。封存manifest及8715公开成员完全未改，恢复发布只允许原已分组的完整索引白名单加这一归档交付元数据，并再次逐blob验证。运行源码/部署/权限无变化；不以改写原始快照或临时info/attributes回避。适用 EXP-004/007/008/009/011/074/091/121/122。
 
+
+
+### ERR-2106：全局插件将未初始化注册拒绝误报为断线并逐事件重试刷屏
+
+- 用户截图和真实t5清单缺失确认初始409符合SPS10.1；受控初始化只能由Project Init owner执行。当前Thin Plugin在未取得session时对每个事件调用register，失败后无条件notify；register把HTTP状态和业务码折叠为普通Error，postEvent的退避不覆盖此入口。
+- 既有630文件lint和全量回归通过不能证明该首次使用路径正确。前一阶段publication-live诊断0029在仓库及实际部署副本均以闭合合成HTTP409复现：10事件触发11注册、11提示，零真实网络/业务写入；0028宿主模块导入拒绝原样保留，不算产品失败。
+- 所属层：Service Management传输错误合同和Thin Plugin连接/注册投影；ProjectManager拒绝与Project Init独立入口符合现有架构。修复须保留结构化拒绝、单次初始化提示、普通事件暂停注册及初始化完成后原owner复核，并覆盖并发/重复/失败恢复。不得暗中初始化t5、吞掉守护或把业务拒绝当网络重试。
+- 状态：IN_PROGRESS；本轮证据docs/archive/2026-11-09-plugin-registration-recovery。适用EXP-001/004/007/008/011/017/026/031/121/122。
+
+### ERR-2107：独立部署 helper 必须用明确宿主类型的正式配置检查响应边界
+
+- 临时逐文件 TypeScript6 检查先因 TS5112 拒绝隐式忽略配置；显式命令随后缺少 Node 宿主类型。这两次属于验证命令配置错误，不能计作产品失败或通过。正式 `scripts/tsconfig.plugin-client.json` 继承当前严格配置并明确 Node types/noEmit 后，真实暴露了独立部署 client 对 unknown JSON 响应的未校验访问。
+- 修复在隔离候选中同步 workspace 与部署 client：验证成功注册所需的 sessionId/projectId/mode，未知或损坏成功正文拒绝；native guard 继续只接受显式 boolean allow；拒绝诊断不回显原始响应正文。新增坏响应/身份/守护回归和三平台 CI 中的同一正式 helper 类型检查。根类型配置、规则、版本和依赖未放宽或变更。
+- 同阶段一次相对辅助脚本路径在隔离 cwd 下定位失败；原输出保留，之后使用带固定根的绝对入口并单独执行。一次自动审批超时未创建测试进程，按系统允许重试一次后成功，不能补造首次执行回执。所有后续封存命令保留真实数字退出码。
+- 证据：本轮0007/0008/0010..0017、green-03、plan-addendum-01及冻结候选b6e07d0；第一次配置失败、真正类型错误、源码修复和转绿分别保留。适用EXP-002/004/007/008/011/014/015/121/122。
