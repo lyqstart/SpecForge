@@ -1,0 +1,125 @@
+{
+  "utc": "2026-11-10T03:34:50.309Z",
+  "accepted": true,
+  "commit": "1fab365d95af1f22328b8807195aa3b645b8042a",
+  "version": "1.0.26",
+  "scope": "DEPLOYMENT_PREREQUISITE_OFFICIAL_ALL_12_JOBS_SUCCESS_WITH_SIX_ARTIFACT_DIGESTS",
+  "runs": [
+    42734595209,
+    42734595520
+  ],
+  "jobs": [
+    {
+      "id": 129560594358,
+      "name": "工作流文档同步检查",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 129560594650,
+      "name": "Windows 源码 LF 检出治理",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 129560594756,
+      "name": "异步资源规范审查",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 129560594795,
+      "name": "Full lint/build/regression (windows-latest)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 129560594814,
+      "name": "目录布局一致性检查",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 129560594834,
+      "name": "Full lint/build/regression (macos-latest)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 129560594987,
+      "name": "硬编码路径 Lint",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 129560595058,
+      "name": "Full lint/build/regression (ubuntu-latest)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 129560599347,
+      "name": "Official release acceptance (macos-latest)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 129560599656,
+      "name": "Official release acceptance (ubuntu-latest)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 129560599888,
+      "name": "Official release acceptance (windows-latest)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 129561665410,
+      "name": "Aggregate Results",
+      "status": "completed",
+      "conclusion": "success"
+    }
+  ],
+  "artifacts": [
+    {
+      "id": 13726673220,
+      "name": "full-regression-evidence-windows-latest",
+      "digest": "sha256:eb4c612e3789e8279cb44b2acba6249cc315bfb71d5dec5a0264d744d5c33858",
+      "head_sha": "1fab365d95af1f22328b8807195aa3b645b8042a"
+    },
+    {
+      "id": 13726109401,
+      "name": "full-regression-evidence-macos-latest",
+      "digest": "sha256:4cf0d1b4f97e4822d989ec9b236a49246b41df02d1c6edfa6cd346e791638b1b",
+      "head_sha": "1fab365d95af1f22328b8807195aa3b645b8042a"
+    },
+    {
+      "id": 13725709255,
+      "name": "full-regression-evidence-ubuntu-latest",
+      "digest": "sha256:75fd845d08f8a9a36b2457e2e541eb16c7694213d8182e0020fc16169734ae19",
+      "head_sha": "1fab365d95af1f22328b8807195aa3b645b8042a"
+    },
+    {
+      "id": 13726342367,
+      "name": "platform-evidence-ubuntu-latest",
+      "digest": "sha256:d4c9d7931381d126c1e553d30f059325451db26f62eb885b3788fd2d5f8ca0bb",
+      "head_sha": "1fab365d95af1f22328b8807195aa3b645b8042a"
+    },
+    {
+      "id": 13725968502,
+      "name": "platform-evidence-windows-latest",
+      "digest": "sha256:2b117d28ad120b45b2b54c8dce7fbf6db274f248832e927c1f95f165230e92f9",
+      "head_sha": "1fab365d95af1f22328b8807195aa3b645b8042a"
+    },
+    {
+      "id": 13725788867,
+      "name": "platform-evidence-macos-latest",
+      "digest": "sha256:03aa9145cfb8c941fa0b5a7e812ba09ec617d4996321cdf1f408912c66d251fa",
+      "head_sha": "1fab365d95af1f22328b8807195aa3b645b8042a"
+    }
+  ],
+  "raw_member_archive_complete": false,
+  "remaining": "GitHub connector transport failure after canonical successful job evidence; full member evidence must be completed before final evidence contract acceptance."
+}

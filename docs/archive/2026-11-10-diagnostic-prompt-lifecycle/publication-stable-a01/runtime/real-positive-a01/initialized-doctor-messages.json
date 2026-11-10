@@ -1,0 +1,352 @@
+[
+  {
+    "info": {
+      "id": "msg_2034fa77173373baddc18115e1ad2a82",
+      "role": "user",
+      "agent": "sf-orchestrator",
+      "time": {
+        "created": 1794282033927
+      }
+    },
+    "parts": [
+      {
+        "id": "prt_1c38b1310001OtmCOkeUfdlM2I",
+        "sessionID": "ses_e3c74ed50ffe8q3qDlYiT7mQ8d",
+        "messageID": "msg_2034fa77173373baddc18115e1ad2a82",
+        "type": "text",
+        "text": "本轮只是已授权的合成安装只读咨询。只调用sf_doctor({})一次，不初始化项目，不创建工作项，不调用其他工具。按真实返回简述诊断。 最后原样输出 SF_REAL_UNINITIALIZED_25e890344d0676e7。"
+      }
+    ]
+  },
+  {
+    "info": {
+      "id": "msg_1c38b13250010YW7YPtoIOjgsK",
+      "role": "assistant",
+      "parentID": "msg_2034fa77173373baddc18115e1ad2a82",
+      "agent": "sf-orchestrator",
+      "providerID": "zhipuai-coding-plan",
+      "modelID": "glm-5.3",
+      "time": {
+        "created": 1794282033957,
+        "completed": 1794282050304
+      },
+      "finish": "tool-calls",
+      "tokens": {
+        "total": 34274,
+        "input": 33056,
+        "output": 24,
+        "reasoning": 170,
+        "cache": {
+          "read": 1024,
+          "write": 0
+        }
+      }
+    },
+    "parts": [
+      {
+        "id": "prt_1c38b50f000141NTjlCnjgn6ki",
+        "sessionID": "ses_e3c74ed50ffe8q3qDlYiT7mQ8d",
+        "messageID": "msg_1c38b13250010YW7YPtoIOjgsK",
+        "type": "text",
+        "text": "本轮为只读咨询，按授权仅调用一次 `sf_doctor`：",
+        "time": {
+          "start": 1794282049776,
+          "end": 1794282050233
+        }
+      },
+      {
+        "id": "prt_1c38b52aa001uiz6u8xNmMvG5M",
+        "sessionID": "ses_e3c74ed50ffe8q3qDlYiT7mQ8d",
+        "messageID": "msg_1c38b13250010YW7YPtoIOjgsK",
+        "type": "tool",
+        "callID": "call_017f9bc7057943e8bd4478b9",
+        "tool": "sf_doctor",
+        "state": {
+          "status": "completed",
+          "input": {},
+          "output": "{\n  \"success\": true,\n  \"healthy\": false,\n  \"installation\": {\n    \"checks\": [\n      {\n        \"name\": \"用户级文件: sf-user/bin/specforge.exe\",\n        \"status\": \"ok\",\n        \"detail\": \"C:\\\\Users\\\\lyq\\\\.config\\\\opencode\\\\sf-user\\\\bin\\\\specforge.exe\"\n      },\n      {\n        \"name\": \"用户级文件: sf-user/bin/specforged.exe\",\n        \"status\": \"ok\",\n        \"detail\": \"C:\\\\Users\\\\lyq\\\\.config\\\\opencode\\\\sf-user\\\\bin\\\\specforged.exe\"\n      },\n      {\n        \"name\": \"用户级文件: specforge-manifest.json\",\n        \"status\": \"ok\",\n        \"detail\": \"C:\\\\Users\\\\lyq\\\\.config\\\\opencode\\\\specforge-manifest.json\"\n      },\n      {\n        \"name\": \"用户级文件: agents/sf-orchestrator.md\",\n        \"status\": \"ok\",\n        \"detail\": \"C:\\\\Users\\\\lyq\\\\.config\\\\opencode\\\\agents\\\\sf-orchestrator.md\"\n      },\n      {\n        \"name\": \"用户级文件: plugins/sf_specforge.ts\",\n        \"status\": \"ok\",\n        \"detail\": \"C:\\\\Users\\\\lyq\\\\.config\\\\opencode\\\\plugins\\\\sf_specforge.ts\"\n      },\n      {\n        \"name\": \"用户级文件: sf-user/lib/sf_thin_plugin.ts\",\n        \"status\": \"ok\",\n        \"detail\": \"C:\\\\Users\\\\lyq\\\\.config\\\\opencode\\\\sf-user\\\\lib\\\\sf_thin_plugin.ts\"\n      },\n      {\n        \"name\": \"项目运行时: .specforge\\\\project\\\\spec_manifest.json\",\n        \"status\": \"error\",\n        \"detail\": \"缺失: C:\\\\Users\\\\lyq\\\\AppData\\\\Local\\\\Temp\\\\sf-kernel-real-PRzhqD\\\\.specforge\\\\project\\\\spec_manifest.json\"\n      },\n      {\n        \"name\": \"项目运行时: .specforge\\\\runtime\\\\state.json\",\n        \"status\": \"error\",\n        \"detail\": \"缺失: C:\\\\Users\\\\lyq\\\\AppData\\\\Local\\\\Temp\\\\sf-kernel-real-PRzhqD\\\\.specforge\\\\runtime\\\\state.json\"\n      },\n      {\n        \"name\": \"初始化: spec_manifest.json\",\n        \"status\": \"error\",\n        \"detail\": \"项目未初始化（project/spec_manifest.json 不存在）\"\n      },\n      {\n        \"name\": \"初始化: host-profile.json\",\n        \"status\": \"ok\",\n        \"detail\": \"主机环境配置存在且新鲜\"\n      },\n      {\n        \"name\": \"初始化: prod-environment.md\",\n        \"status\": \"warning\",\n        \"detail\": \"生产环境配置缺失\"\n      },\n      {\n        \"name\": \"初始化: project-rules.md\",\n        \"status\": \"warning\",\n        \"detail\": \"项目规则缺失\"\n      }\n    ],\n    \"overall\": \"error\"\n  },\n  \"project\": {\n    \"status\": \"not_initialized\",\n    \"configuration\": {\n      \"valid\": false,\n      \"error\": \"CONFIGURATION_READ_FAILED\"\n    },\n    \"schemas\": [\n      {\n        \"descriptorId\": \"project-spec-manifest\",\n        \"status\": \"blocked\",\n        \"errorCode\": \"FILE_REQUIRED\"\n      },\n      {\n        \"descriptorId\": \"project-config\",\n        \"status\": \"blocked\",\n        \"errorCode\": \"FILE_REQUIRED\"\n      },\n      {\n        \"descriptorId\": \"project-observability-config\",\n        \"status\": \"blocked\",\n        \"errorCode\": \"FILE_REQUIRED\"\n      },\n      {\n        \"descriptorId\": \"project-extension-registry\",\n        \"status\": \"blocked\",\n        \"errorCode\": \"FILE_REQUIRED\"\n      }\n    ]\n  },\n  \"daemon_components\": {\n    \"projectManager\": \"ok\",\n    \"projectStateManager\": \"missing\",\n    \"stateAuthority\": {\n      \"source\": \"missing\",\n      \"events_jsonl\": \"authoritative_append_only_source\",\n      \"runtime_state_json\": \"projection_cache\",\n      \"work_item_json\": \"metadata_not_state_source\",\n      \"can_rebuild_from_events\": null\n    },\n    \"legacyStateManager\": \"absent_ignored\",\n    \"workflowEngine\": \"ok\",\n    \"eventBus\": \"ok\",\n    \"eventLogger\": \"missing\",\n    \"permissionEngine\": \"ok\"\n  }\n}",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1794282050229,
+            "end": 1794282050290
+          }
+        }
+      }
+    ]
+  },
+  {
+    "info": {
+      "id": "msg_1c38b5304001FADqKrJv54ooFb",
+      "role": "assistant",
+      "parentID": "msg_2034fa77173373baddc18115e1ad2a82",
+      "agent": "sf-orchestrator",
+      "providerID": "zhipuai-coding-plan",
+      "modelID": "glm-5.3",
+      "time": {
+        "created": 1794282050308,
+        "completed": 1794282063806
+      },
+      "finish": "stop",
+      "tokens": {
+        "total": 35742,
+        "input": 1158,
+        "output": 348,
+        "reasoning": 188,
+        "cache": {
+          "read": 34048,
+          "write": 0
+        }
+      }
+    },
+    "parts": [
+      {
+        "id": "prt_1c38b722a001kadnogMVf2YpfV",
+        "sessionID": "ses_e3c74ed50ffe8q3qDlYiT7mQ8d",
+        "messageID": "msg_1c38b5304001FADqKrJv54ooFb",
+        "type": "text",
+        "text": "诊断简述（基于 `sf_doctor` 真实返回）：\n\n- **总体**：`success=true`，`healthy=false`，安装自检整体为 `error`。\n- **用户级安装完好**：`specforge.exe`、`specforged.exe`、`specforge-manifest.json`、`agents/sf-orchestrator.md`、`plugins/sf_specforge.ts`、`sf-user/lib/sf_thin_plugin.ts` 全部 `ok`。\n- **项目未初始化**：当前目录缺失 `.specforge\\project\\spec_manifest.json` 与 `.specforge\\runtime\\state.json`，项目状态为 `not_initialized`；项目配置读取失败（`CONFIGURATION_READ_FAILED`），4 个项目级 Schema（spec-manifest、config、observability、extension-registry）均因 `FILE_REQUIRED` 处于 `blocked`。\n- **Daemon 组件**：`projectManager`、`workflowEngine`、`eventBus`、`permissionEngine` 为 `ok`；`projectStateManager` 与 `eventLogger` 为 `missing`（状态权威源缺失，尚无法从 events 重建）；legacy state manager 为 absent_ignored。\n- **警告项**：`prod-environment.md` 与 `project-rules.md` 缺失。\n\n结论：安装本身可用，但当前目录尚未成为 SpecForge 治理项目。按本轮边界，未执行初始化、未创建工作项、未调用其他工具；如需初始化请在后续轮次明确授权。\n\nSF_REAL_UNINITIALIZED_25e890344d0676e7",
+        "time": {
+          "start": 1794282058282,
+          "end": 1794282063794
+        }
+      }
+    ]
+  },
+  {
+    "info": {
+      "id": "msg_574c8806773cee6c9782b29c0d782dcd",
+      "role": "user",
+      "agent": "sf-orchestrator",
+      "time": {
+        "created": 1794282064331
+      }
+    },
+    "parts": [
+      {
+        "id": "prt_1c38b89cc001ytfiJFdFGATvZu",
+        "sessionID": "ses_e3c74ed50ffe8q3qDlYiT7mQ8d",
+        "messageID": "msg_574c8806773cee6c9782b29c0d782dcd",
+        "type": "text",
+        "text": "现在只做明确授权的本轮自有合成目录前置准备：只调用sf_project_init({action:\"ensure\"})一次，不创建WI，不调用其他工具。 最后原样输出 SF_REAL_INITIALIZE_24f438501bad0693。"
+      }
+    ]
+  },
+  {
+    "info": {
+      "id": "msg_1c38b89e00019xMe2hSrTP2zsP",
+      "role": "assistant",
+      "parentID": "msg_574c8806773cee6c9782b29c0d782dcd",
+      "agent": "sf-orchestrator",
+      "providerID": "zhipuai-coding-plan",
+      "modelID": "glm-5.3",
+      "time": {
+        "created": 1794282064352,
+        "completed": 1794282069777
+      },
+      "finish": "tool-calls",
+      "tokens": {
+        "total": 35869,
+        "input": 598,
+        "output": 30,
+        "reasoning": 41,
+        "cache": {
+          "read": 35200,
+          "write": 0
+        }
+      }
+    },
+    "parts": [
+      {
+        "id": "prt_1c38b9dcc001dbcm1Zzpg5IEKd",
+        "sessionID": "ses_e3c74ed50ffe8q3qDlYiT7mQ8d",
+        "messageID": "msg_1c38b89e00019xMe2hSrTP2zsP",
+        "type": "text",
+        "text": "本轮按授权仅调用一次 `sf_project_init({action:\"ensure\"})`：",
+        "time": {
+          "start": 1794282069452,
+          "end": 1794282069699
+        }
+      },
+      {
+        "id": "prt_1c38b9eb9001c083Ifds7tNHW8",
+        "sessionID": "ses_e3c74ed50ffe8q3qDlYiT7mQ8d",
+        "messageID": "msg_1c38b89e00019xMe2hSrTP2zsP",
+        "type": "tool",
+        "callID": "call_4508dfb7cc3f45a0b241e000",
+        "tool": "sf_project_init",
+        "state": {
+          "status": "completed",
+          "input": {
+            "action": "ensure"
+          },
+          "output": "{\n  \"success\": true,\n  \"created\": [\n    \".specforge\\\\config\\\\observability.json\",\n    \".specforge\\\\project\\\\modules\\\\CORE\\\\module.json\",\n    \".specforge\\\\project\\\\modules\\\\CORE\\\\requirements.md\",\n    \".specforge\\\\project\\\\modules\\\\CORE\\\\design.md\",\n    \".specforge\\\\project\\\\modules\\\\CORE\\\\trace.md\",\n    \".specforge\\\\config\\\\project-rules.md\",\n    \".specforge\\\\config\\\\prod-environment.md\",\n    \".specforge\\\\config\\\\project.json\",\n    \".specforge\\\\project\\\\spec_manifest.json\",\n    \".specforge\\\\project\\\\extension_registry.json\",\n    \".specforge\\\\project\\\\requirements_index.md\",\n    \".specforge\\\\project\\\\design_index.md\",\n    \".specforge\\\\project\\\\architecture.md\",\n    \".specforge\\\\project\\\\glossary.md\",\n    \".specforge\\\\project\\\\decisions.md\",\n    \".specforge\\\\project\\\\trace_matrix.md\",\n    \".specforge\\\\.gitignore\"\n  ],\n  \"existed\": [],\n  \"errors\": [],\n  \"placeholderFiles\": [\n    \".specforge\\\\config\\\\project-rules.md\",\n    \".specforge\\\\config\\\\prod-environment.md\"\n  ],\n  \"normalized\": [],\n  \"moduleRegistry\": {\n    \"status\": \"unchanged\",\n    \"moduleCodes\": [\n      \"CORE\"\n    ]\n  }\n}",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1794282069695,
+            "end": 1794282069767
+          }
+        }
+      }
+    ]
+  },
+  {
+    "info": {
+      "id": "msg_1c38b9f14001Cz4fBeMddFdWuc",
+      "role": "assistant",
+      "parentID": "msg_574c8806773cee6c9782b29c0d782dcd",
+      "agent": "sf-orchestrator",
+      "providerID": "zhipuai-coding-plan",
+      "modelID": "glm-5.3",
+      "time": {
+        "created": 1794282069780,
+        "completed": 1794282078748
+      },
+      "finish": "stop",
+      "tokens": {
+        "total": 36461,
+        "input": 385,
+        "output": 261,
+        "reasoning": 39,
+        "cache": {
+          "read": 35776,
+          "write": 0
+        }
+      }
+    },
+    "parts": [
+      {
+        "id": "prt_1c38bb2f70019BG5CUoZ06Ri7V",
+        "sessionID": "ses_e3c74ed50ffe8q3qDlYiT7mQ8d",
+        "messageID": "msg_1c38b9f14001Cz4fBeMddFdWuc",
+        "type": "text",
+        "text": "初始化结果简述（基于 `sf_project_init` 真实返回）：\n\n- **总体**：`success=true`，`errors=[]`，`existed=[]`（全部为本轮新建）。\n- **已建立骨架**：`.specforge/project/spec_manifest.json`、`extension_registry.json`、`architecture.md`、`glossary.md`、`decisions.md`、`trace_matrix.md`、`requirements_index.md`、`design_index.md`，以及 `config/` 下 `project.json`、`observability.json`、`project-rules.md`、`prod-environment.md` 和 `.gitignore`。\n- **默认模块**：模块注册表状态 `unchanged`，声明默认模块 `CORE`（含 `module.json`、`requirements.md`、`design.md`、`trace.md`）。\n- **占位提示**：`project-rules.md` 与 `prod-environment.md` 当前为占位文件（placeholderFiles）。\n\n按本轮边界，未创建 Work Item、未调用其他工具；项目骨架已就绪，后续如需受理需求请另行明确授权。\n\nSF_REAL_INITIALIZE_24f438501bad0693",
+        "time": {
+          "start": 1794282074872,
+          "end": 1794282078738
+        }
+      }
+    ]
+  },
+  {
+    "info": {
+      "id": "msg_2f9e7c17e81bb9446b06f169182f5c4d",
+      "role": "user",
+      "agent": "sf-orchestrator",
+      "time": {
+        "created": 1794282079322
+      }
+    },
+    "parts": [
+      {
+        "id": "prt_1c38bc45b001eAefA7lyZSNc72",
+        "sessionID": "ses_e3c74ed50ffe8q3qDlYiT7mQ8d",
+        "messageID": "msg_2f9e7c17e81bb9446b06f169182f5c4d",
+        "type": "text",
+        "text": "继续纯只读安装咨询：只调用sf_doctor({})一次，不初始化、不创建WI，不调用其他工具。只按healthy及project字段报告检查事实。 最后原样输出 SF_REAL_INITIALIZED-DOCTOR_95081a2d1565167e。"
+      }
+    ]
+  },
+  {
+    "info": {
+      "id": "msg_1c38bc4700013vOzI3bcT4z1Wl",
+      "role": "assistant",
+      "parentID": "msg_2f9e7c17e81bb9446b06f169182f5c4d",
+      "agent": "sf-orchestrator",
+      "providerID": "zhipuai-coding-plan",
+      "modelID": "glm-5.3",
+      "time": {
+        "created": 1794282079344,
+        "completed": 1794282084599
+      },
+      "finish": "tool-calls",
+      "tokens": {
+        "total": 36575,
+        "input": 366,
+        "output": 19,
+        "reasoning": 30,
+        "cache": {
+          "read": 36160,
+          "write": 0
+        }
+      }
+    },
+    "parts": [
+      {
+        "id": "prt_1c38bd7bc001dgXInOmXZ312e8",
+        "sessionID": "ses_e3c74ed50ffe8q3qDlYiT7mQ8d",
+        "messageID": "msg_1c38bc4700013vOzI3bcT4z1Wl",
+        "type": "text",
+        "text": "本轮按授权仅调用一次 `sf_doctor`：",
+        "time": {
+          "start": 1794282084284,
+          "end": 1794282084565
+        }
+      },
+      {
+        "id": "prt_1c38bd8c5001ge2KTqDrsA11c0",
+        "sessionID": "ses_e3c74ed50ffe8q3qDlYiT7mQ8d",
+        "messageID": "msg_1c38bc4700013vOzI3bcT4z1Wl",
+        "type": "tool",
+        "callID": "call_157f4370a3394f22b78ab486",
+        "tool": "sf_doctor",
+        "state": {
+          "status": "completed",
+          "input": {},
+          "output": "{\n  \"success\": true,\n  \"healthy\": true,\n  \"installation\": {\n    \"checks\": [\n      {\n        \"name\": \"用户级文件: sf-user/bin/specforge.exe\",\n        \"status\": \"ok\",\n        \"detail\": \"C:\\\\Users\\\\lyq\\\\.config\\\\opencode\\\\sf-user\\\\bin\\\\specforge.exe\"\n      },\n      {\n        \"name\": \"用户级文件: sf-user/bin/specforged.exe\",\n        \"status\": \"ok\",\n        \"detail\": \"C:\\\\Users\\\\lyq\\\\.config\\\\opencode\\\\sf-user\\\\bin\\\\specforged.exe\"\n      },\n      {\n        \"name\": \"用户级文件: specforge-manifest.json\",\n        \"status\": \"ok\",\n        \"detail\": \"C:\\\\Users\\\\lyq\\\\.config\\\\opencode\\\\specforge-manifest.json\"\n      },\n      {\n        \"name\": \"用户级文件: agents/sf-orchestrator.md\",\n        \"status\": \"ok\",\n        \"detail\": \"C:\\\\Users\\\\lyq\\\\.config\\\\opencode\\\\agents\\\\sf-orchestrator.md\"\n      },\n      {\n        \"name\": \"用户级文件: plugins/sf_specforge.ts\",\n        \"status\": \"ok\",\n        \"detail\": \"C:\\\\Users\\\\lyq\\\\.config\\\\opencode\\\\plugins\\\\sf_specforge.ts\"\n      },\n      {\n        \"name\": \"用户级文件: sf-user/lib/sf_thin_plugin.ts\",\n        \"status\": \"ok\",\n        \"detail\": \"C:\\\\Users\\\\lyq\\\\.config\\\\opencode\\\\sf-user\\\\lib\\\\sf_thin_plugin.ts\"\n      },\n      {\n        \"name\": \"项目运行时: .specforge\\\\project\\\\spec_manifest.json\",\n        \"status\": \"ok\",\n        \"detail\": \"C:\\\\Users\\\\lyq\\\\AppData\\\\Local\\\\Temp\\\\sf-kernel-real-PRzhqD\\\\.specforge\\\\project\\\\spec_manifest.json\"\n      },\n      {\n        \"name\": \"项目运行时: .specforge\\\\runtime\\\\state.json\",\n        \"status\": \"ok\",\n        \"detail\": \"C:\\\\Users\\\\lyq\\\\AppData\\\\Local\\\\Temp\\\\sf-kernel-real-PRzhqD\\\\.specforge\\\\runtime\\\\state.json\"\n      },\n      {\n        \"name\": \"初始化: spec_manifest.json\",\n        \"status\": \"ok\",\n        \"detail\": \"当前 Project Spec 权威存在\"\n      },\n      {\n        \"name\": \"初始化: host-profile.json\",\n        \"status\": \"ok\",\n        \"detail\": \"主机环境配置存在且新鲜\"\n      },\n      {\n        \"name\": \"初始化: prod-environment.md\",\n        \"status\": \"ok\",\n        \"detail\": \"生产环境配置存在\"\n      },\n      {\n        \"name\": \"初始化: project-rules.md\",\n        \"status\": \"ok\",\n        \"detail\": \"项目规则存在\"\n      }\n    ],\n    \"overall\": \"healthy\"\n  },\n  \"project\": {\n    \"status\": \"initialized\",\n    \"configuration\": {\n      \"valid\": true\n    },\n    \"schemas\": [\n      {\n        \"descriptorId\": \"project-spec-manifest\",\n        \"status\": \"current\"\n      },\n      {\n        \"descriptorId\": \"project-config\",\n        \"status\": \"current\"\n      },\n      {\n        \"descriptorId\": \"project-observability-config\",\n        \"status\": \"current\"\n      },\n      {\n        \"descriptorId\": \"project-extension-registry\",\n        \"status\": \"current\"\n      },\n      {\n        \"descriptorId\": \"project-module-CORE\",\n        \"status\": \"current\"\n      }\n    ]\n  },\n  \"daemon_components\": {\n    \"projectManager\": \"ok\",\n    \"projectStateManager\": \"ok\",\n    \"stateAuthority\": {\n      \"source\": \"StateManager/events\",\n      \"events_jsonl\": \"authoritative_append_only_source\",\n      \"runtime_state_json\": \"projection_cache\",\n      \"work_item_json\": \"metadata_not_state_source\",\n      \"can_rebuild_from_events\": true\n    },\n    \"legacyStateManager\": \"absent_ignored\",\n    \"workflowEngine\": \"ok\",\n    \"eventBus\": \"ok\",\n    \"eventLogger\": \"missing\",\n    \"permissionEngine\": \"ok\"\n  }\n}",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1794282084554,
+            "end": 1794282084592
+          }
+        }
+      }
+    ]
+  },
+  {
+    "info": {
+      "id": "msg_1c38bd8fa0017Ftl81J21bGumi",
+      "role": "assistant",
+      "parentID": "msg_2f9e7c17e81bb9446b06f169182f5c4d",
+      "agent": "sf-orchestrator",
+      "providerID": "zhipuai-coding-plan",
+      "modelID": "glm-5.3",
+      "time": {
+        "created": 1794282084602,
+        "completed": 1794282091684
+      },
+      "finish": "stop",
+      "tokens": {
+        "total": 37627,
+        "input": 998,
+        "output": 130,
+        "reasoning": 19,
+        "cache": {
+          "read": 36480,
+          "write": 0
+        }
+      }
+    },
+    "parts": [
+      {
+        "id": "prt_1c38becc80010YbO5OuOHoc6q1",
+        "sessionID": "ses_e3c74ed50ffe8q3qDlYiT7mQ8d",
+        "messageID": "msg_1c38bd8fa0017Ftl81J21bGumi",
+        "type": "text",
+        "text": "检查事实（按授权仅报告 `healthy` 与 `project` 字段）：\n\n- **healthy**：`true`\n- **project**：\n  - `status`: `initialized`\n  - `configuration.valid`: `true`\n  - Schemas 共 5 项，全部 `current`：`project-spec-manifest`、`project-config`、`project-observability-config`、`project-extension-registry`、`project-module-CORE`\n\n未初始化、未创建 WI、未调用其他工具。\n\nSF_REAL_INITIALIZED-DOCTOR_95081a2d1565167e",
+        "time": {
+          "start": 1794282089672,
+          "end": 1794282091675
+        }
+      }
+    ]
+  }
+]

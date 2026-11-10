@@ -1,0 +1,13 @@
+{
+  "utc": "2026-11-10T04:18:20.052Z",
+  "cwd": "D:\\code\\SpecForge",
+  "file": "C:/Program Files/Git/cmd/git.exe",
+  "args": [
+    "merge",
+    "--ff-only",
+    "codex/diagnostic-prompt-lifecycle"
+  ],
+  "inner_exit_code": 0,
+  "stdout": "Updating 6a1dd14e..1fab365d\nFast-forward\n bun.lock                                           |  24 ++--\n docs/product-specification/authority-registry.md   |   2 +\n .../specforge-product-specification.md             |   5 +-\n docs/rule/specforge-active-development-rules.md    |   4 +\n docs/user/quick-start.md                           |   2 +\n package.json                                       |   2 +-\n packages/cli/package.json                          |   2 +-\n .../configuration/docs/configuration-format.md     |   2 +\n packages/configuration/package.json                |   2 +-\n packages/daemon-core/package.json                  |   2 +-\n packages/daemon-core/src/project/ProjectManager.ts |  14 ++-\n packages/daemon-core/src/tools/ToolDispatcher.ts   |   9 +-\n .../daemon-core/src/tools/handlers/sf-doctor.ts    |  65 ++++++++---\n .../unit/doctor-uninitialized-dispatch.test.ts     | 122 +++++++++++++++++++++\n packages/host-profile/package.json                 |   2 +-\n packages/observability/package.json                |   2 +-\n packages/opencode-adapter/README.md                |   2 +\n packages/opencode-adapter/package.json             |   2 +-\n .../src/integration/OpenCodeHttpRuntimeClient.ts   |  23 +++-\n .../tests/OpenCodeHttpRuntimeClient.test.ts        |   5 +-\n .../tests/prompt-async-delayed-http.test.ts        |  49 +++++++++\n .../tests/prompt-delivery-lifecycle.test.ts        |  63 +++++++++++\n packages/permission-engine/package.json            |   2 +-\n packages/scope-gate/package.json                   |   2 +-\n packages/service-management/package.json           |   2 +-\n packages/types/package.json                        |   2 +-\n packages/types/src/llm-kernel-contract.ts          |   1 +\n packages/version-unification/package.json          |   2 +-\n packages/workflow-runtime/package.json             |   2 +-\n setup/userlevel-opencode/tools/sf_doctor.ts        |   2 +-\n 30 files changed, 370 insertions(+), 50 deletions(-)\n create mode 100644 packages/daemon-core/tests/unit/doctor-uninitialized-dispatch.test.ts\n create mode 100644 packages/opencode-adapter/tests/prompt-async-delayed-http.test.ts\n create mode 100644 packages/opencode-adapter/tests/prompt-delivery-lifecycle.test.ts\n",
+  "stderr": ""
+}

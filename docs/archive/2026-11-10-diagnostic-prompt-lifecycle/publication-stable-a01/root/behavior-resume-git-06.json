@@ -1,0 +1,30 @@
+{
+  "utc": "2026-11-10T00:24:58.504Z",
+  "file": "C:/Program Files/Git/cmd/git.exe",
+  "args": [
+    "check-attr",
+    "text",
+    "eol",
+    "--",
+    "docs/product-specification/authority-registry.md",
+    "docs/product-specification/specforge-product-specification.md",
+    "docs/rule/specforge-active-development-rules.md",
+    "docs/user/quick-start.md",
+    "packages/configuration/docs/configuration-format.md",
+    "packages/daemon-core/src/project/ProjectManager.ts",
+    "packages/daemon-core/src/tools/ToolDispatcher.ts",
+    "packages/daemon-core/src/tools/handlers/sf-doctor.ts",
+    "packages/daemon-core/tests/unit/doctor-uninitialized-dispatch.test.ts",
+    "packages/opencode-adapter/README.md",
+    "packages/opencode-adapter/src/integration/OpenCodeHttpRuntimeClient.ts",
+    "packages/opencode-adapter/tests/OpenCodeHttpRuntimeClient.test.ts",
+    "packages/opencode-adapter/tests/prompt-async-delayed-http.test.ts",
+    "packages/opencode-adapter/tests/prompt-delivery-lifecycle.test.ts",
+    "packages/types/src/llm-kernel-contract.ts",
+    "setup/userlevel-opencode/tools/sf_doctor.ts"
+  ],
+  "cwd": "D:\\code\\SpecForge\\.kernel-patched-a01",
+  "exit_code": 0,
+  "stdout": "docs/product-specification/authority-registry.md: text: unspecified\ndocs/product-specification/authority-registry.md: eol: unspecified\ndocs/product-specification/specforge-product-specification.md: text: unspecified\ndocs/product-specification/specforge-product-specification.md: eol: unspecified\ndocs/rule/specforge-active-development-rules.md: text: unspecified\ndocs/rule/specforge-active-development-rules.md: eol: unspecified\ndocs/user/quick-start.md: text: unspecified\ndocs/user/quick-start.md: eol: unspecified\npackages/configuration/docs/configuration-format.md: text: unspecified\npackages/configuration/docs/configuration-format.md: eol: unspecified\npackages/daemon-core/src/project/ProjectManager.ts: text: set\npackages/daemon-core/src/project/ProjectManager.ts: eol: lf\npackages/daemon-core/src/tools/ToolDispatcher.ts: text: set\npackages/daemon-core/src/tools/ToolDispatcher.ts: eol: lf\npackages/daemon-core/src/tools/handlers/sf-doctor.ts: text: set\npackages/daemon-core/src/tools/handlers/sf-doctor.ts: eol: lf\npackages/daemon-core/tests/unit/doctor-uninitialized-dispatch.test.ts: text: set\npackages/daemon-core/tests/unit/doctor-uninitialized-dispatch.test.ts: eol: lf\npackages/opencode-adapter/README.md: text: unspecified\npackages/opencode-adapter/README.md: eol: unspecified\npackages/opencode-adapter/src/integration/OpenCodeHttpRuntimeClient.ts: text: set\npackages/opencode-adapter/src/integration/OpenCodeHttpRuntimeClient.ts: eol: lf\npackages/opencode-adapter/tests/OpenCodeHttpRuntimeClient.test.ts: text: set\npackages/opencode-adapter/tests/OpenCodeHttpRuntimeClient.test.ts: eol: lf\npackages/opencode-adapter/tests/prompt-async-delayed-http.test.ts: text: set\npackages/opencode-adapter/tests/prompt-async-delayed-http.test.ts: eol: lf\npackages/opencode-adapter/tests/prompt-delivery-lifecycle.test.ts: text: set\npackages/opencode-adapter/tests/prompt-delivery-lifecycle.test.ts: eol: lf\npackages/types/src/llm-kernel-contract.ts: text: set\npackages/types/src/llm-kernel-contract.ts: eol: lf\nsetup/userlevel-opencode/tools/sf_doctor.ts: text: set\nsetup/userlevel-opencode/tools/sf_doctor.ts: eol: lf\n",
+  "stderr": ""
+}

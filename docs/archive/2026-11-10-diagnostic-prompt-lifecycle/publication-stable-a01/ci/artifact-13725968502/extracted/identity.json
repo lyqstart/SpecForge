@@ -1,0 +1,13 @@
+{
+  "utc": "2026-11-10T01:18:39.608Z",
+  "platform": "win32",
+  "architecture": "x64",
+  "node": "v24.3.0",
+  "bun": "1.3.14",
+  "bun_executable": "C:\\Users\\runneradmin\\.bun\\bin\\bun.exe",
+  "candidate": "1fab365d95af1f22328b8807195aa3b645b8042a",
+  "version": "1.0.26",
+  "fixture": "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\sf-platform-acceptance-f9E2aX",
+  "config": "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\sf-platform-acceptance-f9E2aX\\opencode",
+  "qualification": "Actual host execution; platform mocks and skipped cases do not count as this evidence."
+}

@@ -1,0 +1,62 @@
+{
+  "utc": "2026-11-10T00:09:41.422Z",
+  "leg": "patched",
+  "mode": "build",
+  "cwd": "D:\\code\\SpecForge\\.kernel-patched-a01",
+  "source_head": "6a1dd14e61f8d0ccc5c1120f342ac4f57e20f4da",
+  "node": {
+    "path": "C:\\Program Files\\nodejs\\node.exe",
+    "version": "v24.19.0",
+    "sha256": "3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237"
+  },
+  "bun": {
+    "path": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+    "sha256": "0187f68d843f825a72ada4a7eca60db896ed753759a7f8252edcd31ac1bf1b9c"
+  },
+  "profile": "D:\\code\\SpecForge\\.kernel-patched-a01\\.tmp\\kernel-qualification-a03",
+  "temporary": "D:\\code\\SpecForge\\.kernel-patched-a01\\.tmp\\kernel-qualification-a03\\temp",
+  "lock_sha256": "3f60323fd1c3303673a8d79d4253257198725d247d3e6551e7648d0826db4438",
+  "passed": true,
+  "exit_code": 0,
+  "results": [
+    {
+      "utc": "2026-11-10T00:09:41.662Z",
+      "cwd": "D:\\code\\SpecForge\\.kernel-patched-a01",
+      "file": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+      "args": [
+        "run",
+        "build"
+      ],
+      "environment_profile": "D:\\code\\SpecForge\\.kernel-patched-a01\\.tmp\\kernel-qualification-a03",
+      "temporary_native": "D:\\code\\SpecForge\\.kernel-patched-a01\\.tmp\\kernel-qualification-a03\\temp",
+      "purpose": "build",
+      "expected_writes": "Only ignored build/test/profile outputs and owned evidence",
+      "baseline_sha256": "3f60323fd1c3303673a8d79d4253257198725d247d3e6551e7648d0826db4438",
+      "ended_utc": "2026-11-10T00:10:05.485Z",
+      "inner_exit_code": 0,
+      "signal": null,
+      "error": null,
+      "stdout_sha256": "71adea7f502d15c9682048b4f85917e4043b178d63e086511ada2b00b93fa740",
+      "stderr_sha256": "3e63283165ed9857fcb7f91fd5cc56f461dcb051dabd70968522dbeb51e7dce9",
+      "status_after_sha256": "caba01a6c0b0bf5967afb54e9a0d41f25d9c66c192a75deac2eed6f86e38fe67",
+      "status_entries": [
+        " M docs/product-specification/authority-registry.md",
+        " M docs/product-specification/specforge-product-specification.md",
+        " M docs/rule/specforge-active-development-rules.md",
+        " M docs/user/quick-start.md",
+        " M packages/configuration/docs/configuration-format.md",
+        " M packages/daemon-core/src/project/ProjectManager.ts",
+        " M packages/daemon-core/src/tools/ToolDispatcher.ts",
+        " M packages/daemon-core/src/tools/handlers/sf-doctor.ts",
+        " M packages/opencode-adapter/README.md",
+        " M packages/opencode-adapter/src/integration/OpenCodeHttpRuntimeClient.ts",
+        " M packages/opencode-adapter/tests/OpenCodeHttpRuntimeClient.test.ts",
+        " M packages/types/src/llm-kernel-contract.ts",
+        " M setup/userlevel-opencode/tools/sf_doctor.ts",
+        "?? packages/daemon-core/tests/unit/doctor-uninitialized-dispatch.test.ts",
+        "?? packages/opencode-adapter/tests/prompt-async-delayed-http.test.ts",
+        "?? packages/opencode-adapter/tests/prompt-delivery-lifecycle.test.ts"
+      ]
+    }
+  ]
+}

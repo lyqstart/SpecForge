@@ -1,0 +1,14 @@
+{
+  "health": {
+    "schema_version": "1.0",
+    "status": "ok",
+    "pid": 51952,
+    "version": "1.0.26",
+    "startedAt": 1794273653339,
+    "uptimeSec": 0,
+    "activeClients": 0,
+    "pendingEvents": 4,
+    "lastEventTs": 1794273653364
+  },
+  "opencode_url": "http://127.0.0.1:12009"
+}

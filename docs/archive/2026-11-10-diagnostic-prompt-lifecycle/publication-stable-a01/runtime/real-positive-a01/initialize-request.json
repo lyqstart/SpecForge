@@ -1,0 +1,5 @@
+{
+  "sessionId": "ses_e3c74ed50ffe8q3qDlYiT7mQ8d",
+  "messageId": "msg_574c8806773cee6c9782b29c0d782dcd",
+  "content": "现在只做明确授权的本轮自有合成目录前置准备：只调用sf_project_init({action:\"ensure\"})一次，不创建WI，不调用其他工具。 最后原样输出 SF_REAL_INITIALIZE_24f438501bad0693。"
+}

@@ -1,0 +1,5 @@
+Set-Content: D:\code\SpecForge\docs\archive\2026-11-10-diagnostic-prompt-lifecycle\stop-unqualified.ps1:9
+Line |
+   9 |  … SScriptRoot 'unqualified-stop-intent.json') -Encoding utf8 -NoClobber
+     |                                                               ~~~~~~~~~~
+     | A parameter cannot be found that matches parameter name 'NoClobber'.

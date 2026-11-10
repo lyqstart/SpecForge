@@ -1,0 +1,62 @@
+{
+  "utc": "2026-11-09T23:55:01.083Z",
+  "mode": "green",
+  "owner": "daemon-core",
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "test",
+    "--",
+    "tests/unit/doctor-uninitialized-dispatch.test.ts",
+    "--maxWorkers=1",
+    "--reporter=default",
+    "--reporter=json",
+    "--outputFile=D:\\code\\SpecForge\\docs\\archive\\2026-11-10-diagnostic-prompt-lifecycle\\green\\daemon-core.vitest.json"
+  ],
+  "cwd": "D:\\code\\SpecForge\\.kernel-patched-a01\\packages\\daemon-core",
+  "source_sha256": "b25518da16bf7492bceee2c059f625bf5f581b6a01d66f0457af8833cf3017e3",
+  "expected_writes": "Only owned isolated test/profile and evidence output",
+  "ended_utc": "2026-11-09T23:55:07.504Z",
+  "inner_exit_code": 1,
+  "signal": null,
+  "stdout_sha256": "bd1c8ad324b2babd8270c498b9bc73e5338dfdb463c851bbeccc9ae34d545d12",
+  "stderr_sha256": "8204a2cb5a2123469c0d38c99a8ab571c2a88858db16be02dddef82acd8ac639",
+  "collected": true,
+  "cases": [
+    {
+      "title": "diagnoses a new directory without configuration activation, state initialization or implicit project init",
+      "fullName": "readonly doctor through production dispatcher and HTTP diagnoses a new directory without configuration activation, state initialization or implicit project init",
+      "status": "passed"
+    },
+    {
+      "title": "returns a structured unhealthy result over authenticated HTTP, then diagnoses controlled initialization",
+      "fullName": "readonly doctor through production dispatcher and HTTP returns a structured unhealthy result over authenticated HTTP, then diagnoses controlled initialization",
+      "status": "passed"
+    },
+    {
+      "title": "reports corrupt configuration without exposing its bytes or weakening ordinary acceptance",
+      "fullName": "readonly doctor through production dispatcher and HTTP reports corrupt configuration without exposing its bytes or weakening ordinary acceptance",
+      "status": "passed"
+    },
+    {
+      "title": "does not rewrite activation or state witnesses when diagnosing an already active project",
+      "fullName": "readonly doctor through production dispatcher and HTTP does not rewrite activation or state witnesses when diagnosing an already active project",
+      "status": "failed"
+    },
+    {
+      "title": "retains project recovery exclusion before any diagnostic observation or handler work",
+      "fullName": "readonly doctor through production dispatcher and HTTP retains project recovery exclusion before any diagnostic observation or handler work",
+      "status": "passed"
+    }
+  ],
+  "failures": [
+    {
+      "title": "does not rewrite activation or state witnesses when diagnosing an already active project",
+      "fullName": "readonly doctor through production dispatcher and HTTP does not rewrite activation or state witnesses when diagnosing an already active project",
+      "messages": [
+        "AssertionError: expected { success: false, …(1) } to match object { success: false, …(1) }\n    at Proxy.<anonymous> (file:///D:/code/SpecForge/.kernel-patched-a01/node_modules/.bun/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:1155:10)\n    at Proxy.<anonymous> (file:///D:/code/SpecForge/.kernel-patched-a01/node_modules/.bun/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:1029:14)\n    at Proxy.methodWrapper (file:///D:/code/SpecForge/.kernel-patched-a01/node_modules/.bun/chai@5.3.3/node_modules/chai/index.js:1686:25)\n    at D:\\code\\SpecForge\\.kernel-patched-a01\\packages\\daemon-core\\tests\\unit\\doctor-uninitialized-dispatch.test.ts:88:31\n    at file:///D:/code/SpecForge/.kernel-patched-a01/node_modules/.bun/@vitest+runner@3.2.4/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
+      ]
+    }
+  ],
+  "accepted": false
+}

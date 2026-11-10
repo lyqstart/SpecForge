@@ -1,0 +1,14 @@
+{
+  "utc": "2026-11-10T03:41:04.321Z",
+  "finished_utc": "2026-11-10T03:41:04.342Z",
+  "delivery_ms": 20.67540000000008,
+  "ack": {
+    "success": true,
+    "data": {
+      "sessionId": "ses_e3c74ed50ffe8q3qDlYiT7mQ8d",
+      "accepted": true
+    },
+    "requestId": "id0vgez7l9smwa57phx",
+    "timestamp": 1794282064341
+  }
+}

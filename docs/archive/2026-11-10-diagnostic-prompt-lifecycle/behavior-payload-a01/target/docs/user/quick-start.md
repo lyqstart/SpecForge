@@ -1,0 +1,20 @@
+# 快速开始
+
+> Role: DERIVED OPERATING DOCUMENTATION。
+
+首次安装后若 shell 尚不能解析 `specforge`，先执行 Installer 成功回执给出的一次性 PATH 配置命令；不要把绝对路径当作日常启动方式。
+
+```bash
+specforge daemon start --detach
+specforge daemon status
+cd <你的项目>
+opencode --port 4096
+```
+
+默认连接使用本机 4096 端口；显式指定端口，让当前 OpenCode 交互会话提供 SpecForge Adapter 所需的接口。
+
+在 OpenCode 中切换到 `sf-orchestrator`，直接描述业务目标。Orchestrator 会先初始化 `.specforge/project/`（若尚未初始化），读取 Runtime 权威状态，再创建或恢复同一个 Work Item。
+
+仅做安装自检时，可以直接请求 `sf_doctor`。未初始化目录会返回不健康的诊断和缺失项，不会为自检自动初始化项目或创建工作项；配置损坏也会保留诊断结果。模型请求已接收不等于执行完成，最终结果应以实际工具返回及会话完成事件为准。
+
+不要让 Plugin 启动 daemon，不要手工编辑 `.specforge`，也不要先为非 Git 项目执行 `git init`。版本控制模式会在实施前按真实现场冻结：已有 Git 项目走 Git 治理；无 Git 项目走 filesystem 模式。

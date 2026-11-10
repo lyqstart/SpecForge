@@ -1,0 +1,9 @@
+{
+  "utc": "2026-11-10T01:17:53.593Z",
+  "head": "1fab365d95af1f22328b8807195aa3b645b8042a",
+  "version": "1.0.26",
+  "profile": "D:\\code\\SpecForge\\.kernel-patched-a01\\.tmp\\final-platform-a02",
+  "node_sha256": "3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237",
+  "bun_sha256": "0187f68d843f825a72ada4a7eca60db896ed753759a7f8252edcd31ac1bf1b9c",
+  "lock_sha256": "a2953e4c5c0d0f02b7935d0efd2479341253ccb5aca40926bec6b49795fd28b7"
+}

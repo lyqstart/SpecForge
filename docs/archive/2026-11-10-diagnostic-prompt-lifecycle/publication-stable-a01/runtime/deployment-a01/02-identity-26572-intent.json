@@ -1,0 +1,13 @@
+{
+  "utc": "2026-11-10T03:35:58.336Z",
+  "cwd": "D:\\code\\SpecForge\\.kernel-patched-a01",
+  "file": "C:/Users/lyq/.cache/codex-runtimes/codex-primary-runtime/dependencies/native/powershell/pwsh.exe",
+  "args": [
+    "-NoProfile",
+    "-NonInteractive",
+    "-Command",
+    "$ErrorActionPreference='Stop';$p=Get-Process -Id 26572;@{pid=$p.Id;path=$p.Path;start_ticks=$p.StartTime.ToUniversalTime().Ticks.ToString()}|ConvertTo-Json -Compress"
+  ],
+  "environment_overrides": [],
+  "purpose": "identity-26572"
+}

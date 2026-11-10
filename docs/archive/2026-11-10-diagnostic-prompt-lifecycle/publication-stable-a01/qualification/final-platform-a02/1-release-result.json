@@ -1,0 +1,14 @@
+{
+  "utc": "2026-11-10T01:17:53.859Z",
+  "cwd": "D:\\code\\SpecForge\\.kernel-patched-a01",
+  "file": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "scripts/prepare-current-release.ts"
+  ],
+  "purpose": "release",
+  "finished_utc": "2026-11-10T01:18:46.832Z",
+  "inner_exit_code": 0,
+  "signal": null,
+  "stdout_sha256": "d7ce0bf7c0461c07beb885403d7ef611f4c9db719a1e03c3bd26ba67c23cd146",
+  "stderr_sha256": "42580806f72966c011a56229da3d32784afbef0b7cde7cfe7d94dfef7da3aee9"
+}

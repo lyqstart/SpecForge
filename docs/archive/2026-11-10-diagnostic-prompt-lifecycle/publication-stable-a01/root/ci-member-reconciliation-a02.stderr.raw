@@ -1,0 +1,27 @@
+node:assert:152
+  throw new AssertionError(obj);
+  ^
+
+AssertionError [ERR_ASSERTION]: CROSS_PLATFORM_MANAGED_SOURCE_DRIFT:AGENTS.md
++ actual - expected
+
++ 'f8491af3fd0d4e459bd0ba9d70291e3379a0a710767c7c8c62321b6d50143d5a'
+- 'a0541e3b8bb679d50231967117aab59ba4600dfb6c76117d491be0c55c78042d'
+
+    at Object.<anonymous> (D:\code\SpecForge\docs\archive\2026-11-10-diagnostic-prompt-lifecycle\ci-reconcile.cjs:2:3098)
+    at Module._compile (node:internal/modules/cjs/loader:1872:14)
+    at Object..js (node:internal/modules/cjs/loader:2003:10)
+    at Module.load (node:internal/modules/cjs/loader:1594:32)
+    at Module._load (node:internal/modules/cjs/loader:1396:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)
+    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)
+    at node:internal/main/run_main_module:33:47 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: 'f8491af3fd0d4e459bd0ba9d70291e3379a0a710767c7c8c62321b6d50143d5a',
+  expected: 'a0541e3b8bb679d50231967117aab59ba4600dfb6c76117d491be0c55c78042d',
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.19.0

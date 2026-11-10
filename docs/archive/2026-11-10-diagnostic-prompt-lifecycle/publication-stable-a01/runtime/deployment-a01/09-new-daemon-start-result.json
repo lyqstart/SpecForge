@@ -1,0 +1,20 @@
+{
+  "utc": "2026-11-10T03:36:15.567Z",
+  "cwd": "D:\\code\\SpecForge\\.kernel-patched-a01",
+  "file": "C:\\Users\\lyq\\.config\\opencode\\sf-user\\bin\\specforge.exe",
+  "args": [
+    "daemon",
+    "start",
+    "--detach",
+    "--json"
+  ],
+  "environment_overrides": [
+    "OPENCODE_SERVER_URL"
+  ],
+  "purpose": "new-daemon-start",
+  "finished_utc": "2026-11-10T03:36:16.093Z",
+  "inner_exit_code": 0,
+  "signal": null,
+  "stdout_sha256": "5185e2007b8405846c9c6c9f435cf8a735b699df9e375f2ef5986ee99319de62",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

@@ -1,0 +1,26 @@
+{
+  "utc": "2026-11-10T01:15:46.667Z",
+  "commit": "1fab365d95af1f22328b8807195aa3b645b8042a",
+  "behavior_commit": "c2fdc6c822940b5eaec92bb1888cd091bdc7144d",
+  "version": "1.0.26",
+  "files": [
+    "bun.lock",
+    "docs/product-specification/specforge-product-specification.md",
+    "package.json",
+    "packages/cli/package.json",
+    "packages/configuration/package.json",
+    "packages/daemon-core/package.json",
+    "packages/host-profile/package.json",
+    "packages/observability/package.json",
+    "packages/opencode-adapter/package.json",
+    "packages/permission-engine/package.json",
+    "packages/scope-gate/package.json",
+    "packages/service-management/package.json",
+    "packages/types/package.json",
+    "packages/version-unification/package.json",
+    "packages/workflow-runtime/package.json"
+  ],
+  "identity_only": true,
+  "external_dependency_graph_unchanged": true,
+  "proof_sha256": "dad5dd54f29e12ebee73df6c671c88518738bccbb5a59b102de5b1fdb1ae8636"
+}

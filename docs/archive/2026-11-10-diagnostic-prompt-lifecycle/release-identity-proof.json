@@ -1,0 +1,100 @@
+{
+  "utc": "2026-11-10T01:15:45.811Z",
+  "version": "1.0.26",
+  "behavior_commit": "c2fdc6c822940b5eaec92bb1888cd091bdc7144d",
+  "changes": [
+    {
+      "file": "package.json",
+      "before_sha256": "80659155fe160e5162ba4821fe7418fd48fd990082055d6e64504969474343d9",
+      "after_sha256": "a2d98d2d5d8c355fe758dbd059e0dc8604e5a63463e39c62da238e2c2b7033b9",
+      "replacement_count": 1
+    },
+    {
+      "file": "packages/cli/package.json",
+      "before_sha256": "15a6b813e7ad86e52f5e7c61bc00ba5996eab8700dd714c668200852b30051dd",
+      "after_sha256": "377fe2451a4b1de9db90e9f23f5177957c91803d46f43f6ce592b252dda19360",
+      "replacement_count": 1
+    },
+    {
+      "file": "packages/configuration/package.json",
+      "before_sha256": "b3a012b17f04e4f9258bf611e9ed1b7a04639354d37445c08895817d7e058150",
+      "after_sha256": "31dd01d0d6ab118eff4fbe0ea3b2ea0c352179283e875ab7ed21a1934254c665",
+      "replacement_count": 1
+    },
+    {
+      "file": "packages/daemon-core/package.json",
+      "before_sha256": "adaf1b0c130487ebf020b910ceaf2b9d444fda41d62ce0c2093ab2c3c66c8638",
+      "after_sha256": "ebdafa4e559663dc493d9d97f37e3c863d92c2971830dc548b140ad31cea7a9f",
+      "replacement_count": 1
+    },
+    {
+      "file": "packages/host-profile/package.json",
+      "before_sha256": "36cb21f59111a6900310b64160b662e63f5c9b3ff308c7f7ed801085ed444639",
+      "after_sha256": "0ba4d33ede533aa35b94a906d4d3880341c5d0f43ce374c6a995acd1e6089dec",
+      "replacement_count": 1
+    },
+    {
+      "file": "packages/observability/package.json",
+      "before_sha256": "5d629d73a9adadb1cdfbb3769c12090079ecedc8c3258286cca232c9b33c3937",
+      "after_sha256": "89ef144e41628416eda9bbe9eeb3c521a51f41f860a19fca8e33fd69230120ca",
+      "replacement_count": 1
+    },
+    {
+      "file": "packages/opencode-adapter/package.json",
+      "before_sha256": "f7a8d574b03e89af4a13aed4422d748a7250e3933cd9b4150b417a34fb29495d",
+      "after_sha256": "2dcbfd485f293b1b6c100291bfca5a643cb001793cad8773f5b4724e8abd42aa",
+      "replacement_count": 1
+    },
+    {
+      "file": "packages/permission-engine/package.json",
+      "before_sha256": "19d678166d93659dd02c754dc1e6a740cf17b0f617edd64a6bafdaee535ebe62",
+      "after_sha256": "7754f84237719397b3f806cc4c3a7d2e6236a4fec38d4d76164af6dd063fe10d",
+      "replacement_count": 1
+    },
+    {
+      "file": "packages/scope-gate/package.json",
+      "before_sha256": "efdeab2701c755ee4b486d4b7fcb0f99a938f639aab308d203f14a250a9ce97a",
+      "after_sha256": "d2e2e6fe31a30a7e24220ab05cd468acf192eff6cb80a6d475e7706793086d21",
+      "replacement_count": 1
+    },
+    {
+      "file": "packages/service-management/package.json",
+      "before_sha256": "f5cdf97f69b121ddd628ed2508d83e53c60f47c1ca1a25e4182fbf418e9cfb63",
+      "after_sha256": "fb9546ce8fe06313de44b30e9f83ca2688cdb5ee02cf6114b49d8567a3faa4a8",
+      "replacement_count": 1
+    },
+    {
+      "file": "packages/types/package.json",
+      "before_sha256": "e10692a6f59f69255f786ea0d0cd42a2023c914f4129551dcaf86942226d4388",
+      "after_sha256": "f61ad82d47963dd6a2935c6d507095d8371c71cc43e00e4b0bc50c8766ef2900",
+      "replacement_count": 1
+    },
+    {
+      "file": "packages/version-unification/package.json",
+      "before_sha256": "6afc1b37eb3b39fd49e7dde9bca83943d4e6fd31c8ac354ff03ce48af958db6f",
+      "after_sha256": "93b59cb050d86101cd32d8e3ea2e40fee9a606542fba0ba37b6176b2f5fa6627",
+      "replacement_count": 1
+    },
+    {
+      "file": "packages/workflow-runtime/package.json",
+      "before_sha256": "de49c9bc44c0512d9b0192faa97dbb863f840f1a352f0cfdbb0725d1dc75448c",
+      "after_sha256": "495107834329c877625d384f3213bf160004f1b6ef12252935a15dd66e1ff8c6",
+      "replacement_count": 1
+    },
+    {
+      "file": "bun.lock",
+      "before_sha256": "3f60323fd1c3303673a8d79d4253257198725d247d3e6551e7648d0826db4438",
+      "after_sha256": "a2953e4c5c0d0f02b7935d0efd2479341253ccb5aca40926bec6b49795fd28b7",
+      "replacement_count": 12
+    },
+    {
+      "file": "docs/product-specification/specforge-product-specification.md",
+      "before_sha256": "0bb40260b66235ed590ed3c0e22ccf7a0a7ccc077ca2cfd39467ff6cf64ac0c3",
+      "after_sha256": "7f772e699932a16e373296afedbab680c8335c67b86a69379252090f9e5fffcf",
+      "replacement_count": 1
+    }
+  ],
+  "external_dependency_graph_unchanged": true,
+  "all_other_tracked_files_unchanged": 49471,
+  "runtime_behavior_sources_unchanged": true
+}

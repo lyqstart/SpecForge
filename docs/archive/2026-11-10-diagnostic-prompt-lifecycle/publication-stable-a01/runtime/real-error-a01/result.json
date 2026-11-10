@@ -1,0 +1,64 @@
+{
+  "utc": "2026-11-10T03:50:49.662Z",
+  "exit_code": 0,
+  "passed": true,
+  "mode": "error",
+  "version": "1.0.26",
+  "daemon_pid": 22480,
+  "opencode_pid": 52632,
+  "endpoint": "http://127.0.0.1:4096",
+  "model": "INTENTIONALLY_UNAVAILABLE",
+  "session_id": "ses_e3c6b8b81ffeijG0VkzatefSn7",
+  "fixture": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-kernel-real-791qWT",
+  "managed_files_unchanged": 117,
+  "work_item_created": false,
+  "existing_business_access": false,
+  "evidence": [
+    {
+      "step": "invalid-model",
+      "acknowledged": true,
+      "model_succeeded": false,
+      "error_name": "UnknownError",
+      "elapsed_ms": 600.6704
+    }
+  ],
+  "events": [
+    {
+      "utc": "2026-11-10T03:50:48.829Z",
+      "type": "session.status",
+      "sessionID": "ses_e3c6b8b81ffeijG0VkzatefSn7",
+      "status": {
+        "type": "busy"
+      }
+    },
+    {
+      "utc": "2026-11-10T03:50:48.829Z",
+      "type": "session.error",
+      "sessionID": "ses_e3c6b8b81ffeijG0VkzatefSn7",
+      "error": {
+        "name": "UnknownError"
+      }
+    },
+    {
+      "utc": "2026-11-10T03:50:48.829Z",
+      "type": "session.status",
+      "sessionID": "ses_e3c6b8b81ffeijG0VkzatefSn7",
+      "status": {
+        "type": "idle"
+      }
+    },
+    {
+      "utc": "2026-11-10T03:50:48.829Z",
+      "type": "session.idle",
+      "sessionID": "ses_e3c6b8b81ffeijG0VkzatefSn7"
+    },
+    {
+      "utc": "2026-11-10T03:50:48.829Z",
+      "type": "session.error",
+      "sessionID": "ses_e3c6b8b81ffeijG0VkzatefSn7",
+      "error": {
+        "name": "UnknownError"
+      }
+    }
+  ]
+}

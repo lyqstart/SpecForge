@@ -1,0 +1,14 @@
+{
+  "utc": "2026-11-10T00:22:57.699Z",
+  "file": "C:/Program Files/Git/cmd/git.exe",
+  "args": [
+    "status",
+    "--porcelain=v1",
+    "-z",
+    "--untracked-files=all"
+  ],
+  "cwd": "D:\\code\\SpecForge\\.kernel-patched-a01",
+  "exit_code": 0,
+  "stdout": " M docs/product-specification/authority-registry.md\u0000 M docs/product-specification/specforge-product-specification.md\u0000 M docs/rule/specforge-active-development-rules.md\u0000 M docs/user/quick-start.md\u0000 M packages/configuration/docs/configuration-format.md\u0000 M packages/daemon-core/src/project/ProjectManager.ts\u0000 M packages/daemon-core/src/tools/ToolDispatcher.ts\u0000 M packages/daemon-core/src/tools/handlers/sf-doctor.ts\u0000 M packages/opencode-adapter/README.md\u0000 M packages/opencode-adapter/src/integration/OpenCodeHttpRuntimeClient.ts\u0000 M packages/opencode-adapter/tests/OpenCodeHttpRuntimeClient.test.ts\u0000 M packages/types/src/llm-kernel-contract.ts\u0000 M setup/userlevel-opencode/tools/sf_doctor.ts\u0000?? packages/daemon-core/tests/unit/doctor-uninitialized-dispatch.test.ts\u0000?? packages/opencode-adapter/tests/prompt-async-delayed-http.test.ts\u0000?? packages/opencode-adapter/tests/prompt-delivery-lifecycle.test.ts\u0000",
+  "stderr": ""
+}

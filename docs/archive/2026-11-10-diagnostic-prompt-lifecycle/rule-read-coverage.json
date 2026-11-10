@@ -1,0 +1,152 @@
+[
+  {
+    "file": "docs/rule/specforge-active-development-rules.md",
+    "raw_sha256": "33a56add8a0c68c0df3267e8ac4a9594a072ec598533097f358ecd5f45c07e05",
+    "total_lines": 2670,
+    "chunks": [
+      {
+        "first_line": 1,
+        "last_line": 250,
+        "sha256": "4ac1c0826e09e8e8c1113c02c159cc29ccfacae4d07c6ef71b03c9cbf30ff51e"
+      },
+      {
+        "first_line": 251,
+        "last_line": 500,
+        "sha256": "13bfaa2eb1509d1d85ab0e05de1ce77a5e1367a31f02588b8d799a0df3e3f0d4"
+      },
+      {
+        "first_line": 501,
+        "last_line": 750,
+        "sha256": "385a41a74e1cf8131b5a4ce92f0df53a162af2a0bd13521dac7c8267863d9423"
+      },
+      {
+        "first_line": 751,
+        "last_line": 1000,
+        "sha256": "34aba35cbe2f429988343e28f8dcabec0879bb741ae4d43de18e8718a8685e35"
+      },
+      {
+        "first_line": 1001,
+        "last_line": 1250,
+        "sha256": "b8f1834fb3c8cdf6ce63f5ec862743bc75177212596c5271ca852ddbdca27aa7"
+      },
+      {
+        "first_line": 1251,
+        "last_line": 1500,
+        "sha256": "aa10ee4fddc3016af22098707ca69ba21afb6d09772abae5266d051d477411ac"
+      },
+      {
+        "first_line": 1501,
+        "last_line": 1750,
+        "sha256": "8b3ebf3e29681d54623ec296326f3dd7bbdea2808cdf8dfedb54709359eb0d4c"
+      },
+      {
+        "first_line": 1751,
+        "last_line": 2000,
+        "sha256": "f25d353302f52ed6fc9803226a3aa629f2417b240c3bfcb4aac9b0326de6f850"
+      },
+      {
+        "first_line": 2001,
+        "last_line": 2250,
+        "sha256": "48602f90176910819f1d313ea10b0781d538faa78fe2cc0cd361686bd2c2c826"
+      },
+      {
+        "first_line": 2251,
+        "last_line": 2500,
+        "sha256": "e4cbe10864811a94147a0d672cf3d5e6d8d8bc97e42372e0e6fe1715e612b525"
+      },
+      {
+        "first_line": 2501,
+        "last_line": 2670,
+        "sha256": "a749627de5fb02b2ab3b1d65886886fc9779d2340a422785a4a8e6195cdeac97"
+      }
+    ],
+    "normalized_reconstruction_equal": true,
+    "read_method": "Full displayed reads in current tool transcript; truncated ranges supplemented. 250-line hash partition independently proves EOF reconstruction; unchanged prior full-read identities also available."
+  },
+  {
+    "file": "docs/product-specification/specforge-product-specification.md",
+    "raw_sha256": "37b52eca9e7f32787bff3ef529c955a712d4cd6c97969e5002f8d3c080ae6052",
+    "total_lines": 1695,
+    "chunks": [
+      {
+        "first_line": 1,
+        "last_line": 250,
+        "sha256": "fb5779ba9a770e3d90c99b754b8cdc575e0fd41f4b152833175a64cdffe5bb3b"
+      },
+      {
+        "first_line": 251,
+        "last_line": 500,
+        "sha256": "990e5fedcb37f05ab6cd938cad6702764d0008fb7ac96489e02eefe600f609d2"
+      },
+      {
+        "first_line": 501,
+        "last_line": 750,
+        "sha256": "53b64413e71a335d832fffe5f198a945aaeb53ca563c3a9f3455f15fc4c1def7"
+      },
+      {
+        "first_line": 751,
+        "last_line": 1000,
+        "sha256": "575499d4993006f1f6ab1e48c2650c1a748067da1ad4f69e09b04af2d97dd0c7"
+      },
+      {
+        "first_line": 1001,
+        "last_line": 1250,
+        "sha256": "9d2ef3a4807ee80d8823c14aba9d3c2a4b5217a393eceeed97de70121385dc17"
+      },
+      {
+        "first_line": 1251,
+        "last_line": 1500,
+        "sha256": "3c73519dd08b170eda11c5573e0c153fa0663e2397d9976e9f8abb131ab5f1e1"
+      },
+      {
+        "first_line": 1501,
+        "last_line": 1695,
+        "sha256": "2062d6dbfd314def3299c24e879c3e9079de39209cd080a8275cbc2e9c542a5a"
+      }
+    ],
+    "normalized_reconstruction_equal": true,
+    "read_method": "Full displayed reads in current tool transcript; truncated ranges supplemented. 250-line hash partition independently proves EOF reconstruction; unchanged prior full-read identities also available."
+  },
+  {
+    "file": "docs/product-specification/authority-registry.md",
+    "raw_sha256": "5ba13ce20545eb660aa8556097f2d5cbdea0a018c46ce60674985784e87d9a1e",
+    "total_lines": 144,
+    "chunks": [
+      {
+        "first_line": 1,
+        "last_line": 144,
+        "sha256": "f96c255c4c0a0e32380862f6573d8e6d35d8422924a0d9728afb360f4b5b06f7"
+      }
+    ],
+    "normalized_reconstruction_equal": true,
+    "read_method": "Full displayed reads in current tool transcript; truncated ranges supplemented. 250-line hash partition independently proves EOF reconstruction; unchanged prior full-read identities also available."
+  },
+  {
+    "file": "docs/design/SpecForge架构一致性治理最终实施方案.md",
+    "raw_sha256": "956df3943a44d1b99636790a32e9b2a0dc266b7116f50b60b7b8c6f2614423ac",
+    "total_lines": 232,
+    "chunks": [
+      {
+        "first_line": 1,
+        "last_line": 232,
+        "sha256": "634dd431a58c972e6059e86aee47524e16a0dea45f666ea6dbee71b2de0d4879"
+      }
+    ],
+    "normalized_reconstruction_equal": true,
+    "read_method": "Full displayed reads in current tool transcript; truncated ranges supplemented. 250-line hash partition independently proves EOF reconstruction; unchanged prior full-read identities also available."
+  },
+  {
+    "file": "docs/rule/specforge-execution-mode-and-evidence-protocol.md",
+    "raw_sha256": "166db21aecece99aa7787bc62978a1bdb89c8b17750182ea1030fedd17a063ef",
+    "total_lines": 182,
+    "chunks": [
+      {
+        "first_line": 1,
+        "last_line": 182,
+        "sha256": "ad5805c4d203c5f3aba8cf506fff83c7b2aa8bb6a38ea4e871b49c1414895ba7"
+      }
+    ],
+    "normalized_reconstruction_equal": true,
+    "read_method": "Full displayed reads in current tool transcript; truncated ranges supplemented. 250-line hash partition independently proves EOF reconstruction; unchanged prior full-read identities also available."
+  }
+]

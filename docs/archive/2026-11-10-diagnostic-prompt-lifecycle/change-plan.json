@@ -1,0 +1,35 @@
+{
+  "run_id": "CODEX-SF-20261110-KERNEL-A01",
+  "execution_attempt_id": "A01",
+  "execution_mode": "CODEX_DIRECT",
+  "baseline_head": "6a1dd14e61f8d0ccc5c1120f342ac4f57e20f4da",
+  "user_request": "继续，把未初始化目录自检失败和模型请求超过 30 秒返回 502 这两项问题修好，不要简单放宽超时，补齐回归测试、部署和真实模型端到端验证，再全面验收。",
+  "PRIOR_FAILURE_RECONCILIATION": "PASS",
+  "BACKFILLED_ERROR_IDS": ["ERR-2123", "ERR-2124", "ERR-2125", "ERR-2126"],
+  "UNRECORDED_FAILURES": 0,
+  "ACTIVE_EXPERIENCE_RULES_FILE_READ": "YES",
+  "EXPERIENCE_FILE_READ": "YES",
+  "APPLICABLE_EXPERIENCE_RULES": "EXP-001,002,004,006,007,008,009,010,011,015,018,023,026,031,032,033,037,038,060,065,089,102,117,121,122,123,125,135,136,137,138,193,195,197,201,261,264,276,282,283,284,289,290,296,298",
+  "HISTORICAL_LEDGER_SEARCH": "CONFIGURATION_READ_FAILED,prompt_async,30秒,未初始化,OpenCode,configuration activation; hits ERR-1975,2011,2107,2108,2110,2112,2117,2120,2121,2122 and newly recorded2123..2126",
+  "REPEATED_ERROR_CHECK": "PASS",
+  "confirmed": [
+    "Readonly bootstrap READY on clean main and exact live remote6a1dd14e",
+    "Prior immutable actual model/daemon tool call failed at project configuration acceptance before doctor handler",
+    "Prior actual daemon prompt HTTP502 explicitly cites synchronous OpenCode message endpoint timeout after30000ms",
+    "Official OpenCode API and installed SDK support prompt_async204; noReply context injection must retain synchronous persistence ordering",
+    "No existing caller uses sendPrompt return as model result; public handler returns accepted:true, neutral contract returns void; results/events/cancellation are separate responsibilities"
+  ],
+  "classification": "RUNTIME_DEFECT",
+  "responsibility": ["ToolDispatcher diagnostic prerequisites", "doctor handler/project state owner", "OpenCode Adapter prompt delivery transport", "consumer guidance/test completion and cancellation semantics", "deployment"],
+  "goals": [
+    "G1: real dispatcher/HTTP doctor returns structured unhealthy diagnostic on uninitialized or corrupt project without implicit initialization/config activation/state fabrication; ordinary tools still fail closed",
+    "G2: real model long execution survives original30s transport window by async acceptance; bounded acceptance errors/cancel/identity and separate actual completion remain enforced",
+    "G3: synchronized source/templates/docs/installer, symmetric exact-HEAD regression, current three-platform qualification, new deployed process and actual OpenCode/model/tool evidence"
+  ],
+  "design": "Use existing diagnostic owner and exact tool identity, never broadly optional project configuration. Use existing neutral delivery acknowledgment with official async OpenCode endpoint for generation, synchronous noReply persistence; preserve deadline and cancellation. Final results must be validated from actual events/messages, not ACK alone. No new business workflow, authority source or tool family.",
+  "allowed_scope": ["packages/daemon-core/src/tools/ToolDispatcher.ts", "packages/daemon-core/src/tools/handlers/sf-doctor.ts", "packages/daemon-core/src/tools/lib/sf_doctor_core.ts", "packages/daemon-core/src/project/** if a shared readonly owner is necessary", "packages/opencode-adapter/src/**", "packages/opencode-adapter/tests/**", "packages/daemon-core/tests/**", "packages/types/src/llm-kernel-contract.ts", "setup/userlevel-opencode/tools/sf_doctor.ts", "setup/userlevel-opencode/tools/lib/sf_doctor_core.ts", "tests/** related consumers", "docs/product-specification/**", "docs/cli/**", "docs/user/**", "packages/daemon-core/docs/http-endpoints.md", "packages/opencode-adapter/README.md", "packages/configuration/docs/configuration-format.md", "docs/rule/specforge-active-development-rules.md", "docs/rule/specforge-development-error-ledger-and-experience.md", "docs/project-status.md", ".gitignore", "package.json", "packages/*/package.json product version only", "bun.lock version identities only", "docs/archive/2026-11-10-diagnostic-prompt-lifecycle/**"],
+  "writes": {"TRUTH_SOURCE_WRITES":"SPS stable existing-scope clarification and controlled initialization only in owned synthetic validation fixture; no existing business truth source", "REPOSITORY_TRACKED_WRITES":"Administrative status/ledger/plan now; product payload first in isolated exact-HEAD patched worktree, root only after acceptance", "RUNTIME_OBSERVER_WRITES":"Owned OpenCode sessions/cache/logs and installer lifecycle; real daemon controlled stop/upgrade/start after validation", "EXTERNAL_EVIDENCE_WRITES":"This evidence root; active files excluded from final immutable member set"},
+  "prohibited": ["No t2/t3/t5 access", "No SpecForge self-development WI", "No PR", "No timeout increase/assertion reduction", "No automatic model retry", "No client success from ACK interpreted as inference completion", "No credentials/old conversation sent to provider", "No hand-written synthetic project truth source for real E2E"],
+  "validation": ["Freeze structured validation contract before blocking qualification", "Dedicated red/green regressions through real production entrances", "Exact-head isolated original/patched same-lock full regression and build/lint", "Three-platform official full and distribution qualification", "Official installer verify/upgrade with controlled old-process shutdown and new process identity", "Real OpenCode delayed transport, error/cancel, real GLM doctor before initialization and after controlled init, actual tool/daemon output matching", "Diff/source/authority/consumer reconciliation, immutable manifest, local-main merge/push per AGENTS, final clean READY"],
+  "stop": "All goals reconciled with current deployed actual behavior and final Git/CI evidence; otherwise preserve concrete unresolved evidence and checkpoint, do not declare complete"
+}

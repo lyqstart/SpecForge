@@ -1,0 +1,117 @@
+$ vitest run tests/prompt-delivery-lifecycle.test.ts "--maxWorkers=1" "--reporter=default" "--reporter=json" "--outputFile=D:\\code\\SpecForge\\docs\\archive\\2026-11-10-diagnostic-prompt-lifecycle\\red\\opencode-adapter.vitest.json"
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 9 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/prompt-delivery-lifecycle.test.ts[2m > [22mgeneration delivery acknowledgment is independent of inference lifetime[2m > [22macknowledges before a generation longer than the unchanged thirty-second transport bound
+[31m[1mAssertionError[22m: expected false to be true // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- true[39m
+[31m+ false[39m
+
+[36m [2m❯[22m tests/prompt-delivery-lifecycle.test.ts:[2m19:64[22m[39m
+
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/9]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/prompt-delivery-lifecycle.test.ts[2m > [22mgeneration delivery acknowledgment is independent of inference lifetime[2m > [22mkeeps synchronous noReply persistence before accepting the next generated prompt
+[31m[1mAssertionError[22m: expected [ '/session/s1/message', …(1) ] to deeply equal [ '/session/s1/message', …(1) ][39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  [[22m
+[2m    "/session/s1/message",[22m
+[32m-   "/session/s1/prompt_async",[39m
+[31m+   "/session/s1/message",[39m
+[2m  ][22m
+
+[36m [2m❯[22m tests/prompt-delivery-lifecycle.test.ts:[2m33:53[22m[39m
+    [90m 31| [39m    }) [35mas[39m [35mtypeof[39m fetch })[33m;[39m
+    [90m 32| [39m    await client.sendPrompt('s1', { content: 'context', noReply: true …
+    [90m 33| [39m    expect(calls.map(v => new URL(v.url).pathname)).toEqual(['/session…
+    [90m   | [39m                                                    [31m^[39m
+    [90m 34| [39m  })[33m;[39m
+    [90m 35| [39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/9]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/prompt-delivery-lifecycle.test.ts[2m > [22mgeneration delivery acknowledgment is independent of inference lifetime[2m > [22mrejects non-204 asynchronous acceptance HTTP400 without synchronous fallback or resend
+[41m[1m FAIL [22m[49m tests/prompt-delivery-lifecycle.test.ts[2m > [22mgeneration delivery acknowledgment is independent of inference lifetime[2m > [22mrejects non-204 asynchronous acceptance HTTP404 without synchronous fallback or resend
+[41m[1m FAIL [22m[49m tests/prompt-delivery-lifecycle.test.ts[2m > [22mgeneration delivery acknowledgment is independent of inference lifetime[2m > [22mrejects non-204 asynchronous acceptance HTTP409 without synchronous fallback or resend
+[41m[1m FAIL [22m[49m tests/prompt-delivery-lifecycle.test.ts[2m > [22mgeneration delivery acknowledgment is independent of inference lifetime[2m > [22mrejects non-204 asynchronous acceptance HTTP503 without synchronous fallback or resend
+[31m[1mAssertionError[22m: expected 'http://127.0.0.1:4096/session/s1/mess…' to contain '/prompt_async'[39m
+
+Expected: [32m"/prompt_async"[39m
+Received: [31m"http://127.0.0.1:4096/session/s1/message"[39m
+
+[36m [2m❯[22m tests/prompt-delivery-lifecycle.test.ts:[2m40:48[22m[39m
+    [90m 38| [39m    const client = new OpenCodeHttpRuntimeClient({ fetchFn: fetchFn as…
+    [90m 39| [39m    await expect(client.sendPrompt('s1', { content: 'generate' })).rej…
+    [90m 40| [39m    expect(String(fetchFn.mock.calls[0]?.[0])).toContain('/prompt_asyn…
+    [90m   | [39m                                               [31m^[39m
+    [90m 41| [39m  })[33m;[39m
+    [90m 42| [39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/9]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/prompt-delivery-lifecycle.test.ts[2m > [22mgeneration delivery acknowledgment is independent of inference lifetime[2m > [22mrejects non-204 asynchronous acceptance HTTP200 without synchronous fallback or resend
+[31m[1mAssertionError[22m: promise resolved "undefined" instead of rejecting[39m
+
+[32m- Expected:[39m 
+Error {
+  "message": "rejected promise",
+}
+
+[31m+ Received:[39m 
+undefined
+
+[36m [2m❯[22m tests/prompt-delivery-lifecycle.test.ts:[2m39:66[22m[39m
+    [90m 37| [39m    const fetchFn = vi.fn(async () => Response.json({ success: false }…
+    [90m 38| [39m    const client = new OpenCodeHttpRuntimeClient({ fetchFn: fetchFn as…
+    [90m 39| [39m    await expect(client.sendPrompt('s1', { content: 'generate' })).rej…
+    [90m   | [39m                                                                 [31m^[39m
+    [90m 40| [39m    expect(String(fetchFn.mock.calls[0]?.[0])).toContain('/prompt_asyn…
+    [90m 41| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/9]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/prompt-delivery-lifecycle.test.ts[2m > [22mgeneration delivery acknowledgment is independent of inference lifetime[2m > [22mrequires an actual positive cancellation acknowledgment
+[31m[1mAssertionError[22m: promise resolved "undefined" instead of rejecting[39m
+
+[32m- Expected:[39m 
+Error {
+  "message": "rejected promise",
+}
+
+[31m+ Received:[39m 
+undefined
+
+[36m [2m❯[22m tests/prompt-delivery-lifecycle.test.ts:[2m53:55[22m[39m
+    [90m 51| [39m  it('requires an actual positive cancellation acknowledgment', async …
+    [90m 52| [39m    const fetchFn = vi.fn(async () => Response.json(false)); const cli…
+    [90m 53| [39m    await expect(client.abortSession('s1', 'D:/owned')).rejects.toThro…
+    [90m   | [39m                                                      [31m^[39m
+    [90m 54| [39m  })[33m;[39m
+    [90m 55| [39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/9]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/prompt-delivery-lifecycle.test.ts[2m > [22mgeneration delivery acknowledgment is independent of inference lifetime[2m > [22mdelivers a later model failure through the actual SSE parser rather than treating ACK as completion
+[31m[1mOpenCodeRuntimeError[22m: OpenCode POST /session/s1/message returned invalid JSON[39m
+[36m [2m❯[22m OpenCodeHttpRuntimeClient.requestJson src/integration/OpenCodeHttpRuntimeClient.ts:[2m381:15[22m[39m
+    [90m379| [39m        [35mreturn[39m [33mJSON[39m[33m.[39m[34mparse[39m(text) [35mas[39m unknown[33m;[39m
+    [90m380| [39m      } [35mcatch[39m {
+    [90m381| [39m        throw new OpenCodeRuntimeError(`OpenCode ${method} ${pathname}…
+    [90m   | [39m              [31m^[39m
+    [90m382| [39m      }
+    [90m383| [39m    } [35mcatch[39m (error) {
+[90m [2m❯[22m OpenCodeHttpRuntimeClient.sendPrompt src/integration/OpenCodeHttpRuntimeClient.ts:[2m305:5[22m[39m
+[90m [2m❯[22m tests/prompt-delivery-lifecycle.test.ts:[2m59:89[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/9]⎯[22m[39m
+
+error: script "test" exited with code 1

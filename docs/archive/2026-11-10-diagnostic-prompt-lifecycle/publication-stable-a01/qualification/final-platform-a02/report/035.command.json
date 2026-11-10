@@ -1,0 +1,15 @@
+{
+  "number": "035",
+  "name": "official-daemon-restart",
+  "executable": "D:\\code\\SpecForge\\.kernel-patched-a01\\.tmp\\final-platform-a02\\temp\\sf-platform-acceptance-sIgKPr\\opencode\\sf-user\\bin\\specforge.exe",
+  "args": [
+    "daemon",
+    "restart",
+    "--json"
+  ],
+  "started_utc": "2026-11-10T01:19:08.258Z",
+  "finished_utc": "2026-11-10T01:19:09.241Z",
+  "inner_exit_code": 0,
+  "signal": null,
+  "spawn_error": null
+}

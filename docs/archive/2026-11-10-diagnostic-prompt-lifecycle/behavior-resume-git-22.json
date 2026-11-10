@@ -1,0 +1,13 @@
+{
+  "utc": "2026-11-10T00:24:59.695Z",
+  "file": "C:/Program Files/Git/cmd/git.exe",
+  "args": [
+    "cat-file",
+    "blob",
+    ":setup/userlevel-opencode/tools/sf_doctor.ts"
+  ],
+  "cwd": "D:\\code\\SpecForge\\.kernel-patched-a01",
+  "exit_code": 0,
+  "stdout": "import { tool } from \"@opencode-ai/plugin\"\nimport { daemon } from \"./lib/thin-client\"\n\nexport default tool({\n  description: \"SpecForge 只读自检：未初始化目录或配置损坏时也返回诊断报告；不初始化项目、不激活配置，诊断成功不等于项目健康。\",\n  args: {},\n  async execute(args, context) {\n    const result = await daemon.invokeTool(\"sf_doctor\", args, {\n      sessionID: context.sessionID,\n      agent: context.agent,\n      directory: context.directory,\n      worktree: context.worktree,\n    })\n    if (typeof result === 'string') return result\n    return JSON.stringify(result, null, 2)\n  },\n})\n",
+  "stderr": ""
+}

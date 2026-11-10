@@ -1,0 +1,13 @@
+{
+  "utc": "2026-11-10T01:15:46.403Z",
+  "cwd": "D:\\code\\SpecForge\\.kernel-patched-a01",
+  "file": "C:/Program Files/Git/cmd/git.exe",
+  "args": [
+    "commit",
+    "-m",
+    "chore(release): qualify diagnostic and async prompt fixes as 1.0.26"
+  ],
+  "inner_exit_code": 0,
+  "stdout": "[codex/diagnostic-prompt-lifecycle 1fab365d] chore(release): qualify diagnostic and async prompt fixes as 1.0.26\n 15 files changed, 26 insertions(+), 26 deletions(-)\n",
+  "stderr": ""
+}

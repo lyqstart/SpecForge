@@ -1,0 +1,844 @@
+{
+  "utc": "2026-11-10T04:08:27.949Z",
+  "accepted": true,
+  "inner_exit_code": 0,
+  "commit": "1fab365d95af1f22328b8807195aa3b645b8042a",
+  "version": "1.0.26",
+  "all_jobs_success": 12,
+  "official_archives_verified": 6,
+  "raw_member_archive_complete": true,
+  "all_source_identity_bound": true,
+  "reports": [
+    {
+      "artifact_id": 13726673220,
+      "name": "full-regression-evidence-windows-latest",
+      "platform": "win32",
+      "zip_sha256": "eb4c612e3789e8279cb44b2acba6249cc315bfb71d5dec5a0264d744d5c33858",
+      "members": 33,
+      "source_commit": "1fab365d95af1f22328b8807195aa3b645b8042a",
+      "lock_sha256": "a2953e4c5c0d0f02b7935d0efd2479341253ccb5aca40926bec6b49795fd28b7",
+      "phases": [
+        {
+          "phase": "build",
+          "inner_exit_code": 0,
+          "carrier_exit_code": 0,
+          "stdout_sha256": "ac4d2f14ff0c682e42b982d8956e26bbe725219558f7303463f2ae901a45f0a6",
+          "stderr_sha256": "42580806f72966c011a56229da3d32784afbef0b7cde7cfe7d94dfef7da3aee9"
+        },
+        {
+          "phase": "lint",
+          "inner_exit_code": 0,
+          "carrier_exit_code": 0,
+          "stdout_sha256": "43ba605e206c17cbdb6257b5e7d023fa0a4d008d0c2ae524663158c00b7f1da9",
+          "stderr_sha256": "f3057fb7412d8bad44b554618fef5876038cfcc98fc02a2fc6c5112e5ca0b160"
+        },
+        {
+          "phase": "workspace",
+          "inner_exit_code": 0,
+          "carrier_exit_code": 0,
+          "stdout_sha256": "68eb1023bb6d9f6f4fb6ce9a933401bfafe1854db060dd0b256830f02a10e4b4",
+          "stderr_sha256": "dfd16be93f4c856f5a5507afe593226d6d00be13e4d2a81d69350e2f84df4197"
+        },
+        {
+          "phase": "root",
+          "inner_exit_code": 0,
+          "carrier_exit_code": 0,
+          "stdout_sha256": "194371970bd951480f68a575071f9f60c865aef1281f52d491c6e9fb1e372112",
+          "stderr_sha256": "03e550c0166010426c91f394618240bada172f33f328dd7bd98de15336f2d089"
+        }
+      ],
+      "workspace_test_summary": [
+        "Test Files  1 passed (1)",
+        "Tests  2 passed (2)",
+        "Test Files  13 passed (13)",
+        "Tests  198 passed (198)",
+        "Test Files  18 passed (18)",
+        "Tests  263 passed (263)",
+        "Test Files  1 passed (1)",
+        "Tests  2 passed (2)",
+        "Test Files  5 passed (5)",
+        "Tests  60 passed (60)",
+        "Test Files  23 passed (23)",
+        "Tests  379 passed (379)",
+        "Test Files  37 passed (37)",
+        "Tests  951 passed (951)",
+        "Test Files  39 passed (39)",
+        "Tests  184 passed (184)",
+        "Test Files  69 passed (69)",
+        "Tests  1390 passed (1390)",
+        "Test Files  41 passed (41)",
+        "Tests  794 passed (794)",
+        "Test Files  251 passed (251)",
+        "Tests  2464 passed (2464)"
+      ]
+    },
+    {
+      "artifact_id": 13726109401,
+      "name": "full-regression-evidence-macos-latest",
+      "platform": "darwin",
+      "zip_sha256": "4cf0d1b4f97e4822d989ec9b236a49246b41df02d1c6edfa6cd346e791638b1b",
+      "members": 33,
+      "source_commit": "1fab365d95af1f22328b8807195aa3b645b8042a",
+      "lock_sha256": "a2953e4c5c0d0f02b7935d0efd2479341253ccb5aca40926bec6b49795fd28b7",
+      "phases": [
+        {
+          "phase": "build",
+          "inner_exit_code": 0,
+          "carrier_exit_code": 0,
+          "stdout_sha256": "1b7a4fb7271c7d1936aaa85de3ce9cf05a4a06b51ddd00173530ba07cf6ab6a4",
+          "stderr_sha256": "42580806f72966c011a56229da3d32784afbef0b7cde7cfe7d94dfef7da3aee9"
+        },
+        {
+          "phase": "lint",
+          "inner_exit_code": 0,
+          "carrier_exit_code": 0,
+          "stdout_sha256": "6e1e63899e92751a44d49e130f5297b477098591bcf1898471ce477ba2e98d4b",
+          "stderr_sha256": "f3057fb7412d8bad44b554618fef5876038cfcc98fc02a2fc6c5112e5ca0b160"
+        },
+        {
+          "phase": "workspace",
+          "inner_exit_code": 0,
+          "carrier_exit_code": 0,
+          "stdout_sha256": "b4eeb0a9ddb0e6b2e0e45d7bf9f3afb2052e86503eba421a0146c54750910d9a",
+          "stderr_sha256": "2eefa6f6d38360ae53d4fec5ed21a3b2878f1c17e1b995bc1ca5b226f93b04ee"
+        },
+        {
+          "phase": "root",
+          "inner_exit_code": 0,
+          "carrier_exit_code": 0,
+          "stdout_sha256": "305ddcf8630bf59e569ac941ad9fd60a7614f04f595941f15eb0f9c6671147ce",
+          "stderr_sha256": "03e550c0166010426c91f394618240bada172f33f328dd7bd98de15336f2d089"
+        }
+      ],
+      "workspace_test_summary": [
+        "Test Files  1 passed (1)",
+        "Tests  2 passed (2)",
+        "Test Files  13 passed (13)",
+        "Tests  198 passed (198)",
+        "Test Files  18 passed (18)",
+        "Tests  263 passed (263)",
+        "Test Files  1 passed (1)",
+        "Tests  2 passed (2)",
+        "Test Files  5 passed (5)",
+        "Tests  60 passed (60)",
+        "Test Files  23 passed (23)",
+        "Tests  379 passed (379)",
+        "Test Files  37 passed (37)",
+        "Tests  951 passed (951)",
+        "Test Files  39 passed (39)",
+        "Tests  183 passed | 1 skipped (184)",
+        "Test Files  69 passed (69)",
+        "Tests  1390 passed (1390)",
+        "Test Files  41 passed (41)",
+        "Tests  794 passed (794)",
+        "Test Files  251 passed (251)",
+        "Tests  2463 passed | 1 skipped (2464)"
+      ]
+    },
+    {
+      "artifact_id": 13725709255,
+      "name": "full-regression-evidence-ubuntu-latest",
+      "platform": "linux",
+      "zip_sha256": "75fd845d08f8a9a36b2457e2e541eb16c7694213d8182e0020fc16169734ae19",
+      "members": 33,
+      "source_commit": "1fab365d95af1f22328b8807195aa3b645b8042a",
+      "lock_sha256": "a2953e4c5c0d0f02b7935d0efd2479341253ccb5aca40926bec6b49795fd28b7",
+      "phases": [
+        {
+          "phase": "build",
+          "inner_exit_code": 0,
+          "carrier_exit_code": 0,
+          "stdout_sha256": "71db79710f2acd3d623ca20f47673062a624d78c4d0328140d2c9880d590949e",
+          "stderr_sha256": "42580806f72966c011a56229da3d32784afbef0b7cde7cfe7d94dfef7da3aee9"
+        },
+        {
+          "phase": "lint",
+          "inner_exit_code": 0,
+          "carrier_exit_code": 0,
+          "stdout_sha256": "c8d8f7343ec5ac6d5a19529ddf710fb9765c72e1b558c82890eb28044c98e9d6",
+          "stderr_sha256": "f3057fb7412d8bad44b554618fef5876038cfcc98fc02a2fc6c5112e5ca0b160"
+        },
+        {
+          "phase": "workspace",
+          "inner_exit_code": 0,
+          "carrier_exit_code": 0,
+          "stdout_sha256": "773cf4efe4441bb4e9cc51213da22488b1d6b9056e9a85f7ead6dafb972c2a3b",
+          "stderr_sha256": "59ce9bdf5396c0cc76d667035f363b381af155ef1e35332cac29cc1c61ac767f"
+        },
+        {
+          "phase": "root",
+          "inner_exit_code": 0,
+          "carrier_exit_code": 0,
+          "stdout_sha256": "d482fd13229ebadc5bc298ba0de349ce63a6f4fc02ee2041e49138b42911088b",
+          "stderr_sha256": "03e550c0166010426c91f394618240bada172f33f328dd7bd98de15336f2d089"
+        }
+      ],
+      "workspace_test_summary": [
+        "Test Files  1 passed (1)",
+        "Tests  2 passed (2)",
+        "Test Files  13 passed (13)",
+        "Tests  198 passed (198)",
+        "Test Files  18 passed (18)",
+        "Tests  263 passed (263)",
+        "Test Files  1 passed (1)",
+        "Tests  2 passed (2)",
+        "Test Files  5 passed (5)",
+        "Tests  60 passed (60)",
+        "Test Files  23 passed (23)",
+        "Tests  379 passed (379)",
+        "Test Files  37 passed (37)",
+        "Tests  951 passed (951)",
+        "Test Files  39 passed (39)",
+        "Tests  183 passed | 1 skipped (184)",
+        "Test Files  69 passed (69)",
+        "Tests  1390 passed (1390)",
+        "Test Files  41 passed (41)",
+        "Tests  794 passed (794)",
+        "Test Files  251 passed (251)",
+        "Tests  2463 passed | 1 skipped (2464)"
+      ]
+    },
+    {
+      "artifact_id": 13726342367,
+      "name": "platform-evidence-ubuntu-latest",
+      "platform": "linux",
+      "zip_sha256": "d4c9d7931381d126c1e553d30f059325451db26f62eb885b3788fd2d5f8ca0bb",
+      "members": 124,
+      "source_commit": "1fab365d95af1f22328b8807195aa3b645b8042a",
+      "checks": {
+        "installed_files": 114,
+        "help_cases": 23,
+        "unauthorized_governance_write": "REFUSED_401",
+        "current_read_examples": "PASS",
+        "protected_and_unsupported_routes": "PASS",
+        "official_start_restart_stop": "PASS",
+        "uninstall_private_and_unmanaged_retained": true
+      },
+      "commands": [
+        {
+          "number": "001",
+          "name": "official-install",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "002",
+          "name": "official-verify",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "003",
+          "name": "current-help",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "004",
+          "name": "current-help",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "005",
+          "name": "current-help",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "006",
+          "name": "current-help",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "007",
+          "name": "current-help",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "008",
+          "name": "current-help",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "009",
+          "name": "current-help",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "010",
+          "name": "current-help",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "011",
+          "name": "current-help",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "012",
+          "name": "current-help",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "013",
+          "name": "current-help",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "014",
+          "name": "current-help",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "015",
+          "name": "current-help",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "016",
+          "name": "current-help",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "017",
+          "name": "current-help",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "018",
+          "name": "current-help",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "019",
+          "name": "current-help",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "020",
+          "name": "current-help",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "021",
+          "name": "current-help",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "022",
+          "name": "current-help",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "023",
+          "name": "current-help",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "024",
+          "name": "current-help",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "025",
+          "name": "current-help",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "026",
+          "name": "unsupported-command-rejected",
+          "inner_exit_code": 1
+        },
+        {
+          "number": "027",
+          "name": "unsupported-command-rejected",
+          "inner_exit_code": 1
+        },
+        {
+          "number": "028",
+          "name": "unsupported-command-rejected",
+          "inner_exit_code": 1
+        },
+        {
+          "number": "029",
+          "name": "unsupported-command-rejected",
+          "inner_exit_code": 1
+        },
+        {
+          "number": "030",
+          "name": "unsupported-command-rejected",
+          "inner_exit_code": 1
+        },
+        {
+          "number": "031",
+          "name": "unsupported-command-rejected",
+          "inner_exit_code": 1
+        },
+        {
+          "number": "032",
+          "name": "unsupported-command-rejected",
+          "inner_exit_code": 1
+        },
+        {
+          "number": "033",
+          "name": "installed-version",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "034",
+          "name": "official-daemon-start",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "035",
+          "name": "official-daemon-restart",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "036",
+          "name": "official-daemon-stop",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "037",
+          "name": "official-upgrade",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "038",
+          "name": "official-post-upgrade-verify",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "039",
+          "name": "official-uninstall",
+          "inner_exit_code": 0
+        }
+      ]
+    },
+    {
+      "artifact_id": 13725968502,
+      "name": "platform-evidence-windows-latest",
+      "platform": "win32",
+      "zip_sha256": "2b117d28ad120b45b2b54c8dce7fbf6db274f248832e927c1f95f165230e92f9",
+      "members": 124,
+      "source_commit": "1fab365d95af1f22328b8807195aa3b645b8042a",
+      "checks": {
+        "installed_files": 117,
+        "help_cases": 23,
+        "unauthorized_governance_write": "REFUSED_401",
+        "current_read_examples": "PASS",
+        "protected_and_unsupported_routes": "PASS",
+        "official_start_restart_stop": "PASS",
+        "uninstall_private_and_unmanaged_retained": true
+      },
+      "commands": [
+        {
+          "number": "001",
+          "name": "official-install",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "002",
+          "name": "official-verify",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "003",
+          "name": "current-help",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "004",
+          "name": "current-help",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "005",
+          "name": "current-help",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "006",
+          "name": "current-help",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "007",
+          "name": "current-help",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "008",
+          "name": "current-help",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "009",
+          "name": "current-help",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "010",
+          "name": "current-help",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "011",
+          "name": "current-help",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "012",
+          "name": "current-help",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "013",
+          "name": "current-help",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "014",
+          "name": "current-help",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "015",
+          "name": "current-help",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "016",
+          "name": "current-help",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "017",
+          "name": "current-help",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "018",
+          "name": "current-help",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "019",
+          "name": "current-help",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "020",
+          "name": "current-help",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "021",
+          "name": "current-help",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "022",
+          "name": "current-help",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "023",
+          "name": "current-help",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "024",
+          "name": "current-help",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "025",
+          "name": "current-help",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "026",
+          "name": "unsupported-command-rejected",
+          "inner_exit_code": 1
+        },
+        {
+          "number": "027",
+          "name": "unsupported-command-rejected",
+          "inner_exit_code": 1
+        },
+        {
+          "number": "028",
+          "name": "unsupported-command-rejected",
+          "inner_exit_code": 1
+        },
+        {
+          "number": "029",
+          "name": "unsupported-command-rejected",
+          "inner_exit_code": 1
+        },
+        {
+          "number": "030",
+          "name": "unsupported-command-rejected",
+          "inner_exit_code": 1
+        },
+        {
+          "number": "031",
+          "name": "unsupported-command-rejected",
+          "inner_exit_code": 1
+        },
+        {
+          "number": "032",
+          "name": "unsupported-command-rejected",
+          "inner_exit_code": 1
+        },
+        {
+          "number": "033",
+          "name": "installed-version",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "034",
+          "name": "official-daemon-start",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "035",
+          "name": "official-daemon-restart",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "036",
+          "name": "official-daemon-stop",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "037",
+          "name": "official-upgrade",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "038",
+          "name": "official-post-upgrade-verify",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "039",
+          "name": "official-uninstall",
+          "inner_exit_code": 0
+        }
+      ]
+    },
+    {
+      "artifact_id": 13725788867,
+      "name": "platform-evidence-macos-latest",
+      "platform": "darwin",
+      "zip_sha256": "03aa9145cfb8c941fa0b5a7e812ba09ec617d4996321cdf1f408912c66d251fa",
+      "members": 124,
+      "source_commit": "1fab365d95af1f22328b8807195aa3b645b8042a",
+      "checks": {
+        "installed_files": 114,
+        "help_cases": 23,
+        "unauthorized_governance_write": "REFUSED_401",
+        "current_read_examples": "PASS",
+        "protected_and_unsupported_routes": "PASS",
+        "official_start_restart_stop": "PASS",
+        "uninstall_private_and_unmanaged_retained": true
+      },
+      "commands": [
+        {
+          "number": "001",
+          "name": "official-install",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "002",
+          "name": "official-verify",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "003",
+          "name": "current-help",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "004",
+          "name": "current-help",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "005",
+          "name": "current-help",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "006",
+          "name": "current-help",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "007",
+          "name": "current-help",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "008",
+          "name": "current-help",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "009",
+          "name": "current-help",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "010",
+          "name": "current-help",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "011",
+          "name": "current-help",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "012",
+          "name": "current-help",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "013",
+          "name": "current-help",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "014",
+          "name": "current-help",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "015",
+          "name": "current-help",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "016",
+          "name": "current-help",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "017",
+          "name": "current-help",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "018",
+          "name": "current-help",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "019",
+          "name": "current-help",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "020",
+          "name": "current-help",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "021",
+          "name": "current-help",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "022",
+          "name": "current-help",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "023",
+          "name": "current-help",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "024",
+          "name": "current-help",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "025",
+          "name": "current-help",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "026",
+          "name": "unsupported-command-rejected",
+          "inner_exit_code": 1
+        },
+        {
+          "number": "027",
+          "name": "unsupported-command-rejected",
+          "inner_exit_code": 1
+        },
+        {
+          "number": "028",
+          "name": "unsupported-command-rejected",
+          "inner_exit_code": 1
+        },
+        {
+          "number": "029",
+          "name": "unsupported-command-rejected",
+          "inner_exit_code": 1
+        },
+        {
+          "number": "030",
+          "name": "unsupported-command-rejected",
+          "inner_exit_code": 1
+        },
+        {
+          "number": "031",
+          "name": "unsupported-command-rejected",
+          "inner_exit_code": 1
+        },
+        {
+          "number": "032",
+          "name": "unsupported-command-rejected",
+          "inner_exit_code": 1
+        },
+        {
+          "number": "033",
+          "name": "installed-version",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "034",
+          "name": "official-daemon-start",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "035",
+          "name": "official-daemon-restart",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "036",
+          "name": "official-daemon-stop",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "037",
+          "name": "official-upgrade",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "038",
+          "name": "official-post-upgrade-verify",
+          "inner_exit_code": 0
+        },
+        {
+          "number": "039",
+          "name": "official-uninstall",
+          "inner_exit_code": 0
+        }
+      ]
+    }
+  ]
+}

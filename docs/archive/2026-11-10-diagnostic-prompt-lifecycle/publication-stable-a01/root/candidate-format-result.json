@@ -1,0 +1,63 @@
+{
+  "utc": "2026-11-10T00:03:12.649Z",
+  "exit_code": 0,
+  "files": [
+    {
+      "file": "packages/daemon-core/src/project/ProjectManager.ts",
+      "before": "a2581f8070afe1a70905ba3bbb9c52ace0b951caab116845f80b33f9d78401c1",
+      "after": "a2581f8070afe1a70905ba3bbb9c52ace0b951caab116845f80b33f9d78401c1"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/ToolDispatcher.ts",
+      "before": "9d8e88da9f26b1e09df3e2892415acc9c6c4db7b05ac130c4eba9251cf46f4e9",
+      "after": "9d8e88da9f26b1e09df3e2892415acc9c6c4db7b05ac130c4eba9251cf46f4e9"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-doctor.ts",
+      "before": "6a7238f5ae2a0eff2449acade4c8db4aa649e7aa5d30d55b5d781dbefac7a702",
+      "after": "c1b5977cd4ea53fd610719832690297aae9bc9bc305be24f7b856284a42404ea"
+    },
+    {
+      "file": "packages/opencode-adapter/src/integration/OpenCodeHttpRuntimeClient.ts",
+      "before": "bef1d2cd9eee27c4ddd5e05fe10cede2dee641b29ab007c83f307fd72a3a846e",
+      "after": "bef1d2cd9eee27c4ddd5e05fe10cede2dee641b29ab007c83f307fd72a3a846e"
+    },
+    {
+      "file": "packages/types/src/llm-kernel-contract.ts",
+      "before": "12786cd3599915e85f26671fd36b603f7390c8b4de98d570000dec5c77a392f7",
+      "after": "12786cd3599915e85f26671fd36b603f7390c8b4de98d570000dec5c77a392f7"
+    }
+  ],
+  "results": [
+    {
+      "file": "packages\\daemon-core\\src\\project\\ProjectManager.ts",
+      "errors": 0,
+      "warnings": 0,
+      "messages": []
+    },
+    {
+      "file": "packages\\daemon-core\\src\\tools\\ToolDispatcher.ts",
+      "errors": 0,
+      "warnings": 0,
+      "messages": []
+    },
+    {
+      "file": "packages\\daemon-core\\src\\tools\\handlers\\sf-doctor.ts",
+      "errors": 0,
+      "warnings": 0,
+      "messages": []
+    },
+    {
+      "file": "packages\\opencode-adapter\\src\\integration\\OpenCodeHttpRuntimeClient.ts",
+      "errors": 0,
+      "warnings": 0,
+      "messages": []
+    },
+    {
+      "file": "packages\\types\\src\\llm-kernel-contract.ts",
+      "errors": 0,
+      "warnings": 0,
+      "messages": []
+    }
+  ]
+}

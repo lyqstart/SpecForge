@@ -1,0 +1,10 @@
+{
+  "utc": "2026-11-10T03:17:39.566Z",
+  "method": "GET",
+  "route": "/provider?directory=D%3A%5Ccode%5CSpecForge%5Cdocs%5Carchive%5C2026-11-10-diagnostic-prompt-lifecycle%5Clocal-assets%5Clong-product-a01%5Cproject",
+  "elapsed_ms": 35008.7644,
+  "error": {
+    "name": "TimeoutError",
+    "message": "The operation was aborted due to timeout"
+  }
+}

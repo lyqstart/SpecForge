@@ -1,0 +1,6 @@
+{
+  "utc": "2026-11-10T01:21:52.581Z",
+  "inner_exit_code": 1,
+  "name": "AssertionError",
+  "message": "Expected values to be strictly equal:\n\n1 !== 0\n"
+}

@@ -1,0 +1,317 @@
+{
+  "utc": "2026-11-10T03:52:24.513Z",
+  "accepted": true,
+  "inner_exit_code": 0,
+  "version": "1.0.26",
+  "daemon_pid": 22480,
+  "session_id": "ses_e3c74ed50ffe8q3qDlYiT7mQ8d",
+  "fixture": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-kernel-real-PRzhqD",
+  "classification": "INDEPENDENT_ACCEPTANCE_OF_COMPLETED_REAL_MODEL_STEPS_AFTER_AUDIT_CONSUMER_CORRECTION",
+  "prior_failed_carrier_preserved": true,
+  "new_model_requests": 0,
+  "managed_files_unchanged": 117,
+  "work_items": 0,
+  "steps": [
+    {
+      "label": "uninitialized",
+      "tool": "sf_doctor",
+      "call_id": "call_017f9bc7057943e8bd4478b9",
+      "message_id": "msg_1c38b13250010YW7YPtoIOjgsK",
+      "delivery_ms": 24.263300000000072,
+      "model_elapsed_ms": 29879,
+      "output": {
+        "success": true,
+        "healthy": false,
+        "installation": {
+          "checks": [
+            {
+              "name": "用户级文件: sf-user/bin/specforge.exe",
+              "status": "ok",
+              "detail": "C:\\Users\\lyq\\.config\\opencode\\sf-user\\bin\\specforge.exe"
+            },
+            {
+              "name": "用户级文件: sf-user/bin/specforged.exe",
+              "status": "ok",
+              "detail": "C:\\Users\\lyq\\.config\\opencode\\sf-user\\bin\\specforged.exe"
+            },
+            {
+              "name": "用户级文件: specforge-manifest.json",
+              "status": "ok",
+              "detail": "C:\\Users\\lyq\\.config\\opencode\\specforge-manifest.json"
+            },
+            {
+              "name": "用户级文件: agents/sf-orchestrator.md",
+              "status": "ok",
+              "detail": "C:\\Users\\lyq\\.config\\opencode\\agents\\sf-orchestrator.md"
+            },
+            {
+              "name": "用户级文件: plugins/sf_specforge.ts",
+              "status": "ok",
+              "detail": "C:\\Users\\lyq\\.config\\opencode\\plugins\\sf_specforge.ts"
+            },
+            {
+              "name": "用户级文件: sf-user/lib/sf_thin_plugin.ts",
+              "status": "ok",
+              "detail": "C:\\Users\\lyq\\.config\\opencode\\sf-user\\lib\\sf_thin_plugin.ts"
+            },
+            {
+              "name": "项目运行时: .specforge\\project\\spec_manifest.json",
+              "status": "error",
+              "detail": "缺失: C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-kernel-real-PRzhqD\\.specforge\\project\\spec_manifest.json"
+            },
+            {
+              "name": "项目运行时: .specforge\\runtime\\state.json",
+              "status": "error",
+              "detail": "缺失: C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-kernel-real-PRzhqD\\.specforge\\runtime\\state.json"
+            },
+            {
+              "name": "初始化: spec_manifest.json",
+              "status": "error",
+              "detail": "项目未初始化（project/spec_manifest.json 不存在）"
+            },
+            {
+              "name": "初始化: host-profile.json",
+              "status": "ok",
+              "detail": "主机环境配置存在且新鲜"
+            },
+            {
+              "name": "初始化: prod-environment.md",
+              "status": "warning",
+              "detail": "生产环境配置缺失"
+            },
+            {
+              "name": "初始化: project-rules.md",
+              "status": "warning",
+              "detail": "项目规则缺失"
+            }
+          ],
+          "overall": "error"
+        },
+        "project": {
+          "status": "not_initialized",
+          "configuration": {
+            "valid": false,
+            "error": "CONFIGURATION_READ_FAILED"
+          },
+          "schemas": [
+            {
+              "descriptorId": "project-spec-manifest",
+              "status": "blocked",
+              "errorCode": "FILE_REQUIRED"
+            },
+            {
+              "descriptorId": "project-config",
+              "status": "blocked",
+              "errorCode": "FILE_REQUIRED"
+            },
+            {
+              "descriptorId": "project-observability-config",
+              "status": "blocked",
+              "errorCode": "FILE_REQUIRED"
+            },
+            {
+              "descriptorId": "project-extension-registry",
+              "status": "blocked",
+              "errorCode": "FILE_REQUIRED"
+            }
+          ]
+        },
+        "daemon_components": {
+          "projectManager": "ok",
+          "projectStateManager": "missing",
+          "stateAuthority": {
+            "source": "missing",
+            "events_jsonl": "authoritative_append_only_source",
+            "runtime_state_json": "projection_cache",
+            "work_item_json": "metadata_not_state_source",
+            "can_rebuild_from_events": null
+          },
+          "legacyStateManager": "absent_ignored",
+          "workflowEngine": "ok",
+          "eventBus": "ok",
+          "eventLogger": "missing",
+          "permissionEngine": "ok"
+        }
+      },
+      "raw_message_sha256": "c7351d61e9398ec84d2e40ece19e71e58536597627b494f11ab65230a2ac8d80"
+    },
+    {
+      "label": "initialize",
+      "tool": "sf_project_init",
+      "call_id": "call_4508dfb7cc3f45a0b241e000",
+      "message_id": "msg_1c38b89e00019xMe2hSrTP2zsP",
+      "delivery_ms": 20.67540000000008,
+      "model_elapsed_ms": 14417,
+      "output": {
+        "success": true,
+        "created": [
+          ".specforge\\config\\observability.json",
+          ".specforge\\project\\modules\\CORE\\module.json",
+          ".specforge\\project\\modules\\CORE\\requirements.md",
+          ".specforge\\project\\modules\\CORE\\design.md",
+          ".specforge\\project\\modules\\CORE\\trace.md",
+          ".specforge\\config\\project-rules.md",
+          ".specforge\\config\\prod-environment.md",
+          ".specforge\\config\\project.json",
+          ".specforge\\project\\spec_manifest.json",
+          ".specforge\\project\\extension_registry.json",
+          ".specforge\\project\\requirements_index.md",
+          ".specforge\\project\\design_index.md",
+          ".specforge\\project\\architecture.md",
+          ".specforge\\project\\glossary.md",
+          ".specforge\\project\\decisions.md",
+          ".specforge\\project\\trace_matrix.md",
+          ".specforge\\.gitignore"
+        ],
+        "existed": [],
+        "errors": [],
+        "placeholderFiles": [
+          ".specforge\\config\\project-rules.md",
+          ".specforge\\config\\prod-environment.md"
+        ],
+        "normalized": [],
+        "moduleRegistry": {
+          "status": "unchanged",
+          "moduleCodes": [
+            "CORE"
+          ]
+        }
+      },
+      "raw_message_sha256": "2626af6237f0739550c6cfdf2bb00c442aa322827b4636f7d99534cf4f00089b"
+    },
+    {
+      "label": "initialized-doctor",
+      "tool": "sf_doctor",
+      "call_id": "call_157f4370a3394f22b78ab486",
+      "message_id": "msg_1c38bc4700013vOzI3bcT4z1Wl",
+      "delivery_ms": 19.06629999999859,
+      "model_elapsed_ms": 12362,
+      "output": {
+        "success": true,
+        "healthy": true,
+        "installation": {
+          "checks": [
+            {
+              "name": "用户级文件: sf-user/bin/specforge.exe",
+              "status": "ok",
+              "detail": "C:\\Users\\lyq\\.config\\opencode\\sf-user\\bin\\specforge.exe"
+            },
+            {
+              "name": "用户级文件: sf-user/bin/specforged.exe",
+              "status": "ok",
+              "detail": "C:\\Users\\lyq\\.config\\opencode\\sf-user\\bin\\specforged.exe"
+            },
+            {
+              "name": "用户级文件: specforge-manifest.json",
+              "status": "ok",
+              "detail": "C:\\Users\\lyq\\.config\\opencode\\specforge-manifest.json"
+            },
+            {
+              "name": "用户级文件: agents/sf-orchestrator.md",
+              "status": "ok",
+              "detail": "C:\\Users\\lyq\\.config\\opencode\\agents\\sf-orchestrator.md"
+            },
+            {
+              "name": "用户级文件: plugins/sf_specforge.ts",
+              "status": "ok",
+              "detail": "C:\\Users\\lyq\\.config\\opencode\\plugins\\sf_specforge.ts"
+            },
+            {
+              "name": "用户级文件: sf-user/lib/sf_thin_plugin.ts",
+              "status": "ok",
+              "detail": "C:\\Users\\lyq\\.config\\opencode\\sf-user\\lib\\sf_thin_plugin.ts"
+            },
+            {
+              "name": "项目运行时: .specforge\\project\\spec_manifest.json",
+              "status": "ok",
+              "detail": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-kernel-real-PRzhqD\\.specforge\\project\\spec_manifest.json"
+            },
+            {
+              "name": "项目运行时: .specforge\\runtime\\state.json",
+              "status": "ok",
+              "detail": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-kernel-real-PRzhqD\\.specforge\\runtime\\state.json"
+            },
+            {
+              "name": "初始化: spec_manifest.json",
+              "status": "ok",
+              "detail": "当前 Project Spec 权威存在"
+            },
+            {
+              "name": "初始化: host-profile.json",
+              "status": "ok",
+              "detail": "主机环境配置存在且新鲜"
+            },
+            {
+              "name": "初始化: prod-environment.md",
+              "status": "ok",
+              "detail": "生产环境配置存在"
+            },
+            {
+              "name": "初始化: project-rules.md",
+              "status": "ok",
+              "detail": "项目规则存在"
+            }
+          ],
+          "overall": "healthy"
+        },
+        "project": {
+          "status": "initialized",
+          "configuration": {
+            "valid": true
+          },
+          "schemas": [
+            {
+              "descriptorId": "project-spec-manifest",
+              "status": "current"
+            },
+            {
+              "descriptorId": "project-config",
+              "status": "current"
+            },
+            {
+              "descriptorId": "project-observability-config",
+              "status": "current"
+            },
+            {
+              "descriptorId": "project-extension-registry",
+              "status": "current"
+            },
+            {
+              "descriptorId": "project-module-CORE",
+              "status": "current"
+            }
+          ]
+        },
+        "daemon_components": {
+          "projectManager": "ok",
+          "projectStateManager": "ok",
+          "stateAuthority": {
+            "source": "StateManager/events",
+            "events_jsonl": "authoritative_append_only_source",
+            "runtime_state_json": "projection_cache",
+            "work_item_json": "metadata_not_state_source",
+            "can_rebuild_from_events": true
+          },
+          "legacyStateManager": "absent_ignored",
+          "workflowEngine": "ok",
+          "eventBus": "ok",
+          "eventLogger": "missing",
+          "permissionEngine": "ok"
+        }
+      },
+      "raw_message_sha256": "9d68d3ce6787868527014db60bb029c760e32d64311dfca0d4731dda0bf2db84"
+    }
+  ],
+  "post_init_daemon_match": {
+    "trace_id": "sftr_20261110034124557_a816a795eff4",
+    "payload_sha256": "a42b98e63fb5249fbfe0a5e5b4b7ab19d43bba051d82ba359b60a716dd4e8db1",
+    "log_sha256": "0924962190327419a2fd51d966e958afeba76ad50eda3b0a6deea58fbaa3903a"
+  },
+  "pre_init_observation": {
+    "expected": "DISABLED_WITHOUT_PROJECT_OBSERVABILITY_POLICY",
+    "configuration_error": "FILE_REQUIRED",
+    "policy_source_sha256": "e16d480fa7e63c1e70d63297cfd67972443720dd67448f71459b09afac6bb49a",
+    "fabricated_log": false
+  },
+  "unchanged_checks_reached_before_original_failure": "Original frozen carrier reached downstream daemon matching only after exact pre-init no-write and post-init governance snapshot assertions passed."
+}

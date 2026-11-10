@@ -1,0 +1,141 @@
+$ vitest run tests/unit/doctor-uninitialized-dispatch.test.ts "--maxWorkers=1" "--reporter=default" "--reporter=json" "--outputFile=D:\\code\\SpecForge\\docs\\archive\\2026-11-10-diagnostic-prompt-lifecycle\\red\\daemon-core.vitest.json"
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+[90mstderr[2m | tests/unit/doctor-uninitialized-dispatch.test.ts[2m > [22m[2mreadonly doctor through production dispatcher and HTTP[2m > [22m[2mdoes not rewrite activation or state witnesses when diagnosing an already active project
+[22m[39m[Config] DEBUG Validating configuration layer { layer: [32m'builtin'[39m, schemaVersion: [32m'1.0'[39m }
+[Config] DEBUG Validating configuration layer { layer: [32m'user'[39m, schemaVersion: [32m'1.0'[39m }
+[Config] DEBUG Validating configuration layer { layer: [32m'project'[39m, schemaVersion: [32m'1.0'[39m }
+[Config] DEBUG Validating configuration layer { layer: [32m'runtime'[39m, schemaVersion: [32m'1.0'[39m }
+[Config] DEBUG Starting configuration merge { layerCount: [33m4[39m }
+[Config] DEBUG Merging layer { layer: [32m'builtin'[39m }
+[Config] DEBUG Merging layer { layer: [32m'user'[39m }
+[Config] DEBUG Merging layer { layer: [32m'project'[39m }
+[Config] DEBUG Merging layer { layer: [32m'runtime'[39m }
+[Config] INFO Configuration merge completed { keyCount: [33m8[39m, layerCount: [33m4[39m, validationErrors: [33m0[39m }
+
+[90mstderr[2m | tests/unit/doctor-uninitialized-dispatch.test.ts[2m > [22m[2mreadonly doctor through production dispatcher and HTTP[2m > [22m[2mdoes not rewrite activation or state witnesses when diagnosing an already active project
+[22m[39m[Config] DEBUG Validating configuration layer { layer: [32m'builtin'[39m, schemaVersion: [32m'1.0'[39m }
+[Config] DEBUG Validating configuration layer { layer: [32m'user'[39m, schemaVersion: [32m'1.0'[39m }
+[Config] DEBUG Validating configuration layer { layer: [32m'project'[39m, schemaVersion: [32m'1.0'[39m }
+[Config] DEBUG Validating configuration layer { layer: [32m'runtime'[39m, schemaVersion: [32m'1.0'[39m }
+[Config] DEBUG Starting configuration merge { layerCount: [33m4[39m }
+[Config] DEBUG Merging layer { layer: [32m'builtin'[39m }
+[Config] DEBUG Merging layer { layer: [32m'user'[39m }
+[Config] DEBUG Merging layer { layer: [32m'project'[39m }
+[Config] DEBUG Merging layer { layer: [32m'runtime'[39m }
+[Config] INFO Configuration merge completed { keyCount: [33m8[39m, layerCount: [33m4[39m, validationErrors: [33m0[39m }
+
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 4 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/unit/doctor-uninitialized-dispatch.test.ts[2m > [22mreadonly doctor through production dispatcher and HTTP[2m > [22mdiagnoses a new directory without configuration activation, state initialization or implicit project init
+[31m[1mAssertionError[22m: expected { success: false, …(1) } to match object { success: true, healthy: false, …(1) }
+(1 matching property omitted from actual)[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[32m-   "healthy": false,[39m
+[32m-   "project": {[39m
+[32m-     "configuration": {[39m
+[32m-       "error": "CONFIGURATION_READ_FAILED",[39m
+[32m-       "valid": false,[39m
+[32m-     },[39m
+[32m-     "status": "not_initialized",[39m
+[32m-   },[39m
+[32m-   "success": true,[39m
+[31m+   "success": false,[39m
+[2m  }[22m
+
+[36m [2m❯[22m tests/unit/doctor-uninitialized-dispatch.test.ts:[2m47:20[22m[39m
+    [90m 45| [39m    const f = fixture(), before = snapshot(f.project), acceptance = vi…
+    [90m 46| [39m    [35mconst[39m result [33m=[39m [35mawait[39m [34mdoctor[39m(f)[33m;[39m
+    [90m 47| [39m    expect(result).toMatchObject({ success: true, healthy: false, proj…
+    [90m   | [39m                   [31m^[39m
+    [90m 48| [39m    expect(acceptance).not.toHaveBeenCalled(); expect(state).not.toHav…
+    [90m 49| [39m    [34mexpect[39m([34msnapshot[39m(f[33m.[39mproject))[33m.[39m[34mtoEqual[39m(before)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/doctor-uninitialized-dispatch.test.ts[2m > [22mreadonly doctor through production dispatcher and HTTP[2m > [22mreturns a structured unhealthy result over authenticated HTTP, then diagnoses controlled initialization
+[31m[1mAssertionError[22m: expected { success: true, data: { …(2) }, …(2) } to match object { success: true, data: { …(3) } }
+(3 matching properties omitted from actual)[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[2m    "data": {[22m
+[32m-     "healthy": false,[39m
+[32m-     "project": {[39m
+[32m-       "status": "not_initialized",[39m
+[32m-     },[39m
+[32m-     "success": true,[39m
+[31m+     "success": false,[39m
+[2m    },[22m
+[2m    "success": true,[22m
+[2m  }[22m
+
+[36m [2m❯[22m tests/unit/doctor-uninitialized-dispatch.test.ts:[2m62:34[22m[39m
+    [90m 60| [39m    [35mtry[39m {
+    [90m 61| [39m      const before = snapshot(f.project), first = await invoke(); expe…
+    [90m 62| [39m      expect(await first.json()).toMatchObject({ success: true, data: …
+    [90m   | [39m                                 [31m^[39m
+    [90m 63| [39m      [34mexpect[39m([34msnapshot[39m(f[33m.[39mproject))[33m.[39m[34mtoEqual[39m(before)[33m;[39m
+    [90m 64| [39m      const initialized = await post('/api/v1/project/ensure', { proje…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/doctor-uninitialized-dispatch.test.ts[2m > [22mreadonly doctor through production dispatcher and HTTP[2m > [22mreports corrupt configuration without exposing its bytes or weakening ordinary acceptance
+[31m[1mAssertionError[22m: expected { success: false, …(1) } to match object { success: true, healthy: false, …(1) }
+(1 matching property omitted from actual)[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[32m-   "healthy": false,[39m
+[32m-   "project": {[39m
+[32m-     "configuration": {[39m
+[32m-       "error": "CONFIGURATION_INVALID_OBJECT",[39m
+[32m-       "valid": false,[39m
+[32m-     },[39m
+[32m-     "status": "invalid",[39m
+[32m-   },[39m
+[32m-   "success": true,[39m
+[31m+   "success": false,[39m
+[2m  }[22m
+
+[36m [2m❯[22m tests/unit/doctor-uninitialized-dispatch.test.ts:[2m78:20[22m[39m
+    [90m 76| [39m    const document = path.join(f.project, '.specforge/config/project.j…
+    [90m 77| [39m    [35mconst[39m before [33m=[39m [34msnapshot[39m(f[33m.[39mproject)[33m,[39m result [33m=[39m [35mawait[39m [34mdoctor[39m(f)[33m;[39m
+    [90m 78| [39m    expect(result).toMatchObject({ success: true, healthy: false, proj…
+    [90m   | [39m                   [31m^[39m
+    [90m 79| [39m    expect(JSON.stringify(result)).not.toContain(marker); expect(snaps…
+    [90m 80| [39m    expect(await ordinary(f)).toMatchObject({ success: false, error: '…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/doctor-uninitialized-dispatch.test.ts[2m > [22mreadonly doctor through production dispatcher and HTTP[2m > [22mdoes not rewrite activation or state witnesses when diagnosing an already active project
+[31m[1mAssertionError[22m: expected { success: false, …(1) } to match object { success: true }
+(1 matching property omitted from actual)[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[32m-   "success": true,[39m
+[31m+   "success": false,[39m
+[2m  }[22m
+
+[36m [2m❯[22m tests/unit/doctor-uninitialized-dispatch.test.ts:[2m87:65[22m[39m
+    [90m 85| [39m    const sm = await f.pm.getProjectStateManager(f.project); await sm.…
+    [90m 86| [39m    const document = path.join(f.project, '.specforge/config/project.j…
+    [90m 87| [39m    const before = snapshot(f.project); expect(await doctor(f)).toMatc…
+    [90m   | [39m                                                                [31m^[39m
+    [90m 88| [39m    expect(await ordinary(f)).toMatchObject({ success: false, error: '…
+    [90m 89| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯[22m[39m
+
+error: script "test" exited with code 1

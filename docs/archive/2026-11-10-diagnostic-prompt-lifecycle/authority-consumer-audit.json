@@ -1,0 +1,29 @@
+{
+  "classification": "CONFIRMED_WITH_EXPLICIT_SCOPE",
+  "product_version": "1.0.26",
+  "qualified_source_commit": "1fab365d95af1f22328b8807195aa3b645b8042a",
+  "baseline": "6a1dd14e61f8d0ccc5c1120f342ac4f57e20f4da",
+  "accepted": true,
+  "reviewed_product_paths": 30,
+  "authority": [
+    {"owner":"SPS §5.2 / Registry diagnostic acceptance","behavior":"Exact sf_doctor can inspect unaccepted project configuration without activation or initialization; ordinary tools still require acceptance.","implementation":["ToolDispatcher","sf-doctor handler","ProjectManager.inspectProjectState"],"evidence":["green-a04","delayed","symmetric-ab-acceptance.json","real-positive-a01.acceptance.json"],"outcome":"SUPPORTED"},
+    {"owner":"SPS §7.3 / §10.2 / Registry neutral Kernel","behavior":"Generation delivery acknowledgment is distinct from model completion. OpenCode prompt_async requires204, noReply persists synchronously first, actual errors/cancellation remain owner-controlled;30000ms bound unchanged.","implementation":["OpenCodeHttpRuntimeClient","llm-kernel-contract sendPrompt documentation"],"evidence":["prompt-delivery-lifecycle tests","prompt-async-delayed-http tests","real-long-a01","real-cancel-a01","real-error-a01"],"outcome":"SUPPORTED"},
+    {"owner":"SPS §0.1 product identity","behavior":"All13 root/workspace manifests align1.0.26. External dependency graph and runtime behavior are unchanged by release identity commit.","evidence":["release-identity-proof.json","candidate-release-source-commit.json","root-source-integration.json"],"outcome":"SUPPORTED"},
+    {"owner":"SPS §7.2 / §12 / §19 installation and qualification","behavior":"Formal installer and release owner qualify host-specific exact payloads. Windows117;Linux/macOS114 excluding exactly3Windows-only D23 assets. Shared document physical line endings may differ; canonical content is verified.","evidence":["ci-qualified-members.json","deployed-a01.acceptance.json","opencode-reload-a01.acceptance.json"],"outcome":"SUPPORTED"}
+  ],
+  "consumers": [
+    {"path":"docs/user/quick-start.md","result":"Diagnostic prerequisites and delivery versus completion clarified"},
+    {"path":"packages/configuration/docs/configuration-format.md","result":"Only exact read-only doctor exception; normal acceptance remains mandatory"},
+    {"path":"packages/opencode-adapter/README.md","result":"Async acknowledgment,noReply order,no automatic resend,positive cancellation"},
+    {"path":"setup/userlevel-opencode/tools/sf_doctor.ts","result":"User tool description synchronized; schema,owner,RBAC and daemon routing unchanged"},
+    {"path":"docs/rule/specforge-active-development-rules.md","result":"EXP008 and EXP298 synchronized with existing diagnostic/neutral-delivery ownership"},
+    {"path":"scripts/sf-installer.ts and release owners","result":"No new bypass or source change; official installation/upgrades/verification/uninstall exercised on3hosts"},
+    {"path":"Agent/Workflow/Tool Schema/Gate/Merge/Close/D18/D23","result":"No scope expansion or implementation change; prior approved bounds retained, full current regression passed"}
+  ],
+  "retained_guards": ["normal configuration acceptance","project recovery operation exclusion","HardStop/RBAC ownership","WAL history-loss witnesses","redacted stable diagnostic errors","bounded transport acknowledgment","no automatic prompt resend","positive cancellation acknowledgment"],
+  "existing_test_changes": "Only existing transport mock adds official204 endpoint and updates the expected destination; no old assertion or timeout removed. Three new files add20 diagnostic/delivery/delayed cases.",
+  "deployment_facts": {"new_daemon_pid":22480,"new_opencode_pid":52632,"opencode_url":"http://127.0.0.1:4096","managed_files":117,"private_owner_preserved":true,"old_processes_ended":true},
+  "real_model_facts": {"provider":"zhipuai-coding-plan","model":"glm-5.3","long_delivery_ms":12.3539,"actual_long_completion_ms":45372.9955,"tool":"sf_doctor","original_timeout_ms":30000,"implicit_initialization":false,"work_items_created":0},
+  "excluded_probe": {"classification":"INSUFFICIENT_EVIDENCE","scope":"Additional finite-provider isolated cold OpenCode host setup","result":"Never reached provider readiness and never submitted a model prompt; all owned processes closed. Remote catalog and SDK preparation hypotheses were investigated and remain insufficient to explain all blocking. Not counted as a passing product test.","disposition":"The frozen delayed-completion guarantee is independently satisfied by original31s real HTTP/SSE regression and actual45s deployed GLM/tool completion. No failing test or declared blocking assertion was removed or weakened.","records":["ERR2141","ERR2144","ERR2145","publication-live/long-product-a01","publication-live/long-product-a02","publication-live/long-product-a03","publication-live/long-product-a04"]},
+  "scope_boundary": "Current approved SpecForge capabilities on the verified user installation. D23 remains Windows x64 single-process read-only Node. No claim of all possible third-party OpenCode cold hosts or arbitrary provider bootstraps. No existing business project accessed."
+}

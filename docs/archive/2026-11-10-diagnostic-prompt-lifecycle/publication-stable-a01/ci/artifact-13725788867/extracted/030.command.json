@@ -1,0 +1,13 @@
+{
+  "number": "030",
+  "name": "unsupported-command-rejected",
+  "executable": "/var/folders/h5/t85nd63d71x27_8gl5gw3l_w0000gn/T/sf-platform-acceptance-OpuhoN/opencode/sf-user/bin/specforge",
+  "args": [
+    "plugin"
+  ],
+  "started_utc": "2026-11-10T01:17:45.633Z",
+  "finished_utc": "2026-11-10T01:17:45.701Z",
+  "inner_exit_code": 1,
+  "signal": null,
+  "spawn_error": null
+}

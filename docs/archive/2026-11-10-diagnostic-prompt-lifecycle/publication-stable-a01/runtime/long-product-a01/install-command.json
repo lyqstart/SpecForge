@@ -1,0 +1,11 @@
+{
+  "utc": "2026-11-10T01:20:45.047Z",
+  "file": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "D:\\code\\SpecForge\\.kernel-patched-a01\\scripts\\sf-installer.ts",
+    "install"
+  ],
+  "cwd": "D:\\code\\SpecForge\\.kernel-patched-a01",
+  "purpose": "install",
+  "env_override_keys": []
+}

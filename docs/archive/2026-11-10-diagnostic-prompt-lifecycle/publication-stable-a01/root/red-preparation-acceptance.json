@@ -1,0 +1,36 @@
+{
+  "utc": "2026-11-09T23:53:41.446Z",
+  "accepted": true,
+  "exit_code": 0,
+  "old_carrier_exit": 1,
+  "old_carrier_reclassified": false,
+  "receipts": [
+    {
+      "label": "01-install",
+      "receipt_sha256": "2f245890516df407b3837243fdc61d96ec128478fa1eac08c44221b03eb28078",
+      "exit_code": 0
+    },
+    {
+      "label": "02-build",
+      "receipt_sha256": "fcaad51d63982af0e634617821cd1f02db421f736b9300f6e014eaa475501338",
+      "exit_code": 0
+    }
+  ],
+  "tracked_source_matches_baseline": true,
+  "new_tests": [
+    {
+      "file": "packages/daemon-core/tests/unit/doctor-uninitialized-dispatch.test.ts",
+      "sha256": "b25518da16bf7492bceee2c059f625bf5f581b6a01d66f0457af8833cf3017e3"
+    },
+    {
+      "file": "packages/opencode-adapter/tests/prompt-async-delayed-http.test.ts",
+      "sha256": "42d0a8ca69b0c649befa01fdc8c9876b97d47084851603c68e00375cfabe76a9"
+    },
+    {
+      "file": "packages/opencode-adapter/tests/prompt-delivery-lifecycle.test.ts",
+      "sha256": "f30e2be0e1b22975219a591e16cb69cd6c668b61acab4e3eb3d80ae747b44f0d"
+    }
+  ],
+  "build_source_excludes_tests": true,
+  "production_actions_repeated": false
+}

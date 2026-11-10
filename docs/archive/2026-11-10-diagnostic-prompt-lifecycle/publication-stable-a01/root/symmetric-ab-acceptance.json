@@ -1,0 +1,155 @@
+{
+  "utc": "2026-11-10T04:10:18.025Z",
+  "accepted": true,
+  "same_lock": true,
+  "legs": [
+    {
+      "leg": "original",
+      "source_head": "6a1dd14e61f8d0ccc5c1120f342ac4f57e20f4da",
+      "lock_sha256": "3f60323fd1c3303673a8d79d4253257198725d247d3e6551e7648d0826db4438",
+      "phases": [
+        {
+          "purpose": "lint",
+          "inner_exit_code": 0,
+          "stdout_sha256": "25bc6e553589793fa7a6b68b59e43364a1b37ee0e581ff0e1a4386d2b4fa9b04",
+          "stderr_sha256": "f3057fb7412d8bad44b554618fef5876038cfcc98fc02a2fc6c5112e5ca0b160"
+        },
+        {
+          "purpose": "workspace",
+          "inner_exit_code": 0,
+          "stdout_sha256": "05f58a5af22f46f1b13146bd476f5d557783076a20b6dad67b00177f001a56f6",
+          "stderr_sha256": "e4661f2a8b3142d8e57889f1d92f3655c57b601fc0d240305320846d220be14f"
+        },
+        {
+          "purpose": "root",
+          "inner_exit_code": 0,
+          "stdout_sha256": "d3467a8901f4347dcb199ded18fbd3c04f91f835de2f0aeed121bc1d1fdf2f51",
+          "stderr_sha256": "03e550c0166010426c91f394618240bada172f33f328dd7bd98de15336f2d089"
+        },
+        {
+          "purpose": "validator-typecheck",
+          "inner_exit_code": 0,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "61f4ceb64e981079e7a8d14bae3e9831d053a1b93ba6eae78bee22b49a68ae58"
+        },
+        {
+          "purpose": "installer-typecheck",
+          "inner_exit_code": 0,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "a15810241b3912fa7f39a950d330eb2c2ecfc6300c39f416eb88b30a7ed29190"
+        },
+        {
+          "purpose": "plugin-typecheck",
+          "inner_exit_code": 0,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "2179a040c6a8fe14154ed1177d007086f95280b030aec9e6554474aa9e4d04ab"
+        },
+        {
+          "purpose": "release-owner-typecheck",
+          "inner_exit_code": 0,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "c05cd62f904626950850714c76a836d9cc245d33035fd55359763bdf6e12e2f1"
+        }
+      ],
+      "workspace_summaries": [
+        "Test Files  1 passed (1)",
+        "Tests  2 passed (2)",
+        "Test Files  13 passed (13)",
+        "Tests  198 passed (198)",
+        "Test Files  18 passed (18)",
+        "Tests  263 passed (263)",
+        "Test Files  1 passed (1)",
+        "Tests  2 passed (2)",
+        "Test Files  5 passed (5)",
+        "Tests  60 passed (60)",
+        "Test Files  23 passed (23)",
+        "Tests  379 passed (379)",
+        "Test Files  35 passed (35)",
+        "Tests  940 passed (940)",
+        "Test Files  39 passed (39)",
+        "Tests  184 passed (184)",
+        "Test Files  69 passed (69)",
+        "Tests  1390 passed (1390)",
+        "Test Files  41 passed (41)",
+        "Tests  794 passed (794)",
+        "Test Files  250 passed (250)",
+        "Tests  2455 passed (2455)"
+      ],
+      "result_sha256": "11d2373af349d8371da973f0f60b9b2ffdbc452287d00888a620de79dbfac1ce"
+    },
+    {
+      "leg": "patched",
+      "source_head": "c2fdc6c822940b5eaec92bb1888cd091bdc7144d",
+      "lock_sha256": "3f60323fd1c3303673a8d79d4253257198725d247d3e6551e7648d0826db4438",
+      "phases": [
+        {
+          "purpose": "lint",
+          "inner_exit_code": 0,
+          "stdout_sha256": "25bc6e553589793fa7a6b68b59e43364a1b37ee0e581ff0e1a4386d2b4fa9b04",
+          "stderr_sha256": "f3057fb7412d8bad44b554618fef5876038cfcc98fc02a2fc6c5112e5ca0b160"
+        },
+        {
+          "purpose": "workspace",
+          "inner_exit_code": 0,
+          "stdout_sha256": "a77316154a4468d84b835a9b8b53980b12701ba67164affb5c894f0b3d46f823",
+          "stderr_sha256": "0de869bbc09cc4bab159e483c3313b036c029469afb81d5ccf9886250c3e6404"
+        },
+        {
+          "purpose": "root",
+          "inner_exit_code": 0,
+          "stdout_sha256": "f17801d3d3eb8ed06c6ad33ac8cb0346791ac1c98aa25acca43b55084d6e2bd5",
+          "stderr_sha256": "03e550c0166010426c91f394618240bada172f33f328dd7bd98de15336f2d089"
+        },
+        {
+          "purpose": "validator-typecheck",
+          "inner_exit_code": 0,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "61f4ceb64e981079e7a8d14bae3e9831d053a1b93ba6eae78bee22b49a68ae58"
+        },
+        {
+          "purpose": "installer-typecheck",
+          "inner_exit_code": 0,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "a15810241b3912fa7f39a950d330eb2c2ecfc6300c39f416eb88b30a7ed29190"
+        },
+        {
+          "purpose": "plugin-typecheck",
+          "inner_exit_code": 0,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "2179a040c6a8fe14154ed1177d007086f95280b030aec9e6554474aa9e4d04ab"
+        },
+        {
+          "purpose": "release-owner-typecheck",
+          "inner_exit_code": 0,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "c05cd62f904626950850714c76a836d9cc245d33035fd55359763bdf6e12e2f1"
+        }
+      ],
+      "workspace_summaries": [
+        "Test Files  1 passed (1)",
+        "Tests  2 passed (2)",
+        "Test Files  13 passed (13)",
+        "Tests  198 passed (198)",
+        "Test Files  18 passed (18)",
+        "Tests  263 passed (263)",
+        "Test Files  1 passed (1)",
+        "Tests  2 passed (2)",
+        "Test Files  5 passed (5)",
+        "Tests  60 passed (60)",
+        "Test Files  23 passed (23)",
+        "Tests  379 passed (379)",
+        "Test Files  37 passed (37)",
+        "Tests  951 passed (951)",
+        "Test Files  39 passed (39)",
+        "Tests  184 passed (184)",
+        "Test Files  69 passed (69)",
+        "Tests  1390 passed (1390)",
+        "Test Files  41 passed (41)",
+        "Tests  794 passed (794)",
+        "Test Files  251 passed (251)",
+        "Tests  2464 passed (2464)"
+      ],
+      "result_sha256": "deaaf5d89aa837826de31f71dd3169161701ebaf9d9f34474ce9a211b2c01b09"
+    }
+  ]
+}

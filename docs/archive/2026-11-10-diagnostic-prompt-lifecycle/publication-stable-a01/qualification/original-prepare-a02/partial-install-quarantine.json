@@ -1,0 +1,58 @@
+{
+  "utc": "2026-11-09T23:49:24.919Z",
+  "moved": [
+    {
+      "source": "D:\\code\\SpecForge\\.kernel-original-a01\\node_modules",
+      "target": "D:\\code\\SpecForge\\.kernel-original-a01\\.tmp\\kernel-qualification-a02\\prior-install-0"
+    },
+    {
+      "source": "D:\\code\\SpecForge\\.kernel-original-a01\\packages\\cli\\node_modules",
+      "target": "D:\\code\\SpecForge\\.kernel-original-a01\\.tmp\\kernel-qualification-a02\\prior-install-1"
+    },
+    {
+      "source": "D:\\code\\SpecForge\\.kernel-original-a01\\packages\\configuration\\node_modules",
+      "target": "D:\\code\\SpecForge\\.kernel-original-a01\\.tmp\\kernel-qualification-a02\\prior-install-2"
+    },
+    {
+      "source": "D:\\code\\SpecForge\\.kernel-original-a01\\packages\\daemon-core\\node_modules",
+      "target": "D:\\code\\SpecForge\\.kernel-original-a01\\.tmp\\kernel-qualification-a02\\prior-install-3"
+    },
+    {
+      "source": "D:\\code\\SpecForge\\.kernel-original-a01\\packages\\host-profile\\node_modules",
+      "target": "D:\\code\\SpecForge\\.kernel-original-a01\\.tmp\\kernel-qualification-a02\\prior-install-4"
+    },
+    {
+      "source": "D:\\code\\SpecForge\\.kernel-original-a01\\packages\\observability\\node_modules",
+      "target": "D:\\code\\SpecForge\\.kernel-original-a01\\.tmp\\kernel-qualification-a02\\prior-install-5"
+    },
+    {
+      "source": "D:\\code\\SpecForge\\.kernel-original-a01\\packages\\opencode-adapter\\node_modules",
+      "target": "D:\\code\\SpecForge\\.kernel-original-a01\\.tmp\\kernel-qualification-a02\\prior-install-6"
+    },
+    {
+      "source": "D:\\code\\SpecForge\\.kernel-original-a01\\packages\\permission-engine\\node_modules",
+      "target": "D:\\code\\SpecForge\\.kernel-original-a01\\.tmp\\kernel-qualification-a02\\prior-install-7"
+    },
+    {
+      "source": "D:\\code\\SpecForge\\.kernel-original-a01\\packages\\scope-gate\\node_modules",
+      "target": "D:\\code\\SpecForge\\.kernel-original-a01\\.tmp\\kernel-qualification-a02\\prior-install-8"
+    },
+    {
+      "source": "D:\\code\\SpecForge\\.kernel-original-a01\\packages\\service-management\\node_modules",
+      "target": "D:\\code\\SpecForge\\.kernel-original-a01\\.tmp\\kernel-qualification-a02\\prior-install-9"
+    },
+    {
+      "source": "D:\\code\\SpecForge\\.kernel-original-a01\\packages\\types\\node_modules",
+      "target": "D:\\code\\SpecForge\\.kernel-original-a01\\.tmp\\kernel-qualification-a02\\prior-install-10"
+    },
+    {
+      "source": "D:\\code\\SpecForge\\.kernel-original-a01\\packages\\version-unification\\node_modules",
+      "target": "D:\\code\\SpecForge\\.kernel-original-a01\\.tmp\\kernel-qualification-a02\\prior-install-11"
+    },
+    {
+      "source": "D:\\code\\SpecForge\\.kernel-original-a01\\packages\\workflow-runtime\\node_modules",
+      "target": "D:\\code\\SpecForge\\.kernel-original-a01\\.tmp\\kernel-qualification-a02\\prior-install-12"
+    }
+  ],
+  "deleted": false
+}

@@ -1,0 +1,17 @@
+
+[1m[46m RUN [49m[22m [36mv3.2.4 [39m[90mD:/code/SpecForge/.kernel-patched-a01/packages/daemon-core[39m
+
+ [31m❯[39m tests/unit/doctor-uninitialized-dispatch.test.ts [2m([22m[2m5 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[33m 393[2mms[22m[39m
+   [32m✓[39m readonly doctor through production dispatcher and HTTP[2m > [22mdiagnoses a new directory without configuration activation, state initialization or implicit project init[32m 16[2mms[22m[39m
+   [32m✓[39m readonly doctor through production dispatcher and HTTP[2m > [22mreturns a structured unhealthy result over authenticated HTTP, then diagnoses controlled initialization[32m 134[2mms[22m[39m
+   [32m✓[39m readonly doctor through production dispatcher and HTTP[2m > [22mreports corrupt configuration without exposing its bytes or weakening ordinary acceptance[32m 88[2mms[22m[39m
+[31m   [31m×[31m readonly doctor through production dispatcher and HTTP[2m > [22mdoes not rewrite activation or state witnesses when diagnosing an already active project[39m[32m 146[2mms[22m[39m
+[31m     → expected { success: false, …(1) } to match object { success: false, …(1) }[39m
+   [32m✓[39m readonly doctor through production dispatcher and HTTP[2m > [22mretains project recovery exclusion before any diagnostic observation or handler work[32m 7[2mms[22m[39m
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m4 passed[39m[22m[90m (5)[39m
+[2m   Start at [22m 07:55:01
+[2m   Duration [22m 5.36s[2m (transform 2.51s, setup 0ms, collect 4.52s, tests 393ms, environment 0ms, prepare 194ms)[22m
+
+JSON report written to D:/code/SpecForge/docs/archive/2026-11-10-diagnostic-prompt-lifecycle/green/daemon-core.vitest.json

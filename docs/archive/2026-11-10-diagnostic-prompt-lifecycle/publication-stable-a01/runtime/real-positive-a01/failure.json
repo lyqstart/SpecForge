@@ -1,0 +1,6 @@
+{
+  "utc": "2026-11-10T03:41:31.736Z",
+  "exit_code": 1,
+  "name": "AssertionError",
+  "message": "DAEMON_OUTPUT_MATCH_REQUIRED\n\n0 !== 1\n"
+}

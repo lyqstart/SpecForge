@@ -1,0 +1,14 @@
+{
+  "utc": "2026-11-10T04:18:14.820Z",
+  "cwd": "D:\\code\\SpecForge\\.kernel-patched-a01",
+  "file": "C:/Program Files/Git/cmd/git.exe",
+  "args": [
+    "status",
+    "--porcelain=v1",
+    "-z",
+    "--untracked-files=all"
+  ],
+  "inner_exit_code": 0,
+  "stdout": "",
+  "stderr": ""
+}

@@ -1,0 +1,22 @@
+{
+  "utc": "2026-11-10T01:13:01.694Z",
+  "cwd": "D:\\code\\SpecForge\\.kernel-patched-a01",
+  "file": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "typecheck:release-owner-snapshot"
+  ],
+  "environment_profile": "D:\\code\\SpecForge\\.kernel-patched-a01\\.tmp\\kernel-qualification-a04",
+  "temporary_native": "D:\\code\\SpecForge\\.kernel-patched-a01\\.tmp\\kernel-qualification-a04\\temp",
+  "purpose": "release-owner-typecheck",
+  "expected_writes": "Only ignored build/test/profile outputs and owned evidence",
+  "baseline_sha256": "3f60323fd1c3303673a8d79d4253257198725d247d3e6551e7648d0826db4438",
+  "ended_utc": "2026-11-10T01:13:06.244Z",
+  "inner_exit_code": 0,
+  "signal": null,
+  "error": null,
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "c05cd62f904626950850714c76a836d9cc245d33035fd55359763bdf6e12e2f1",
+  "status_after_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "status_entries": []
+}

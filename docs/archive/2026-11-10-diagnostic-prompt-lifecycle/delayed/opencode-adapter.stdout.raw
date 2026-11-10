@@ -1,0 +1,12 @@
+
+[1m[46m RUN [49m[22m [36mv3.2.4 [39m[90mD:/code/SpecForge/.kernel-patched-a01/packages/opencode-adapter[39m
+
+ [32m✓[39m tests/prompt-async-delayed-http.test.ts [2m([22m[2m1 test[22m[2m)[22m[33m 31056[2mms[22m[39m
+   [33m[2m✓[22m[39m asynchronous prompt over actual HTTP and SSE[2m > [22mkeeps the accepted generation alive past the original transport deadline and observes its later result [33m 31054[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m   Start at [22m 07:56:18
+[2m   Duration [22m 31.45s[2m (transform 45ms, setup 0ms, collect 56ms, tests 31.06s, environment 0ms, prepare 93ms)[22m
+
+JSON report written to D:/code/SpecForge/docs/archive/2026-11-10-diagnostic-prompt-lifecycle/delayed/opencode-adapter.vitest.json

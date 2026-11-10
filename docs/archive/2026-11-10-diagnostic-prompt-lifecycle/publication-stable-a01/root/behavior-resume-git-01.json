@@ -1,0 +1,13 @@
+{
+  "utc": "2026-11-10T00:24:58.149Z",
+  "file": "C:/Program Files/Git/cmd/git.exe",
+  "args": [
+    "symbolic-ref",
+    "--short",
+    "HEAD"
+  ],
+  "cwd": "D:\\code\\SpecForge\\.kernel-patched-a01",
+  "exit_code": 0,
+  "stdout": "codex/diagnostic-prompt-lifecycle\n",
+  "stderr": ""
+}

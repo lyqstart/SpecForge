@@ -1,0 +1,5 @@
+{
+  "sessionId": "ses_e3c74ed50ffe8q3qDlYiT7mQ8d",
+  "messageId": "msg_2034fa77173373baddc18115e1ad2a82",
+  "content": "本轮只是已授权的合成安装只读咨询。只调用sf_doctor({})一次，不初始化项目，不创建工作项，不调用其他工具。按真实返回简述诊断。 最后原样输出 SF_REAL_UNINITIALIZED_25e890344d0676e7。"
+}

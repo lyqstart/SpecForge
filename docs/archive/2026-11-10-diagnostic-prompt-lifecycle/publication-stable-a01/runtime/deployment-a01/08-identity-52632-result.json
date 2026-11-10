@@ -1,0 +1,18 @@
+{
+  "utc": "2026-11-10T03:36:14.829Z",
+  "cwd": "D:\\code\\SpecForge\\.kernel-patched-a01",
+  "file": "C:/Users/lyq/.cache/codex-runtimes/codex-primary-runtime/dependencies/native/powershell/pwsh.exe",
+  "args": [
+    "-NoProfile",
+    "-NonInteractive",
+    "-Command",
+    "$ErrorActionPreference='Stop';$p=Get-Process -Id 52632;@{pid=$p.Id;path=$p.Path;start_ticks=$p.StartTime.ToUniversalTime().Ticks.ToString()}|ConvertTo-Json -Compress"
+  ],
+  "environment_overrides": [],
+  "purpose": "identity-52632",
+  "finished_utc": "2026-11-10T03:36:15.400Z",
+  "inner_exit_code": 0,
+  "signal": null,
+  "stdout_sha256": "303e9efb0b06724fd3c8d0cdc0f0bd7c54c88c7ef9a8edabdc5733c6b45934fb",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

@@ -1,0 +1,17 @@
+{
+  "utc": "2026-11-10T01:21:23.509Z",
+  "file": "D:\\code\\SpecForge\\docs\\archive\\2026-11-10-diagnostic-prompt-lifecycle\\local-assets\\long-product-a01\\config\\sf-user\\bin\\specforge.exe",
+  "args": [
+    "daemon",
+    "stop",
+    "--json"
+  ],
+  "cwd": "D:\\code\\SpecForge\\.kernel-patched-a01",
+  "purpose": "daemon-stop",
+  "env_override_keys": [],
+  "finished_utc": "2026-11-10T01:21:23.704Z",
+  "inner_exit_code": 0,
+  "signal": null,
+  "stdout_sha256": "ea4c9ec36d109b94597db3a904475079352d55b0890bcb9356e5f5fc5569e743",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

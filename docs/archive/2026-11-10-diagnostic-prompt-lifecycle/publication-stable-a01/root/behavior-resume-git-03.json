@@ -1,0 +1,14 @@
+{
+  "utc": "2026-11-10T00:24:58.265Z",
+  "file": "C:/Program Files/Git/cmd/git.exe",
+  "args": [
+    "diff",
+    "--cached",
+    "--name-only",
+    "-z"
+  ],
+  "cwd": "D:\\code\\SpecForge\\.kernel-patched-a01",
+  "exit_code": 0,
+  "stdout": "docs/product-specification/authority-registry.md\u0000docs/product-specification/specforge-product-specification.md\u0000docs/rule/specforge-active-development-rules.md\u0000docs/user/quick-start.md\u0000packages/configuration/docs/configuration-format.md\u0000packages/daemon-core/src/project/ProjectManager.ts\u0000packages/daemon-core/src/tools/ToolDispatcher.ts\u0000packages/daemon-core/src/tools/handlers/sf-doctor.ts\u0000packages/daemon-core/tests/unit/doctor-uninitialized-dispatch.test.ts\u0000packages/opencode-adapter/README.md\u0000packages/opencode-adapter/src/integration/OpenCodeHttpRuntimeClient.ts\u0000packages/opencode-adapter/tests/OpenCodeHttpRuntimeClient.test.ts\u0000packages/opencode-adapter/tests/prompt-async-delayed-http.test.ts\u0000packages/opencode-adapter/tests/prompt-delivery-lifecycle.test.ts\u0000packages/types/src/llm-kernel-contract.ts\u0000setup/userlevel-opencode/tools/sf_doctor.ts\u0000",
+  "stderr": ""
+}

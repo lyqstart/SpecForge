@@ -1,0 +1,21 @@
+{
+  "utc": "2026-11-10T00:27:41.228Z",
+  "cwd": "D:\\code\\SpecForge\\.kernel-original-a01",
+  "file": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "scripts/prepare-current-release.ts"
+  ],
+  "environment_profile": "D:\\code\\SpecForge\\.kernel-original-a01\\.tmp\\kernel-qualification-a04",
+  "temporary_native": "D:\\code\\SpecForge\\.kernel-original-a01\\.tmp\\kernel-qualification-a04\\temp",
+  "purpose": "release",
+  "expected_writes": "Only ignored build/test/profile outputs and owned evidence",
+  "baseline_sha256": "3f60323fd1c3303673a8d79d4253257198725d247d3e6551e7648d0826db4438",
+  "ended_utc": "2026-11-10T00:28:23.895Z",
+  "inner_exit_code": 0,
+  "signal": null,
+  "error": null,
+  "stdout_sha256": "d8f38e742d91dcb72d5d7a17a3f29f4dc0697981d22bfb149ee1cbd3ae6f016b",
+  "stderr_sha256": "42580806f72966c011a56229da3d32784afbef0b7cde7cfe7d94dfef7da3aee9",
+  "status_after_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "status_entries": []
+}

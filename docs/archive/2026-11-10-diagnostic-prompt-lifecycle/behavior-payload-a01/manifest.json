@@ -1,0 +1,192 @@
+{
+  "utc": "2026-11-10T00:16:32.111Z",
+  "baseline": "6a1dd14e61f8d0ccc5c1120f342ac4f57e20f4da",
+  "classification": "FROZEN_BEHAVIOR_CANDIDATE_BEFORE_IDENTITY_ONLY_RELEASE_BUMP",
+  "product_version": "1.0.25",
+  "lock_sha256": "3f60323fd1c3303673a8d79d4253257198725d247d3e6551e7648d0826db4438",
+  "entries": [
+    {
+      "file": "docs/product-specification/authority-registry.md",
+      "source": {
+        "sha256": "f96c255c4c0a0e32380862f6573d8e6d35d8422924a0d9728afb360f4b5b06f7",
+        "bytes": 18908
+      },
+      "target": {
+        "sha256": "ea052cc42280c2b0c371c5df63bf809633dd08d2866c9d76ec7cd1c0c12dcb50",
+        "bytes": 19357
+      }
+    },
+    {
+      "file": "docs/product-specification/specforge-product-specification.md",
+      "source": {
+        "sha256": "c93f5e0ba2fc9cf4c6b6e903c4b4c5b3dcb309dc1a367378e485ab5e76dfd855",
+        "bytes": 89061
+      },
+      "target": {
+        "sha256": "0bb40260b66235ed590ed3c0e22ccf7a0a7ccc077ca2cfd39467ff6cf64ac0c3",
+        "bytes": 91839
+      }
+    },
+    {
+      "file": "docs/rule/specforge-active-development-rules.md",
+      "source": {
+        "sha256": "7fb677114f0ffe52c437c72e61f8012e6dd07c623e9d4463b420ac5154a17d06",
+        "bytes": 175566
+      },
+      "target": {
+        "sha256": "632b06929b004146e5c14f2004f424874c0f921af6448e0b525e4facb22f32b7",
+        "bytes": 178922
+      }
+    },
+    {
+      "file": "docs/user/quick-start.md",
+      "source": {
+        "sha256": "961a189c8159963f821c6a3dd00d8892aaf14fd7e3e4a65da88b6aa30b341cf9",
+        "bytes": 948
+      },
+      "target": {
+        "sha256": "5812ccef44e33e57aa853f22158fdc04b5b3794843ef2c1dad603e687571efea",
+        "bytes": 1294
+      }
+    },
+    {
+      "file": "packages/configuration/docs/configuration-format.md",
+      "source": {
+        "sha256": "7f5832c31ab0f6b858839b93f554bbc9594b9691c497dc8c5d2063d3baaba96f",
+        "bytes": 1644
+      },
+      "target": {
+        "sha256": "fee6bc627b61858f788a186ff28b45a4d951a074e9c373c7e355678347a2d68c",
+        "bytes": 2139
+      }
+    },
+    {
+      "file": "packages/daemon-core/src/project/ProjectManager.ts",
+      "source": {
+        "sha256": "b014f75aa7fd35690e25aa18e60b89d12f812bb482b974783d329ce077c7e0ad",
+        "bytes": 22460
+      },
+      "target": {
+        "sha256": "a2581f8070afe1a70905ba3bbb9c52ace0b951caab116845f80b33f9d78401c1",
+        "bytes": 23059
+      }
+    },
+    {
+      "file": "packages/daemon-core/src/tools/ToolDispatcher.ts",
+      "source": {
+        "sha256": "a9b0f31f72f0ae5838d28c30898f1af5e975b5ed3c7d451b7a7f4710f834df43",
+        "bytes": 14453
+      },
+      "target": {
+        "sha256": "9d8e88da9f26b1e09df3e2892415acc9c6c4db7b05ac130c4eba9251cf46f4e9",
+        "bytes": 14871
+      }
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-doctor.ts",
+      "source": {
+        "sha256": "c4d38dd040e506a3ae42069e08b17b957a3ae078b8cc9be5d247668bd1fd2e78",
+        "bytes": 2477
+      },
+      "target": {
+        "sha256": "9a35519d20079bdb2dc78e4bb26cb6c87895c38d429ae2412e63b23695c7a78b",
+        "bytes": 3953
+      }
+    },
+    {
+      "file": "packages/daemon-core/tests/unit/doctor-uninitialized-dispatch.test.ts",
+      "source": {
+        "absent": true,
+        "probe_exit": 128
+      },
+      "target": {
+        "sha256": "054c0b648e2a004b2a43fe39b6c1995ed17f393a5cb372841911d940432e3828",
+        "bytes": 9963
+      }
+    },
+    {
+      "file": "packages/opencode-adapter/README.md",
+      "source": {
+        "sha256": "40dae1af8b0f8db8be4b3c445b8738b648d593096a4389d3ab3d3a02dc46c9fd",
+        "bytes": 946
+      },
+      "target": {
+        "sha256": "75dfe2ac38bc096d5d4da1a7cf36e1e2c53c142c4f653370beb29d975b0f01e7",
+        "bytes": 1480
+      }
+    },
+    {
+      "file": "packages/opencode-adapter/src/integration/OpenCodeHttpRuntimeClient.ts",
+      "source": {
+        "sha256": "85b4a4e9ff860b4fcd80aa9f27f26e7f46f21f62e247306a6d07c0c3165a8789",
+        "bytes": 15975
+      },
+      "target": {
+        "sha256": "bef1d2cd9eee27c4ddd5e05fe10cede2dee641b29ab007c83f307fd72a3a846e",
+        "bytes": 16682
+      }
+    },
+    {
+      "file": "packages/opencode-adapter/tests/OpenCodeHttpRuntimeClient.test.ts",
+      "source": {
+        "sha256": "4264aba01b56d6898caf86fe42147806b17aff5c2d8b629de1a42e498dff1088",
+        "bytes": 6024
+      },
+      "target": {
+        "sha256": "529717db0b54e75979ea2efc43de9d2524847394170d985e02da256683d029a0",
+        "bytes": 6153
+      }
+    },
+    {
+      "file": "packages/opencode-adapter/tests/prompt-async-delayed-http.test.ts",
+      "source": {
+        "absent": true,
+        "probe_exit": 128
+      },
+      "target": {
+        "sha256": "42d0a8ca69b0c649befa01fdc8c9876b97d47084851603c68e00375cfabe76a9",
+        "bytes": 3326
+      }
+    },
+    {
+      "file": "packages/opencode-adapter/tests/prompt-delivery-lifecycle.test.ts",
+      "source": {
+        "absent": true,
+        "probe_exit": 128
+      },
+      "target": {
+        "sha256": "f30e2be0e1b22975219a591e16cb69cd6c668b61acab4e3eb3d80ae747b44f0d",
+        "bytes": 5485
+      }
+    },
+    {
+      "file": "packages/types/src/llm-kernel-contract.ts",
+      "source": {
+        "sha256": "5ca88fbba6a4db7ce76d6ebcbcb291f63accf15e609088c8b2dc5664599b5a0e",
+        "bytes": 2038
+      },
+      "target": {
+        "sha256": "12786cd3599915e85f26671fd36b603f7390c8b4de98d570000dec5c77a392f7",
+        "bytes": 2138
+      }
+    },
+    {
+      "file": "setup/userlevel-opencode/tools/sf_doctor.ts",
+      "source": {
+        "sha256": "358ed45fbb58baa8b285c8f18ef937f100b9123ca59dae54c9b24aaa9978e8fb",
+        "bytes": 558
+      },
+      "target": {
+        "sha256": "1ce460244482818d98400e47ab92a757f37e709801165a5d16d9618b608f12c8",
+        "bytes": 639
+      }
+    }
+  ],
+  "tracked_patch_sha256": "3801405f2025bebe2b2e445fabe3b62e8eea9041d1685e404ea0d8822cd12ea8",
+  "new_files_included": [
+    "packages/daemon-core/tests/unit/doctor-uninitialized-dispatch.test.ts",
+    "packages/opencode-adapter/tests/prompt-async-delayed-http.test.ts",
+    "packages/opencode-adapter/tests/prompt-delivery-lifecycle.test.ts"
+  ],
+  "scope_accepted": true
+}

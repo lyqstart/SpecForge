@@ -1,0 +1,6 @@
+{
+  "utc": "2026-11-10T01:21:23.507Z",
+  "exit_code": 1,
+  "name": "Error",
+  "message": "HTTP_502_/api/v1/kernel/session/spawn"
+}

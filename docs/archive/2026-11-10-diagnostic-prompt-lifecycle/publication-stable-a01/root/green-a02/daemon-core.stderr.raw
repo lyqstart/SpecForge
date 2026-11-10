@@ -1,0 +1,50 @@
+$ vitest run tests/unit/doctor-uninitialized-dispatch.test.ts "--maxWorkers=1" "--reporter=default" "--reporter=json" "--outputFile=D:\\code\\SpecForge\\docs\\archive\\2026-11-10-diagnostic-prompt-lifecycle\\green-a02\\daemon-core.vitest.json"
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+[90mstderr[2m | tests/unit/doctor-uninitialized-dispatch.test.ts[2m > [22m[2mreadonly doctor through production dispatcher and HTTP[2m > [22m[2mreturns a structured unhealthy result over authenticated HTTP, then diagnoses controlled initialization
+[22m[39m[Config] DEBUG Validating configuration layer { layer: [32m'builtin'[39m, schemaVersion: [32m'1.0'[39m }
+[Config] DEBUG Validating configuration layer { layer: [32m'user'[39m, schemaVersion: [32m'1.0'[39m }
+[Config] DEBUG Validating configuration layer { layer: [32m'project'[39m, schemaVersion: [32m'1.0'[39m }
+[Config] DEBUG Validating configuration layer { layer: [32m'runtime'[39m, schemaVersion: [32m'1.0'[39m }
+[Config] DEBUG Starting configuration merge { layerCount: [33m4[39m }
+[Config] DEBUG Merging layer { layer: [32m'builtin'[39m }
+[Config] DEBUG Merging layer { layer: [32m'user'[39m }
+[Config] DEBUG Merging layer { layer: [32m'project'[39m }
+[Config] DEBUG Merging layer { layer: [32m'runtime'[39m }
+[Config] INFO Configuration merge completed { keyCount: [33m8[39m, layerCount: [33m4[39m, validationErrors: [33m0[39m }
+
+[90mstderr[2m | tests/unit/doctor-uninitialized-dispatch.test.ts[2m > [22m[2mreadonly doctor through production dispatcher and HTTP[2m > [22m[2mdoes not rewrite activation or state witnesses when diagnosing an already active project
+[22m[39m[Config] DEBUG Validating configuration layer { layer: [32m'builtin'[39m, schemaVersion: [32m'1.0'[39m }
+[Config] DEBUG Validating configuration layer { layer: [32m'user'[39m, schemaVersion: [32m'1.0'[39m }
+[Config] DEBUG Validating configuration layer { layer: [32m'project'[39m, schemaVersion: [32m'1.0'[39m }
+[Config] DEBUG Validating configuration layer { layer: [32m'runtime'[39m, schemaVersion: [32m'1.0'[39m }
+[Config] DEBUG Starting configuration merge { layerCount: [33m4[39m }
+[Config] DEBUG Merging layer { layer: [32m'builtin'[39m }
+[Config] DEBUG Merging layer { layer: [32m'user'[39m }
+[Config] DEBUG Merging layer { layer: [32m'project'[39m }
+[Config] DEBUG Merging layer { layer: [32m'runtime'[39m }
+[Config] INFO Configuration merge completed { keyCount: [33m8[39m, layerCount: [33m4[39m, validationErrors: [33m0[39m }
+
+[90mstderr[2m | tests/unit/doctor-uninitialized-dispatch.test.ts[2m > [22m[2mreadonly doctor through production dispatcher and HTTP[2m > [22m[2mdoes not rewrite activation or state witnesses when diagnosing an already active project
+[22m[39m[Config] DEBUG Validating configuration layer { layer: [32m'builtin'[39m, schemaVersion: [32m'1.0'[39m }
+[Config] DEBUG Validating configuration layer { layer: [32m'user'[39m, schemaVersion: [32m'1.0'[39m }
+[Config] DEBUG Validating configuration layer { layer: [32m'project'[39m, schemaVersion: [32m'1.0'[39m }
+[Config] DEBUG Validating configuration layer { layer: [32m'runtime'[39m, schemaVersion: [32m'1.0'[39m }
+[Config] DEBUG Starting configuration merge { layerCount: [33m4[39m }
+[Config] DEBUG Merging layer { layer: [32m'builtin'[39m }
+[Config] DEBUG Merging layer { layer: [32m'user'[39m }
+[Config] DEBUG Merging layer { layer: [32m'project'[39m }
+[Config] DEBUG Merging layer { layer: [32m'runtime'[39m }
+[Config] INFO Configuration merge completed { keyCount: [33m8[39m, layerCount: [33m4[39m, validationErrors: [33m0[39m }
+
+[90mstderr[2m | tests/unit/doctor-uninitialized-dispatch.test.ts[2m > [22m[2mreadonly doctor through production dispatcher and HTTP[2m > [22m[2mdoes not rewrite activation or state witnesses when diagnosing an already active project
+[22m[39m[Config] DEBUG Validating configuration layer { layer: [32m'builtin'[39m, schemaVersion: [32m'1.0'[39m }
+[Config] DEBUG Validating configuration layer { layer: [32m'user'[39m, schemaVersion: [32m'1.0'[39m }
+[Config] DEBUG Validating configuration layer { layer: [32m'project'[39m, schemaVersion: [32m'1.0'[39m }
+[Config] DEBUG Validating configuration layer { layer: [32m'runtime'[39m, schemaVersion: [32m'1.0'[39m }
+[Config] DEBUG Starting configuration merge { layerCount: [33m4[39m }
+[Config] DEBUG Merging layer { layer: [32m'builtin'[39m }
+[Config] DEBUG Merging layer { layer: [32m'user'[39m }
+[Config] DEBUG Merging layer { layer: [32m'project'[39m }
+[Config] DEBUG Merging layer { layer: [32m'runtime'[39m }
+[Config] INFO Configuration merge completed { keyCount: [33m8[39m, layerCount: [33m4[39m, validationErrors: [33m0[39m }
+

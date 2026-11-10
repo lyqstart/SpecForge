@@ -1,0 +1,13 @@
+{
+  "utc": "2026-11-10T04:18:19.274Z",
+  "cwd": "D:\\code\\SpecForge",
+  "file": "C:/Program Files/Git/cmd/git.exe",
+  "args": [
+    "diff",
+    "--name-only",
+    "-z"
+  ],
+  "inner_exit_code": 0,
+  "stdout": ".gitignore\u0000docs/project-status.md\u0000docs/rule/specforge-development-error-ledger-and-experience.md\u0000",
+  "stderr": "warning: in the working copy of '.gitignore', LF will be replaced by CRLF the next time Git touches it\nwarning: in the working copy of 'docs/rule/specforge-development-error-ledger-and-experience.md', LF will be replaced by CRLF the next time Git touches it\n"
+}

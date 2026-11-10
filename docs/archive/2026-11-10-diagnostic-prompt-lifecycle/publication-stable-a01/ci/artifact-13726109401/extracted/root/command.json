@@ -1,0 +1,12 @@
+{
+  "phase": "root",
+  "cwd": "/Users/runner/work/SpecForge/SpecForge",
+  "executable": "/Users/runner/.bun/bin/bun",
+  "args": [
+    "run",
+    "test:root"
+  ],
+  "started_utc": "2026-11-10T01:25:33.956Z",
+  "context_sha256": "8b5e9891ea413fc7e8d79c1ebca3b0c90c882f4b51a7efaa66688baadddd1161",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES:build/test outputs;EXTERNAL_EVIDENCE_WRITES:owned runner-temp report;no tracked source changes"
+}

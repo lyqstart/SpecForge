@@ -1,0 +1,178 @@
+{
+  "utc": "2026-11-10T00:58:18.140Z",
+  "leg": "patched",
+  "mode": "full",
+  "cwd": "D:\\code\\SpecForge\\.kernel-patched-a01",
+  "source_head": "c2fdc6c822940b5eaec92bb1888cd091bdc7144d",
+  "node": {
+    "path": "C:\\Program Files\\nodejs\\node.exe",
+    "version": "v24.19.0",
+    "sha256": "3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237"
+  },
+  "bun": {
+    "path": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+    "sha256": "0187f68d843f825a72ada4a7eca60db896ed753759a7f8252edcd31ac1bf1b9c"
+  },
+  "profile": "D:\\code\\SpecForge\\.kernel-patched-a01\\.tmp\\kernel-qualification-a04",
+  "temporary": "D:\\code\\SpecForge\\.kernel-patched-a01\\.tmp\\kernel-qualification-a04\\temp",
+  "git_discovery_ceiling": "D:\\code\\SpecForge\\.kernel-patched-a01\\.tmp\\kernel-qualification-a04\\temp",
+  "verification_node_source": "C:\\Program Files\\nodejs\\node.exe",
+  "lock_sha256": "3f60323fd1c3303673a8d79d4253257198725d247d3e6551e7648d0826db4438",
+  "passed": true,
+  "exit_code": 0,
+  "results": [
+    {
+      "utc": "2026-11-10T00:58:18.397Z",
+      "cwd": "D:\\code\\SpecForge\\.kernel-patched-a01",
+      "file": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+      "args": [
+        "run",
+        "lint"
+      ],
+      "environment_profile": "D:\\code\\SpecForge\\.kernel-patched-a01\\.tmp\\kernel-qualification-a04",
+      "temporary_native": "D:\\code\\SpecForge\\.kernel-patched-a01\\.tmp\\kernel-qualification-a04\\temp",
+      "purpose": "lint",
+      "expected_writes": "Only ignored build/test/profile outputs and owned evidence",
+      "baseline_sha256": "3f60323fd1c3303673a8d79d4253257198725d247d3e6551e7648d0826db4438",
+      "ended_utc": "2026-11-10T01:00:01.748Z",
+      "inner_exit_code": 0,
+      "signal": null,
+      "error": null,
+      "stdout_sha256": "25bc6e553589793fa7a6b68b59e43364a1b37ee0e581ff0e1a4386d2b4fa9b04",
+      "stderr_sha256": "f3057fb7412d8bad44b554618fef5876038cfcc98fc02a2fc6c5112e5ca0b160",
+      "status_after_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "status_entries": []
+    },
+    {
+      "utc": "2026-11-10T01:00:01.749Z",
+      "cwd": "D:\\code\\SpecForge\\.kernel-patched-a01",
+      "file": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+      "args": [
+        "scripts/test-workspace.ts"
+      ],
+      "environment_profile": "D:\\code\\SpecForge\\.kernel-patched-a01\\.tmp\\kernel-qualification-a04",
+      "temporary_native": "D:\\code\\SpecForge\\.kernel-patched-a01\\.tmp\\kernel-qualification-a04\\temp",
+      "purpose": "workspace",
+      "expected_writes": "Only ignored build/test/profile outputs and owned evidence",
+      "baseline_sha256": "3f60323fd1c3303673a8d79d4253257198725d247d3e6551e7648d0826db4438",
+      "ended_utc": "2026-11-10T01:12:45.686Z",
+      "inner_exit_code": 0,
+      "signal": null,
+      "error": null,
+      "stdout_sha256": "a77316154a4468d84b835a9b8b53980b12701ba67164affb5c894f0b3d46f823",
+      "stderr_sha256": "0de869bbc09cc4bab159e483c3313b036c029469afb81d5ccf9886250c3e6404",
+      "status_after_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "status_entries": []
+    },
+    {
+      "utc": "2026-11-10T01:12:45.689Z",
+      "cwd": "D:\\code\\SpecForge\\.kernel-patched-a01",
+      "file": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+      "args": [
+        "run",
+        "test:root"
+      ],
+      "environment_profile": "D:\\code\\SpecForge\\.kernel-patched-a01\\.tmp\\kernel-qualification-a04",
+      "temporary_native": "D:\\code\\SpecForge\\.kernel-patched-a01\\.tmp\\kernel-qualification-a04\\temp",
+      "purpose": "root",
+      "expected_writes": "Only ignored build/test/profile outputs and owned evidence",
+      "baseline_sha256": "3f60323fd1c3303673a8d79d4253257198725d247d3e6551e7648d0826db4438",
+      "ended_utc": "2026-11-10T01:12:56.786Z",
+      "inner_exit_code": 0,
+      "signal": null,
+      "error": null,
+      "stdout_sha256": "f17801d3d3eb8ed06c6ad33ac8cb0346791ac1c98aa25acca43b55084d6e2bd5",
+      "stderr_sha256": "03e550c0166010426c91f394618240bada172f33f328dd7bd98de15336f2d089",
+      "status_after_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "status_entries": []
+    },
+    {
+      "utc": "2026-11-10T01:12:56.787Z",
+      "cwd": "D:\\code\\SpecForge\\.kernel-patched-a01",
+      "file": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+      "args": [
+        "run",
+        "typecheck:validator-contract"
+      ],
+      "environment_profile": "D:\\code\\SpecForge\\.kernel-patched-a01\\.tmp\\kernel-qualification-a04",
+      "temporary_native": "D:\\code\\SpecForge\\.kernel-patched-a01\\.tmp\\kernel-qualification-a04\\temp",
+      "purpose": "validator-typecheck",
+      "expected_writes": "Only ignored build/test/profile outputs and owned evidence",
+      "baseline_sha256": "3f60323fd1c3303673a8d79d4253257198725d247d3e6551e7648d0826db4438",
+      "ended_utc": "2026-11-10T01:12:58.414Z",
+      "inner_exit_code": 0,
+      "signal": null,
+      "error": null,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "61f4ceb64e981079e7a8d14bae3e9831d053a1b93ba6eae78bee22b49a68ae58",
+      "status_after_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "status_entries": []
+    },
+    {
+      "utc": "2026-11-10T01:12:58.415Z",
+      "cwd": "D:\\code\\SpecForge\\.kernel-patched-a01",
+      "file": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+      "args": [
+        "run",
+        "typecheck:installer"
+      ],
+      "environment_profile": "D:\\code\\SpecForge\\.kernel-patched-a01\\.tmp\\kernel-qualification-a04",
+      "temporary_native": "D:\\code\\SpecForge\\.kernel-patched-a01\\.tmp\\kernel-qualification-a04\\temp",
+      "purpose": "installer-typecheck",
+      "expected_writes": "Only ignored build/test/profile outputs and owned evidence",
+      "baseline_sha256": "3f60323fd1c3303673a8d79d4253257198725d247d3e6551e7648d0826db4438",
+      "ended_utc": "2026-11-10T01:13:00.305Z",
+      "inner_exit_code": 0,
+      "signal": null,
+      "error": null,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "a15810241b3912fa7f39a950d330eb2c2ecfc6300c39f416eb88b30a7ed29190",
+      "status_after_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "status_entries": []
+    },
+    {
+      "utc": "2026-11-10T01:13:00.306Z",
+      "cwd": "D:\\code\\SpecForge\\.kernel-patched-a01",
+      "file": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+      "args": [
+        "run",
+        "typecheck:plugin-client"
+      ],
+      "environment_profile": "D:\\code\\SpecForge\\.kernel-patched-a01\\.tmp\\kernel-qualification-a04",
+      "temporary_native": "D:\\code\\SpecForge\\.kernel-patched-a01\\.tmp\\kernel-qualification-a04\\temp",
+      "purpose": "plugin-typecheck",
+      "expected_writes": "Only ignored build/test/profile outputs and owned evidence",
+      "baseline_sha256": "3f60323fd1c3303673a8d79d4253257198725d247d3e6551e7648d0826db4438",
+      "ended_utc": "2026-11-10T01:13:01.693Z",
+      "inner_exit_code": 0,
+      "signal": null,
+      "error": null,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "2179a040c6a8fe14154ed1177d007086f95280b030aec9e6554474aa9e4d04ab",
+      "status_after_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "status_entries": []
+    },
+    {
+      "utc": "2026-11-10T01:13:01.694Z",
+      "cwd": "D:\\code\\SpecForge\\.kernel-patched-a01",
+      "file": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+      "args": [
+        "run",
+        "typecheck:release-owner-snapshot"
+      ],
+      "environment_profile": "D:\\code\\SpecForge\\.kernel-patched-a01\\.tmp\\kernel-qualification-a04",
+      "temporary_native": "D:\\code\\SpecForge\\.kernel-patched-a01\\.tmp\\kernel-qualification-a04\\temp",
+      "purpose": "release-owner-typecheck",
+      "expected_writes": "Only ignored build/test/profile outputs and owned evidence",
+      "baseline_sha256": "3f60323fd1c3303673a8d79d4253257198725d247d3e6551e7648d0826db4438",
+      "ended_utc": "2026-11-10T01:13:06.244Z",
+      "inner_exit_code": 0,
+      "signal": null,
+      "error": null,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "c05cd62f904626950850714c76a836d9cc245d33035fd55359763bdf6e12e2f1",
+      "status_after_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "status_entries": []
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "utc": "2026-11-10T00:25:01.487Z",
+  "exit_code": 0,
+  "commit": "c2fdc6c822940b5eaec92bb1888cd091bdc7144d",
+  "branch": "codex/diagnostic-prompt-lifecycle",
+  "baseline": "6a1dd14e61f8d0ccc5c1120f342ac4f57e20f4da",
+  "source_manifest_sha256": "7023f957238e739ff102afe814e39fa2e04424feb084607071c11779dba238db",
+  "git_identity_mapping_sha256": "25a31640754a1d4e639e3cde31d2d4fd5d4318c913674ba09dc5d80586f2b88e",
+  "qualification_only": true,
+  "remote_pushed": false,
+  "root_main_changed": false,
+  "product_deployed": false,
+  "version": "1.0.25",
+  "files": [
+    "docs/product-specification/authority-registry.md",
+    "docs/product-specification/specforge-product-specification.md",
+    "docs/rule/specforge-active-development-rules.md",
+    "docs/user/quick-start.md",
+    "packages/configuration/docs/configuration-format.md",
+    "packages/daemon-core/src/project/ProjectManager.ts",
+    "packages/daemon-core/src/tools/ToolDispatcher.ts",
+    "packages/daemon-core/src/tools/handlers/sf-doctor.ts",
+    "packages/daemon-core/tests/unit/doctor-uninitialized-dispatch.test.ts",
+    "packages/opencode-adapter/README.md",
+    "packages/opencode-adapter/src/integration/OpenCodeHttpRuntimeClient.ts",
+    "packages/opencode-adapter/tests/OpenCodeHttpRuntimeClient.test.ts",
+    "packages/opencode-adapter/tests/prompt-async-delayed-http.test.ts",
+    "packages/opencode-adapter/tests/prompt-delivery-lifecycle.test.ts",
+    "packages/types/src/llm-kernel-contract.ts",
+    "setup/userlevel-opencode/tools/sf_doctor.ts"
+  ]
+}

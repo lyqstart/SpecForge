@@ -1,0 +1,120 @@
+{
+  "utc": "2026-11-10T00:24:59.695Z",
+  "attributes": "docs/product-specification/authority-registry.md: text: unspecified\ndocs/product-specification/authority-registry.md: eol: unspecified\ndocs/product-specification/specforge-product-specification.md: text: unspecified\ndocs/product-specification/specforge-product-specification.md: eol: unspecified\ndocs/rule/specforge-active-development-rules.md: text: unspecified\ndocs/rule/specforge-active-development-rules.md: eol: unspecified\ndocs/user/quick-start.md: text: unspecified\ndocs/user/quick-start.md: eol: unspecified\npackages/configuration/docs/configuration-format.md: text: unspecified\npackages/configuration/docs/configuration-format.md: eol: unspecified\npackages/daemon-core/src/project/ProjectManager.ts: text: set\npackages/daemon-core/src/project/ProjectManager.ts: eol: lf\npackages/daemon-core/src/tools/ToolDispatcher.ts: text: set\npackages/daemon-core/src/tools/ToolDispatcher.ts: eol: lf\npackages/daemon-core/src/tools/handlers/sf-doctor.ts: text: set\npackages/daemon-core/src/tools/handlers/sf-doctor.ts: eol: lf\npackages/daemon-core/tests/unit/doctor-uninitialized-dispatch.test.ts: text: set\npackages/daemon-core/tests/unit/doctor-uninitialized-dispatch.test.ts: eol: lf\npackages/opencode-adapter/README.md: text: unspecified\npackages/opencode-adapter/README.md: eol: unspecified\npackages/opencode-adapter/src/integration/OpenCodeHttpRuntimeClient.ts: text: set\npackages/opencode-adapter/src/integration/OpenCodeHttpRuntimeClient.ts: eol: lf\npackages/opencode-adapter/tests/OpenCodeHttpRuntimeClient.test.ts: text: set\npackages/opencode-adapter/tests/OpenCodeHttpRuntimeClient.test.ts: eol: lf\npackages/opencode-adapter/tests/prompt-async-delayed-http.test.ts: text: set\npackages/opencode-adapter/tests/prompt-async-delayed-http.test.ts: eol: lf\npackages/opencode-adapter/tests/prompt-delivery-lifecycle.test.ts: text: set\npackages/opencode-adapter/tests/prompt-delivery-lifecycle.test.ts: eol: lf\npackages/types/src/llm-kernel-contract.ts: text: set\npackages/types/src/llm-kernel-contract.ts: eol: lf\nsetup/userlevel-opencode/tools/sf_doctor.ts: text: set\nsetup/userlevel-opencode/tools/sf_doctor.ts: eol: lf\n",
+  "identities": [
+    {
+      "file": "docs/product-specification/authority-registry.md",
+      "raw_sha256": "ea052cc42280c2b0c371c5df63bf809633dd08d2866c9d76ec7cd1c0c12dcb50",
+      "normalized_lf_sha256": "9ac54fbba994363dd3e754d7bc081e2061147a6b2ccd691e8f44a6ce097640d1",
+      "staged_blob_sha256": "9ac54fbba994363dd3e754d7bc081e2061147a6b2ccd691e8f44a6ce097640d1",
+      "equivalence": "CRLF_TO_LF_ONLY"
+    },
+    {
+      "file": "docs/product-specification/specforge-product-specification.md",
+      "raw_sha256": "0bb40260b66235ed590ed3c0e22ccf7a0a7ccc077ca2cfd39467ff6cf64ac0c3",
+      "normalized_lf_sha256": "c456e65e8161bf92f3f0371702c8469c057276392ad4ca67a9afd43b5fe84836",
+      "staged_blob_sha256": "c456e65e8161bf92f3f0371702c8469c057276392ad4ca67a9afd43b5fe84836",
+      "equivalence": "CRLF_TO_LF_ONLY"
+    },
+    {
+      "file": "docs/rule/specforge-active-development-rules.md",
+      "raw_sha256": "632b06929b004146e5c14f2004f424874c0f921af6448e0b525e4facb22f32b7",
+      "normalized_lf_sha256": "5bfc29010b44ab64d30a462d2e48600c670d95d28a82fb44370903623a23eeaa",
+      "staged_blob_sha256": "5bfc29010b44ab64d30a462d2e48600c670d95d28a82fb44370903623a23eeaa",
+      "equivalence": "CRLF_TO_LF_ONLY"
+    },
+    {
+      "file": "docs/user/quick-start.md",
+      "raw_sha256": "5812ccef44e33e57aa853f22158fdc04b5b3794843ef2c1dad603e687571efea",
+      "normalized_lf_sha256": "569822140cbce5f22c756f95fa9639d1f09e6cb98d9e99117fbdb0e0daff49b3",
+      "staged_blob_sha256": "569822140cbce5f22c756f95fa9639d1f09e6cb98d9e99117fbdb0e0daff49b3",
+      "equivalence": "CRLF_TO_LF_ONLY"
+    },
+    {
+      "file": "packages/configuration/docs/configuration-format.md",
+      "raw_sha256": "fee6bc627b61858f788a186ff28b45a4d951a074e9c373c7e355678347a2d68c",
+      "normalized_lf_sha256": "5c64303f233a7296721877bca8d0ebecce67de35f4e1659172c19ebf5e20392a",
+      "staged_blob_sha256": "5c64303f233a7296721877bca8d0ebecce67de35f4e1659172c19ebf5e20392a",
+      "equivalence": "CRLF_TO_LF_ONLY"
+    },
+    {
+      "file": "packages/daemon-core/src/project/ProjectManager.ts",
+      "raw_sha256": "a2581f8070afe1a70905ba3bbb9c52ace0b951caab116845f80b33f9d78401c1",
+      "normalized_lf_sha256": "a2581f8070afe1a70905ba3bbb9c52ace0b951caab116845f80b33f9d78401c1",
+      "staged_blob_sha256": "a2581f8070afe1a70905ba3bbb9c52ace0b951caab116845f80b33f9d78401c1",
+      "equivalence": "IDENTICAL_BYTES"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/ToolDispatcher.ts",
+      "raw_sha256": "9d8e88da9f26b1e09df3e2892415acc9c6c4db7b05ac130c4eba9251cf46f4e9",
+      "normalized_lf_sha256": "9d8e88da9f26b1e09df3e2892415acc9c6c4db7b05ac130c4eba9251cf46f4e9",
+      "staged_blob_sha256": "9d8e88da9f26b1e09df3e2892415acc9c6c4db7b05ac130c4eba9251cf46f4e9",
+      "equivalence": "IDENTICAL_BYTES"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-doctor.ts",
+      "raw_sha256": "9a35519d20079bdb2dc78e4bb26cb6c87895c38d429ae2412e63b23695c7a78b",
+      "normalized_lf_sha256": "9a35519d20079bdb2dc78e4bb26cb6c87895c38d429ae2412e63b23695c7a78b",
+      "staged_blob_sha256": "9a35519d20079bdb2dc78e4bb26cb6c87895c38d429ae2412e63b23695c7a78b",
+      "equivalence": "IDENTICAL_BYTES"
+    },
+    {
+      "file": "packages/daemon-core/tests/unit/doctor-uninitialized-dispatch.test.ts",
+      "raw_sha256": "054c0b648e2a004b2a43fe39b6c1995ed17f393a5cb372841911d940432e3828",
+      "normalized_lf_sha256": "054c0b648e2a004b2a43fe39b6c1995ed17f393a5cb372841911d940432e3828",
+      "staged_blob_sha256": "054c0b648e2a004b2a43fe39b6c1995ed17f393a5cb372841911d940432e3828",
+      "equivalence": "IDENTICAL_BYTES"
+    },
+    {
+      "file": "packages/opencode-adapter/README.md",
+      "raw_sha256": "75dfe2ac38bc096d5d4da1a7cf36e1e2c53c142c4f653370beb29d975b0f01e7",
+      "normalized_lf_sha256": "b66e01259510b9405ee76e4bb8ed66c078ee1bf5db1ae0fd36871608cfa0eabf",
+      "staged_blob_sha256": "b66e01259510b9405ee76e4bb8ed66c078ee1bf5db1ae0fd36871608cfa0eabf",
+      "equivalence": "CRLF_TO_LF_ONLY"
+    },
+    {
+      "file": "packages/opencode-adapter/src/integration/OpenCodeHttpRuntimeClient.ts",
+      "raw_sha256": "bef1d2cd9eee27c4ddd5e05fe10cede2dee641b29ab007c83f307fd72a3a846e",
+      "normalized_lf_sha256": "bef1d2cd9eee27c4ddd5e05fe10cede2dee641b29ab007c83f307fd72a3a846e",
+      "staged_blob_sha256": "bef1d2cd9eee27c4ddd5e05fe10cede2dee641b29ab007c83f307fd72a3a846e",
+      "equivalence": "IDENTICAL_BYTES"
+    },
+    {
+      "file": "packages/opencode-adapter/tests/OpenCodeHttpRuntimeClient.test.ts",
+      "raw_sha256": "529717db0b54e75979ea2efc43de9d2524847394170d985e02da256683d029a0",
+      "normalized_lf_sha256": "529717db0b54e75979ea2efc43de9d2524847394170d985e02da256683d029a0",
+      "staged_blob_sha256": "529717db0b54e75979ea2efc43de9d2524847394170d985e02da256683d029a0",
+      "equivalence": "IDENTICAL_BYTES"
+    },
+    {
+      "file": "packages/opencode-adapter/tests/prompt-async-delayed-http.test.ts",
+      "raw_sha256": "42d0a8ca69b0c649befa01fdc8c9876b97d47084851603c68e00375cfabe76a9",
+      "normalized_lf_sha256": "42d0a8ca69b0c649befa01fdc8c9876b97d47084851603c68e00375cfabe76a9",
+      "staged_blob_sha256": "42d0a8ca69b0c649befa01fdc8c9876b97d47084851603c68e00375cfabe76a9",
+      "equivalence": "IDENTICAL_BYTES"
+    },
+    {
+      "file": "packages/opencode-adapter/tests/prompt-delivery-lifecycle.test.ts",
+      "raw_sha256": "f30e2be0e1b22975219a591e16cb69cd6c668b61acab4e3eb3d80ae747b44f0d",
+      "normalized_lf_sha256": "f30e2be0e1b22975219a591e16cb69cd6c668b61acab4e3eb3d80ae747b44f0d",
+      "staged_blob_sha256": "f30e2be0e1b22975219a591e16cb69cd6c668b61acab4e3eb3d80ae747b44f0d",
+      "equivalence": "IDENTICAL_BYTES"
+    },
+    {
+      "file": "packages/types/src/llm-kernel-contract.ts",
+      "raw_sha256": "12786cd3599915e85f26671fd36b603f7390c8b4de98d570000dec5c77a392f7",
+      "normalized_lf_sha256": "12786cd3599915e85f26671fd36b603f7390c8b4de98d570000dec5c77a392f7",
+      "staged_blob_sha256": "12786cd3599915e85f26671fd36b603f7390c8b4de98d570000dec5c77a392f7",
+      "equivalence": "IDENTICAL_BYTES"
+    },
+    {
+      "file": "setup/userlevel-opencode/tools/sf_doctor.ts",
+      "raw_sha256": "1ce460244482818d98400e47ab92a757f37e709801165a5d16d9618b608f12c8",
+      "normalized_lf_sha256": "1ce460244482818d98400e47ab92a757f37e709801165a5d16d9618b608f12c8",
+      "staged_blob_sha256": "1ce460244482818d98400e47ab92a757f37e709801165a5d16d9618b608f12c8",
+      "equivalence": "IDENTICAL_BYTES"
+    }
+  ],
+  "source_modified": false,
+  "scope_accepted": true
+}

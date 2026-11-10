@@ -1,0 +1,5 @@
+{
+  "sessionId": "ses_e3c5f5eaeffeBHbqGfEVU0Mair",
+  "messageId": "msg_94d12332bb08cf688b8bc8db5d674003",
+  "content": "这是明确授权的只读真实模型长生成验收。只调用sf_doctor({})一次，不初始化、不创建WI、不调用其他工具。然后基于真实返回，用约2000字中文向首次用户解释未初始化、Daemon健康、配置接收、受控初始化入口、治理证据和只读咨询的关系。内容仅作说明，不执行任何后续操作。 最后原样输出 SF_REAL_LONG-READONLY_362e781891b7c4ed。"
+}

@@ -1,0 +1,15 @@
+{
+  "run_id": "CODEX-SF-20261110-KERNEL-A01",
+  "attempt": "A01",
+  "mode": "CODEX_DIRECT",
+  "utc": "2026-11-10T04:18:14.280Z",
+  "file": "C:/Program Files/nodejs/node.exe",
+  "args": [
+    "docs/archive/2026-11-10-diagnostic-prompt-lifecycle/integrate-source.cjs"
+  ],
+  "cwd": "D:/code/SpecForge",
+  "purpose": "integrate-qualified-source-a02",
+  "expected_writes": "Owned isolated worktrees, evidence and declared administrative scope; product installation only in explicit deployment commands",
+  "executable_sha256": "3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237",
+  "runner_sha256": "b17777aa724d32091020c2b5d80932b7f3e827c2174c7ecde93f663bae4a5b3a"
+}

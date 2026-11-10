@@ -1,0 +1,12 @@
+{
+  "utc": "2026-11-10T01:21:23.509Z",
+  "file": "D:\\code\\SpecForge\\docs\\archive\\2026-11-10-diagnostic-prompt-lifecycle\\local-assets\\long-product-a01\\config\\sf-user\\bin\\specforge.exe",
+  "args": [
+    "daemon",
+    "stop",
+    "--json"
+  ],
+  "cwd": "D:\\code\\SpecForge\\.kernel-patched-a01",
+  "purpose": "daemon-stop",
+  "env_override_keys": []
+}

@@ -1,0 +1,12 @@
+{
+  "utc": "2026-11-10T03:35:58.962Z",
+  "cwd": "D:\\code\\SpecForge\\.kernel-patched-a01",
+  "file": "C:\\Users\\lyq\\.config\\opencode\\sf-user\\bin\\specforge.exe",
+  "args": [
+    "daemon",
+    "stop",
+    "--json"
+  ],
+  "environment_overrides": [],
+  "purpose": "old-daemon-stop"
+}

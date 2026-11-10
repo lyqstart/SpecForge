@@ -1,0 +1,34 @@
+{
+  "utc": "2026-11-09T23:56:18.083Z",
+  "mode": "delayed",
+  "owner": "opencode-adapter",
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "test",
+    "--",
+    "tests/prompt-async-delayed-http.test.ts",
+    "--maxWorkers=1",
+    "--reporter=default",
+    "--reporter=json",
+    "--outputFile=D:\\code\\SpecForge\\docs\\archive\\2026-11-10-diagnostic-prompt-lifecycle\\delayed\\opencode-adapter.vitest.json"
+  ],
+  "cwd": "D:\\code\\SpecForge\\.kernel-patched-a01\\packages\\opencode-adapter",
+  "source_sha256": "42d0a8ca69b0c649befa01fdc8c9876b97d47084851603c68e00375cfabe76a9",
+  "expected_writes": "Only owned isolated test/profile and evidence output",
+  "ended_utc": "2026-11-09T23:56:50.392Z",
+  "inner_exit_code": 0,
+  "signal": null,
+  "stdout_sha256": "6401fca18bc9b2647de3ec565ef456891e31d3e6eb7cc52be44ef46cc1544c2c",
+  "stderr_sha256": "11e7d0b6e8d4cfc4d842204602fe7278496890885dcb9f5e7020c0cf004d06cb",
+  "collected": true,
+  "cases": [
+    {
+      "title": "keeps the accepted generation alive past the original transport deadline and observes its later result",
+      "fullName": "asynchronous prompt over actual HTTP and SSE keeps the accepted generation alive past the original transport deadline and observes its later result",
+      "status": "passed"
+    }
+  ],
+  "failures": [],
+  "accepted": true
+}

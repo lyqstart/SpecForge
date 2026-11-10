@@ -1,0 +1,16 @@
+Warning: OPENCODE_SERVER_PASSWORD is not set; server is unsecured.
+timestamp=2026-11-10T03:16:29.097Z level=INFO run=62c1dcdb message=loading path="D:\\code\\SpecForge\\docs\\archive\\2026-11-10-diagnostic-prompt-lifecycle\\local-assets\\long-product-a01\\config\\opencode\\config.json"
+timestamp=2026-11-10T03:16:29.125Z level=INFO run=62c1dcdb message=loading path="D:\\code\\SpecForge\\docs\\archive\\2026-11-10-diagnostic-prompt-lifecycle\\local-assets\\long-product-a01\\config\\opencode\\opencode.json"
+timestamp=2026-11-10T03:16:29.126Z level=INFO run=62c1dcdb message=loading path="D:\\code\\SpecForge\\docs\\archive\\2026-11-10-diagnostic-prompt-lifecycle\\local-assets\\long-product-a01\\config\\opencode\\opencode.jsonc"
+opencode server listening on http://127.0.0.1:25148
+timestamp=2026-11-10T03:16:29.588Z level=INFO run=62c1dcdb message="creating instance" directory="D:\\code\\SpecForge\\docs\\archive\\2026-11-10-diagnostic-prompt-lifecycle\\local-assets\\long-product-a01\\project"
+timestamp=2026-11-10T03:16:29.589Z level=INFO run=62c1dcdb message=fromDirectory directory="D:\\code\\SpecForge\\docs\\archive\\2026-11-10-diagnostic-prompt-lifecycle\\local-assets\\long-product-a01\\project"
+timestamp=2026-11-10T03:16:30.043Z level=INFO run=62c1dcdb message=bootstrapping directory="D:\\code\\SpecForge\\docs\\archive\\2026-11-10-diagnostic-prompt-lifecycle\\local-assets\\long-product-a01\\project"
+timestamp=2026-11-10T03:16:30.057Z level=INFO run=62c1dcdb message=loading path="D:\\code\\SpecForge\\docs\\archive\\2026-11-10-diagnostic-prompt-lifecycle\\local-assets\\long-product-a01\\config\\opencode\\config.json"
+timestamp=2026-11-10T03:16:30.058Z level=INFO run=62c1dcdb message=loading path="D:\\code\\SpecForge\\docs\\archive\\2026-11-10-diagnostic-prompt-lifecycle\\local-assets\\long-product-a01\\config\\opencode\\opencode.json"
+timestamp=2026-11-10T03:16:30.058Z level=INFO run=62c1dcdb message=loading path="D:\\code\\SpecForge\\docs\\archive\\2026-11-10-diagnostic-prompt-lifecycle\\local-assets\\long-product-a01\\config\\opencode\\opencode.jsonc"
+timestamp=2026-11-10T03:16:30.073Z level=DEBUG run=62c1dcdb message="loading config from OPENCODE_CONFIG_DIR" path="D:\\code\\SpecForge\\docs\\archive\\2026-11-10-diagnostic-prompt-lifecycle\\local-assets\\long-product-a01\\config"
+timestamp=2026-11-10T03:16:30.103Z level=DEBUG run=62c1dcdb message="loading config from D:\\code\\SpecForge\\docs\\archive\\2026-11-10-diagnostic-prompt-lifecycle\\local-assets\\long-product-a01\\config\\opencode.json"
+timestamp=2026-11-10T03:16:30.103Z level=INFO run=62c1dcdb message=loading path="D:\\code\\SpecForge\\docs\\archive\\2026-11-10-diagnostic-prompt-lifecycle\\local-assets\\long-product-a01\\config\\opencode.json"
+timestamp=2026-11-10T03:16:30.120Z level=DEBUG run=62c1dcdb message="loading config from D:\\code\\SpecForge\\docs\\archive\\2026-11-10-diagnostic-prompt-lifecycle\\local-assets\\long-product-a01\\config\\opencode.jsonc"
+timestamp=2026-11-10T03:16:30.120Z level=INFO run=62c1dcdb message=loading path="D:\\code\\SpecForge\\docs\\archive\\2026-11-10-diagnostic-prompt-lifecycle\\local-assets\\long-product-a01\\config\\opencode.jsonc"

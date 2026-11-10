@@ -1,0 +1,19 @@
+{
+  "utc": "2026-11-09T23:54:00.299Z",
+  "mode": "red",
+  "owner": "opencode-adapter",
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "test",
+    "--",
+    "tests/prompt-delivery-lifecycle.test.ts",
+    "--maxWorkers=1",
+    "--reporter=default",
+    "--reporter=json",
+    "--outputFile=D:\\code\\SpecForge\\docs\\archive\\2026-11-10-diagnostic-prompt-lifecycle\\red\\opencode-adapter.vitest.json"
+  ],
+  "cwd": "D:\\code\\SpecForge\\.kernel-patched-a01\\packages\\opencode-adapter",
+  "source_sha256": "f30e2be0e1b22975219a591e16cb69cd6c668b61acab4e3eb3d80ae747b44f0d",
+  "expected_writes": "Only owned isolated test/profile and evidence output"
+}

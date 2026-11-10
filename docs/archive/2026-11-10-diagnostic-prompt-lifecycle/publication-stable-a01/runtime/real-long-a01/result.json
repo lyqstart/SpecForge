@@ -1,0 +1,224 @@
+{
+  "utc": "2026-11-10T04:04:52.337Z",
+  "exit_code": 0,
+  "passed": true,
+  "mode": "long",
+  "version": "1.0.26",
+  "daemon_pid": 22480,
+  "opencode_pid": 52632,
+  "endpoint": "http://127.0.0.1:4096",
+  "model": "zhipuai-coding-plan/glm-5.3",
+  "session_id": "ses_e3c5f5eaeffeBHbqGfEVU0Mair",
+  "fixture": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-kernel-real-xbtqdf",
+  "managed_files_unchanged": 117,
+  "work_item_created": false,
+  "existing_business_access": false,
+  "evidence": [
+    {
+      "step": "actual-model-and-tool-over-30s",
+      "label": "long-readonly",
+      "nonce": "SF_REAL_LONG-READONLY_362e781891b7c4ed",
+      "messageId": "msg_94d12332bb08cf688b8bc8db5d674003",
+      "delivery_ms": 12.353900000000067,
+      "elapsed_ms": 45372.9955,
+      "tools": [
+        {
+          "name": "sf_doctor",
+          "call_id": "call_08e4a6d633a846b69907492f",
+          "message_id": "msg_1c3a0a1ba001aCGmj8zYsmXwV6",
+          "output": {
+            "success": true,
+            "healthy": false,
+            "installation": {
+              "checks": [
+                {
+                  "name": "用户级文件: sf-user/bin/specforge.exe",
+                  "status": "ok",
+                  "detail": "C:\\Users\\lyq\\.config\\opencode\\sf-user\\bin\\specforge.exe"
+                },
+                {
+                  "name": "用户级文件: sf-user/bin/specforged.exe",
+                  "status": "ok",
+                  "detail": "C:\\Users\\lyq\\.config\\opencode\\sf-user\\bin\\specforged.exe"
+                },
+                {
+                  "name": "用户级文件: specforge-manifest.json",
+                  "status": "ok",
+                  "detail": "C:\\Users\\lyq\\.config\\opencode\\specforge-manifest.json"
+                },
+                {
+                  "name": "用户级文件: agents/sf-orchestrator.md",
+                  "status": "ok",
+                  "detail": "C:\\Users\\lyq\\.config\\opencode\\agents\\sf-orchestrator.md"
+                },
+                {
+                  "name": "用户级文件: plugins/sf_specforge.ts",
+                  "status": "ok",
+                  "detail": "C:\\Users\\lyq\\.config\\opencode\\plugins\\sf_specforge.ts"
+                },
+                {
+                  "name": "用户级文件: sf-user/lib/sf_thin_plugin.ts",
+                  "status": "ok",
+                  "detail": "C:\\Users\\lyq\\.config\\opencode\\sf-user\\lib\\sf_thin_plugin.ts"
+                },
+                {
+                  "name": "项目运行时: .specforge\\project\\spec_manifest.json",
+                  "status": "error",
+                  "detail": "缺失: C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-kernel-real-xbtqdf\\.specforge\\project\\spec_manifest.json"
+                },
+                {
+                  "name": "项目运行时: .specforge\\runtime\\state.json",
+                  "status": "error",
+                  "detail": "缺失: C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-kernel-real-xbtqdf\\.specforge\\runtime\\state.json"
+                },
+                {
+                  "name": "初始化: spec_manifest.json",
+                  "status": "error",
+                  "detail": "项目未初始化（project/spec_manifest.json 不存在）"
+                },
+                {
+                  "name": "初始化: host-profile.json",
+                  "status": "ok",
+                  "detail": "主机环境配置存在且新鲜"
+                },
+                {
+                  "name": "初始化: prod-environment.md",
+                  "status": "warning",
+                  "detail": "生产环境配置缺失"
+                },
+                {
+                  "name": "初始化: project-rules.md",
+                  "status": "warning",
+                  "detail": "项目规则缺失"
+                }
+              ],
+              "overall": "error"
+            },
+            "project": {
+              "status": "not_initialized",
+              "configuration": {
+                "valid": false,
+                "error": "CONFIGURATION_READ_FAILED"
+              },
+              "schemas": [
+                {
+                  "descriptorId": "project-spec-manifest",
+                  "status": "blocked",
+                  "errorCode": "FILE_REQUIRED"
+                },
+                {
+                  "descriptorId": "project-config",
+                  "status": "blocked",
+                  "errorCode": "FILE_REQUIRED"
+                },
+                {
+                  "descriptorId": "project-observability-config",
+                  "status": "blocked",
+                  "errorCode": "FILE_REQUIRED"
+                },
+                {
+                  "descriptorId": "project-extension-registry",
+                  "status": "blocked",
+                  "errorCode": "FILE_REQUIRED"
+                }
+              ]
+            },
+            "daemon_components": {
+              "projectManager": "ok",
+              "projectStateManager": "missing",
+              "stateAuthority": {
+                "source": "missing",
+                "events_jsonl": "authoritative_append_only_source",
+                "runtime_state_json": "projection_cache",
+                "work_item_json": "metadata_not_state_source",
+                "can_rebuild_from_events": null
+              },
+              "legacyStateManager": "absent_ignored",
+              "workflowEngine": "ok",
+              "eventBus": "ok",
+              "eventLogger": "missing",
+              "permissionEngine": "ok"
+            }
+          },
+          "output_sha256": "8e1310739da985f240db405f2d586f197c01d80b8796d57bf60a1e1400a4922e"
+        }
+      ],
+      "model_completed_after_original_deadline": true,
+      "no_implicit_initialization": true
+    }
+  ],
+  "events": [
+    {
+      "utc": "2026-11-10T04:04:06.766Z",
+      "type": "session.status",
+      "sessionID": "ses_e3c5f5eaeffeBHbqGfEVU0Mair",
+      "status": {
+        "type": "busy"
+      }
+    },
+    {
+      "utc": "2026-11-10T04:04:07.167Z",
+      "type": "session.status",
+      "sessionID": "ses_e3c5f5eaeffeBHbqGfEVU0Mair",
+      "status": {
+        "type": "busy"
+      }
+    },
+    {
+      "utc": "2026-11-10T04:04:16.455Z",
+      "type": "session.status",
+      "sessionID": "ses_e3c5f5eaeffeBHbqGfEVU0Mair",
+      "status": {
+        "type": "busy"
+      }
+    },
+    {
+      "utc": "2026-11-10T04:04:16.484Z",
+      "type": "session.status",
+      "sessionID": "ses_e3c5f5eaeffeBHbqGfEVU0Mair",
+      "status": {
+        "type": "busy"
+      }
+    },
+    {
+      "utc": "2026-11-10T04:04:17.151Z",
+      "type": "session.status",
+      "sessionID": "ses_e3c5f5eaeffeBHbqGfEVU0Mair",
+      "status": {
+        "type": "retry",
+        "attempt": 1,
+        "message": "您的账户已达到速率限制，请您控制请求频率",
+        "next": 1794283459300
+      }
+    },
+    {
+      "utc": "2026-11-10T04:04:19.324Z",
+      "type": "session.status",
+      "sessionID": "ses_e3c5f5eaeffeBHbqGfEVU0Mair",
+      "status": {
+        "type": "busy"
+      }
+    },
+    {
+      "utc": "2026-11-10T04:04:51.944Z",
+      "type": "session.status",
+      "sessionID": "ses_e3c5f5eaeffeBHbqGfEVU0Mair",
+      "status": {
+        "type": "busy"
+      }
+    },
+    {
+      "utc": "2026-11-10T04:04:51.944Z",
+      "type": "session.status",
+      "sessionID": "ses_e3c5f5eaeffeBHbqGfEVU0Mair",
+      "status": {
+        "type": "idle"
+      }
+    },
+    {
+      "utc": "2026-11-10T04:04:51.944Z",
+      "type": "session.idle",
+      "sessionID": "ses_e3c5f5eaeffeBHbqGfEVU0Mair"
+    }
+  ]
+}

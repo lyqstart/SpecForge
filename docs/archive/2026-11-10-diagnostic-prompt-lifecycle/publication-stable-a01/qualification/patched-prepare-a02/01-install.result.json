@@ -1,0 +1,25 @@
+{
+  "utc": "2026-11-09T23:50:39.471Z",
+  "cwd": "D:\\code\\SpecForge\\.kernel-patched-a01",
+  "file": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "install",
+    "--frozen-lockfile"
+  ],
+  "environment_profile": "D:\\code\\SpecForge\\.kernel-patched-a01\\.tmp\\kernel-qualification-a02",
+  "temporary_native": "D:\\code\\SpecForge\\.kernel-patched-a01\\.tmp\\kernel-qualification-a02\\temp",
+  "purpose": "install",
+  "expected_writes": "Only ignored build/test/profile outputs and owned evidence",
+  "baseline_sha256": "3f60323fd1c3303673a8d79d4253257198725d247d3e6551e7648d0826db4438",
+  "ended_utc": "2026-11-09T23:51:18.220Z",
+  "inner_exit_code": 0,
+  "signal": null,
+  "error": null,
+  "stdout_sha256": "1d74e0adddbb4d6c8d0208589acb70d68d43203b6238510b180399ded335cf82",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "status_after_sha256": "7ad1428bba0f6c3c4a4124834c688265bdb661e1ab903dc5e9037f73a0ccc0b0",
+  "status_entries": [
+    "?? packages/daemon-core/tests/unit/doctor-uninitialized-dispatch.test.ts",
+    "?? packages/opencode-adapter/tests/prompt-delivery-lifecycle.test.ts"
+  ]
+}

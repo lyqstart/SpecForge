@@ -1,0 +1,18 @@
+{
+  "utc": "2026-11-10T03:16:28.036Z",
+  "file": "C:/Users/lyq/AppData/Roaming/npm/node_modules/opencode-ai/bin/opencode.exe",
+  "args": [
+    "serve",
+    "--hostname",
+    "127.0.0.1",
+    "--port",
+    "0",
+    "--print-logs",
+    "--log-level",
+    "DEBUG"
+  ],
+  "cwd": "D:\\code\\SpecForge\\docs\\archive\\2026-11-10-diagnostic-prompt-lifecycle\\local-assets\\long-product-a01\\project",
+  "profile": "D:\\code\\SpecForge\\docs\\archive\\2026-11-10-diagnostic-prompt-lifecycle\\local-assets\\long-product-a01",
+  "existing_installation_reused": true,
+  "model_requested": false
+}

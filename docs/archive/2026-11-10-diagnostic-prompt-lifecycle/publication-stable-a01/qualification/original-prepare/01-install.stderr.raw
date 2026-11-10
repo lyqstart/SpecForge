@@ -1,0 +1,6 @@
+error: moving "tsconfig-paths" to cache dir failed
+EPERM: Operation not permitted (NtSetInformationFile())
+  From: .3df6a5a7fb5f0e74-00000066.tsconfig-paths
+    To: tsconfig-paths@3.15.0@@@1
+error: failed to download tsconfig-paths@3.15.0: InstallFailed
+  https://registry.npmjs.org/tsconfig-paths/-/tsconfig-paths-3.15.0.tgz

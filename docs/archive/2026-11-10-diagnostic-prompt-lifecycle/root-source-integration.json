@@ -1,0 +1,74 @@
+{
+  "utc": "2026-11-10T04:18:20.278Z",
+  "accepted": true,
+  "inner_exit_code": 0,
+  "previous_head": "6a1dd14e61f8d0ccc5c1120f342ac4f57e20f4da",
+  "head": "1fab365d95af1f22328b8807195aa3b645b8042a",
+  "product_source_exact_qualified_git_tree": true,
+  "administrative_changes_preserved": true,
+  "remote_main_not_yet_changed": true,
+  "source_files": [
+    "bun.lock",
+    "docs/product-specification/authority-registry.md",
+    "docs/product-specification/specforge-product-specification.md",
+    "docs/rule/specforge-active-development-rules.md",
+    "docs/user/quick-start.md",
+    "package.json",
+    "packages/cli/package.json",
+    "packages/configuration/docs/configuration-format.md",
+    "packages/configuration/package.json",
+    "packages/daemon-core/package.json",
+    "packages/daemon-core/src/project/ProjectManager.ts",
+    "packages/daemon-core/src/tools/ToolDispatcher.ts",
+    "packages/daemon-core/src/tools/handlers/sf-doctor.ts",
+    "packages/daemon-core/tests/unit/doctor-uninitialized-dispatch.test.ts",
+    "packages/host-profile/package.json",
+    "packages/observability/package.json",
+    "packages/opencode-adapter/README.md",
+    "packages/opencode-adapter/package.json",
+    "packages/opencode-adapter/src/integration/OpenCodeHttpRuntimeClient.ts",
+    "packages/opencode-adapter/tests/OpenCodeHttpRuntimeClient.test.ts",
+    "packages/opencode-adapter/tests/prompt-async-delayed-http.test.ts",
+    "packages/opencode-adapter/tests/prompt-delivery-lifecycle.test.ts",
+    "packages/permission-engine/package.json",
+    "packages/scope-gate/package.json",
+    "packages/service-management/package.json",
+    "packages/types/package.json",
+    "packages/types/src/llm-kernel-contract.ts",
+    "packages/version-unification/package.json",
+    "packages/workflow-runtime/package.json",
+    "setup/userlevel-opencode/tools/sf_doctor.ts"
+  ],
+  "sourceIdentities": [
+    {
+      "file": "packages/daemon-core/src/project/ProjectManager.ts",
+      "behavior_blob_sha256": "a2581f8070afe1a70905ba3bbb9c52ace0b951caab116845f80b33f9d78401c1",
+      "release_blob_sha256": "a2581f8070afe1a70905ba3bbb9c52ace0b951caab116845f80b33f9d78401c1",
+      "unchanged": true
+    },
+    {
+      "file": "packages/daemon-core/src/tools/ToolDispatcher.ts",
+      "behavior_blob_sha256": "9d8e88da9f26b1e09df3e2892415acc9c6c4db7b05ac130c4eba9251cf46f4e9",
+      "release_blob_sha256": "9d8e88da9f26b1e09df3e2892415acc9c6c4db7b05ac130c4eba9251cf46f4e9",
+      "unchanged": true
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-doctor.ts",
+      "behavior_blob_sha256": "9a35519d20079bdb2dc78e4bb26cb6c87895c38d429ae2412e63b23695c7a78b",
+      "release_blob_sha256": "9a35519d20079bdb2dc78e4bb26cb6c87895c38d429ae2412e63b23695c7a78b",
+      "unchanged": true
+    },
+    {
+      "file": "packages/opencode-adapter/src/integration/OpenCodeHttpRuntimeClient.ts",
+      "behavior_blob_sha256": "bef1d2cd9eee27c4ddd5e05fe10cede2dee641b29ab007c83f307fd72a3a846e",
+      "release_blob_sha256": "bef1d2cd9eee27c4ddd5e05fe10cede2dee641b29ab007c83f307fd72a3a846e",
+      "unchanged": true
+    },
+    {
+      "file": "packages/types/src/llm-kernel-contract.ts",
+      "behavior_blob_sha256": "12786cd3599915e85f26671fd36b603f7390c8b4de98d570000dec5c77a392f7",
+      "release_blob_sha256": "12786cd3599915e85f26671fd36b603f7390c8b4de98d570000dec5c77a392f7",
+      "unchanged": true
+    }
+  ]
+}

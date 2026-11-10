@@ -1,0 +1,6 @@
+{
+  "agentRole": "sf-orchestrator",
+  "spawnIntentId": "real-cancel-978c75c8-3567-4d39-87d8-c9e3af1a69aa",
+  "cwd": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-kernel-real-XK8T2I",
+  "model": "zhipuai-coding-plan/glm-5.3"
+}

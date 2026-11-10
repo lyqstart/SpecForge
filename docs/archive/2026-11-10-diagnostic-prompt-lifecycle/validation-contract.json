@@ -1,0 +1,163 @@
+{
+  "validator_id": "diagnostic-kernel-lifecycle-acceptance",
+  "validation_target": "CODEX-SF-20261110-KERNEL-A01",
+  "validation_contract_id": "SF-DIAGNOSTIC-ASYNC-PROMPT/v1",
+  "contract_source": "SPS §5,§7.3,§10,§14,§19,§22;change-plan G1..G3",
+  "truth_source": "Raw process/test/model/tool/deployment/Git receipts under this evidence root",
+  "baseline_source": "main6a1dd14e61f8d0ccc5c1120f342ac4f57e20f4da and prior stable real E2E evidence",
+  "baseline_freshness": "Readonly Bootstrap verified exact live baseline; source payload,CI and deployment rechecked at acceptance",
+  "assertions": [
+    {
+      "assertion_id": "RULES_AND_BASELINE",
+      "assertion_type": "IMMUTABLE_EVIDENCE",
+      "truth_source": "Rule coverage and live Git evidence",
+      "contract_source": "SPS §22 / GOV-PRE-001",
+      "expected": true,
+      "comparator": "EQUALS",
+      "baseline_mode": "ABSOLUTE",
+      "blocking": true
+    },
+    {
+      "assertion_id": "DIAGNOSTIC_RED_GREEN",
+      "assertion_type": "IMMUTABLE_EVIDENCE",
+      "truth_source": "Dedicated original/candidate HTTP and dispatcher reports",
+      "contract_source": "SPS §5,§6.1,§14,§19; user authorized diagnostic repair",
+      "expected": true,
+      "comparator": "EQUALS",
+      "baseline_mode": "ABSOLUTE",
+      "blocking": true
+    },
+    {
+      "assertion_id": "DIAGNOSTIC_NO_TRUTH_WRITES",
+      "assertion_type": "IMMUTABLE_EVIDENCE",
+      "truth_source": "Before/after exact file identities excluding declared observability output",
+      "contract_source": "SPS §3,§5,§9,§10.1 / EXP-006,282",
+      "expected": true,
+      "comparator": "EQUALS",
+      "baseline_mode": "ABSOLUTE",
+      "blocking": true
+    },
+    {
+      "assertion_id": "NORMAL_GUARDS_RETAINED",
+      "assertion_type": "IMMUTABLE_EVIDENCE",
+      "truth_source": "Configuration,HardStop,recovery exclusion and history integrity regressions",
+      "contract_source": "SPS §3.3,§5.2,§9 / EXP-031,282,284",
+      "expected": true,
+      "comparator": "EQUALS",
+      "baseline_mode": "ABSOLUTE",
+      "blocking": true
+    },
+    {
+      "assertion_id": "ASYNC_DELIVERY_RED_GREEN",
+      "assertion_type": "IMMUTABLE_EVIDENCE",
+      "truth_source": "Original/candidate official-transport behavior reports and preserved30000ms bound",
+      "contract_source": "SPS §7.3,§10.2 / neutral sendPrompt delivery acknowledgment",
+      "expected": true,
+      "comparator": "EQUALS",
+      "baseline_mode": "ABSOLUTE",
+      "blocking": true
+    },
+    {
+      "assertion_id": "DELAYED_COMPLETION_OVER_30S",
+      "assertion_type": "IMMUTABLE_EVIDENCE",
+      "truth_source": "Actual delayed31s producer trace,delivery ACK and later terminal message/tool identities",
+      "contract_source": "User no-timeout-increase goal / EXP-282,298",
+      "expected": true,
+      "comparator": "EQUALS",
+      "baseline_mode": "ABSOLUTE",
+      "blocking": true
+    },
+    {
+      "assertion_id": "ERROR_CANCEL_ORDERING",
+      "assertion_type": "IMMUTABLE_EVIDENCE",
+      "truth_source": "NoReply persistence ordering,transport rejection,async error and cancellation regressions",
+      "contract_source": "SPS §7.3,§10.2 / EXP-008,289,290,298",
+      "expected": true,
+      "comparator": "EQUALS",
+      "baseline_mode": "ABSOLUTE",
+      "blocking": true
+    },
+    {
+      "assertion_id": "SYMMETRIC_FULL_AB",
+      "assertion_type": "IMMUTABLE_EVIDENCE",
+      "truth_source": "Exact-HEAD same-lock original/candidate full test reports and normalized failure comparison",
+      "contract_source": "EXP-009,118,121,122,136,140",
+      "expected": true,
+      "comparator": "EQUALS",
+      "baseline_mode": "ABSOLUTE",
+      "blocking": true
+    },
+    {
+      "assertion_id": "BUILD_LINT_TYPES",
+      "assertion_type": "IMMUTABLE_EVIDENCE",
+      "truth_source": "Formal build,full lint,typecheck numeric phase receipts",
+      "contract_source": "GOV-CLOSELOOP-001 / EXP-011,052,102",
+      "expected": true,
+      "comparator": "EQUALS",
+      "baseline_mode": "ABSOLUTE",
+      "blocking": true
+    },
+    {
+      "assertion_id": "THREE_PLATFORM_QUALIFICATION",
+      "assertion_type": "IMMUTABLE_EVIDENCE",
+      "truth_source": "Official current candidate Windows/Linux/macOS full and distribution job raw receipts and digests",
+      "contract_source": "SPS §12,§17,§19 / change-plan G3",
+      "expected": true,
+      "comparator": "EQUALS",
+      "baseline_mode": "ABSOLUTE",
+      "blocking": true
+    },
+    {
+      "assertion_id": "DEPLOYED_NEW_PROCESS",
+      "assertion_type": "IMMUTABLE_EVIDENCE",
+      "truth_source": "Official installer payload identities,old process stopped,new process identity/health and actual tool result",
+      "contract_source": "SPS §7.2,§12 / EXP-023,125,283",
+      "expected": true,
+      "comparator": "EQUALS",
+      "baseline_mode": "ABSOLUTE",
+      "blocking": true
+    },
+    {
+      "assertion_id": "GENUINE_MODEL_E2E",
+      "assertion_type": "IMMUTABLE_EVIDENCE",
+      "truth_source": "Actual configured GLM model tool parts,empty-directory diagnosis,controlled init,healthy diagnosis and daemon payload match",
+      "contract_source": "SPS §10.1,§10.2,§19 / EXP-007,282,290",
+      "expected": true,
+      "comparator": "EQUALS",
+      "baseline_mode": "ABSOLUTE",
+      "blocking": true
+    },
+    {
+      "assertion_id": "AUTHORITY_CONSUMER_RECONCILIATION",
+      "assertion_type": "IMMUTABLE_EVIDENCE",
+      "truth_source": "Final complete source/docs/template/installer consumer audit and goal reconciliation",
+      "contract_source": "GOV-POST-001 / EXP-004,026,031,193,276",
+      "expected": true,
+      "comparator": "EQUALS",
+      "baseline_mode": "ABSOLUTE",
+      "blocking": true
+    },
+    {
+      "assertion_id": "EVIDENCE_ACCEPTED",
+      "assertion_type": "IMMUTABLE_EVIDENCE",
+      "truth_source": "Immutable exact-member SHA256 manifest and independent verification,no credential publication",
+      "contract_source": "EXP-023,032,089,193,260,289,296,298",
+      "expected": true,
+      "comparator": "EQUALS",
+      "baseline_mode": "ABSOLUTE",
+      "blocking": true
+    },
+    {
+      "assertion_id": "GIT_DELIVERY",
+      "assertion_type": "STRUCTURED_GIT",
+      "truth_source": "Exact staged payload,local main merge,push live ref,final clean READY and final-main CI",
+      "contract_source": "AGENTS Git collaboration / EXP-037,082,113,201",
+      "expected": true,
+      "comparator": "EQUALS",
+      "baseline_mode": "ABSOLUTE",
+      "blocking": true
+    }
+  ],
+  "validation_contract_frozen": true,
+  "validation_contract_hash": "BDB9839A336D7AE3BFE7C14ED6B994F963B6E9D3906B317A4C807328F3E5223A"
+}

@@ -1,0 +1,9 @@
+{
+  "utc": "2026-11-10T01:17:53.859Z",
+  "cwd": "D:\\code\\SpecForge\\.kernel-patched-a01",
+  "file": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "scripts/prepare-current-release.ts"
+  ],
+  "purpose": "release"
+}

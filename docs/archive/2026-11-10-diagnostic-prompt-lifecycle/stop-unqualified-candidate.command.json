@@ -1,0 +1,17 @@
+{
+  "run_id": "CODEX-SF-20261110-KERNEL-A01",
+  "attempt": "A01",
+  "mode": "CODEX_DIRECT",
+  "utc": "2026-11-10T00:19:50.046Z",
+  "file": "C:/Users/lyq/.cache/codex-runtimes/codex-primary-runtime/dependencies/native/powershell/pwsh.exe",
+  "args": [
+    "-NoProfile",
+    "-File",
+    "D:/code/SpecForge/docs/archive/2026-11-10-diagnostic-prompt-lifecycle/stop-unqualified.ps1"
+  ],
+  "cwd": "D:/code/SpecForge",
+  "purpose": "stop-unqualified-candidate",
+  "expected_writes": "Owned isolated worktrees, evidence and declared administrative scope; product installation only in explicit deployment commands",
+  "executable_sha256": "2a6769a3330dc1084d0154bfde7d164ab750ca7f700f313f9d417c1be78b2233",
+  "runner_sha256": "b17777aa724d32091020c2b5d80932b7f3e827c2174c7ecde93f663bae4a5b3a"
+}

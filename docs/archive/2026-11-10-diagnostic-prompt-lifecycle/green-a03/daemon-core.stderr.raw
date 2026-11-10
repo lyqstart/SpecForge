@@ -1,0 +1,102 @@
+$ vitest run tests/unit/doctor-uninitialized-dispatch.test.ts "--maxWorkers=1" "--reporter=default" "--reporter=json" "--outputFile=D:\\code\\SpecForge\\docs\\archive\\2026-11-10-diagnostic-prompt-lifecycle\\green-a03\\daemon-core.vitest.json"
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+[90mstderr[2m | tests/unit/doctor-uninitialized-dispatch.test.ts[2m > [22m[2mreadonly doctor through production dispatcher and HTTP[2m > [22m[2mreturns a structured unhealthy result over authenticated HTTP, then diagnoses controlled initialization
+[22m[39m[Config] DEBUG Validating configuration layer { layer: [32m'builtin'[39m, schemaVersion: [32m'1.0'[39m }
+[Config] DEBUG Validating configuration layer { layer: [32m'user'[39m, schemaVersion: [32m'1.0'[39m }
+[Config] DEBUG Validating configuration layer { layer: [32m'project'[39m, schemaVersion: [32m'1.0'[39m }
+[Config] DEBUG Validating configuration layer { layer: [32m'runtime'[39m, schemaVersion: [32m'1.0'[39m }
+[Config] DEBUG Starting configuration merge { layerCount: [33m4[39m }
+[Config] DEBUG Merging layer { layer: [32m'builtin'[39m }
+[Config] DEBUG Merging layer { layer: [32m'user'[39m }
+[Config] DEBUG Merging layer { layer: [32m'project'[39m }
+[Config] DEBUG Merging layer { layer: [32m'runtime'[39m }
+[Config] INFO Configuration merge completed { keyCount: [33m8[39m, layerCount: [33m4[39m, validationErrors: [33m0[39m }
+
+[90mstderr[2m | tests/unit/doctor-uninitialized-dispatch.test.ts[2m > [22m[2mreadonly doctor through production dispatcher and HTTP[2m > [22m[2mdoes not rewrite activation or state witnesses when diagnosing an already active project
+[22m[39m[Config] DEBUG Validating configuration layer { layer: [32m'builtin'[39m, schemaVersion: [32m'1.0'[39m }
+[Config] DEBUG Validating configuration layer { layer: [32m'user'[39m, schemaVersion: [32m'1.0'[39m }
+[Config] DEBUG Validating configuration layer { layer: [32m'project'[39m, schemaVersion: [32m'1.0'[39m }
+[Config] DEBUG Validating configuration layer { layer: [32m'runtime'[39m, schemaVersion: [32m'1.0'[39m }
+[Config] DEBUG Starting configuration merge { layerCount: [33m4[39m }
+[Config] DEBUG Merging layer { layer: [32m'builtin'[39m }
+[Config] DEBUG Merging layer { layer: [32m'user'[39m }
+[Config] DEBUG Merging layer { layer: [32m'project'[39m }
+[Config] DEBUG Merging layer { layer: [32m'runtime'[39m }
+[Config] INFO Configuration merge completed { keyCount: [33m8[39m, layerCount: [33m4[39m, validationErrors: [33m0[39m }
+
+[90mstderr[2m | tests/unit/doctor-uninitialized-dispatch.test.ts[2m > [22m[2mreadonly doctor through production dispatcher and HTTP[2m > [22m[2mdoes not rewrite activation or state witnesses when diagnosing an already active project
+[22m[39m[Config] DEBUG Validating configuration layer { layer: [32m'builtin'[39m, schemaVersion: [32m'1.0'[39m }
+[Config] DEBUG Validating configuration layer { layer: [32m'user'[39m, schemaVersion: [32m'1.0'[39m }
+[Config] DEBUG Validating configuration layer { layer: [32m'project'[39m, schemaVersion: [32m'1.0'[39m }
+[Config] DEBUG Validating configuration layer { layer: [32m'runtime'[39m, schemaVersion: [32m'1.0'[39m }
+[Config] DEBUG Starting configuration merge { layerCount: [33m4[39m }
+[Config] DEBUG Merging layer { layer: [32m'builtin'[39m }
+[Config] DEBUG Merging layer { layer: [32m'user'[39m }
+[Config] DEBUG Merging layer { layer: [32m'project'[39m }
+[Config] DEBUG Merging layer { layer: [32m'runtime'[39m }
+[Config] INFO Configuration merge completed { keyCount: [33m8[39m, layerCount: [33m4[39m, validationErrors: [33m0[39m }
+
+[90mstderr[2m | tests/unit/doctor-uninitialized-dispatch.test.ts[2m > [22m[2mreadonly doctor through production dispatcher and HTTP[2m > [22m[2mdoes not rewrite activation or state witnesses when diagnosing an already active project
+[22m[39m[Config] DEBUG Validating configuration layer { layer: [32m'builtin'[39m, schemaVersion: [32m'1.0'[39m }
+[Config] DEBUG Validating configuration layer { layer: [32m'user'[39m, schemaVersion: [32m'1.0'[39m }
+[Config] DEBUG Validating configuration layer { layer: [32m'project'[39m, schemaVersion: [32m'1.0'[39m }
+[Config] DEBUG Validating configuration layer { layer: [32m'runtime'[39m, schemaVersion: [32m'1.0'[39m }
+[Config] DEBUG Starting configuration merge { layerCount: [33m4[39m }
+[Config] DEBUG Merging layer { layer: [32m'builtin'[39m }
+[Config] DEBUG Merging layer { layer: [32m'user'[39m }
+[Config] DEBUG Merging layer { layer: [32m'project'[39m }
+[Config] DEBUG Merging layer { layer: [32m'runtime'[39m }
+[Config] INFO Configuration merge completed { keyCount: [33m8[39m, layerCount: [33m4[39m, validationErrors: [33m0[39m }
+
+[90mstderr[2m | tests/unit/doctor-uninitialized-dispatch.test.ts[2m > [22m[2mreadonly doctor through production dispatcher and HTTP[2m > [22m[2mreports corrupt state without exposing parser input or rewriting the original checkpoint
+[22m[39m[Config] DEBUG Validating configuration layer { layer: [32m'builtin'[39m, schemaVersion: [32m'1.0'[39m }
+[Config] DEBUG Validating configuration layer { layer: [32m'user'[39m, schemaVersion: [32m'1.0'[39m }
+[Config] DEBUG Validating configuration layer { layer: [32m'project'[39m, schemaVersion: [32m'1.0'[39m }
+[Config] DEBUG Validating configuration layer { layer: [32m'runtime'[39m, schemaVersion: [32m'1.0'[39m }
+[Config] DEBUG Starting configuration merge { layerCount: [33m4[39m }
+[Config] DEBUG Merging layer { layer: [32m'builtin'[39m }
+[Config] DEBUG Merging layer { layer: [32m'user'[39m }
+[Config] DEBUG Merging layer { layer: [32m'project'[39m }
+[Config] DEBUG Merging layer { layer: [32m'runtime'[39m }
+[Config] INFO Configuration merge completed { keyCount: [33m8[39m, layerCount: [33m4[39m, validationErrors: [33m0[39m }
+
+[90mstderr[2m | tests/unit/doctor-uninitialized-dispatch.test.ts[2m > [22m[2mreadonly doctor through production dispatcher and HTTP[2m > [22m[2mreports corrupt state without exposing parser input or rewriting the original checkpoint
+[22m[39m[Config] DEBUG Validating configuration layer { layer: [32m'builtin'[39m, schemaVersion: [32m'1.0'[39m }
+[Config] DEBUG Validating configuration layer { layer: [32m'user'[39m, schemaVersion: [32m'1.0'[39m }
+[Config] DEBUG Validating configuration layer { layer: [32m'project'[39m, schemaVersion: [32m'1.0'[39m }
+[Config] DEBUG Validating configuration layer { layer: [32m'runtime'[39m, schemaVersion: [32m'1.0'[39m }
+[Config] DEBUG Starting configuration merge { layerCount: [33m4[39m }
+[Config] DEBUG Merging layer { layer: [32m'builtin'[39m }
+[Config] DEBUG Merging layer { layer: [32m'user'[39m }
+[Config] DEBUG Merging layer { layer: [32m'project'[39m }
+[Config] DEBUG Merging layer { layer: [32m'runtime'[39m }
+[Config] INFO Configuration merge completed { keyCount: [33m8[39m, layerCount: [33m4[39m, validationErrors: [33m0[39m }
+
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/unit/doctor-uninitialized-dispatch.test.ts[2m > [22mreadonly doctor through production dispatcher and HTTP[2m > [22mreports corrupt state without exposing parser input or rewriting the original checkpoint
+[31m[1mAssertionError[22m: expected { success: true, healthy: false, …(3) } to match object { success: true, healthy: false, …(1) }
+(13 matching properties omitted from actual)[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[33m@@ -1,9 +1,9 @@[39m
+[2m  {[22m
+[2m    "daemon_components": {[22m
+[2m      "projectStateManager": "error",[22m
+[32m-     "projectStateManagerError": "RUNTIME_STATE_INSPECTION_FAILED",[39m
+[31m+     "projectStateManagerError": "Unexpected token 'S', \"SECRETKEY\" is not valid JSON",[39m
+[2m      "stateAuthority": {[22m
+[2m        "can_rebuild_from_events": false,[22m
+[2m      },[22m
+[2m    },[22m
+[2m    "healthy": false,[22m
+
+[36m [2m❯[22m tests/unit/doctor-uninitialized-dispatch.test.ts:[2m109:20[22m[39m
+
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+error: script "test" exited with code 1

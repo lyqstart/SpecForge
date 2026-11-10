@@ -1,0 +1,30 @@
+
+[1m[46m RUN [49m[22m [36mv3.2.4 [39m[90mD:/code/SpecForge/.kernel-patched-a01/packages/opencode-adapter[39m
+
+ [31m❯[39m tests/prompt-delivery-lifecycle.test.ts [2m([22m[2m10 tests[22m[2m | [22m[31m9 failed[39m[2m)[22m[32m 42[2mms[22m[39m
+[31m   [31m×[31m generation delivery acknowledgment is independent of inference lifetime[2m > [22macknowledges before a generation longer than the unchanged thirty-second transport bound[39m[32m 15[2mms[22m[39m
+[31m     → expected false to be true // Object.is equality[39m
+[31m   [31m×[31m generation delivery acknowledgment is independent of inference lifetime[2m > [22mkeeps synchronous noReply persistence before accepting the next generated prompt[39m[32m 7[2mms[22m[39m
+[31m     → expected [ '/session/s1/message', …(1) ] to deeply equal [ '/session/s1/message', …(1) ][39m
+[31m   [31m×[31m generation delivery acknowledgment is independent of inference lifetime[2m > [22mrejects non-204 asynchronous acceptance HTTP400 without synchronous fallback or resend[39m[32m 5[2mms[22m[39m
+[31m     → expected 'http://127.0.0.1:4096/session/s1/mess…' to contain '/prompt_async'[39m
+[31m   [31m×[31m generation delivery acknowledgment is independent of inference lifetime[2m > [22mrejects non-204 asynchronous acceptance HTTP404 without synchronous fallback or resend[39m[32m 2[2mms[22m[39m
+[31m     → expected 'http://127.0.0.1:4096/session/s1/mess…' to contain '/prompt_async'[39m
+[31m   [31m×[31m generation delivery acknowledgment is independent of inference lifetime[2m > [22mrejects non-204 asynchronous acceptance HTTP409 without synchronous fallback or resend[39m[32m 2[2mms[22m[39m
+[31m     → expected 'http://127.0.0.1:4096/session/s1/mess…' to contain '/prompt_async'[39m
+[31m   [31m×[31m generation delivery acknowledgment is independent of inference lifetime[2m > [22mrejects non-204 asynchronous acceptance HTTP503 without synchronous fallback or resend[39m[32m 1[2mms[22m[39m
+[31m     → expected 'http://127.0.0.1:4096/session/s1/mess…' to contain '/prompt_async'[39m
+[31m   [31m×[31m generation delivery acknowledgment is independent of inference lifetime[2m > [22mrejects non-204 asynchronous acceptance HTTP200 without synchronous fallback or resend[39m[32m 3[2mms[22m[39m
+[31m     → promise resolved "undefined" instead of rejecting[39m
+   [32m✓[39m generation delivery acknowledgment is independent of inference lifetime[2m > [22mretains the original 30000ms bound when the server never acknowledges delivery[32m 2[2mms[22m[39m
+[31m   [31m×[31m generation delivery acknowledgment is independent of inference lifetime[2m > [22mrequires an actual positive cancellation acknowledgment[39m[32m 1[2mms[22m[39m
+[31m     → promise resolved "undefined" instead of rejecting[39m
+[31m   [31m×[31m generation delivery acknowledgment is independent of inference lifetime[2m > [22mdelivers a later model failure through the actual SSE parser rather than treating ACK as completion[39m[32m 3[2mms[22m[39m
+[31m     → OpenCode POST /session/s1/message returned invalid JSON[39m
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m9 failed[39m[22m[2m | [22m[1m[32m1 passed[39m[22m[90m (10)[39m
+[2m   Start at [22m 07:54:01
+[2m   Duration [22m 582ms[2m (transform 61ms, setup 0ms, collect 69ms, tests 42ms, environment 0ms, prepare 155ms)[22m
+
+JSON report written to D:/code/SpecForge/docs/archive/2026-11-10-diagnostic-prompt-lifecycle/red/opencode-adapter.vitest.json

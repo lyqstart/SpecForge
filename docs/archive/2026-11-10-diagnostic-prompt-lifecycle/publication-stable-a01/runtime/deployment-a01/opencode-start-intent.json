@@ -1,0 +1,18 @@
+{
+  "utc": "2026-11-10T03:36:08.214Z",
+  "file": "C:/Users/lyq/AppData/Roaming/npm/node_modules/opencode-ai/bin/opencode.exe",
+  "args": [
+    "serve",
+    "--hostname",
+    "127.0.0.1",
+    "--port",
+    "4096"
+  ],
+  "cwd": "D:\\code\\SpecForge\\docs\\archive\\2026-11-10-diagnostic-prompt-lifecycle\\publication-live\\deployment-a01\\owned-server-directory",
+  "environment_keys_overridden": [
+    "OPENCODE_CONFIG_DIR",
+    "OPENCODE_DISABLE_AUTOUPDATE"
+  ],
+  "windows_hide": true,
+  "managed_manifest_sha256": "3ba69490fb4a290a870a2e1c7aa1baf6fbcba98eed883a12c9f2f71248827835"
+}

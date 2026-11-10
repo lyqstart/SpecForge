@@ -1,0 +1,9 @@
+{
+  "pid": 12596,
+  "creation_utc": "2026-11-10T00:16:47.6817930Z",
+  "image": "C:\\Program Files\\nodejs\\node.exe",
+  "utc": "2026-11-10T00:21:26.6707015Z",
+  "original_command_receipt_sha256": "54d7949ea4096f94b46e70c4705c781205423621f3fe1818faae54f53ef5b733",
+  "parent_pid": 33488,
+  "purpose": "Stop only owned unqualified validation tree; real daemon/OpenCode not targets"
+}

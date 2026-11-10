@@ -1,0 +1,16 @@
+{
+  "number": "005",
+  "name": "current-help",
+  "executable": "D:\\code\\SpecForge\\.kernel-patched-a01\\.tmp\\final-platform-a02\\temp\\sf-platform-acceptance-sIgKPr\\opencode\\sf-user\\bin\\specforge.exe",
+  "args": [
+    "daemon",
+    "start",
+    "--help",
+    "--json"
+  ],
+  "started_utc": "2026-11-10T01:19:02.542Z",
+  "finished_utc": "2026-11-10T01:19:02.703Z",
+  "inner_exit_code": 0,
+  "signal": null,
+  "spawn_error": null
+}

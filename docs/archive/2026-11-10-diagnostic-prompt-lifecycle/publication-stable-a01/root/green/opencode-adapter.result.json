@@ -1,0 +1,79 @@
+{
+  "utc": "2026-11-09T23:55:07.507Z",
+  "mode": "green",
+  "owner": "opencode-adapter",
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "test",
+    "--",
+    "tests/prompt-delivery-lifecycle.test.ts",
+    "--maxWorkers=1",
+    "--reporter=default",
+    "--reporter=json",
+    "--outputFile=D:\\code\\SpecForge\\docs\\archive\\2026-11-10-diagnostic-prompt-lifecycle\\green\\opencode-adapter.vitest.json"
+  ],
+  "cwd": "D:\\code\\SpecForge\\.kernel-patched-a01\\packages\\opencode-adapter",
+  "source_sha256": "f30e2be0e1b22975219a591e16cb69cd6c668b61acab4e3eb3d80ae747b44f0d",
+  "expected_writes": "Only owned isolated test/profile and evidence output",
+  "ended_utc": "2026-11-09T23:55:08.808Z",
+  "inner_exit_code": 0,
+  "signal": null,
+  "stdout_sha256": "0feaf72fa193454eb0cddee3c090af0f964412fd7d53360dbdc85564c764c698",
+  "stderr_sha256": "5b4af352f729d3a50a2ebeba1d9cc6e9a93927f4fd3dab66f175642bea559bd9",
+  "collected": true,
+  "cases": [
+    {
+      "title": "acknowledges before a generation longer than the unchanged thirty-second transport bound",
+      "fullName": "generation delivery acknowledgment is independent of inference lifetime acknowledges before a generation longer than the unchanged thirty-second transport bound",
+      "status": "passed"
+    },
+    {
+      "title": "keeps synchronous noReply persistence before accepting the next generated prompt",
+      "fullName": "generation delivery acknowledgment is independent of inference lifetime keeps synchronous noReply persistence before accepting the next generated prompt",
+      "status": "passed"
+    },
+    {
+      "title": "rejects non-204 asynchronous acceptance HTTP400 without synchronous fallback or resend",
+      "fullName": "generation delivery acknowledgment is independent of inference lifetime rejects non-204 asynchronous acceptance HTTP400 without synchronous fallback or resend",
+      "status": "passed"
+    },
+    {
+      "title": "rejects non-204 asynchronous acceptance HTTP404 without synchronous fallback or resend",
+      "fullName": "generation delivery acknowledgment is independent of inference lifetime rejects non-204 asynchronous acceptance HTTP404 without synchronous fallback or resend",
+      "status": "passed"
+    },
+    {
+      "title": "rejects non-204 asynchronous acceptance HTTP409 without synchronous fallback or resend",
+      "fullName": "generation delivery acknowledgment is independent of inference lifetime rejects non-204 asynchronous acceptance HTTP409 without synchronous fallback or resend",
+      "status": "passed"
+    },
+    {
+      "title": "rejects non-204 asynchronous acceptance HTTP503 without synchronous fallback or resend",
+      "fullName": "generation delivery acknowledgment is independent of inference lifetime rejects non-204 asynchronous acceptance HTTP503 without synchronous fallback or resend",
+      "status": "passed"
+    },
+    {
+      "title": "rejects non-204 asynchronous acceptance HTTP200 without synchronous fallback or resend",
+      "fullName": "generation delivery acknowledgment is independent of inference lifetime rejects non-204 asynchronous acceptance HTTP200 without synchronous fallback or resend",
+      "status": "passed"
+    },
+    {
+      "title": "retains the original 30000ms bound when the server never acknowledges delivery",
+      "fullName": "generation delivery acknowledgment is independent of inference lifetime retains the original 30000ms bound when the server never acknowledges delivery",
+      "status": "passed"
+    },
+    {
+      "title": "requires an actual positive cancellation acknowledgment",
+      "fullName": "generation delivery acknowledgment is independent of inference lifetime requires an actual positive cancellation acknowledgment",
+      "status": "passed"
+    },
+    {
+      "title": "delivers a later model failure through the actual SSE parser rather than treating ACK as completion",
+      "fullName": "generation delivery acknowledgment is independent of inference lifetime delivers a later model failure through the actual SSE parser rather than treating ACK as completion",
+      "status": "passed"
+    }
+  ],
+  "failures": [],
+  "accepted": true
+}

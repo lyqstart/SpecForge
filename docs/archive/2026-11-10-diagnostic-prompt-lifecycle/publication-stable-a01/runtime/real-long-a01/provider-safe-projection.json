@@ -1,0 +1,7 @@
+{
+  "provider": "zhipuai-coding-plan",
+  "model": "glm-5.3",
+  "connected": true,
+  "toolcall": true,
+  "context": 1000000
+}

@@ -1,0 +1,13 @@
+{
+  "number": "029",
+  "name": "unsupported-command-rejected",
+  "executable": "/tmp/sf-platform-acceptance-tNV8j2/opencode/sf-user/bin/specforge",
+  "args": [
+    "webhook"
+  ],
+  "started_utc": "2026-11-10T01:17:31.757Z",
+  "finished_utc": "2026-11-10T01:17:31.875Z",
+  "inner_exit_code": 1,
+  "signal": null,
+  "spawn_error": null
+}

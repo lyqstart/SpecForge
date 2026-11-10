@@ -1,0 +1,12 @@
+{
+  "utc": "2026-11-10T04:18:19.096Z",
+  "cwd": "D:\\code\\SpecForge\\.kernel-patched-a01",
+  "file": "C:/Program Files/Git/cmd/git.exe",
+  "args": [
+    "show",
+    "c2fdc6c822940b5eaec92bb1888cd091bdc7144d:packages/types/src/llm-kernel-contract.ts"
+  ],
+  "inner_exit_code": 0,
+  "stdout": "/**\n * Provider-neutral contract between the Daemon and an LLM kernel adapter.\n *\n * Provider-specific request, response, session and event shapes must stay on\n * the adapter side of this boundary.\n */\nexport interface LLMKernelAdapter {\n  readonly version: string;\n  readonly compatibleKernelRange: string;\n  spawnAgent(params: SpawnAgentParams): Promise<SpawnAgentResult>;\n  getSession(sessionId: string): Promise<SessionInfo | null>;\n  cancelSession(sessionId: string, reason: string): Promise<void>;\n  /** Confirms delivery only. Model/tool completion or failure is observed separately in events. */\n  sendPrompt(sessionId: string, message: UserMessage): Promise<void>;\n  subscribeEvents(sessionId: string): AsyncIterable<KernelEvent>;\n  getCapabilities(model: string): Promise<ModelCapabilities>;\n}\n\nexport interface UserMessage {\n  role: 'user' | 'assistant' | 'system';\n  content: string;\n  messageId?: string;\n  timestamp?: Date;\n}\n\nexport interface KernelEvent {\n  type: string;\n  payload: unknown;\n  sessionId: string;\n  timestamp: Date;\n  metadata?: Record<string, unknown>;\n}\n\nexport interface SpawnAgentParams {\n  agentRole: string;\n  spawnIntentId: string;\n  systemPrompt?: string;\n  cwd?: string;\n  model?: string;\n  options?: SessionSpawnOptions;\n}\n\nexport interface SessionSpawnOptions {\n  timeout?: number;\n  env?: Record<string, string>;\n  verbose?: boolean;\n}\n\nexport interface SpawnAgentResult {\n  sessionId: string;\n}\n\nexport interface SessionInfo {\n  sessionId: string;\n  status: SessionStatus;\n  createdAt: Date;\n  lastActivityAt: Date;\n  model?: string;\n}\n\nexport type SessionStatus = 'pending' | 'active' | 'completed' | 'cancelled' | 'error';\n\nexport interface ModelCapabilities {\n  /** null means the provider has not supplied evidence; it is not false. */\n  streaming: boolean | null;\n  maxContextLength: number | null;\n  tools: boolean | null;\n  vision: boolean | null;\n  functionCalling: boolean | null;\n  /** Structured JSON support, distinct from ordinary text containing JSON. */\n  jsonOutput?: boolean | null;\n  outputFormats: OutputFormat[];\n}\n\nexport type OutputFormat = 'text' | 'json' | 'markdown';\n",
+  "stderr": ""
+}

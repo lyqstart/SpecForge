@@ -1,0 +1,5 @@
+{
+  "sessionId": "ses_e3c74ed50ffe8q3qDlYiT7mQ8d",
+  "messageId": "msg_2f9e7c17e81bb9446b06f169182f5c4d",
+  "content": "继续纯只读安装咨询：只调用sf_doctor({})一次，不初始化、不创建WI，不调用其他工具。只按healthy及project字段报告检查事实。 最后原样输出 SF_REAL_INITIALIZED-DOCTOR_95081a2d1565167e。"
+}

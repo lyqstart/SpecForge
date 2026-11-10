@@ -1,0 +1,363 @@
+diff --git a/docs/product-specification/authority-registry.md b/docs/product-specification/authority-registry.md
+index 72e77914..ab8e8890 100644
+--- a/docs/product-specification/authority-registry.md
++++ b/docs/product-specification/authority-registry.md
+@@ -137,6 +137,8 @@ SPS-1.0
+ 
+ 配置受控入口的权威归属：SPS §5.1–5.2 定义 `sf_project_config` 的项目 JSON producer、激活和恢复边界，SPS release-surface 机器块登记发布面。此入口是用户批准的六项验收补齐方案中的最小治理扩展；说明文档 producer 不得冒充运行时 JSON producer，受控入口不能管理用户凭据或放宽 HardStop。
+ 
++只读自检和模型交付的稳定合同分别归 SPS §5.2 与 §10.2。`sf_doctor` 不承担配置激活或项目初始化；异步消息接收不承担模型/工具完成证明。实现、模板和使用说明应消费这些同一语义，不建立新的 producer、治理状态或产品权威。
++
+ 本 Registry 与 SPS-1.0 建立后，ADR-014 所要求的“显式 authority registry + 唯一正式产品规格”已经建立。
+ 
+ 六项独立审查后用户明确要求修复硬链接越权与补齐能力判断：对应合同细化归于 SPS §9.2 与 §10.2。写前拒绝多硬链接目标；外部接口未提供的可选模型能力保持未知，不从默认值生成支持或不支持事实。
+diff --git a/docs/product-specification/specforge-product-specification.md b/docs/product-specification/specforge-product-specification.md
+index 9400a2a2..3681bced 100644
+--- a/docs/product-specification/specforge-product-specification.md
++++ b/docs/product-specification/specforge-product-specification.md
+@@ -422,6 +422,8 @@ builtin
+ 
+ ## 5.2 活动 Work Item 配置稳定性
+ 
++`sf_doctor` 是配置接纳之前可达的只读诊断入口。未初始化、项目配置缺失或损坏时，应返回明确的结构化检查结果和不健康状态，不得把诊断本身变成初始化、配置激活或状态修复。诊断只能校验已有配置与通过状态 owner 只读重放已有历史；不得调用会创建 Runtime 或持久化投影的初始化路径。诊断完成不代表项目健康或治理操作已获准，普通治理工具仍执行完整的配置 acceptance、状态、HardStop 与恢复互斥。
++
+ 运行时项目 JSON 的受控 producer 是 `sf_project_config`，owner 为 `sf-orchestrator`，提供 read（文档哈希及有效性，不返回原始值）、validate、update、restore。更新/恢复必须绑定当前文档原始字节 SHA-256，先校验四层合并，再原子替换；替换前不可变保存旧文档，以哈希指定恢复来源。活动任务期间仅允许写回与已接受配置内容身份一致的配置；缺失/损坏激活证据不得借恢复绕过。配置管理与 acceptance 使用同一项目串行边界，配置损坏时该管理入口仍可达，HardStop 边界不放宽。用户级凭据不由项目工具管理。所有自动请求归档与错误日志对配置工具只记录固定结构，不保存原始配置正文、任意字段名或解析片段。
+ 
+ 配置 reload 不得使已经运行的 Work Item 在中途随机切换治理规则。Runtime 必须对活动 Work Item 使用稳定 configuration snapshot 或等价 activation boundary。
+@@ -793,6 +795,7 @@ Daemon
+ - spawn/manage OpenCode-side agent/session operations required by Runtime
+ - session translation
+ - prompt delivery
++- prompt delivery 确认消息已被接收，不表示模型、工具或工作流已经完成。生成请求须采用异步交付，传输有界期限不能包含整个模型执行生命周期；noReply 上下文注入仍须先确认持久化顺序。后续完成、模型错误和取消必须由真实事件或消息事实分别验证，不得自动重发超时或被拒绝的生成请求，不得把接收确认当作通过证据。取消未获外部 owner 明确成功确认时必须保留失败，不能把会话标记为已取消。
+ - event subscription/translation
+ - capability discovery
+ - capability discovery 必须读取 OpenCode 已连接 provider 的实际模型字段；未知模型、服务不可用或响应不完整必须明确失败，不得根据模型名称编造上下文长度、视觉或工具能力。
+diff --git a/docs/rule/specforge-active-development-rules.md b/docs/rule/specforge-active-development-rules.md
+index 72e2273d..792cc407 100644
+--- a/docs/rule/specforge-active-development-rules.md
++++ b/docs/rule/specforge-active-development-rules.md
+@@ -71,6 +71,8 @@ Project Spec Version、状态、路径和 Contract ID 等权威值不能用“
+ 没有分类就继续写下一版脚本，会把产品问题、环境问题和脚本问题混在一起。分类是修复动作的前置条件。
+ 
+ 客户端必须区分传输故障和明确业务拒绝，不能将可达服务返回的初始化或 Schema 拒绝误报为断线；事件转发与通知不得形成逐事件重试刷屏。恢复须消费明确的宿主完成信号，再由原 owner 重新校验，不得用自动初始化、旁路写入或吞掉错误代替恢复。回归应覆盖首次使用、拒绝期间并发/重复事件及正式初始化后的恢复。
++
++只读诊断必须能报告前置状态缺失或损坏，不能依赖它所诊断对象已经通过普通操作的接纳门禁。诊断只能调用不初始化、不激活、不落盘修复的 owner 读取路径；普通操作的配置、状态、HardStop 与恢复互斥不因此放宽。
+ <!-- source: ledger Part3/4 verbatim (audited), view L1903-2944 -->
+ 
+ ## EXP-009：归因必须做 A/B
+@@ -2667,4 +2669,6 @@ Windows扩展路径不是目录联接，路径名不能证明reparse类型。夹
+ ## EXP-298：取消与连接生命周期必须在真实宿主验证，并由执行owner持续核验归属
+ 
+ Node单元里出现Abort/close事件，不能证明Bun编译宿主会报告同样事件。须用真实客户端/服务端运输组合区分信号、断连观察及owner消费；取消验收必须证明实际进程结束、不可变失败/取消回执与独立清理，不能把后来停机兜底冒充原取消通过。执行owner应复核真实running调用的完整主体，结束或不可核验即受控取消；有界不可变lease须绑定回执及所有共同消费者。联测载体也须在每次启动冻结自己的源字节，不依赖后来可变的同名脚本解释旧执行。
++
++模型交付确认与生成完成须分别取证。使用真实异步接收接口保留有界交付期限，以后续事件/消息确认完成或错误；不能用扩大传输超时、自动重发或吞错代替生命周期修复。上下文持久化须保留顺序，取消必须消费外部 owner 的明确确认，并覆盖超过原传输期限的真实延迟、错误与取消回归。
+ <!-- source: ledger ERR-1975; actual0124/0126 failure/transport and0133/0134 fixed real Kernel cancellation -->
+diff --git a/docs/user/quick-start.md b/docs/user/quick-start.md
+index 06364596..7e0e6153 100644
+--- a/docs/user/quick-start.md
++++ b/docs/user/quick-start.md
+@@ -15,4 +15,6 @@ opencode --port 4096
+ 
+ 在 OpenCode 中切换到 `sf-orchestrator`，直接描述业务目标。Orchestrator 会先初始化 `.specforge/project/`（若尚未初始化），读取 Runtime 权威状态，再创建或恢复同一个 Work Item。
+ 
++仅做安装自检时，可以直接请求 `sf_doctor`。未初始化目录会返回不健康的诊断和缺失项，不会为自检自动初始化项目或创建工作项；配置损坏也会保留诊断结果。模型请求已接收不等于执行完成，最终结果应以实际工具返回及会话完成事件为准。
++
+ 不要让 Plugin 启动 daemon，不要手工编辑 `.specforge`，也不要先为非 Git 项目执行 `git init`。版本控制模式会在实施前按真实现场冻结：已有 Git 项目走 Git 治理；无 Git 项目走 filesystem 模式。
+diff --git a/packages/configuration/docs/configuration-format.md b/packages/configuration/docs/configuration-format.md
+index 0aa80824..5519cce2 100644
+--- a/packages/configuration/docs/configuration-format.md
++++ b/packages/configuration/docs/configuration-format.md
+@@ -20,3 +20,5 @@ Current validators and merge policy determine allowed values and sensitive-field
+ `ConfigAccess.get` and `getOr` return `{value, source, path}` and do not persist changes. Explicit library interpolation differs from production environment parsing: production does not automatically map every prefixed variable or accept an arbitrary workflow CLI command.
+ 
+ Errors fail closed: `CONFIGURATION_READ_FAILED`, `CONFIGURATION_INVALID_OBJECT`, `CONFIGURATION_SCHEMA_UNSUPPORTED`, `CONFIGURATION_VALIDATION_FAILED`. Record the exact code and file identity without exposing values. Resolve project changes through `sf_project_config`.
++
++`sf_doctor` can diagnose before project acceptance. It reports missing/corrupt configuration as structured unhealthy diagnostic data, without activating configuration, initializing the project or persisting state. This exception belongs only to the exact diagnostic entry; it does not make the project layer optional for normal governance tools. Diagnostic configuration validation is not evidence that a changed configuration has been accepted for an active Work Item.
+diff --git a/packages/daemon-core/src/project/ProjectManager.ts b/packages/daemon-core/src/project/ProjectManager.ts
+index 60107647..c385fbd4 100644
+--- a/packages/daemon-core/src/project/ProjectManager.ts
++++ b/packages/daemon-core/src/project/ProjectManager.ts
+@@ -3,7 +3,7 @@ import * as crypto from 'crypto';
+ import * as fs from 'fs/promises';
+ import * as os from 'os';
+ import * as path from 'path';
+-import { Event, Lock, Subscription } from '../types';
++import { Event, Lock, Subscription, type ProjectState } from '../types';
+ import { EventBus } from '../event-bus/EventBus';
+ import { WAL } from '../wal/WAL';
+ import { StateManager } from '../state/StateManager';
+@@ -324,6 +324,18 @@ export class ProjectManager {
+     return this.withProjectOperation(projectPath, () => this.loadProjectStateManager(projectPath));
+   }
+ 
++  /** Inspect existing history without initializing a Runtime or persisting a projection. */
++  async inspectProjectState(projectPath: string): Promise<ProjectState> {
++    return this.withProjectOperation(projectPath, async () => {
++      // Retain an existing owner's in-memory loss witnesses when available.
++      // A new reader uses the same WAL/checkpoint validators, never initialize().
++      const reader =
++        this.projectStateManagers.get(projectPath) ??
++        new StateManager(this.pathResolver, projectPath, false);
++      return reader.rebuildState();
++    });
++  }
++
+   private async loadProjectStateManager(projectPath: string): Promise<StateManager> {
+     if (!this.projectStateManagers.has(projectPath)) {
+       const sm = new StateManager(this.pathResolver, projectPath, false);
+diff --git a/packages/daemon-core/src/tools/ToolDispatcher.ts b/packages/daemon-core/src/tools/ToolDispatcher.ts
+index 48a05c06..6c44ea46 100644
+--- a/packages/daemon-core/src/tools/ToolDispatcher.ts
++++ b/packages/daemon-core/src/tools/ToolDispatcher.ts
+@@ -305,12 +305,14 @@ export class ToolDispatcher {
+ 
+     const projectRoot = resolveProjectRoot(ctx);
+     const verificationRecovery = isVerificationRecoveryRequest(req.tool, req.args);
++    const diagnosticOnly = req.tool === 'sf_doctor';
+ 
+     let acceptedConfiguration = this.deps.acceptedConfiguration;
+     // Configuration repair must remain reachable when the current document is corrupt.
+     // Its owner validates prospective data and enforces the same activation boundary.
+     if (
+       req.tool !== 'sf_project_config' &&
++      !diagnosticOnly &&
+       !verificationRecovery &&
+       this.deps.projectManager?.getProjectConfiguration
+     ) {
+@@ -323,7 +325,12 @@ export class ToolDispatcher {
+         };
+       }
+     }
+-    const hardStopContext = await resolveHardStopContext(projectRoot, work_item_id, this.deps);
++    // Doctor is already permitted by the HardStop policy. Resolving every WI
++    // through the initializing state accessor would create a Runtime merely
++    // to diagnose an empty directory. Keep both scoped guards below intact.
++    const hardStopContext: HardStopContext = diagnosticOnly
++      ? { resolvedWorkItemId: work_item_id, activeWorkItemIds: [] }
++      : await resolveHardStopContext(projectRoot, work_item_id, this.deps);
+ 
+     // Project-scoped HardStop is independent of WI resolution and must be
+     // enforced even when no active WI exists or several WIs are active.
+diff --git a/packages/daemon-core/src/tools/handlers/sf-doctor.ts b/packages/daemon-core/src/tools/handlers/sf-doctor.ts
+index 105ccba6..ae7e1593 100644
+--- a/packages/daemon-core/src/tools/handlers/sf-doctor.ts
++++ b/packages/daemon-core/src/tools/handlers/sf-doctor.ts
+@@ -1,37 +1,59 @@
+ import { registerHandler } from '../ToolDispatcher';
+ import { checkUserLevelInstallation } from '../lib/sf_doctor_core';
++import { loadAcceptedConfigSync } from '@specforge/configuration';
++import { precheckProjectRegistrationSchemas } from '../../project/project-schema-descriptors';
+ 
+ function componentStatus(value: unknown): 'ok' | 'missing' {
+   return value ? 'ok' : 'missing';
+ }
+ 
++function diagnosticErrorCode(error: unknown, fallback: string): string {
++  const message = error instanceof Error ? error.message : '';
++  // Parse errors can embed original file bytes. Only stable owner codes belong
++  // in a model-visible diagnostic or its observation payload.
++  return /^[A-Z][A-Z0-9_]+(?=$|:)/.exec(message)?.[0] ?? fallback;
++}
++
+ registerHandler('sf_doctor', async (args, context, deps) => {
+   const baseDir = (context?.directory as string) || (context?.worktree as string) || process.cwd();
+ 
+   try {
+     const report = await checkUserLevelInstallation(baseDir);
++    const schemas = await precheckProjectRegistrationSchemas(baseDir);
++    const manifest = schemas.checks.find(check => check.descriptorId === 'project-spec-manifest');
++    const projectStatus =
++      manifest?.errorCode === 'FILE_REQUIRED'
++        ? 'not_initialized'
++        : schemas.ok
++          ? 'initialized'
++          : 'invalid';
++    let configuration: { valid: boolean; error?: string };
++    try {
++      // Parse and validate only. Diagnosis must never activate this configuration.
++      loadAcceptedConfigSync({ projectPath: baseDir });
++      configuration = { valid: true };
++    } catch (error) {
++      const code = error instanceof Error ? error.message : '';
++      configuration = {
++        valid: false,
++        error: /^CONFIGURATION_[A-Z_]+$/.test(code) ? code : 'CONFIGURATION_ACCEPTANCE_FAILED',
++      };
++    }
+ 
+     let projectStateManager: 'ok' | 'missing' | 'error' = 'missing';
+     let projectStateManagerError: string | undefined;
+     let canRebuildFromEvents: boolean | null = null;
+     let stateReadSource: 'StateManager/events' | 'missing' = 'missing';
+ 
+-    if (deps.projectManager?.getProjectStateManager) {
++    if (schemas.ok && configuration.valid && deps.projectManager?.inspectProjectState) {
+       try {
+-        const projectSm = await deps.projectManager.getProjectStateManager(baseDir);
+-        projectStateManager = projectSm ? 'ok' : 'missing';
+-        if (projectSm && typeof projectSm.rebuildFromEventsFile === 'function') {
+-          await projectSm.rebuildFromEventsFile();
+-          canRebuildFromEvents = true;
+-        } else {
+-          canRebuildFromEvents = false;
+-        }
+-        if (projectSm && typeof projectSm.getState === 'function') {
+-          stateReadSource = 'StateManager/events';
+-        }
++        await deps.projectManager.inspectProjectState(baseDir);
++        projectStateManager = 'ok';
++        canRebuildFromEvents = true;
++        stateReadSource = 'StateManager/events';
+       } catch (err) {
+         projectStateManager = 'error';
+-        projectStateManagerError = err instanceof Error ? err.message : String(err);
++        projectStateManagerError = diagnosticErrorCode(err, 'RUNTIME_STATE_INSPECTION_FAILED');
+         canRebuildFromEvents = false;
+       }
+     }
+@@ -56,11 +78,24 @@ registerHandler('sf_doctor', async (args, context, deps) => {
+ 
+     return {
+       success: true,
+-      healthy: report.overall === 'healthy',
++      healthy:
++        report.overall === 'healthy' &&
++        schemas.ok &&
++        configuration.valid &&
++        canRebuildFromEvents === true,
+       installation: report,
++      project: {
++        status: projectStatus,
++        configuration,
++        schemas: schemas.checks.map(check => ({
++          descriptorId: check.descriptorId,
++          status: check.status,
++          ...(check.errorCode ? { errorCode: check.errorCode } : {}),
++        })),
++      },
+       daemon_components: daemonComponents,
+     };
+   } catch (err) {
+-    return { success: false, error: (err as Error).message };
++    return { success: false, error: diagnosticErrorCode(err, 'DIAGNOSTIC_READ_FAILED') };
+   }
+ });
+diff --git a/packages/opencode-adapter/README.md b/packages/opencode-adapter/README.md
+index 585f4ca4..8f309e96 100644
+--- a/packages/opencode-adapter/README.md
++++ b/packages/opencode-adapter/README.md
+@@ -6,4 +6,6 @@ Production Daemon supplies the real runtime client. Global Thin Plugin is a Daem
+ 
+ Provider metadata is authoritative only when reported. Missing capability fields remain `null` / `unknown`; never infer structured output, tool support or context limits from model names.
+ 
++`sendPrompt` acknowledges delivery through OpenCode's asynchronous `prompt_async` endpoint. The bounded HTTP delivery timeout remains 30 seconds; model generation and tool execution continue independently. Observe the actual session messages/events to establish completion or failure. `noReply` context is persisted through the synchronous message endpoint before a later generation can begin. A failed or ambiguous delivery must not be automatically resent; cancellation requires a positive acknowledgment from OpenCode.
++
+ See [installation](docs/installation.md), [source](src/) and [authority](../../docs/product-specification/authority-registry.md). Build/test through current workspace order. Recovery must preserve actual failure evidence and cannot manufacture WI completion or bypass controlled tools.
+diff --git a/packages/opencode-adapter/src/integration/OpenCodeHttpRuntimeClient.ts b/packages/opencode-adapter/src/integration/OpenCodeHttpRuntimeClient.ts
+index b14f6656..ca8ebc78 100644
+--- a/packages/opencode-adapter/src/integration/OpenCodeHttpRuntimeClient.ts
++++ b/packages/opencode-adapter/src/integration/OpenCodeHttpRuntimeClient.ts
+@@ -281,10 +281,12 @@ export class OpenCodeHttpRuntimeClient implements OpenCodeRuntimeClient {
+   }
+ 
+   async abortSession(sessionId: string, directory?: string): Promise<void> {
+-    await this.requestJson(
++    const body = await this.requestJson(
+       'POST',
+       this.withDirectory(`/session/${encodeURIComponent(sessionId)}/abort`, directory)
+     );
++    if (this.unwrap(body) !== true)
++      throw new OpenCodeRuntimeError('OpenCode did not acknowledge session cancellation');
+   }
+ 
+   async sendPrompt(
+@@ -302,10 +304,16 @@ export class OpenCodeHttpRuntimeClient implements OpenCodeRuntimeClient {
+     const model = this.parseModel(prompt.model);
+     if (model) body['model'] = model;
+ 
++    // noReply persists context synchronously without invoking the model. Keep
++    // that ordering barrier before a subsequent generation request. Generation
++    // itself is acknowledged separately from its later messages/events, so the
++    // bounded delivery deadline never encloses the model/tool execution lifetime.
++    const pathname = prompt.noReply === true ? 'message' : 'prompt_async';
+     await this.requestJson(
+       'POST',
+-      this.withDirectory(`/session/${encodeURIComponent(sessionId)}/message`, directory),
+-      body
++      this.withDirectory(`/session/${encodeURIComponent(sessionId)}/${pathname}`, directory),
++      body,
++      prompt.noReply === true ? undefined : 204
+     );
+   }
+ 
+@@ -356,7 +364,12 @@ export class OpenCodeHttpRuntimeClient implements OpenCodeRuntimeClient {
+     }
+   }
+ 
+-  private async requestJson(method: string, pathname: string, body?: unknown): Promise<unknown> {
++  private async requestJson(
++    method: string,
++    pathname: string,
++    body?: unknown,
++    expectedStatus?: number
++  ): Promise<unknown> {
+     const controller = new AbortController();
+     const timer = setTimeout(() => controller.abort(), this.timeoutMs);
+     try {
+@@ -367,7 +380,7 @@ export class OpenCodeHttpRuntimeClient implements OpenCodeRuntimeClient {
+         signal: controller.signal,
+       });
+       const text = await response.text();
+-      if (!response.ok) {
++      if (!response.ok || (expectedStatus !== undefined && response.status !== expectedStatus)) {
+         throw new OpenCodeRuntimeError(
+           `OpenCode ${method} ${pathname} failed with HTTP ${response.status}`,
+           response.status,
+diff --git a/packages/opencode-adapter/tests/OpenCodeHttpRuntimeClient.test.ts b/packages/opencode-adapter/tests/OpenCodeHttpRuntimeClient.test.ts
+index 73f805ac..041de3ad 100644
+--- a/packages/opencode-adapter/tests/OpenCodeHttpRuntimeClient.test.ts
++++ b/packages/opencode-adapter/tests/OpenCodeHttpRuntimeClient.test.ts
+@@ -26,6 +26,9 @@ describe('OpenCodeHttpRuntimeClient', () => {
+       if (url.endsWith('/global/health')) {
+         return new Response(JSON.stringify({ healthy: true, version: '1.14.41' }), { status: 200 });
+       }
++      if (url.includes('/session/session-real/prompt_async')) {
++        return new Response(null, { status: 204 });
++      }
+       if (url.includes('/session/session-real/message')) {
+         return new Response(JSON.stringify({ info: { id: 'message-1' }, parts: [] }), { status: 200 });
+       }
+@@ -56,7 +59,7 @@ describe('OpenCodeHttpRuntimeClient', () => {
+     expect(requests.map((request) => request.url)).toEqual([
+       'http://127.0.0.1:4096/global/health',
+       'http://127.0.0.1:4096/session?directory=D%3A%2Fproject',
+-      'http://127.0.0.1:4096/session/session-real/message?directory=D%3A%2Fproject',
++      'http://127.0.0.1:4096/session/session-real/prompt_async?directory=D%3A%2Fproject',
+       'http://127.0.0.1:4096/session/session-real/abort?directory=D%3A%2Fproject',
+     ]);
+     expect(JSON.parse(String(requests[2]?.init?.body))).toEqual({
+diff --git a/packages/types/src/llm-kernel-contract.ts b/packages/types/src/llm-kernel-contract.ts
+index 8db6141b..cf11d8a7 100644
+--- a/packages/types/src/llm-kernel-contract.ts
++++ b/packages/types/src/llm-kernel-contract.ts
+@@ -10,6 +10,7 @@ export interface LLMKernelAdapter {
+   spawnAgent(params: SpawnAgentParams): Promise<SpawnAgentResult>;
+   getSession(sessionId: string): Promise<SessionInfo | null>;
+   cancelSession(sessionId: string, reason: string): Promise<void>;
++  /** Confirms delivery only. Model/tool completion or failure is observed separately in events. */
+   sendPrompt(sessionId: string, message: UserMessage): Promise<void>;
+   subscribeEvents(sessionId: string): AsyncIterable<KernelEvent>;
+   getCapabilities(model: string): Promise<ModelCapabilities>;
+diff --git a/setup/userlevel-opencode/tools/sf_doctor.ts b/setup/userlevel-opencode/tools/sf_doctor.ts
+index 8cfbf542..7b3e342a 100644
+--- a/setup/userlevel-opencode/tools/sf_doctor.ts
++++ b/setup/userlevel-opencode/tools/sf_doctor.ts
+@@ -2,7 +2,7 @@ import { tool } from "@opencode-ai/plugin"
+ import { daemon } from "./lib/thin-client"
+ 
+ export default tool({
+-  description: "SpecForge 自检工具：检查当前用户级组件是否正确安装和就位",
++  description: "SpecForge 只读自检：未初始化目录或配置损坏时也返回诊断报告；不初始化项目、不激活配置，诊断成功不等于项目健康。",
+   args: {},
+   async execute(args, context) {
+     const result = await daemon.invokeTool("sf_doctor", args, {

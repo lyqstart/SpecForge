@@ -1,0 +1,59 @@
+{
+  "utc": "2026-11-10T03:51:12.972Z",
+  "exit_code": 0,
+  "passed": true,
+  "mode": "cancel",
+  "version": "1.0.26",
+  "daemon_pid": 22480,
+  "opencode_pid": 52632,
+  "endpoint": "http://127.0.0.1:4096",
+  "model": "zhipuai-coding-plan/glm-5.3",
+  "session_id": "ses_e3c6b2f16ffeBpCEF9OZAWTBlS",
+  "fixture": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-kernel-real-XK8T2I",
+  "managed_files_unchanged": 117,
+  "work_item_created": false,
+  "existing_business_access": false,
+  "evidence": [
+    {
+      "step": "cancel",
+      "label": "cancel",
+      "nonce": "SF_REAL_CANCEL_9ff47ed5193a6a7d",
+      "messageId": "msg_006f040125f4eff3e272a4405045ff54",
+      "delivery_ms": 15.650899999999865,
+      "cancelled": {
+        "success": true,
+        "data": {
+          "sessionId": "ses_e3c6b2f16ffeBpCEF9OZAWTBlS",
+          "cancelled": true
+        },
+        "requestId": "0rgjwgni96zmwa5kqsy",
+        "timestamp": 1794282672562
+      },
+      "idle": true,
+      "kernel_status": "cancelled"
+    }
+  ],
+  "events": [
+    {
+      "utc": "2026-11-10T03:51:12.509Z",
+      "type": "session.status",
+      "sessionID": "ses_e3c6b2f16ffeBpCEF9OZAWTBlS",
+      "status": {
+        "type": "busy"
+      }
+    },
+    {
+      "utc": "2026-11-10T03:51:12.580Z",
+      "type": "session.status",
+      "sessionID": "ses_e3c6b2f16ffeBpCEF9OZAWTBlS",
+      "status": {
+        "type": "idle"
+      }
+    },
+    {
+      "utc": "2026-11-10T03:51:12.580Z",
+      "type": "session.idle",
+      "sessionID": "ses_e3c6b2f16ffeBpCEF9OZAWTBlS"
+    }
+  ]
+}

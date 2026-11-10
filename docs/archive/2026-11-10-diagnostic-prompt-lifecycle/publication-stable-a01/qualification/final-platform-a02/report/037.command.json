@@ -1,0 +1,14 @@
+{
+  "number": "037",
+  "name": "official-upgrade",
+  "executable": "C:\\Users\\lyq\\AppData\\Roaming\\npm\\node_modules\\bun\\bin\\bun.exe",
+  "args": [
+    "scripts/sf-installer.ts",
+    "upgrade"
+  ],
+  "started_utc": "2026-11-10T01:19:09.434Z",
+  "finished_utc": "2026-11-10T01:19:10.214Z",
+  "inner_exit_code": 0,
+  "signal": null,
+  "spawn_error": null
+}

@@ -1,0 +1,74 @@
+{
+  "utc": "2026-11-10T00:07:21.132Z",
+  "mode": "green",
+  "owner": "daemon-core",
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "test",
+    "--",
+    "tests/unit/doctor-uninitialized-dispatch.test.ts",
+    "--maxWorkers=1",
+    "--reporter=default",
+    "--reporter=json",
+    "--outputFile=D:\\code\\SpecForge\\docs\\archive\\2026-11-10-diagnostic-prompt-lifecycle\\green-a04\\daemon-core.vitest.json"
+  ],
+  "cwd": "D:\\code\\SpecForge\\.kernel-patched-a01\\packages\\daemon-core",
+  "source_sha256": "054c0b648e2a004b2a43fe39b6c1995ed17f393a5cb372841911d940432e3828",
+  "expected_writes": "Only owned isolated test/profile and evidence output",
+  "ended_utc": "2026-11-10T00:07:27.218Z",
+  "inner_exit_code": 0,
+  "signal": null,
+  "stdout_sha256": "f8abc8c18d392b3d5593b9c779eb6ed643457dda64d710e5ec4b43047ac5f09c",
+  "stderr_sha256": "8bbb1ec04930b233af8b0862564e40229148eeb40828b3271d53dc3ffaab82f2",
+  "collected": true,
+  "cases": [
+    {
+      "title": "diagnoses a new directory without configuration activation, state initialization or implicit project init",
+      "fullName": "readonly doctor through production dispatcher and HTTP diagnoses a new directory without configuration activation, state initialization or implicit project init",
+      "status": "passed"
+    },
+    {
+      "title": "returns a structured unhealthy result over authenticated HTTP, then diagnoses controlled initialization",
+      "fullName": "readonly doctor through production dispatcher and HTTP returns a structured unhealthy result over authenticated HTTP, then diagnoses controlled initialization",
+      "status": "passed"
+    },
+    {
+      "title": "reports corrupt configuration without exposing its bytes or weakening ordinary acceptance",
+      "fullName": "readonly doctor through production dispatcher and HTTP reports corrupt configuration without exposing its bytes or weakening ordinary acceptance",
+      "status": "passed"
+    },
+    {
+      "title": "does not rewrite activation or state witnesses when diagnosing an already active project",
+      "fullName": "readonly doctor through production dispatcher and HTTP does not rewrite activation or state witnesses when diagnosing an already active project",
+      "status": "passed"
+    },
+    {
+      "title": "retains project recovery exclusion before any diagnostic observation or handler work",
+      "fullName": "readonly doctor through production dispatcher and HTTP retains project recovery exclusion before any diagnostic observation or handler work",
+      "status": "passed"
+    },
+    {
+      "title": "inspects personal history through the owner without creating a Runtime or user-level project directory",
+      "fullName": "readonly doctor through production dispatcher and HTTP inspects personal history through the owner without creating a Runtime or user-level project directory",
+      "status": "passed"
+    },
+    {
+      "title": "inspects enterprise history through the owner without creating a Runtime or user-level project directory",
+      "fullName": "readonly doctor through production dispatcher and HTTP inspects enterprise history through the owner without creating a Runtime or user-level project directory",
+      "status": "passed"
+    },
+    {
+      "title": "reports corrupt state without exposing parser input or rewriting the original checkpoint",
+      "fullName": "readonly doctor through production dispatcher and HTTP reports corrupt state without exposing parser input or rewriting the original checkpoint",
+      "status": "passed"
+    },
+    {
+      "title": "retains the owner history-loss error without accepting a checkpoint as substitute truth",
+      "fullName": "readonly doctor through production dispatcher and HTTP retains the owner history-loss error without accepting a checkpoint as substitute truth",
+      "status": "passed"
+    }
+  ],
+  "failures": [],
+  "accepted": true
+}

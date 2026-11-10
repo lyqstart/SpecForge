@@ -1,0 +1,16 @@
+{
+  "utc": "2026-11-10T00:58:17.879Z",
+  "ceiling": "D:\\code\\SpecForge\\.kernel-patched-a01\\.tmp\\kernel-qualification-a04\\temp",
+  "negative": {
+    "cwd": "D:\\code\\SpecForge\\.kernel-patched-a01\\.tmp\\kernel-qualification-a04\\temp\\qualification-no-git-full",
+    "exit_code": 128,
+    "stdout": "",
+    "stderr": "fatal: not a git repository (or any of the parent directories): .git\n"
+  },
+  "positive": {
+    "cwd": "D:\\code\\SpecForge\\.kernel-patched-a01",
+    "exit_code": 0,
+    "stdout": "D:/code/SpecForge/.kernel-patched-a01\n",
+    "stderr": ""
+  }
+}

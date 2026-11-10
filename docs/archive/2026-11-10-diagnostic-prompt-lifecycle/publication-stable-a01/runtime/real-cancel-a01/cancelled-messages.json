@@ -1,0 +1,48 @@
+[
+  {
+    "info": {
+      "id": "msg_006f040125f4eff3e272a4405045ff54",
+      "role": "user",
+      "agent": "sf-orchestrator",
+      "time": {
+        "created": 1794282672432
+      }
+    },
+    "parts": [
+      {
+        "id": "prt_1c394d135001YsO8ggWrL3aTrR",
+        "sessionID": "ses_e3c6b2f16ffeBpCEF9OZAWTBlS",
+        "messageID": "msg_006f040125f4eff3e272a4405045ff54",
+        "type": "text",
+        "text": "本轮用于取消验证。只生成一段只读使用说明，不调用任何工具，不访问文件，不创建工作项。 最后原样输出 SF_REAL_CANCEL_9ff47ed5193a6a7d。"
+      }
+    ]
+  },
+  {
+    "info": {
+      "id": "msg_1c394d142001uWzX737664N8tY",
+      "role": "assistant",
+      "parentID": "msg_006f040125f4eff3e272a4405045ff54",
+      "agent": "sf-orchestrator",
+      "providerID": "zhipuai-coding-plan",
+      "modelID": "glm-5.3",
+      "time": {
+        "created": 1794282672450,
+        "completed": 1794282672554
+      },
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "reasoning": 0,
+        "cache": {
+          "read": 0,
+          "write": 0
+        }
+      },
+      "error": {
+        "name": "MessageAbortedError"
+      }
+    },
+    "parts": []
+  }
+]

@@ -1,0 +1,19 @@
+{
+  "utc": "2026-11-09T23:55:01.083Z",
+  "mode": "green",
+  "owner": "daemon-core",
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "test",
+    "--",
+    "tests/unit/doctor-uninitialized-dispatch.test.ts",
+    "--maxWorkers=1",
+    "--reporter=default",
+    "--reporter=json",
+    "--outputFile=D:\\code\\SpecForge\\docs\\archive\\2026-11-10-diagnostic-prompt-lifecycle\\green\\daemon-core.vitest.json"
+  ],
+  "cwd": "D:\\code\\SpecForge\\.kernel-patched-a01\\packages\\daemon-core",
+  "source_sha256": "b25518da16bf7492bceee2c059f625bf5f581b6a01d66f0457af8833cf3017e3",
+  "expected_writes": "Only owned isolated test/profile and evidence output"
+}

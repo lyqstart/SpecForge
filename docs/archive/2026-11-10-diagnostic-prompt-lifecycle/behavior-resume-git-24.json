@@ -1,0 +1,12 @@
+{
+  "utc": "2026-11-10T00:25:01.247Z",
+  "file": "C:/Program Files/Git/cmd/git.exe",
+  "args": [
+    "rev-parse",
+    "HEAD"
+  ],
+  "cwd": "D:\\code\\SpecForge\\.kernel-patched-a01",
+  "exit_code": 0,
+  "stdout": "c2fdc6c822940b5eaec92bb1888cd091bdc7144d\n",
+  "stderr": ""
+}

@@ -1,0 +1,6 @@
+{
+  "agentRole": "sf-orchestrator",
+  "spawnIntentId": "real-long-bea2937c-577f-470b-9877-ec26c97eb9f5",
+  "cwd": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-kernel-real-xbtqdf",
+  "model": "zhipuai-coding-plan/glm-5.3"
+}

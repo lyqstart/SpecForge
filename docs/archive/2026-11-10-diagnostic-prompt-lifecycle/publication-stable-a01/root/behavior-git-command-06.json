@@ -1,0 +1,29 @@
+{
+  "utc": "2026-11-10T00:22:58.025Z",
+  "file": "C:/Program Files/Git/cmd/git.exe",
+  "args": [
+    "--literal-pathspecs",
+    "add",
+    "--",
+    "docs/product-specification/authority-registry.md",
+    "docs/product-specification/specforge-product-specification.md",
+    "docs/rule/specforge-active-development-rules.md",
+    "docs/user/quick-start.md",
+    "packages/configuration/docs/configuration-format.md",
+    "packages/daemon-core/src/project/ProjectManager.ts",
+    "packages/daemon-core/src/tools/ToolDispatcher.ts",
+    "packages/daemon-core/src/tools/handlers/sf-doctor.ts",
+    "packages/daemon-core/tests/unit/doctor-uninitialized-dispatch.test.ts",
+    "packages/opencode-adapter/README.md",
+    "packages/opencode-adapter/src/integration/OpenCodeHttpRuntimeClient.ts",
+    "packages/opencode-adapter/tests/OpenCodeHttpRuntimeClient.test.ts",
+    "packages/opencode-adapter/tests/prompt-async-delayed-http.test.ts",
+    "packages/opencode-adapter/tests/prompt-delivery-lifecycle.test.ts",
+    "packages/types/src/llm-kernel-contract.ts",
+    "setup/userlevel-opencode/tools/sf_doctor.ts"
+  ],
+  "cwd": "D:\\code\\SpecForge\\.kernel-patched-a01",
+  "exit_code": 0,
+  "stdout": "",
+  "stderr": ""
+}

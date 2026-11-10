@@ -1,0 +1,1 @@
+{"accepted":true,"new_model_requests":0,"steps":[{"label":"uninitialized","delivery_ms":24.263300000000072,"model_elapsed_ms":29879},{"label":"initialize","delivery_ms":20.67540000000008,"model_elapsed_ms":14417},{"label":"initialized-doctor","delivery_ms":19.06629999999859,"model_elapsed_ms":12362}],"post_init_daemon_match":true}

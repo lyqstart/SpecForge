@@ -1,0 +1,12 @@
+{
+  "utc": "2026-11-10T04:18:14.503Z",
+  "cwd": "D:\\code\\SpecForge",
+  "file": "C:/Program Files/Git/cmd/git.exe",
+  "args": [
+    "rev-parse",
+    "HEAD"
+  ],
+  "inner_exit_code": 0,
+  "stdout": "6a1dd14e61f8d0ccc5c1120f342ac4f57e20f4da\n",
+  "stderr": ""
+}

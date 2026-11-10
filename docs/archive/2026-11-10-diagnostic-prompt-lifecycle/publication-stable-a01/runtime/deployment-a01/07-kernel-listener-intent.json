@@ -1,0 +1,13 @@
+{
+  "utc": "2026-11-10T03:36:09.396Z",
+  "cwd": "D:\\code\\SpecForge\\.kernel-patched-a01",
+  "file": "C:/Users/lyq/.cache/codex-runtimes/codex-primary-runtime/dependencies/native/powershell/pwsh.exe",
+  "args": [
+    "-NoProfile",
+    "-NonInteractive",
+    "-Command",
+    "$ErrorActionPreference='Stop';ConvertTo-Json -Compress -InputObject @(Get-NetTCPConnection -LocalPort 4096 -State Listen|Select-Object LocalAddress,LocalPort,OwningProcess)"
+  ],
+  "environment_overrides": [],
+  "purpose": "kernel-listener"
+}

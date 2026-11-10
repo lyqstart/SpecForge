@@ -1,0 +1,22 @@
+{
+  "utc": "2026-11-10T03:36:15.401Z",
+  "accepted": true,
+  "pid": 52632,
+  "identity": {
+    "start_ticks": "639298785682195353",
+    "pid": 52632,
+    "path": "C:\\Users\\lyq\\AppData\\Roaming\\npm\\node_modules\\opencode-ai\\bin\\opencode.exe"
+  },
+  "listeners": [
+    {
+      "LocalAddress": "127.0.0.1",
+      "LocalPort": 4096,
+      "OwningProcess": 52632
+    }
+  ],
+  "binary_sha256": "83567c13cc5e361ded7e48351cb024cd4503285960d82c30fc585194da46d757",
+  "manifest_sha256": "3ba69490fb4a290a870a2e1c7aa1baf6fbcba98eed883a12c9f2f71248827835",
+  "endpoint": "http://127.0.0.1:4096",
+  "old_pid_ended": true,
+  "automatic_start_installed": false
+}

@@ -1,0 +1,76 @@
+$ vitest run tests/unit/doctor-uninitialized-dispatch.test.ts "--maxWorkers=1" "--reporter=default" "--reporter=json" "--outputFile=D:\\code\\SpecForge\\docs\\archive\\2026-11-10-diagnostic-prompt-lifecycle\\green\\daemon-core.vitest.json"
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+[90mstderr[2m | tests/unit/doctor-uninitialized-dispatch.test.ts[2m > [22m[2mreadonly doctor through production dispatcher and HTTP[2m > [22m[2mreturns a structured unhealthy result over authenticated HTTP, then diagnoses controlled initialization
+[22m[39m[Config] DEBUG Validating configuration layer { layer: [32m'builtin'[39m, schemaVersion: [32m'1.0'[39m }
+[Config] DEBUG Validating configuration layer { layer: [32m'user'[39m, schemaVersion: [32m'1.0'[39m }
+[Config] DEBUG Validating configuration layer { layer: [32m'project'[39m, schemaVersion: [32m'1.0'[39m }
+[Config] DEBUG Validating configuration layer { layer: [32m'runtime'[39m, schemaVersion: [32m'1.0'[39m }
+[Config] DEBUG Starting configuration merge { layerCount: [33m4[39m }
+[Config] DEBUG Merging layer { layer: [32m'builtin'[39m }
+[Config] DEBUG Merging layer { layer: [32m'user'[39m }
+[Config] DEBUG Merging layer { layer: [32m'project'[39m }
+[Config] DEBUG Merging layer { layer: [32m'runtime'[39m }
+[Config] INFO Configuration merge completed { keyCount: [33m8[39m, layerCount: [33m4[39m, validationErrors: [33m0[39m }
+
+[90mstderr[2m | tests/unit/doctor-uninitialized-dispatch.test.ts[2m > [22m[2mreadonly doctor through production dispatcher and HTTP[2m > [22m[2mdoes not rewrite activation or state witnesses when diagnosing an already active project
+[22m[39m[Config] DEBUG Validating configuration layer { layer: [32m'builtin'[39m, schemaVersion: [32m'1.0'[39m }
+[Config] DEBUG Validating configuration layer { layer: [32m'user'[39m, schemaVersion: [32m'1.0'[39m }
+[Config] DEBUG Validating configuration layer { layer: [32m'project'[39m, schemaVersion: [32m'1.0'[39m }
+[Config] DEBUG Validating configuration layer { layer: [32m'runtime'[39m, schemaVersion: [32m'1.0'[39m }
+[Config] DEBUG Starting configuration merge { layerCount: [33m4[39m }
+[Config] DEBUG Merging layer { layer: [32m'builtin'[39m }
+[Config] DEBUG Merging layer { layer: [32m'user'[39m }
+[Config] DEBUG Merging layer { layer: [32m'project'[39m }
+[Config] DEBUG Merging layer { layer: [32m'runtime'[39m }
+[Config] INFO Configuration merge completed { keyCount: [33m8[39m, layerCount: [33m4[39m, validationErrors: [33m0[39m }
+
+[90mstderr[2m | tests/unit/doctor-uninitialized-dispatch.test.ts[2m > [22m[2mreadonly doctor through production dispatcher and HTTP[2m > [22m[2mdoes not rewrite activation or state witnesses when diagnosing an already active project
+[22m[39m[Config] DEBUG Validating configuration layer { layer: [32m'builtin'[39m, schemaVersion: [32m'1.0'[39m }
+[Config] DEBUG Validating configuration layer { layer: [32m'user'[39m, schemaVersion: [32m'1.0'[39m }
+[Config] DEBUG Validating configuration layer { layer: [32m'project'[39m, schemaVersion: [32m'1.0'[39m }
+[Config] DEBUG Validating configuration layer { layer: [32m'runtime'[39m, schemaVersion: [32m'1.0'[39m }
+[Config] DEBUG Starting configuration merge { layerCount: [33m4[39m }
+[Config] DEBUG Merging layer { layer: [32m'builtin'[39m }
+[Config] DEBUG Merging layer { layer: [32m'user'[39m }
+[Config] DEBUG Merging layer { layer: [32m'project'[39m }
+[Config] DEBUG Merging layer { layer: [32m'runtime'[39m }
+[Config] INFO Configuration merge completed { keyCount: [33m8[39m, layerCount: [33m4[39m, validationErrors: [33m0[39m }
+
+[90mstderr[2m | tests/unit/doctor-uninitialized-dispatch.test.ts[2m > [22m[2mreadonly doctor through production dispatcher and HTTP[2m > [22m[2mdoes not rewrite activation or state witnesses when diagnosing an already active project
+[22m[39m[Config] DEBUG Validating configuration layer { layer: [32m'builtin'[39m, schemaVersion: [32m'1.0'[39m }
+[Config] DEBUG Validating configuration layer { layer: [32m'user'[39m, schemaVersion: [32m'1.0'[39m }
+[Config] DEBUG Validating configuration layer { layer: [32m'project'[39m, schemaVersion: [32m'1.0'[39m }
+[Config] DEBUG Validating configuration layer { layer: [32m'runtime'[39m, schemaVersion: [32m'1.0'[39m }
+[Config] DEBUG Starting configuration merge { layerCount: [33m4[39m }
+[Config] DEBUG Merging layer { layer: [32m'builtin'[39m }
+[Config] DEBUG Merging layer { layer: [32m'user'[39m }
+[Config] DEBUG Merging layer { layer: [32m'project'[39m }
+[Config] DEBUG Merging layer { layer: [32m'runtime'[39m }
+[Config] INFO Configuration merge completed { keyCount: [33m8[39m, layerCount: [33m4[39m, validationErrors: [33m0[39m }
+
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/unit/doctor-uninitialized-dispatch.test.ts[2m > [22mreadonly doctor through production dispatcher and HTTP[2m > [22mdoes not rewrite activation or state witnesses when diagnosing an already active project
+[31m[1mAssertionError[22m: expected { success: false, …(1) } to match object { success: false, …(1) }[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[32m-   "error": "CONFIGURATION_CHANGE_BLOCKED_ACTIVE_WORK",[39m
+[31m+   "error": "CONFIGURATION_CHANGE_BLOCKED_ACTIVE_WORK: restore the accepted configuration before continuing",[39m
+[2m    "success": false,[22m
+[2m  }[22m
+
+[36m [2m❯[22m tests/unit/doctor-uninitialized-dispatch.test.ts:[2m88:31[22m[39m
+    [90m 86| [39m    const document = path.join(f.project, '.specforge/config/project.j…
+    [90m 87| [39m    const before = snapshot(f.project); expect(await doctor(f)).toMatc…
+    [90m 88| [39m    expect(await ordinary(f)).toMatchObject({ success: false, error: '…
+    [90m   | [39m                              [31m^[39m
+    [90m 89| [39m  })[33m;[39m
+    [90m 90| [39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+error: script "test" exited with code 1

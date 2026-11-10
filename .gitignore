@@ -123,3 +123,9 @@ packages/observability/test-data/observability-req-[0-9]*/
 /.wal-patched-a01/
 /docs/archive/2026-11-09-windows-wal-timeout-repair/local-assets/
 /docs/archive/2026-11-09-windows-wal-timeout-repair/publication-live/
+
+# Owned exact-HEAD isolation and local execution evidence for kernel/diagnostics repair.
+/.kernel-original-a01/
+/.kernel-patched-a01/
+/docs/archive/2026-11-10-diagnostic-prompt-lifecycle/local-assets/
+/docs/archive/2026-11-10-diagnostic-prompt-lifecycle/publication-live/

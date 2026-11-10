@@ -1,0 +1,7 @@
+{"leg":"original","mode":"full","name":"lint","exit_code":0,"status_entries":0}
+{"leg":"original","mode":"full","name":"workspace","exit_code":0,"status_entries":0}
+{"leg":"original","mode":"full","name":"root","exit_code":0,"status_entries":0}
+{"leg":"original","mode":"full","name":"validator-typecheck","exit_code":0,"status_entries":0}
+{"leg":"original","mode":"full","name":"installer-typecheck","exit_code":0,"status_entries":0}
+{"leg":"original","mode":"full","name":"plugin-typecheck","exit_code":0,"status_entries":0}
+{"leg":"original","mode":"full","name":"release-owner-typecheck","exit_code":0,"status_entries":0}

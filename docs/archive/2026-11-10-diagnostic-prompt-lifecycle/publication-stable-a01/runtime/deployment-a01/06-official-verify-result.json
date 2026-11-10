@@ -1,0 +1,16 @@
+{
+  "utc": "2026-11-10T03:36:07.140Z",
+  "cwd": "D:\\code\\SpecForge\\.kernel-patched-a01",
+  "file": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "D:\\code\\SpecForge\\.kernel-patched-a01\\scripts\\sf-installer.ts",
+    "verify"
+  ],
+  "environment_overrides": [],
+  "purpose": "official-verify",
+  "finished_utc": "2026-11-10T03:36:07.643Z",
+  "inner_exit_code": 0,
+  "signal": null,
+  "stdout_sha256": "ab8f1fbad25a8978aaf1826cb5d6163349ac80be56afe8bda0ad2fd4cef76816",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

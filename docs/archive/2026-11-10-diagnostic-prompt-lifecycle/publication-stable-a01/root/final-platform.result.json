@@ -1,0 +1,28 @@
+{
+  "run_id": "CODEX-SF-20261110-KERNEL-A01",
+  "attempt": "A01",
+  "mode": "CODEX_DIRECT",
+  "utc": "2026-11-10T01:16:05.957Z",
+  "file": "C:/Program Files/nodejs/node.exe",
+  "args": [
+    "docs/archive/2026-11-10-diagnostic-prompt-lifecycle/final-platform.cjs"
+  ],
+  "cwd": "D:/code/SpecForge",
+  "purpose": "final-platform",
+  "expected_writes": "Owned isolated worktrees, evidence and declared administrative scope; product installation only in explicit deployment commands",
+  "executable_sha256": "3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237",
+  "runner_sha256": "b17777aa724d32091020c2b5d80932b7f3e827c2174c7ecde93f663bae4a5b3a",
+  "invoked_sources": [
+    {
+      "file": "D:\\code\\SpecForge\\docs\\archive\\2026-11-10-diagnostic-prompt-lifecycle\\final-platform.cjs",
+      "frozen": "D:\\code\\SpecForge\\docs\\archive\\2026-11-10-diagnostic-prompt-lifecycle\\final-platform.source-final-platform.cjs",
+      "sha256": "5e9d43a3b4a9d34f2ce92c2a560d7465441471113090e91f7194ba64b499df90"
+    }
+  ],
+  "ended_utc": "2026-11-10T01:16:06.278Z",
+  "inner_exit_code": 1,
+  "signal": null,
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "98c47f27f69906ea0c537a05f857ec36a12bb1f4df197f6c6bce8a7398cd6618",
+  "observed_writes": "To be reconciled against post-command status and stage-specific inventory"
+}

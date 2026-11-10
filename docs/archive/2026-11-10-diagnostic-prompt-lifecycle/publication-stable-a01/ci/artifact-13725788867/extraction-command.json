@@ -1,0 +1,12 @@
+{
+  "utc": "2026-11-10T01:21:52.580Z",
+  "file": "C:/Users/lyq/.cache/codex-runtimes/codex-primary-runtime/dependencies/native/powershell/pwsh.exe",
+  "args": [
+    "-NoProfile",
+    "-NonInteractive",
+    "-Command",
+    "$ErrorActionPreference='Stop';Add-Type -AssemblyName System.IO.Compression.FileSystem;$z=[IO.Compression.ZipFile]::OpenRead('D:\\code\\SpecForge\\docs\\archive\\2026-11-10-diagnostic-prompt-lifecycle\\local-assets\\artifact-13725788867\\artifact.zip');try{foreach($e in $z.Entries){if($e.FullName -match '(^[/\\]|(^|[/\\])..([/\\]|$)|:)'){throw 'ARCHIVE_PATH_REFUSED'}}}finally{$z.Dispose()};Expand-Archive -LiteralPath 'D:\\code\\SpecForge\\docs\\archive\\2026-11-10-diagnostic-prompt-lifecycle\\local-assets\\artifact-13725788867\\artifact.zip' -DestinationPath 'D:\\code\\SpecForge\\docs\\archive\\2026-11-10-diagnostic-prompt-lifecycle\\local-assets\\artifact-13725788867\\extracted'"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "inner_exit_code": 1
+}
