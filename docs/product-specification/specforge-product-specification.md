@@ -422,6 +422,8 @@ builtin
 
 ## 5.2 活动 Work Item 配置稳定性
 
+`sf_doctor` 是配置接纳之前可达的只读诊断入口。未初始化、项目配置缺失或损坏时，应返回明确的结构化检查结果和不健康状态，不得把诊断本身变成初始化、配置激活或状态修复。诊断只能校验已有配置与通过状态 owner 只读重放已有历史；不得调用会创建 Runtime 或持久化投影的初始化路径。诊断完成不代表项目健康或治理操作已获准，普通治理工具仍执行完整的配置 acceptance、状态、HardStop 与恢复互斥。
+
 运行时项目 JSON 的受控 producer 是 `sf_project_config`，owner 为 `sf-orchestrator`，提供 read（文档哈希及有效性，不返回原始值）、validate、update、restore。更新/恢复必须绑定当前文档原始字节 SHA-256，先校验四层合并，再原子替换；替换前不可变保存旧文档，以哈希指定恢复来源。活动任务期间仅允许写回与已接受配置内容身份一致的配置；缺失/损坏激活证据不得借恢复绕过。配置管理与 acceptance 使用同一项目串行边界，配置损坏时该管理入口仍可达，HardStop 边界不放宽。用户级凭据不由项目工具管理。所有自动请求归档与错误日志对配置工具只记录固定结构，不保存原始配置正文、任意字段名或解析片段。
 
 配置 reload 不得使已经运行的 Work Item 在中途随机切换治理规则。Runtime 必须对活动 Work Item 使用稳定 configuration snapshot 或等价 activation boundary。
@@ -793,6 +795,7 @@ Daemon
 - spawn/manage OpenCode-side agent/session operations required by Runtime
 - session translation
 - prompt delivery
+- prompt delivery 确认消息已被接收，不表示模型、工具或工作流已经完成。生成请求须采用异步交付，传输有界期限不能包含整个模型执行生命周期；noReply 上下文注入仍须先确认持久化顺序。后续完成、模型错误和取消必须由真实事件或消息事实分别验证，不得自动重发超时或被拒绝的生成请求，不得把接收确认当作通过证据。取消未获外部 owner 明确成功确认时必须保留失败，不能把会话标记为已取消。
 - event subscription/translation
 - capability discovery
 - capability discovery 必须读取 OpenCode 已连接 provider 的实际模型字段；未知模型、服务不可用或响应不完整必须明确失败，不得根据模型名称编造上下文长度、视觉或工具能力。

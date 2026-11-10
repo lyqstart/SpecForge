@@ -26,6 +26,9 @@ describe('OpenCodeHttpRuntimeClient', () => {
       if (url.endsWith('/global/health')) {
         return new Response(JSON.stringify({ healthy: true, version: '1.14.41' }), { status: 200 });
       }
+      if (url.includes('/session/session-real/prompt_async')) {
+        return new Response(null, { status: 204 });
+      }
       if (url.includes('/session/session-real/message')) {
         return new Response(JSON.stringify({ info: { id: 'message-1' }, parts: [] }), { status: 200 });
       }
@@ -56,7 +59,7 @@ describe('OpenCodeHttpRuntimeClient', () => {
     expect(requests.map((request) => request.url)).toEqual([
       'http://127.0.0.1:4096/global/health',
       'http://127.0.0.1:4096/session?directory=D%3A%2Fproject',
-      'http://127.0.0.1:4096/session/session-real/message?directory=D%3A%2Fproject',
+      'http://127.0.0.1:4096/session/session-real/prompt_async?directory=D%3A%2Fproject',
       'http://127.0.0.1:4096/session/session-real/abort?directory=D%3A%2Fproject',
     ]);
     expect(JSON.parse(String(requests[2]?.init?.body))).toEqual({

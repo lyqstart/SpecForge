@@ -20,3 +20,5 @@ Current validators and merge policy determine allowed values and sensitive-field
 `ConfigAccess.get` and `getOr` return `{value, source, path}` and do not persist changes. Explicit library interpolation differs from production environment parsing: production does not automatically map every prefixed variable or accept an arbitrary workflow CLI command.
 
 Errors fail closed: `CONFIGURATION_READ_FAILED`, `CONFIGURATION_INVALID_OBJECT`, `CONFIGURATION_SCHEMA_UNSUPPORTED`, `CONFIGURATION_VALIDATION_FAILED`. Record the exact code and file identity without exposing values. Resolve project changes through `sf_project_config`.
+
+`sf_doctor` can diagnose before project acceptance. It reports missing/corrupt configuration as structured unhealthy diagnostic data, without activating configuration, initializing the project or persisting state. This exception belongs only to the exact diagnostic entry; it does not make the project layer optional for normal governance tools. Diagnostic configuration validation is not evidence that a changed configuration has been accepted for an active Work Item.

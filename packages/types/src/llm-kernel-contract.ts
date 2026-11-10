@@ -10,6 +10,7 @@ export interface LLMKernelAdapter {
   spawnAgent(params: SpawnAgentParams): Promise<SpawnAgentResult>;
   getSession(sessionId: string): Promise<SessionInfo | null>;
   cancelSession(sessionId: string, reason: string): Promise<void>;
+  /** Confirms delivery only. Model/tool completion or failure is observed separately in events. */
   sendPrompt(sessionId: string, message: UserMessage): Promise<void>;
   subscribeEvents(sessionId: string): AsyncIterable<KernelEvent>;
   getCapabilities(model: string): Promise<ModelCapabilities>;

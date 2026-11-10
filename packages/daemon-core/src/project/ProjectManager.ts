@@ -3,7 +3,7 @@ import * as crypto from 'crypto';
 import * as fs from 'fs/promises';
 import * as os from 'os';
 import * as path from 'path';
-import { Event, Lock, Subscription } from '../types';
+import { Event, Lock, Subscription, type ProjectState } from '../types';
 import { EventBus } from '../event-bus/EventBus';
 import { WAL } from '../wal/WAL';
 import { StateManager } from '../state/StateManager';
@@ -322,6 +322,18 @@ export class ProjectManager {
    */
   async getProjectStateManager(projectPath: string): Promise<StateManager> {
     return this.withProjectOperation(projectPath, () => this.loadProjectStateManager(projectPath));
+  }
+
+  /** Inspect existing history without initializing a Runtime or persisting a projection. */
+  async inspectProjectState(projectPath: string): Promise<ProjectState> {
+    return this.withProjectOperation(projectPath, async () => {
+      // Retain an existing owner's in-memory loss witnesses when available.
+      // A new reader uses the same WAL/checkpoint validators, never initialize().
+      const reader =
+        this.projectStateManagers.get(projectPath) ??
+        new StateManager(this.pathResolver, projectPath, false);
+      return reader.rebuildState();
+    });
   }
 
   private async loadProjectStateManager(projectPath: string): Promise<StateManager> {

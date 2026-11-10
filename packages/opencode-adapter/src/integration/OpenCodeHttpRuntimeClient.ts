@@ -281,10 +281,12 @@ export class OpenCodeHttpRuntimeClient implements OpenCodeRuntimeClient {
   }
 
   async abortSession(sessionId: string, directory?: string): Promise<void> {
-    await this.requestJson(
+    const body = await this.requestJson(
       'POST',
       this.withDirectory(`/session/${encodeURIComponent(sessionId)}/abort`, directory)
     );
+    if (this.unwrap(body) !== true)
+      throw new OpenCodeRuntimeError('OpenCode did not acknowledge session cancellation');
   }
 
   async sendPrompt(
@@ -302,10 +304,16 @@ export class OpenCodeHttpRuntimeClient implements OpenCodeRuntimeClient {
     const model = this.parseModel(prompt.model);
     if (model) body['model'] = model;
 
+    // noReply persists context synchronously without invoking the model. Keep
+    // that ordering barrier before a subsequent generation request. Generation
+    // itself is acknowledged separately from its later messages/events, so the
+    // bounded delivery deadline never encloses the model/tool execution lifetime.
+    const pathname = prompt.noReply === true ? 'message' : 'prompt_async';
     await this.requestJson(
       'POST',
-      this.withDirectory(`/session/${encodeURIComponent(sessionId)}/message`, directory),
-      body
+      this.withDirectory(`/session/${encodeURIComponent(sessionId)}/${pathname}`, directory),
+      body,
+      prompt.noReply === true ? undefined : 204
     );
   }
 
@@ -356,7 +364,12 @@ export class OpenCodeHttpRuntimeClient implements OpenCodeRuntimeClient {
     }
   }
 
-  private async requestJson(method: string, pathname: string, body?: unknown): Promise<unknown> {
+  private async requestJson(
+    method: string,
+    pathname: string,
+    body?: unknown,
+    expectedStatus?: number
+  ): Promise<unknown> {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), this.timeoutMs);
     try {
@@ -367,7 +380,7 @@ export class OpenCodeHttpRuntimeClient implements OpenCodeRuntimeClient {
         signal: controller.signal,
       });
       const text = await response.text();
-      if (!response.ok) {
+      if (!response.ok || (expectedStatus !== undefined && response.status !== expectedStatus)) {
         throw new OpenCodeRuntimeError(
           `OpenCode ${method} ${pathname} failed with HTTP ${response.status}`,
           response.status,

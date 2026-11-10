@@ -305,12 +305,14 @@ export class ToolDispatcher {
 
     const projectRoot = resolveProjectRoot(ctx);
     const verificationRecovery = isVerificationRecoveryRequest(req.tool, req.args);
+    const diagnosticOnly = req.tool === 'sf_doctor';
 
     let acceptedConfiguration = this.deps.acceptedConfiguration;
     // Configuration repair must remain reachable when the current document is corrupt.
     // Its owner validates prospective data and enforces the same activation boundary.
     if (
       req.tool !== 'sf_project_config' &&
+      !diagnosticOnly &&
       !verificationRecovery &&
       this.deps.projectManager?.getProjectConfiguration
     ) {
@@ -323,7 +325,12 @@ export class ToolDispatcher {
         };
       }
     }
-    const hardStopContext = await resolveHardStopContext(projectRoot, work_item_id, this.deps);
+    // Doctor is already permitted by the HardStop policy. Resolving every WI
+    // through the initializing state accessor would create a Runtime merely
+    // to diagnose an empty directory. Keep both scoped guards below intact.
+    const hardStopContext: HardStopContext = diagnosticOnly
+      ? { resolvedWorkItemId: work_item_id, activeWorkItemIds: [] }
+      : await resolveHardStopContext(projectRoot, work_item_id, this.deps);
 
     // Project-scoped HardStop is independent of WI resolution and must be
     // enforced even when no active WI exists or several WIs are active.
