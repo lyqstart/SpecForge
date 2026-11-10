@@ -11,6 +11,7 @@ import {
   verificationId,
 } from './owner-store';
 import { verificationRejectionDiagnostic } from './rejection-diagnostic';
+import { readGitIdentity } from '../tools/lib/git-read-identity';
 
 export interface VerificationInputFile {
   path: string;
@@ -110,19 +111,19 @@ export async function captureVerificationSource(
   await assertVerificationPath(path.join(root, '.git'));
   if (!(await fs.lstat(path.join(root, '.git'))).isDirectory())
     throw new Error('VERIFICATION_EXTERNAL_GIT_UNSUPPORTED');
-  const top = path.resolve((await gitRead(root, ['rev-parse', '--show-toplevel'])).trim());
   const same = (a: string, b: string) =>
     process.platform === 'win32' ? a.toLowerCase() === b.toLowerCase() : a === b;
-  if (
-    !same(top, root) ||
-    !same(
-      path.resolve(root, (await gitRead(root, ['rev-parse', '--git-common-dir'])).trim()),
-      path.join(root, '.git')
-    )
-  ) {
-    throw new Error('VERIFICATION_EXTERNAL_GIT_UNSUPPORTED');
-  }
-  const head = (await gitRead(root, ['rev-parse', '--verify', 'HEAD'])).trim();
+  const { head } = await readGitIdentity(
+    args => gitRead(root, args),
+    (top, common) => {
+      if (
+        !same(path.resolve(top), root) ||
+        !same(path.resolve(root, common), path.join(root, '.git'))
+      )
+        throw new Error('VERIFICATION_EXTERNAL_GIT_UNSUPPORTED');
+    },
+    true
+  );
   const branch = (await gitRead(root, ['symbolic-ref', '--quiet', '--short', 'HEAD'])).trim();
   if (!/^[a-f0-9]{40}$/.test(head) || !branch)
     throw new Error('VERIFICATION_GIT_IDENTITY_REQUIRED');

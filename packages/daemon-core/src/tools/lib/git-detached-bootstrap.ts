@@ -6,6 +6,7 @@ import { spawn } from 'node:child_process';
 import { createHash, randomUUID } from 'node:crypto';
 import { validateWorkItemId } from './work-item-id-validator';
 import { readWorkItemMetadata } from './work-item-metadata';
+import { readGitIdentity } from './git-read-identity';
 
 type CommandReceipt = {
   args: string[];
@@ -424,16 +425,16 @@ async function snapshot(
   };
   await inspectGit(path.join(root, '.git'));
   if (await exists(path.join(root, '.git/objects/info/alternates'))) fail('EXTERNAL_GIT_DIRECTORY');
-  const top = (await requireGit(root, ['rev-parse', '--show-toplevel'], receipts, audit)).trim();
-  const common = (
-    await requireGit(root, ['rev-parse', '--git-common-dir'], receipts, audit)
-  ).trim();
-  if (
-    identity(top) !== identity(root) ||
-    identity(path.resolve(root, common)) !== identity(path.join(root, '.git'))
-  )
-    fail('EXTERNAL_GIT_DIRECTORY');
-  const head = (await requireGit(root, ['rev-parse', 'HEAD'], receipts, audit)).trim();
+  const { head } = await readGitIdentity(
+    args => requireGit(root, args, receipts, audit),
+    (top, common) => {
+      if (
+        identity(top) !== identity(root) ||
+        identity(path.resolve(root, common)) !== identity(path.join(root, '.git'))
+      )
+        fail('EXTERNAL_GIT_DIRECTORY');
+    }
+  );
   if (head !== expected) fail('HEAD_DRIFT');
   await requireGit(root, ['fsck', '--full', '--no-reflogs'], receipts, audit);
   // status/diff may run clean/textconv programs from repository config. Use
