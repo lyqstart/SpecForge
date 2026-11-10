@@ -296,7 +296,7 @@ export function validateVerificationPlan(value: unknown): asserts value is Verif
     'semanticProof',
   ]);
   verificationRequire(
-    c.contract === 'readonly-node-command/v1' &&
+    ['readonly-node-command/v1', 'readonly-node-command/v2'].includes(String(c.contract)) &&
       c.original === a.command &&
       ['node-test-file', 'node-inline'].includes(String(c.kind)) &&
       Array.isArray(c.argv) &&
@@ -311,9 +311,15 @@ export function validateVerificationPlan(value: unknown): asserts value is Verif
   );
   const semantic = verificationRecord(c.semanticProof, ['rule', 'inputHashes']);
   verificationRequire(
-    ['single-file-no-host-observation/v1', 'finite-posix-readonly-predicate/v1'].includes(
-      String(semantic.rule)
-    ),
+    (c.contract === 'readonly-node-command/v1' &&
+      ['single-file-no-host-observation/v1', 'finite-posix-readonly-predicate/v1'].includes(
+        String(semantic.rule)
+      )) ||
+      (c.contract === 'readonly-node-command/v2' &&
+        c.kind === 'node-test-file' &&
+        typeof c.entry === 'string' &&
+        c.entry.endsWith('.cjs') &&
+        semantic.rule === 'single-file-bounded-monotonic-observation/v1'),
     'SEMANTIC_PROOF_INVALID'
   );
   for (const [name, identity] of Object.entries(verificationRecord(semantic.inputHashes))) {

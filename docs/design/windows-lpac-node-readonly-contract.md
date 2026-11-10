@@ -112,3 +112,22 @@ Task是WI-owned产物，使用directory-layout定义的canonical `candidates/tas
 D23执行Evidence的独立来源就是Runtime私有认证回执；evidence_manifest直接引用`verification-owner:receipt:<id>`和`canonical-json:verification-execution/v1`身份，不要求复制为verification_evidence文件，也不得用probe或人工观测替代。verification_evidence仅承接另有合同要求的独立观测源，沿用现有受控文件名规则：ASCII字母数字开头，主体仅字母数字._-且最多101字符，扩展名限jsonl/txt/png/webp/jpg/jpeg，禁止路径分隔符或覆盖。此说明不扩大写入口或改动Runtime命名判据。
 
 共同消费者可核验整组执行回执，不能套用轻量写入的30秒客户端假设。Verification Report/Evidence Manifest及Verification/Gate/Close入口使用有界180秒HTTP等待，关闭传输层自动重发；这不改变原生120秒墙钟或任何隔离/验真预算。传输截止或取消后的已提交请求结果为unknown，必须只读对账规范产物、Gate与StateManager后再决定动作；unknown不等于失败/回滚，也不能当pass。请求前握手失败保持原fail closed。Verifier不越权对账Runtime trace，Orchestrator保留原操作和实际owner结果。
+
+
+## D24 精确单调计时命令合同
+
+AUTHORITY=SPS §9.2.5 / Registry D24
+COMMAND_CONTRACT=readonly-node-command/v2
+SEMANTIC_PROOF=single-file-bounded-monotonic-observation/v1
+
+此版本只增加冻结测试入口的有限计时观测，沿用 D23 全部身份、权限、状态、源/资产新鲜度、私有认证、Lease、取消/恢复、共同消费者和原生边界。旧非计时命令保持原 v1 字节形态与证明；静态谓词仍是 v1。含时钟的命令不得标为 single-file-no-host-observation。外层 verification-plan/v1、verification-execution/v1 和原生 profile 不变，由共享 Schema 严格配对嵌套版本/证明，消费时从冻结且新鲜的源重新编译核验。
+
+有限语法（变量名通过词法符号核验，不硬编码业务名称或 Work Item）：
+
+1. 仅 `node --test ENTRY.cjs` 入口；顶层 const 声明分别是 `const { test } = require('node:test')`、`const assert = require('node:assert/strict')`、`const { performance } = require('node:perf_hooks')`，及从字面量相对本地模块 const 解构取得的待测函数。测试入口中三个内置模块只允许这些精确加载点，不接受别名、重绑定、type-only、全局时钟、ESM 计时形式或 require 遮蔽。本地依赖继续通过原纯语法证明，且不能再引入这些内置测试/时钟模块。
+2. 一个顶层 `test('literal name', () => { ... })`；回调同步、无参数、无选项。回调内连续四条语句为 `const start = performance.now(); const result = core(args); const elapsed = performance.now() - start; assert.ok(elapsed <= LIMIT);`。LIMIT 是大于零且不超过 120000 的有限数值字面量，单位毫秒；原 Task 的具体门槛不得替换或放宽。core 是上述本地 const 函数绑定，测量表达式恰好一次调用，不嵌套其他调用。准备输入可在起点之前完成，结果断言可在门槛断言后完成；两者仍须通过原纯语法边界。
+3. performance/start/elapsed 只允许出现在上述声明与精确引用位置；不得赋值、别名、返回、闭包捕获或向外暴露。test 只作为该次直接测试调用；assert 只可直接调用白名单的严格断言成员，不得替换成员或传递对象。禁止引入同名遮蔽或额外内置加载点。每个计时入口恰好一个区间，多个性能场景应由多个独立测试入口表达。
+4. require/test/core/now/assert 均须为直接非可选调用；`?.` 不属于上述精确形态。完整计时源图还拒绝 generator、动态 import 表达式及 Array.fromAsync（包括直接或字符串解构别名），避免把延后工作对象的创建当作同步工作完成。原异步关键词、计时器、未知全局和依赖拒绝保持；旧非计时 v1 不增加这些新拒绝。
+5. 不重写测试源或更换解释器。实际 argv 仍为固定 Node/no-addons/preserve-symlinks/TAP/test/test-isolation=none/ENTRY；真实数值退出、完整输出、Job 结束和清理、Lease/Receipt 才能支持 passed。编译成功只证明声明的同步调用区间，不证明内部算法正确、惰性数据已消费或业务验收通过。
+
+验收须包含合法区间与真实数值失败、作用域/别名/逃逸/动态依赖/绝对时钟/其他 performance 成员及命令版本混用的拒绝；旧 v1 正反例不减少。Runtime、Report、Evidence、Gate、Formal Version、Close 同用严格 Schema/重编译与新鲜度；篡改、撤销、漂移、取消和中断不得通过。三平台回归与部署后新 daemon/固定资产/真实专业工具 LPAC 正反例分别取证。此处为合同和待验收要求，不宣称实现或部署已通过；完整业务实现只在其 Candidate 另获批准后进行。

@@ -9,6 +9,7 @@ import { VerificationOwnerStore, canonicalVerificationJson as json, verification
 import { PINNED_NODE_SHA256, VERIFICATION_PROFILE, type VerificationAssets } from '../../src/verification/verification-plan';
 import { computeCandidateHash } from '../../src/tools/lib/governance-invariants-v11';
 import { setHardStop } from '../../src/tools/lib/hard-stop-latch';
+import { validateVerificationPlan } from '../../src/verification/verification-schema';
 import type { ToolInvocationVerifier, TrustedToolInvocationProof } from '@specforge/types/trusted-tool-invocation';
 import type { NativeExecutionFacts } from '../../src/verification/native-executor';
 
@@ -52,6 +53,38 @@ async function fixture(){
 afterEach(async()=>{vi.restoreAllMocks();for(const root of roots.splice(0)){const full=path.resolve(root);if(path.dirname(full)!==path.resolve(os.tmpdir())||!path.basename(full).startsWith('sf-verification-runtime-unit-'))throw Error('UNSAFE_TEST_CLEANUP');await fs.rm(full,{recursive:true,force:true});}});
 
 describe('verification Runtime plan/permission owner (unit dependencies)',()=>{
+  it('freezes and recompiles the v2 interval without changing native profile or permitting proof/version laundering',async()=>{
+    const f=await fixture();
+    await write(path.join(f.project,'src','timing.cjs'),'function calculate(n){return n+1;}module.exports={calculate};');
+    await write(path.join(f.project,'tests','timing.cjs'),"const {test}=require('node:test');const assert=require('node:assert/strict');const {performance}=require('node:perf_hooks');const {calculate}=require('../src/timing.cjs');test('bounded',()=>{const start=performance.now();const result=calculate(41);const elapsed=performance.now()-start;assert.ok(elapsed<=50);assert.equal(result,42);});");
+    git(f.project,['add','src/timing.cjs','tests/timing.cjs']);
+    git(f.project,['-c','user.name=Synthetic','-c','user.email=synthetic@localhost.invalid','commit','-q','-m','synthetic timing inputs']);
+    const taskFile=path.join(f.wiRoot,'candidates','tasks.md');
+    await fs.writeFile(taskFile,(await fs.readFile(taskFile,'utf8')).replace('tests/value.test.mjs','tests/timing.cjs'));
+    const decisionFile=path.join(f.wiRoot,'user_decision.json'),decision=JSON.parse(await fs.readFile(decisionFile,'utf8'));
+    decision.candidate_hash=await computeCandidateHash(f.wiRoot);await write(decisionFile,decision);
+    const result=await f.service.plan(f.args,f.context('timingPlan'));
+    expect(result.success).toBe(true);
+    const plan=await f.service.getPlan(result.plan_id as string);
+    expect(plan.command.contract).toBe('readonly-node-command/v2');
+    expect(plan.command.semanticProof.rule).toBe('single-file-bounded-monotonic-observation/v1');
+    expect(plan.profile).toBe(VERIFICATION_PROFILE);
+    expect(plan.source.files.map(s=>s.path)).toEqual(['package.json','src/timing.cjs','tests/timing.cjs']);
+    expect(()=>validateVerificationPlan(plan)).not.toThrow();
+    for(const [contract,rule] of [
+      ['readonly-node-command/v1','single-file-bounded-monotonic-observation/v1'],
+      ['readonly-node-command/v2','single-file-no-host-observation/v1'],
+      ['readonly-node-command/v3','single-file-bounded-monotonic-observation/v1'],
+    ]){
+      const forged=structuredClone(plan);Object.assign(forged.command,{contract});Object.assign(forged.command.semanticProof,{rule});
+      expect(()=>validateVerificationPlan(forged)).toThrow();
+    }
+    f.setRole('sf-verifier');
+    const prepared=await f.service.run({action:'prepare',work_item_id:wi,plan_id:result.plan_id},f.context('timingPrepare'));
+    expect(prepared.application_started).toBe(false);
+    await fs.appendFile(path.join(f.project,'src','timing.cjs'),'\n// changed frozen source\n');
+    await expect(f.service.run({action:'run',work_item_id:wi,attempt_record_id:prepared.attempt_record_id},f.context('timingDrift'))).rejects.toThrow('SOURCE_CHANGED');
+  });
   it('retains the legal code-only not_applicable merge path',async()=>{
     const f=await fixture();
     for(const name of ['work_item.json','candidate_manifest.json','user_decision.json']){

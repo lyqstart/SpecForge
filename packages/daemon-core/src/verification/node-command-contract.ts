@@ -4,6 +4,12 @@ import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
 import path from 'node:path';
 import { createHash } from 'node:crypto';
 import ts from 'typescript';
+import {
+  assertSynchronousTimedSource,
+  MONOTONIC_COMMAND_CONTRACT,
+  MONOTONIC_PROOF_RULE,
+  proveMonotonicInterval,
+} from './monotonic-command-proof';
 import { readVerificationFile } from './owner-store';
 import {
   isStaticTaskDeclaration,
@@ -18,14 +24,17 @@ export interface FrozenNodeSource {
   sha256: string;
 }
 export interface NodeCommandPlan {
-  contract: typeof NODE_COMMAND_CONTRACT;
+  contract: typeof NODE_COMMAND_CONTRACT | typeof MONOTONIC_COMMAND_CONTRACT;
   original: string;
   kind: 'node-test-file' | 'node-inline';
   argv: string[];
   entry: string | null;
   inlineSource: string | null;
   semanticProof: {
-    rule: 'single-file-no-host-observation/v1' | 'finite-posix-readonly-predicate/v1';
+    rule:
+      | 'single-file-no-host-observation/v1'
+      | 'finite-posix-readonly-predicate/v1'
+      | typeof MONOTONIC_PROOF_RULE;
     inputHashes: Record<string, string>;
   };
 }
@@ -198,8 +207,10 @@ export function compileNodeCommand(
   }
   const visited = new Set<string>(),
     inputHashes: Record<string, string> = {};
-  function dependency(specifier: string, owner: string): void {
-    if (builtins.has(specifier)) return;
+  let timingActive = false;
+  function dependency(specifier: string, owner: string, approvedBuiltin = false): void {
+    if (builtins.has(specifier) && (!timingActive || approvedBuiltin)) return;
+    if (specifier === 'node:perf_hooks' && approvedBuiltin) return;
     if (!specifier.startsWith('./') && !specifier.startsWith('../')) fail('DEPENDENCY');
     const resolved = path.posix.normalize(path.posix.join(path.posix.dirname(owner), specifier));
     sourcePath(resolved);
@@ -247,6 +258,9 @@ export function compileNodeCommand(
       realpath: name => name,
     };
     const checker = ts.createProgram([virtualName], options, host).getTypeChecker();
+    const timing = proveMonotonicInterval(file, checker, name === entry && name.endsWith('.cjs'));
+    if (timing) timingActive = true;
+    if (timingActive) assertSynchronousTimedSource(file);
     const locallyBound = (node: ts.Identifier): boolean =>
       (
         (ts.isShorthandPropertyAssignment(node.parent)
@@ -319,7 +333,11 @@ export function compileNodeCommand(
       ) {
         if (node.arguments.length !== 1 || !ts.isStringLiteral(node.arguments[0]))
           fail('DYNAMIC_MODULE');
-        dependency((node.arguments[0] as ts.StringLiteral).text, name);
+        dependency(
+          (node.arguments[0] as ts.StringLiteral).text,
+          name,
+          timing?.builtinCalls.has(node) ?? false
+        );
       }
       if (ts.isPropertyAccessExpression(node)) {
         if (forbiddenProperties.has(node.name.text)) fail('OBSERVABLE_PROPERTY:' + node.name.text);
@@ -343,7 +361,10 @@ export function compileNodeCommand(
       )
         fail('OBSERVABLE_OPTION');
       if (ts.isIdentifier(node)) {
-        if (forbiddenNames.has(node.text) || forbiddenProperties.has(node.text))
+        if (
+          (forbiddenNames.has(node.text) || forbiddenProperties.has(node.text)) &&
+          !timing?.identifiers.has(node)
+        )
           fail('HOST_GLOBAL_OR_PROPERTY:' + node.text);
         const parent = node.parent;
         const property =
@@ -391,7 +412,7 @@ export function compileNodeCommand(
   if (entry) inspect(entry);
   else inspect(inlineVirtualPath, inlineSource!);
   return {
-    contract: NODE_COMMAND_CONTRACT,
+    contract: timingActive ? MONOTONIC_COMMAND_CONTRACT : NODE_COMMAND_CONTRACT,
     original,
     kind,
     entry,
@@ -400,7 +421,10 @@ export function compileNodeCommand(
       kind === 'node-test-file'
         ? [...commonFlags, '--test-reporter=tap', '--test', '--test-isolation=none', entry!]
         : [...commonFlags, '-e', inlineSource!],
-    semanticProof: { rule: 'single-file-no-host-observation/v1', inputHashes },
+    semanticProof: {
+      rule: timingActive ? MONOTONIC_PROOF_RULE : 'single-file-no-host-observation/v1',
+      inputHashes,
+    },
   };
 }
 
@@ -470,7 +494,8 @@ export async function collectNodeCommandInputs(
     }
     scan(file);
     for (const specifier of dependencies) {
-      if (builtins.has(specifier)) continue;
+      // Discovery is not authorization: compileNodeCommand proves the precise perf_hooks use.
+      if (builtins.has(specifier) || specifier === 'node:perf_hooks') continue;
       if (!specifier.startsWith('./') && !specifier.startsWith('../')) fail('DEPENDENCY');
       const resolved = sourcePath(
         path.posix.normalize(path.posix.join(path.posix.dirname(name), specifier))

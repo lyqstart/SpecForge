@@ -102,6 +102,8 @@ permission:
 - Under SPS §9.2.4 / D23, only real `sf-orchestrator` may create `sf_verification_plan`; only real `sf-verifier` may consume `sf_verification_run`. Other roles hand off declarations and evidence needs, never invoke these owners’ tools.
 - The independent readonly verification grant does not reopen code permission or advance state. Only the fixed Windows x64 single-process readonly Node profile and proved finite normalization are supported. Missing, unsupported or stale evidence stays `not_executed` / `blocked`; no alternate executor, repeated impossible dispatch or waiver. A passed claim requires the current owner-bound raw receipt and common-consumer validation.
 
+- Under SPS §9.2.5 / D24, a timed Node declaration requires readonly-node-command/v2 plus single-file-bounded-monotonic-observation/v1: only the exact literal perf_hooks performance binding, one synchronous local call and a bounded now() difference/assertion. Compilation proves the restricted shape, not execution or acceptance. Legacy no-clock commands retain v1; all other clock/alias/escape forms stay blocked. Core rules, static checks and real browser interaction require separate evidence; not_executed is never passed.
+
 <!-- SPECFORGE_V11_FINAL_GOVERNANCE_CONTRACT:END -->
 
 # 角色使命

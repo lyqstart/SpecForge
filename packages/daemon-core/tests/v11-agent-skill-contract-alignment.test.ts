@@ -92,6 +92,24 @@ function withoutContract(text: string): string {
 }
 
 describe('v1.1.5 Agent/Skill final governance contract alignment', () => {
+  it('keeps D24 owner boundaries and published timing examples consistent with the real compiler', () => {
+    const current = targetMarkdownFiles().filter(file => readFileSync(file,'utf8').includes('### D18 / D23 verification ownership'));
+    expect(current.length).toBeGreaterThan(10);
+    for(const file of current){
+      const body=contractBody(readFileSync(file,'utf8'));
+      for(const token of ['SPS §9.2.5 / D24','readonly-node-command/v2','single-file-bounded-monotonic-observation/v1','Legacy no-clock commands retain v1','not_executed is never passed'])expect(body,relativeToRepo(file)).toContain(token);
+    }
+    const examples=['agents/sf-task-planner.md','skills/superpowers-writing-plans/SKILL.md'].map(file=>{
+      const text=readFileSync(path.join(USERLEVEL_ROOT,file),'utf8');
+      const example=text.split('<!-- SPECFORGE_D24_TIMING_EXAMPLE:START -->')[1]?.split('<!-- SPECFORGE_D24_TIMING_EXAMPLE:END -->')[0]?.match(/```javascript\s*([\s\S]*?)```/)?.[1];
+      expect(example,file).toBeDefined();return example!;
+    });
+    expect(examples[0]).toBe(examples[1]);
+    const input=(name:string,content:string)=>({path:name,content,sha256:createHash('sha256').update(content).digest('hex')});
+    const plan=compileNodeCommand('node --test example.cjs',[input('example.cjs',examples[0]!),input('core.cjs','function operation(n){return n+1;}module.exports={operation};')]);
+    expect(plan.contract).toBe('readonly-node-command/v2');
+    expect(plan.semanticProof.rule).toBe('single-file-bounded-monotonic-observation/v1');
+  });
   it('keeps the base completion workflow on independent D23 owners without role-local shell execution', () => {
     const base = read('setup/userlevel-opencode/agents/_AGENT_BASE.md');
     const workflow = base.split('# 执行流程')[1]?.split('# 文档硬规则')[0] ?? '';

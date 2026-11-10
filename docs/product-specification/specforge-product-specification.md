@@ -4,7 +4,7 @@
 >
 > Specification ID: SPS-1.0
 >
-> Product release version: 1.0.26
+> Product release version: 1.0.27
 >
 > Product version epoch: 1
 >
@@ -724,6 +724,16 @@ Runtime验证owner保留不可覆盖的计划、Attempt、原始输出及受信�
 Verification Report、Evidence Manifest、Verification Gate、Formal Version和Close必须使用共同执行证据校验器，核验计划/源/资产/回执身份、新鲜度、实际owner/状态/许可及完整终止，真实拒绝篡改、复制、越权、HardStop和陈旧结果。完成SP-I01及固定编译资产/模板/Agent/Skill/登记/安装器一致性的SP-D01、安装后新Daemon真实正反例与中断恢复后，方可在原业务启用。优先恢复原WI，由合法owner重新核验Task005及其余验收的原命令语义，不创建重复WI、不手改封存Task、不自动补写implementation_done/verification_done或跳过Gate/Audit/Merge/Close。
 
 另批准一次Bootstrap自身故障的有限恢复：真实跟踪文件清单超出spawnSync默认缓冲引发ENOBUFS时，仅为该自修复将输出上限显式设为32MiB，并验证大于1MiB完整清单及超限/失败仍阻断；真实READY前不进行其他产品写入。此恢复不放宽后续Bootstrap门禁。
+
+### 9.2.5 有限单调计时观测（D24）
+
+产品负责人批准有限恢复方案：在 D23 已采用的固定 Windows x64 单进程 LPAC 配置内新增精确、版本化的同步调用耗时观测，不增加执行权限或预算。允许的时钟仅为测试入口中由字面量 `require('node:perf_hooks')` 解构取得的不可变 `performance` 绑定及无参数 `performance.now()`；不得使用绝对时钟、全局 performance、Date、process/hrtime、其他成员、别名、逃逸或动态加载。
+
+计时入口只使用固定 node:test / node:assert/strict 绑定，一个无参数同步测试回调内连续记录起点、调用一次冻结本地核心函数、记录终点减起点、对差值作正有限毫秒字面量上限断言。上限不得超过既有墙钟预算；具体允许 AST 形态及不可逃逸证明由从属合同冻结。它证明固定隔离环境下该次同步调用的观测和数值判定，不证明跨机器相同耗时，也不把计时观测冒称为无主机观测。
+
+旧命令仍产生原 `readonly-node-command/v1` 与原证明；新增计时命令使用 `readonly-node-command/v2` 和 `single-file-bounded-monotonic-observation/v1`，严格配对并绑定完整输入，所有共同消费者重新编译和验新。Plan、Attempt、Lease、Receipt 的既有外层合同及原生隔离配置不因嵌套命令证明增加而机械升版；旧有效记录仍按原合同核验。未知版本、规则混用或不能证明语义保持时继续拒绝。
+
+必须完成正反例、绑定与逃逸攻防、旧 v1 回归、共同消费者和取消恢复检查、三平台全量回归，以及正式部署后真实角色工具和固定 LPAC 数值正反例，再恢复原 WI 的候选准备。非 Windows 平台不冒称运行 Windows 后端。此次决定授权产品能力修复与验收后部署，不批准业务 Candidate、不创建重复 WI、不手改 Runtime 真相源、不授权业务代码；完整业务候选与必要 Gate 就绪后仍须另行显式批准。
 
 ## 9.3 HardStop
 

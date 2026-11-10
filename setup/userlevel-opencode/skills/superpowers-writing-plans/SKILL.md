@@ -16,6 +16,29 @@ Task Planner 只规划新 Task 的原始验证声明，不执行命令。已批�
 
 Bun、第三方测试框架、tsc、ESLint、构建、服务/网络、文件写入和需要子进程的检查不属于当前执行范围。若原验收确实需要这些能力，保留原要求并在候选批准前返回 `blocked` / `not_executed` finding，由 Orchestrator 处理能力缺口；不得换解释器、转普通宿主、以 grep 替代类型检查或降低验收。不得修改已封存 Task 来适配本能力。
 
+### D24 有限计时声明（只规划，不提前实施）
+
+每个 CJS 计时入口只允许一个无参数同步测试回调、一次本地核心调用和四条连续计时/断言语句。准备输入在起点之前，结果断言在计时断言之后；LIMIT 必须是原需求规定的正有限毫秒字面量，且不超过既有 120000ms 墙钟预算。其他时钟、别名、额外读取、闭包逃逸、成员替换或测量表达式内嵌套调用继续拒绝。以下仅说明可规划语法，不是已执行结果，也不授权在 Candidate 批准前写业务实现。
+
+<!-- SPECFORGE_D24_TIMING_EXAMPLE:START -->
+```javascript
+const {test}=require('node:test');
+const assert=require('node:assert/strict');
+const {performance}=require('node:perf_hooks');
+const {operation}=require('./core.cjs');
+test('one bounded synchronous operation',()=>{
+  const input=41;
+  const start=performance.now();
+  const result=operation(input);
+  const elapsed=performance.now()-start;
+  assert.ok(elapsed<=50);
+  assert.equal(result,42);
+});
+```
+<!-- SPECFORGE_D24_TIMING_EXAMPLE:END -->
+
+命令编译只证明受限形态；正式执行仍由 sf-orchestrator/sf-verifier 独立拥有并核验。核心规则测试、静态检查、真实浏览器交互必须分列证据，未执行或当前不支持的必需项标 not_executed/blocked；不能用 Node 计时或 grep 代替浏览器交互/类型检查。
+
 ## 指令
 
 在为每个 task 生成执行计划时，你必须包含以下四个部分：
