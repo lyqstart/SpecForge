@@ -92,6 +92,15 @@ function withoutContract(text: string): string {
 }
 
 describe('v1.1.5 Agent/Skill final governance contract alignment', () => {
+  it('keeps finite-source boundaries and verifier raw evidence ownership consistent',()=>{
+    const current=targetMarkdownFiles().filter(file=>readFileSync(file,'utf8').includes('### D18 / D23 verification ownership'));
+    expect(current.length).toBeGreaterThan(10);
+    for(const file of current){const body=contractBody(readFileSync(file,'utf8'));for(const token of ['SPS §9.2.7 / D26','readonly-node-command/v3','single-file-finite-local-keys/v1','verification-rejection/v1'])expect(body,relativeToRepo(file)).toContain(token);}
+    const verifier=read('setup/userlevel-opencode/agents/sf-verifier.md');
+    const role=verifier.split('你唯一允许写入的治理产物是自己拥有的')[1]?.split('## D23')[0]??'';
+    for(const type of ['verification_report','evidence_manifest','verification_evidence','sf_artifact_write'])expect(role).toContain(type);
+    expect(role).toContain('不能替代、复制伪造 Runtime 私有执行回执');
+  });
   it('keeps D24 owner boundaries and published timing examples consistent with the real compiler', () => {
     const current = targetMarkdownFiles().filter(file => readFileSync(file,'utf8').includes('### D18 / D23 verification ownership'));
     expect(current.length).toBeGreaterThan(10);

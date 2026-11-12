@@ -1,5 +1,39 @@
 /** Bounded private diagnostics. Never logs arbitrary exception text, paths or response bodies. */
 import { createHash } from 'node:crypto';
+const stages = new Set([
+  'project_context',
+  'invocation_owner',
+  'request_schema',
+  'recovery',
+  'revocation',
+  'authority',
+  'source_inventory',
+  'input_graph',
+  'command_proof',
+  'source_inputs',
+  'fixed_assets',
+  'validate_and_read_inputs',
+  'claim_invocation',
+  'freeze_or_publish',
+]);
+const errorStages = new WeakMap<object, string>();
+export function tagVerificationRejection(error: unknown, stage: string): void {
+  if (error instanceof Error && stages.has(stage)) errorStages.set(error, stage);
+}
+/** Safe tool-result metadata survives detached stdio and is retained by the calling Runtime. */
+export function verificationPublicRejection(error: unknown): Record<string, unknown> {
+  const message = error instanceof Error ? error.message : '';
+  return {
+    contract: 'verification-rejection/v1',
+    stage: error instanceof Error ? (errorStages.get(error) ?? 'unknown') : 'unknown',
+    reason:
+      message === 'NODE_COMMAND_FINITE_SOURCE_UNPROVEN'
+        ? 'finite_source_unproven'
+        : message.startsWith('NODE_COMMAND_UNSUPPORTED:')
+          ? 'unsupported_command'
+          : 'request_rejected',
+  };
+}
 export function verificationRejectionDiagnostic(error: unknown): Record<string, unknown> {
   const value = error instanceof Error ? error : null,
     extended: (Error & { code?: unknown; syscall?: unknown; statusCode?: unknown }) | null = value;

@@ -33,7 +33,11 @@ import {
   type NativeExecutionFacts,
 } from './native-executor';
 import { VerificationInvocationLease } from './invocation-lease';
-import { verificationRejectionDiagnostic } from './rejection-diagnostic';
+import {
+  verificationRejectionDiagnostic,
+  tagVerificationRejection,
+  verificationPublicRejection,
+} from './rejection-diagnostic';
 import {
   validateVerificationPlan,
   validateVerificationAttempt,
@@ -498,6 +502,7 @@ export class VerificationRuntime {
         root = this.project(context);
       diagnosticStage = 'invocation_owner';
       const proof = await this.owner('sf_verification_plan', args, context);
+      diagnosticStage = 'request_schema';
       if (action === 'create') {
         requireFact(!this.stopping, 'DAEMON_STOPPING');
         record(args, ['action', 'work_item_id', 'task_id', 'verification_type', 'command_index']);
@@ -572,13 +577,16 @@ export class VerificationRuntime {
         diagnosticStage = 'claim_invocation';
         const preparation = await this.claim(proof, 'prepare-plan', { plan, planId: id });
         try {
+          diagnosticStage = 'freeze_or_publish';
           await this.freeze(id, inputs, false);
           await this.assertFresh(id, plan);
           requireFact((await this.store.put('plan', plan)) === id, 'PLAN_PUBLISH_IDENTITY');
         } catch (error) {
+          tagVerificationRejection(error, diagnosticStage);
           return {
             success: false,
             error: errorCode(error),
+            diagnostic: verificationPublicRejection(error),
             preparation_id: preparation,
             plan_id: id,
             application_started: false,
@@ -597,6 +605,7 @@ export class VerificationRuntime {
         };
       }
       if (action === 'recover') {
+        diagnosticStage = 'recovery';
         requireFact(!this.stopping, 'DAEMON_STOPPING');
         record(args, ['action', 'work_item_id', 'preparation_id']);
         verificationHash(args.preparation_id);
@@ -632,6 +641,7 @@ export class VerificationRuntime {
         return { success: true, plan_id: prior.planId, application_started: false };
       }
       if (action === 'revoke') {
+        diagnosticStage = 'revocation';
         record(args, ['action', 'work_item_id', 'plan_id']);
         verificationHash(args.plan_id);
         const plan = await this.getPlan(args.plan_id);
@@ -660,6 +670,7 @@ export class VerificationRuntime {
       }
       throw new Error('VERIFICATION_PLAN_ACTION_INVALID');
     } catch (error) {
+      tagVerificationRejection(error, diagnosticStage);
       const message = error instanceof Error ? error.message : '';
       if (!/^(?:VERIFICATION|TOOL_INVOCATION|NODE_COMMAND)_[A-Z_]+$/.test(message))
         console.error(

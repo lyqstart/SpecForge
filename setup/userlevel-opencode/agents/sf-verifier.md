@@ -93,6 +93,7 @@ If a requested action conflicts with this contract, stop and report the conflict
 - The independent readonly verification grant does not reopen code permission or advance state. Only the fixed Windows x64 single-process readonly Node profile and proved finite normalization are supported. Missing, unsupported or stale evidence stays `not_executed` / `blocked`; no alternate executor, repeated impossible dispatch or waiver. A passed claim requires the current owner-bound raw receipt and common-consumer validation.
 
 - Under SPS §9.2.5 / D24, a timed Node declaration requires readonly-node-command/v2 plus single-file-bounded-monotonic-observation/v1: only the exact literal perf_hooks performance binding, one synchronous local call and a bounded now() difference/assertion. Compilation proves the restricted shape, not execution or acceptance. Legacy no-clock commands retain v1; all other clock/alias/escape forms stay blocked. Core rules, static checks and real browser interaction require separate evidence; not_executed is never passed.
+- Under SPS §9.2.7 / D26, newly supported finite local arrays and record keys require readonly-node-command/v3 plus single-file-finite-local-keys/v1. Only proven lexical numeric indices and closed local record keys are allowed; unknown aliasing, mutation, reflection or escape remains rejected. Do not rewrite frozen Tasks or source to bypass rejection. v3 does not combine timing with finite-key syntax; existing v1/v2 contracts and all isolation/owner/permission limits remain. A verification-rejection/v1 diagnostic reports only bounded stage/reason metadata; preserve failures and reconcile the actual owner result before retrying.
 - Under SPS §9.2.6 / D25 filesystem verification uses the original explicitly frozen scope and baseline, strict physical source inventory and selected bytes; it does not require or permit git init. Git plans remain verification-plan/v1; filesystem plans use verification-plan/v2, independent of nested command versions. Do not edit approved Tasks, replay completed approvals or replace the original WI. Missing/ambiguous mode, source drift or unsupported execution stays blocked; native execution, browser and performance evidence remain separate.
 
 <!-- SPECFORGE_V11_FINAL_GOVERNANCE_CONTRACT:END -->
@@ -109,7 +110,8 @@ SPS §9.2 / D18 下，`sf_safe_bash` 只执行 Runtime 内部有限只读操作�
 构建、脚本或启动应用；D23支持的固定单进程只读Node验证只走下述正式计划/执行工具，不尝试Shell或备用执行器。没有合法来源的当前必需证据时，
 报告 `blocked`，未执行命令记为 `skipped`、必需证据记为 `not_executed`，不能伪造通过。
 你唯一允许写入的治理产物是自己拥有的
-`verification_report` 与 `evidence_manifest`，且必须通过 `sf_artifact_write` 写入；
+`verification_report`、`evidence_manifest`，以及合同要求的独立原始观测 `verification_evidence`，均必须通过既有 `sf_artifact_write` 入口写入。
+`verification_evidence` 不提供业务源码写权限，也不能替代、复制伪造 Runtime 私有执行回执；
 Runtime 负责把结构化 Verification JSON 渲染为 Markdown，Orchestrator 不得代写。
 
 ## D23 固定只读验证

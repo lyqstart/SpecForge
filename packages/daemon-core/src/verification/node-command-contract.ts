@@ -2,6 +2,11 @@ import { hasAsciiControl } from '@specforge/types';
 import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
 /** Finite Task command grammar and conservative proof for single-file isolation normalization. */
 import path from 'node:path';
+import {
+  FINITE_COMMAND_CONTRACT,
+  FINITE_PROOF_RULE,
+  proveFiniteSource,
+} from './finite-source-proof';
 import { createHash } from 'node:crypto';
 import ts from 'typescript';
 import {
@@ -24,7 +29,10 @@ export interface FrozenNodeSource {
   sha256: string;
 }
 export interface NodeCommandPlan {
-  contract: typeof NODE_COMMAND_CONTRACT | typeof MONOTONIC_COMMAND_CONTRACT;
+  contract:
+    | typeof NODE_COMMAND_CONTRACT
+    | typeof MONOTONIC_COMMAND_CONTRACT
+    | typeof FINITE_COMMAND_CONTRACT;
   original: string;
   kind: 'node-test-file' | 'node-inline';
   argv: string[];
@@ -34,7 +42,8 @@ export interface NodeCommandPlan {
     rule:
       | 'single-file-no-host-observation/v1'
       | 'finite-posix-readonly-predicate/v1'
-      | typeof MONOTONIC_PROOF_RULE;
+      | typeof MONOTONIC_PROOF_RULE
+      | typeof FINITE_PROOF_RULE;
     inputHashes: Record<string, string>;
   };
 }
@@ -205,6 +214,7 @@ export function compileNodeCommand(
     if (byPath.has(key) || hash(source.content) !== source.sha256) fail('SOURCE_IDENTITY');
     byPath.set(key, source);
   }
+  const finite = entry ? proveFiniteSource(sources, entry, forbiddenProperties) : null;
   const visited = new Set<string>(),
     inputHashes: Record<string, string> = {};
   let timingActive = false;
@@ -259,6 +269,7 @@ export function compileNodeCommand(
     };
     const checker = ts.createProgram([virtualName], options, host).getTypeChecker();
     const timing = proveMonotonicInterval(file, checker, name === entry && name.endsWith('.cjs'));
+    if (timing && finite) fail('FINITE_TIMING_COMBINATION');
     if (timing) timingActive = true;
     if (timingActive) assertSynchronousTimedSource(file);
     const locallyBound = (node: ts.Identifier): boolean =>
@@ -298,7 +309,8 @@ export function compileNodeCommand(
           ts.SyntaxKind.ImportEqualsDeclaration,
           ts.SyntaxKind.ComputedPropertyName,
           ts.SyntaxKind.DeclareKeyword,
-        ].includes(node.kind)
+        ].includes(node.kind) &&
+        !(ts.isElementAccessExpression(node) && finite?.get(name)?.has(node.getStart()))
       )
         fail('HOST_OBSERVATION_OR_UNSUPPORTED_SYNTAX');
       if (
@@ -362,8 +374,16 @@ export function compileNodeCommand(
         fail('OBSERVABLE_OPTION');
       if (ts.isIdentifier(node)) {
         if (
-          (forbiddenNames.has(node.text) || forbiddenProperties.has(node.text)) &&
-          !timing?.identifiers.has(node)
+          (forbiddenNames.has(node.text) ||
+            (forbiddenProperties.has(node.text) &&
+              !(
+                finite &&
+                locallyBound(node) &&
+                !ts.isBindingElement(node.parent) &&
+                !ts.isShorthandPropertyAssignment(node.parent)
+              ))) &&
+          !timing?.identifiers.has(node) &&
+          !(node.text === 'Object' && finite?.get(name)?.has(node.getStart()))
         )
           fail('HOST_GLOBAL_OR_PROPERTY:' + node.text);
         const parent = node.parent;
@@ -395,7 +415,13 @@ export function compileNodeCommand(
           ['process', 'console', 'require', 'module', 'exports'].includes(node.text)
         )
           fail('HOST_IDENTIFIER_ALIAS:' + node.text);
-        if (!property && !special && !locallyBound(node) && !pureGlobals.has(node.text))
+        if (
+          !property &&
+          !special &&
+          !locallyBound(node) &&
+          !pureGlobals.has(node.text) &&
+          !(node.text === 'Object' && finite?.get(name)?.has(node.getStart()))
+        )
           fail('UNBOUND_OR_HOST_IDENTIFIER:' + node.text);
       }
       if (
@@ -412,7 +438,11 @@ export function compileNodeCommand(
   if (entry) inspect(entry);
   else inspect(inlineVirtualPath, inlineSource!);
   return {
-    contract: timingActive ? MONOTONIC_COMMAND_CONTRACT : NODE_COMMAND_CONTRACT,
+    contract: finite
+      ? FINITE_COMMAND_CONTRACT
+      : timingActive
+        ? MONOTONIC_COMMAND_CONTRACT
+        : NODE_COMMAND_CONTRACT,
     original,
     kind,
     entry,
@@ -422,7 +452,11 @@ export function compileNodeCommand(
         ? [...commonFlags, '--test-reporter=tap', '--test', '--test-isolation=none', entry!]
         : [...commonFlags, '-e', inlineSource!],
     semanticProof: {
-      rule: timingActive ? MONOTONIC_PROOF_RULE : 'single-file-no-host-observation/v1',
+      rule: finite
+        ? FINITE_PROOF_RULE
+        : timingActive
+          ? MONOTONIC_PROOF_RULE
+          : 'single-file-no-host-observation/v1',
       inputHashes,
     },
   };

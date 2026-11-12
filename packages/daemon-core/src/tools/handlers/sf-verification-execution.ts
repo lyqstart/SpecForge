@@ -1,6 +1,9 @@
 import { registerHandler } from '../ToolDispatcher';
 import { verificationRequestAbort } from '../../verification/request-context';
-import { verificationRejectionDiagnostic } from '../../verification/rejection-diagnostic';
+import {
+  verificationRejectionDiagnostic,
+  verificationPublicRejection,
+} from '../../verification/rejection-diagnostic';
 
 for (const tool of ['sf_verification_plan', 'sf_verification_run'] as const) {
   registerHandler(tool, async (args, context, deps) => {
@@ -18,7 +21,12 @@ for (const tool of ['sf_verification_plan', 'sf_verification_run'] as const) {
         : 'VERIFICATION_REQUEST_REJECTED';
       if (code === 'VERIFICATION_REQUEST_REJECTED')
         console.error(JSON.stringify(verificationRejectionDiagnostic(error)));
-      return { success: false, error: code, application_passed: false };
+      return {
+        success: false,
+        error: code,
+        application_passed: false,
+        diagnostic: verificationPublicRejection(error),
+      };
     }
   });
 }

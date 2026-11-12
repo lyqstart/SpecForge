@@ -4,7 +4,7 @@
 >
 > Specification ID: SPS-1.0
 >
-> Product release version: 1.0.29
+> Product release version: 1.0.30
 >
 > Product version epoch: 1
 >
@@ -752,6 +752,16 @@ filesystem 计划必须绑定原 WI/PSV、原始 scope/baseline 哈希、支持�
 源采集的第一方 Windows 物理检查须由构建期固定、哈希核验的 launcher 承担，受 owner 私有请求和数值预算约束；只读控制侧检查不增加应用能力、任意 shell 或新的用户工具。计划、prepare、执行前后和共同消费均重验模式/权威/源/资产。既有真实角色、StateManager、HardStop、独立只读许可、租约、取消和恢复规则不变；代码写许可撤销不等于撤销独立验证许可。
 
 验收必须包括不变的 Git 旧合同、版本混用拒绝、完整清单与同大小/mtime内容替换、物理身份和链接攻击、权限/状态/撤销/取消恢复、真实 Windows 无 Git 普通与计时正例和 50ms 数值失败，以及 Report/Evidence/Verification/Formal Version/Close 共同消费者。三平台全量回归、发行验证和正式安装后新 Daemon/专业工具验收完成后才恢复原业务。此决定不提供未执行的性能或浏览器证据，不授权业务返工或更宽执行能力。
+
+### 9.2.7 有限本地数据与键域证明（D26）
+
+产品负责人批准有限语义扩展：在 D23–D25 原有固定单进程 LPAC、真实 owner、状态、独立验证许可与冻结源身份边界内，新增可证明本地数据来源的只读下标访问及有限记录键读取；不修改已批准业务 Task，不增加权限、capability、网络、文件写入或预算。不能证明的来源、改写、别名和逃逸保持拒绝。
+
+新增 readonly-node-command/v3 严格配对 single-file-finite-local-keys/v1，仅用于冻结 CJS node:test 本地源码图。数字字面量或经词法绑定与完整写入检查证明的循环数值索引，只能读取封闭本地数组；精确 Object.keys 只接受可证明未逃逸、未改写的普通本地记录，包括冻结 CommonJS 对象字面量导出。键域必须有限且排除全部现行危险属性，不能把任意字符串或宿主对象纳入证明；下标写入、未知调用、getter/setter、原型反射、动态导出和 Object 别名均拒绝。仅有解析成功不等于执行或验收通过。
+
+旧 v1/v2 有效声明与记录保持原身份及验证语义；当前 v3 不承接计时/新键组合。原命令和源字节不重写，实际执行仍使用固定 Node 与原隔离配置。Runtime、Report、Evidence、Gate、Formal Version、Close 使用相同严格版本配对、重新编译与新鲜度判据。安全拒绝诊断须在正式 detached 部署可获取，仅允许有界阶段与原因枚举，不回显源、路径、堆栈、任意异常或提供方内容。
+
+先完成合同、实现、正反例与完整三平台回归/发行、官方安装和真实 OpenCode 专业工具 LPAC 验收，再部署并从原 WI 的真实断点继续；不重放已成功恢复或把原业务未执行证据记为通过。Verifier 指令须与 §6.6 的既有原始观测产物所有权一致，Runtime 私有执行回执仍不属于 Agent 写入面。
 
 ## 9.3 HardStop
 

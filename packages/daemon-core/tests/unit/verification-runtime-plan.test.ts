@@ -53,6 +53,31 @@ async function fixture(){
 afterEach(async()=>{vi.restoreAllMocks();for(const root of roots.splice(0)){const full=path.resolve(root);if(path.dirname(full)!==path.resolve(os.tmpdir())||!path.basename(full).startsWith('sf-verification-runtime-unit-'))throw Error('UNSAFE_TEST_CLEANUP');await fs.rm(full,{recursive:true,force:true});}});
 
 describe('verification Runtime plan/permission owner (unit dependencies)',()=>{
+  it('freezes v3 source identity and rejects version laundering and source drift before execution',async()=>{
+    const f=await fixture();
+    await write(path.join(f.project,'src','finite.cjs'),'module.exports={sum};function sum(a,b){return a+b;}');
+    await write(path.join(f.project,'tests','finite.cjs'),"const {test}=require('node:test');const assert=require('node:assert/strict');const api=require('../src/finite.cjs');test('finite',()=>{const values=[2,3];assert.equal(api.sum(values[0],values[1]),5);const keys=Object.keys(api).sort();for(let i=0;i<keys.length;i++){assert.equal(typeof api[keys[i]],'function');}});");
+    git(f.project,['add','src/finite.cjs','tests/finite.cjs']);
+    git(f.project,['-c','user.name=Synthetic','-c','user.email=synthetic@localhost.invalid','commit','-q','-m','synthetic finite inputs']);
+    const taskFile=path.join(f.wiRoot,'candidates','tasks.md');
+    await fs.writeFile(taskFile,(await fs.readFile(taskFile,'utf8')).replace('tests/value.test.mjs','tests/finite.cjs'));
+    const decisionFile=path.join(f.wiRoot,'user_decision.json'),decision=JSON.parse(await fs.readFile(decisionFile,'utf8'));
+    decision.candidate_hash=await computeCandidateHash(f.wiRoot);await write(decisionFile,decision);
+    const result=await f.service.plan(f.args,f.context('finitePlan'));
+    expect(result.success).toBe(true);const plan=await f.service.getPlan(result.plan_id as string);
+    expect(plan.command.contract).toBe('readonly-node-command/v3');
+    expect(plan.command.semanticProof.rule).toBe('single-file-finite-local-keys/v1');
+    expect(plan.profile).toBe(VERIFICATION_PROFILE);expect(plan.permission.codeWriteGranted).toBe(false);
+    expect(()=>validateVerificationPlan(plan)).not.toThrow();
+    for(const contract of ['readonly-node-command/v1','readonly-node-command/v2','readonly-node-command/v4']){
+      const forged=structuredClone(plan);Object.assign(forged.command,{contract});expect(()=>validateVerificationPlan(forged)).toThrow();
+    }
+    f.setRole('sf-verifier');
+    const prepared=await f.service.run({action:'prepare',work_item_id:wi,plan_id:result.plan_id},f.context('finitePrepare'));
+    expect(prepared.application_started).toBe(false);
+    await fs.appendFile(path.join(f.project,'src','finite.cjs'),'\n// changed frozen source\n');
+    await expect(f.service.run({action:'run',work_item_id:wi,attempt_record_id:prepared.attempt_record_id},f.context('finiteDrift'))).rejects.toThrow('SOURCE_CHANGED');
+  });
   it('freezes and recompiles the v2 interval without changing native profile or permitting proof/version laundering',async()=>{
     const f=await fixture();
     await write(path.join(f.project,'src','timing.cjs'),'function calculate(n){return n+1;}module.exports={calculate};');
