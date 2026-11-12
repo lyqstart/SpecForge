@@ -171,7 +171,7 @@ export function validateFilesystemSource(
 
 export async function verificationSourceMode(
   root: string,
-  authority: VerificationAuthoritySnapshot
+  authority: Pick<VerificationAuthoritySnapshot, 'workItemId' | 'files'>
 ): Promise<'git' | 'filesystem'> {
   const file = path.join(workItemRoot(root, authority.workItemId), 'governance_scope.json'),
     raw = await readVerificationFile(file);
@@ -185,9 +185,10 @@ export async function verificationSourceMode(
   return mode === 'filesystem' ? 'filesystem' : 'git';
 }
 
-async function filesystemAuthority(
+/** Shared read-only frozen authority validation; does not start source inspection or an application. */
+export async function inspectFilesystemVerificationAuthority(
   root: string,
-  authority: VerificationAuthoritySnapshot
+  authority: Pick<VerificationAuthoritySnapshot, 'workItemId' | 'psv' | 'files'>
 ): Promise<{ scopeSha256: string; baselineSha256: string }> {
   requireFact((await verificationSourceMode(root, authority)) === 'filesystem', 'MODE_REQUIRED');
   const wi = workItemRoot(root, authority.workItemId),
@@ -407,7 +408,7 @@ export async function captureFilesystemSource(
   owner: string,
   assets: VerificationAssets
 ): Promise<FilesystemVerificationSource> {
-  const binding = await filesystemAuthority(root, authority),
+  const binding = await inspectFilesystemVerificationAuthority(root, authority),
     before = await inspect(root, selected, owner, assets),
     files: VerificationInputFile[] = [];
   for (const native of before.selectedFiles) {
@@ -431,7 +432,7 @@ export async function captureFilesystemSource(
   const after = await inspect(root, selected, owner, assets);
   requireFact(
     json(before) === json(after) &&
-      json(binding) === json(await filesystemAuthority(root, authority)),
+      json(binding) === json(await inspectFilesystemVerificationAuthority(root, authority)),
     'SCAN_DRIFT'
   );
   files.sort((a, b) => a.path.localeCompare(b.path));

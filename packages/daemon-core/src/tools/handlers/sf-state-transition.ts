@@ -752,6 +752,7 @@ registerHandler('sf_state_transition', async (args, context, deps) => {
       toState,
       workflowType: finalWorkflowType,
       actorRole: typeof context?.agent === 'string' ? context.agent : 'system',
+      invocationArgs: args,
       evidence: (args['evidence'] as string) ?? '',
       transitionContext: {
         source: 'sf_state_transition',

@@ -44,46 +44,46 @@ export interface SealTransitionEntry {
  */
 export const SEAL_TRANSITIONS: readonly SealTransitionEntry[] = [
   {
-    from: 'gates_running',
-    to: 'approval_required',
-    authorizedSubject: 'gate_runner',
-    evidenceRequired: 'gate_summary.md',
+    from: "gates_running",
+    to: "approval_required",
+    authorizedSubject: "gate_runner",
+    evidenceRequired: "gate_summary.md",
   },
   {
-    from: 'gates_running',
-    to: 'gates_failed',
-    authorizedSubject: 'gate_runner',
-    evidenceRequired: 'gate_summary.md',
+    from: "gates_running",
+    to: "gates_failed",
+    authorizedSubject: "gate_runner",
+    evidenceRequired: "gate_summary.md",
   },
   {
-    from: 'approval_required',
-    to: 'approved',
-    authorizedSubject: 'user_decision_recorder',
-    evidenceRequired: 'user_decision.json',
+    from: "approval_required",
+    to: "approved",
+    authorizedSubject: "user_decision_recorder",
+    evidenceRequired: "user_decision.json",
   },
   {
-    from: 'approval_required',
-    to: 'rejected',
-    authorizedSubject: 'user_decision_recorder',
-    evidenceRequired: 'user_decision.json',
+    from: "approval_required",
+    to: "rejected",
+    authorizedSubject: "user_decision_recorder",
+    evidenceRequired: "user_decision.json",
   },
   {
-    from: 'merge_ready',
-    to: 'merging',
-    authorizedSubject: 'merge_runner',
-    evidenceRequired: 'gate_summary.md',
+    from: "merge_ready",
+    to: "merging",
+    authorizedSubject: "merge_runner",
+    evidenceRequired: "gate_summary.md",
   },
   {
-    from: 'merging',
-    to: 'merged',
-    authorizedSubject: 'merge_runner',
-    evidenceRequired: 'merge_report.md',
+    from: "merging",
+    to: "merged",
+    authorizedSubject: "merge_runner",
+    evidenceRequired: "merge_report.md",
   },
   {
-    from: 'verification_done',
-    to: 'closed',
-    authorizedSubject: 'close_gate',
-    evidenceRequired: 'verification_report.md',
+    from: "verification_done",
+    to: "closed",
+    authorizedSubject: "close_gate",
+    evidenceRequired: "verification_report.md",
   },
 ] as const;
 
@@ -99,7 +99,9 @@ export const SEAL_TRANSITIONS: readonly SealTransitionEntry[] = [
  * @returns 是否为 seal transition
  */
 export function isSealTransition(from: string, to: string): boolean {
-  return SEAL_TRANSITIONS.some((entry) => entry.from === from && entry.to === to);
+  return SEAL_TRANSITIONS.some(
+    (entry) => entry.from === from && entry.to === to,
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -113,8 +115,13 @@ export function isSealTransition(from: string, to: string): boolean {
  * @param to 目标状态
  * @returns SealTransitionEntry 或 undefined
  */
-export function getSealTransition(from: string, to: string): SealTransitionEntry | undefined {
-  return SEAL_TRANSITIONS.find((entry) => entry.from === from && entry.to === to);
+export function getSealTransition(
+  from: string,
+  to: string,
+): SealTransitionEntry | undefined {
+  return SEAL_TRANSITIONS.find(
+    (entry) => entry.from === from && entry.to === to,
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -132,35 +139,38 @@ export function getSealTransition(from: string, to: string): SealTransitionEntry
  * - 未包含所有 workflow type 的分支路径（如 blocked 的回退目标）
  * - Phase 2 在 TransitionAuthorizer 中做完整实现时，此列表可被替换
  */
-export const REQUESTABLE_TRANSITIONS: readonly { from: string; to: string }[] = [
-  // intake path
-  { from: 'created', to: 'intake_ready' },
-  { from: 'intake_ready', to: 'impact_analyzing' },
-  { from: 'impact_analyzing', to: 'impact_analyzed' },
-  { from: 'impact_analyzed', to: 'workflow_selected' },
+export const REQUESTABLE_TRANSITIONS: readonly { from: string; to: string }[] =
+  [
+    // intake path
+    { from: "created", to: "intake_ready" },
+    { from: "intake_ready", to: "impact_analyzing" },
+    { from: "impact_analyzing", to: "impact_analyzed" },
+    { from: "impact_analyzed", to: "workflow_selected" },
 
-  // candidate path (non-seal)
-  { from: 'workflow_selected', to: 'candidate_preparing' },
-  { from: 'workflow_selected', to: 'implementation_ready' },
-  { from: 'candidate_preparing', to: 'candidate_prepared' },
-  { from: 'candidate_prepared', to: 'gates_running' },
-  { from: 'gates_failed', to: 'candidate_preparing' },
-  { from: 'gates_failed', to: 'gates_running' },
+    // candidate path (non-seal)
+    { from: "workflow_selected", to: "candidate_preparing" },
+    { from: "workflow_selected", to: "implementation_ready" },
+    { from: "candidate_preparing", to: "candidate_prepared" },
+    { from: "candidate_prepared", to: "gates_running" },
+    { from: "gates_failed", to: "candidate_preparing" },
+    { from: "gates_failed", to: "gates_running" },
 
-  // post-approval path (non-seal)
-  { from: 'approved', to: 'merge_ready' },
+    // post-approval path (non-seal)
+    { from: "approved", to: "merge_ready" },
 
-  // post-merge path
-  { from: 'merged', to: 'post_merge_verified' },
-  { from: 'post_merge_verified', to: 'implementation_ready' },
+    // post-merge path
+    { from: "merged", to: "post_merge_verified" },
+    { from: "post_merge_verified", to: "implementation_ready" },
 
-  // implementation path
-  { from: 'implementation_ready', to: 'implementation_running' },
-  { from: 'implementation_done', to: 'verification_running' },
+    // implementation path
+    { from: "implementation_ready", to: "implementation_running" },
+    { from: "implementation_done", to: "verification_running" },
 
-  // blocked rollback
-  { from: 'blocked', to: 'candidate_preparing' },
-  { from: 'blocked', to: 'gates_running' },
-  { from: 'blocked', to: 'implementation_ready' },
-  { from: 'blocked', to: 'workflow_selected' },
-] as const;
+    // blocked rollback
+    // Evidence-bound return to the prior verification stage; coordinator/Runtime guard it.
+    { from: "blocked", to: "verification_running" },
+    { from: "blocked", to: "candidate_preparing" },
+    { from: "blocked", to: "gates_running" },
+    { from: "blocked", to: "implementation_ready" },
+    { from: "blocked", to: "workflow_selected" },
+  ] as const;

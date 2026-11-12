@@ -40,6 +40,7 @@ export interface ToolInvokeRequest {
 }
 
 export interface ToolDeps {
+  toolInvocationVerifier?: import('@specforge/types/trusted-tool-invocation').ToolInvocationVerifier;
   verificationRuntime?: import('../verification/VerificationRuntime').VerificationRuntime;
   acceptedConfiguration?: import('@specforge/configuration').MergedConfig;
   stateManager: any;

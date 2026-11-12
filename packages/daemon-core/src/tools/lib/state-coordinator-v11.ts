@@ -22,6 +22,7 @@ import { ACTOR_ROLES } from '@specforge/types/actor-roles';
 import { validateCurrentCandidateManifestValue } from '@specforge/types';
 import { validateSemanticClosureProvenance } from './semantic-closure-provenance';
 import { verifyInvalidMergedSpecRecoveryAuthorization } from './invalid-merged-spec-closure-recovery.js';
+import { inspectBlockedVerificationRecovery } from './blocked-verification-recovery';
 
 export type AuthoritativeStateRead = {
   current_state: string | null;
@@ -40,6 +41,7 @@ export type TransitionWithEvidenceInput = {
   actorRole: string;
   evidence: string;
   transitionContext?: Record<string, unknown>;
+  invocationArgs?: Record<string, unknown>;
 };
 export type TransitionWithEvidenceResult = {
   attempted: true;
@@ -406,6 +408,7 @@ export async function transitionWithEvidence(
   if (!input.deps?.projectManager)
     throw new Error('STATE_COORDINATOR_TRANSITION_FAILED: ProjectManager not available');
   await validateTransitionRequest(input);
+  const verificationRecovery = await inspectBlockedVerificationRecovery(input);
   const projectSm = await input.deps.projectManager.getProjectStateManager(input.projectRoot);
   await projectSm.transition(
     input.workItemId,
@@ -415,7 +418,11 @@ export async function transitionWithEvidence(
     input.workflowType,
     {
       evidence: input.evidence,
-      transition_context: { source: 'state_coordinator_v11', ...(input.transitionContext ?? {}) },
+      transition_context: {
+        source: 'state_coordinator_v11',
+        ...(input.transitionContext ?? {}),
+        ...(verificationRecovery ? { verification_recovery: verificationRecovery } : {}),
+      },
     }
   );
   return {

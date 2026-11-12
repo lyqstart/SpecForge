@@ -4,7 +4,7 @@
 >
 > Specification ID: SPS-1.0
 >
-> Product release version: 1.0.28
+> Product release version: 1.0.29
 >
 > Product version epoch: 1
 >
@@ -479,6 +479,10 @@ superseded
 ~~~
 
 禁止通过自由文本状态、work_item.json.status 或手工 JSON 编辑推进状态。
+
+验证阶段的受限恢复由原 `sf-orchestrator` 通过 `sf_state_transition` 承担。只有完整、有效的事件历史证明该 WI 的最近一次状态事件为 `verification_running → blocked`，且当前 Candidate/批准、成功 Merge、正式 PSV、冻结 scope、实施审计及其来源绑定仍有效、没有活动 HardStop、代码写权限保持撤销时，才允许 `blocked → verification_running`。真实宿主必须证明当前工具调用属于该项目的 Orchestrator；调用参数中的角色、事件 ID、reason 或恢复声明不能代替此证明。
+
+恢复事件必须记录原阻塞事件 ID 和当前证据的原始字节绑定，并在 WAL 的序列化写入边界比较前序状态事件身份；重复请求、并发漂移、缺失或损坏历史必须在追加前拒绝。历史阻塞、审批、Merge 和实施记录均保留，不重新执行已成功阶段，不修改已批准 Task，不释放代码权限，不直接产生验证通过或 Close。恢复后重新申请验证计划、由真实 Verifier 执行并经过原有 Evidence/Gate/Close 链。其他来源的 `blocked` 不获得此恢复路径。
 
 ## 6.3 Work Item transaction artifacts
 

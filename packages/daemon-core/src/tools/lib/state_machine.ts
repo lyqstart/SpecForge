@@ -192,6 +192,7 @@ export const FINAL_TRANSITIONS: ReadonlyMap<WorkflowState, readonly WorkflowStat
   [
     'blocked',
     [
+      'verification_running',
       'intake_ready',
       'workflow_selected',
       'candidate_preparing',

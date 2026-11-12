@@ -65,6 +65,7 @@ export class StateManager {
 
   /** In-memory state map: work_item_id → WorkItemState */
   private workItemStates: Map<string, WorkItemState> = new Map();
+  private lastWorkItemTransitions = new Map<string, Event>();
 
   /** Last event ID from the WAL (tracked for all events, not just transitions) */
   private _lastEventId: string = '';
@@ -215,6 +216,23 @@ export class StateManager {
       );
     }
 
+    const previousTransition = this.lastWorkItemTransitions.get(workItemId);
+    if (fromState === 'blocked' && toState === 'verification_running') {
+      const context = extraPayload.transition_context as Record<string, unknown> | undefined;
+      const recovery = context?.verification_recovery as Record<string, unknown> | undefined;
+      if (
+        actor !== 'sf-orchestrator' ||
+        context?.source !== 'sf_state_transition' ||
+        previousTransition?.payload.from_state !== 'verification_running' ||
+        previousTransition.payload.to_state !== 'blocked' ||
+        recovery?.blocked_event_id !== previousTransition.eventId ||
+        typeof recovery?.binding_sha256 !== 'string' ||
+        !/^[a-f0-9]{64}$/.test(recovery.binding_sha256)
+      ) {
+        throw new Error('BLOCKED_VERIFICATION_RECOVERY_PROVENANCE_REQUIRED');
+      }
+    }
+
     // ── Step 3: Create the state.transition event ──
     const event = this.wal.createEvent(
       workItemId,
@@ -232,7 +250,10 @@ export class StateManager {
     );
 
     // ── Step 4: Append event to WAL (with fsync guarantee) ──
-    await this.wal.appendEvent(event);
+    await this.wal.appendEvent(event, {
+      workItemId,
+      eventId: previousTransition?.eventId ?? null,
+    });
 
     // ── Step 5: Advance the in-memory WAL cursor and derived state ──
     // The checkpoint is a projection of the authoritative WAL. Persisting the
@@ -312,6 +333,13 @@ export class StateManager {
     return this.rebuildValidatedEvents(events);
   }
 
+  /** Read the latest transition from fully validated history, without persistence. */
+  async readLastWorkItemTransition(workItemId: string): Promise<Event | null> {
+    await this.rebuildState();
+    const event = this.lastWorkItemTransitions.get(workItemId);
+    return event ? structuredClone(event) : null;
+  }
+
   private assertTransitionHistory(events: Event[]): void {
     const replayed = new Map<string, string>();
     for (const event of events) {
@@ -340,6 +368,7 @@ export class StateManager {
 
     // Clear and rebuild
     this.workItemStates.clear();
+    this.lastWorkItemTransitions.clear();
 
     let lastEventId = '';
     let lastEventTs = 0;
@@ -463,6 +492,7 @@ export class StateManager {
 
       // Rebuild from the provided events
       this.workItemStates.clear();
+      this.lastWorkItemTransitions.clear();
       let lastEventId = '';
       let lastEventTs = 0;
 
@@ -513,6 +543,7 @@ export class StateManager {
 
     const toState = payload?.to_state ?? '';
     if (!toState) return;
+    this.lastWorkItemTransitions.set(workItemId, event);
 
     const workflowType = payload?.workflow_type ?? DEFAULT_WORKFLOW_TYPE;
     const now = event.ts ?? Date.now();

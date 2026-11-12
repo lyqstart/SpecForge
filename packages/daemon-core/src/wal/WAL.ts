@@ -49,10 +49,29 @@ export class WAL {
     });
   }
 
-  async appendEvent(event: Event): Promise<void> {
+  async appendEvent(
+    event: Event,
+    previousTransition?: { workItemId: string; eventId: string | null }
+  ): Promise<void> {
     if (!isCurrentRuntimeEvent(event)) throw new Error('WAL_EVENT_SCHEMA_INVALID');
     await this.serialized(async () => {
       const { events } = await this.readHistory();
+      if (previousTransition) {
+        const latest = events
+          .filter(
+            item =>
+              item.action === 'state.transition' &&
+              (item.payload.work_item_id ?? item.projectId) === previousTransition.workItemId
+          )
+          .at(-1);
+        if (
+          event.action !== 'state.transition' ||
+          (event.payload.work_item_id ?? event.projectId) !== previousTransition.workItemId ||
+          (latest?.eventId ?? null) !== previousTransition.eventId
+        ) {
+          throw new Error('WAL_STATE_TRANSITION_CONFLICT');
+        }
+      }
       if (events.some(previous => previous.eventId === event.eventId))
         throw new Error('WAL_DUPLICATE_EVENT');
       // Sequence belongs to durable insertion order, not reservation/caller order.

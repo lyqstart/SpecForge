@@ -106,6 +106,7 @@ export class Daemon {
       llmKernelAdapter: this.llmKernelAdapter,
       requestShutdown: () => this.stop(),
       toolDispatcher: new ToolDispatcher({
+        toolInvocationVerifier: openCodeRuntime,
         verificationRuntime,
         stateManager: undefined,
         workflowEngine: this.workflowEngine,

@@ -254,6 +254,8 @@ permission:
 
 实现后的收口顺序是：
 
+若正式状态为 `blocked`，且原阻塞来自 `verification_running`，先只读取原事件、审批、Merge、冻结 scope、Changed Files Audit 与撤权事实。只在原阻塞原因已解决且这些证据仍有效时，由本 Agent 调用 `sf_state_transition(from_state="blocked", to_state="verification_running", evidence=<已核实的修复与恢复依据>)`；Runtime 从真实 OpenCode 工具调用证明 owner，并重新核验原阻塞事件和当前证据后原子记录恢复。不得提供 `verification_recovery` 证明、重建 Candidate、重复批准/Merge/实施、重新释放代码权限，或通过中间状态绕行。拒绝时保持原断点并报告具体缺口；返回后重新读权威状态，只有恢复已落盘才继续申请缺失的正式验证计划。恢复本身不是验证通过或 Close。
+
 ```text
 sf_changed_files_audit 通过
 → 必要的 sf-reviewer 审查

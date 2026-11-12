@@ -110,7 +110,7 @@ export class OpenCodeHttpRuntimeClient implements OpenCodeRuntimeClient {
     input: OpenCodeToolInvocationRequest
   ): Promise<OpenCodeToolInvocationProof> {
     const expectedAgent =
-      input.tool === 'sf_verification_plan'
+      input.tool === 'sf_verification_plan' || input.tool === 'sf_state_transition'
         ? 'sf-orchestrator'
         : input.tool === 'sf_verification_run'
           ? 'sf-verifier'

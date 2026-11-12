@@ -1,9 +1,9 @@
 import { tool } from "@opencode-ai/plugin";
-import { daemon } from "./lib/thin-client";
+import { daemon, DaemonClient } from "./lib/thin-client";
 
 export default tool({
   description:
-    "推进已存在 Work Item 的状态，验证合法性并更新权威状态。新 Work Item 必须使用 sf_work_item_create 创建；本工具不负责创建。WI ID 固定为 WI-NNNN，例如 WI-0001。",
+    "推进已存在 Work Item 的状态，验证合法性并更新权威状态。blocked→verification_running 仅由真实 sf-orchestrator 在 Runtime 证明原验证阻塞事件、当前批准/合并/实施审计有效且无 HardStop、代码仍撤权时恢复；不重做已成功步骤，不传入自制恢复证明。新 Work Item 必须使用 sf_work_item_create 创建；本工具不负责创建。WI ID 固定为 WI-NNNN，例如 WI-0001。",
   args: {
     work_item_id: tool.schema
       .string()
@@ -32,12 +32,21 @@ export default tool({
   },
 
   async execute(args, context) {
-    const result = await daemon.invokeTool("sf_state_transition", args, {
-      sessionID: context.sessionID,
-      agent: context.agent,
-      directory: context.directory,
-      worktree: context.worktree,
-    });
+    const recovery =
+      args.from_state === "blocked" && args.to_state === "verification_running";
+    const client = recovery ? new DaemonClient(180000) : daemon;
+    const result = await client.invokeTool(
+      "sf_state_transition",
+      args,
+      {
+        sessionID: context.sessionID,
+        messageID: context.messageID,
+        agent: context.agent,
+        directory: context.directory,
+        worktree: context.worktree,
+      },
+      recovery ? { signal: context.abort, retry: false } : undefined,
+    );
 
     if (typeof result === "string") return result;
     return JSON.stringify(result, null, 2);
