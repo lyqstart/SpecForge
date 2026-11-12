@@ -12,6 +12,7 @@ import { promiseFromSync } from '@specforge/types';
 
 import * as fs from 'fs/promises';
 import * as path from 'path';
+import { randomUUID } from 'crypto';
 import { Event, ProjectState, WorkItemState } from '../types';
 import { WAL } from '../wal';
 import { IPathResolver } from '../daemon/path-resolver';
@@ -623,12 +624,25 @@ export class StateManager {
       this._stateVersion++;
       state.stateVersion = this._stateVersion;
       const persistedState = serializeRuntimeCheckpoint(state);
-      await fs.writeFile(this.statePath, JSON.stringify(persistedState, null, 2), 'utf-8');
-      const handle = await fs.open(this.statePath, 'a');
+      // WAL readers validate this checkpoint as a history-loss witness. Never
+      // expose a truncated/partial witness while publishing a new projection.
+      // The sibling is exclusively created; a failed publication leaves the
+      // previous checkpoint intact and the already-fsynced WAL replayable.
+      const temporaryPath = `${this.statePath}.${randomUUID()}.tmp`;
+      await fs.writeFile(temporaryPath, JSON.stringify(persistedState, null, 2), {
+        encoding: 'utf-8',
+        flag: 'wx',
+      });
       try {
-        await handle.sync();
+        const handle = await fs.open(temporaryPath, 'r+');
+        try {
+          await handle.sync();
+        } finally {
+          await handle.close();
+        }
+        await fs.rename(temporaryPath, this.statePath);
       } finally {
-        await handle.close();
+        await fs.rm(temporaryPath, { force: true });
       }
     } else if (attempt < MAX_RETRIES) {
       // Version conflict — rebuild from WAL and retry
