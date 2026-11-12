@@ -17,6 +17,12 @@ import {
   verificationId as hash,
 } from './owner-store';
 import { captureVerificationSource, readFrozenVerificationInputs } from './source-snapshot';
+import {
+  captureFilesystemSource,
+  verificationSourceMode,
+  filesystemSourceReader,
+  readFilesystemInputs,
+} from './filesystem-source';
 import { loadVerificationAssets } from './verification-assets';
 import {
   VerificationNativeExecutor,
@@ -380,17 +386,34 @@ export class VerificationRuntime {
         : authority.identity === plan.authority.identity,
       'AUTHORITY_CHANGED'
     );
-    const source = await captureVerificationSource(
-      plan.projectRoot,
-      plan.source.files.map(f => f.path)
+    const mode = await verificationSourceMode(plan.projectRoot, authority);
+    requireFact(
+      (plan.contract === 'verification-plan/v2') === (mode === 'filesystem'),
+      'SOURCE_MODE_CHANGED'
     );
+    const source =
+      mode === 'filesystem'
+        ? await captureFilesystemSource(
+            plan.projectRoot,
+            authority,
+            plan.source.files.map(f => f.path),
+            this.store.root,
+            await this.assets()
+          )
+        : await captureVerificationSource(
+            plan.projectRoot,
+            plan.source.files.map(f => f.path)
+          );
     requireFact(source.identity === plan.source.identity, 'SOURCE_CHANGED');
     requireFact(json(await this.assets()) === json(plan.assets), 'ASSETS_CHANGED');
-    const inputs = await readFrozenVerificationInputs(plan.source);
+    const inputs = await this.readSourceInputs(plan);
     const selected = await collectNodeCommandInputs(
       plan.projectRoot,
       plan.command.original,
-      source.trackedPaths
+      'availablePaths' in source ? source.availablePaths : source.trackedPaths,
+      mode === 'filesystem'
+        ? filesystemSourceReader(plan.projectRoot, this.store.root, plan.assets)
+        : undefined
     );
     requireFact(
       json(selected.inputPaths) === json(plan.source.files.map(f => f.path).sort()),
@@ -402,6 +425,12 @@ export class VerificationRuntime {
     );
     // Read the frozen input bytes too; authenticated plan data cannot excuse a changed private copy.
     await this.checkFrozen(planId, inputs);
+  }
+
+  private async readSourceInputs(plan: VerificationPlan): Promise<Map<string, Buffer>> {
+    return plan.contract === 'verification-plan/v2'
+      ? readFilesystemInputs(plan.source, this.store.root, plan.assets)
+      : readFrozenVerificationInputs(plan.source);
   }
 
   private async listFrozen(directory: string): Promise<string[]> {
@@ -482,27 +511,47 @@ export class VerificationRuntime {
           commandIndex: args.command_index as number,
         });
         diagnosticStage = 'source_inventory';
-        const inventory = await captureVerificationSource(root, []);
+        const mode = await verificationSourceMode(root, authority);
+        const filesystemAssets = mode === 'filesystem' ? await this.assets() : null;
+        const inventory = filesystemAssets
+          ? await captureFilesystemSource(root, authority, [], this.store.root, filesystemAssets)
+          : await captureVerificationSource(root, []);
         diagnosticStage = 'input_graph';
         const selected = await collectNodeCommandInputs(
           root,
           authority.command,
-          inventory.trackedPaths
+          'availablePaths' in inventory ? inventory.availablePaths : inventory.trackedPaths,
+          filesystemAssets
+            ? filesystemSourceReader(root, this.store.root, filesystemAssets)
+            : undefined
         );
         diagnosticStage = 'command_proof';
         const command = compileNodeCommand(authority.command, selected.sources);
         diagnosticStage = 'source_inputs';
-        const source = await captureVerificationSource(root, selected.inputPaths);
+        const sourceBinding = filesystemAssets
+          ? {
+              contract: 'verification-plan/v2' as const,
+              source: await captureFilesystemSource(
+                root,
+                authority,
+                selected.inputPaths,
+                this.store.root,
+                filesystemAssets
+              ),
+            }
+          : {
+              contract: VERIFICATION_PLAN_CONTRACT,
+              source: await captureVerificationSource(root, selected.inputPaths),
+            };
         const createdAt = new Date().toISOString();
         diagnosticStage = 'fixed_assets';
         const plan: VerificationPlan = {
-          contract: VERIFICATION_PLAN_CONTRACT,
+          ...sourceBinding,
           createdAt,
           expiresAt: new Date(Date.parse(createdAt) + 600000).toISOString(),
           projectRoot: root,
           workItemId: authority.workItemId,
           authority,
-          source,
           command,
           assets: await this.assets(),
           profile: VERIFICATION_PROFILE,
@@ -517,7 +566,7 @@ export class VerificationRuntime {
         diagnosticStage = 'validate_and_read_inputs';
         validateVerificationPlan(plan);
         const id = hash(json(plan)),
-          inputs = await readFrozenVerificationInputs(source);
+          inputs = await this.readSourceInputs(plan);
         for (const [name, identity] of Object.entries(command.semanticProof.inputHashes))
           requireFact(hash(inputs.get(name)!) === identity, 'INPUT_CHANGED_DURING_PLANNING');
         diagnosticStage = 'claim_invocation';
@@ -571,7 +620,7 @@ export class VerificationRuntime {
           preparationId: args.preparation_id,
           planId: prior.planId,
         });
-        const inputs = await readFrozenVerificationInputs(plan.source);
+        const inputs = await this.readSourceInputs(plan);
         await this.freeze(prior.planId, inputs, true);
         await this.assertFresh(prior.planId, plan);
         if (await this.store.has('plan', prior.planId))

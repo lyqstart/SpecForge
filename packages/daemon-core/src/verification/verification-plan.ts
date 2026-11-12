@@ -2,6 +2,7 @@
 import type { TrustedToolInvocationProof } from '@specforge/types/trusted-tool-invocation';
 import type { NodeCommandPlan } from './node-command-contract';
 import type { VerificationSourceSnapshot } from './source-snapshot';
+import type { FilesystemVerificationSource } from './filesystem-source';
 
 export const VERIFICATION_PLAN_CONTRACT = 'verification-plan/v1' as const;
 export const VERIFICATION_RECEIPT_CONTRACT = 'verification-execution/v1' as const;
@@ -50,14 +51,12 @@ export interface VerificationAssets {
   manifestSha256: string;
 }
 
-export interface VerificationPlan {
-  contract: typeof VERIFICATION_PLAN_CONTRACT;
+interface VerificationPlanCommon {
   createdAt: string;
   expiresAt: string;
   projectRoot: string;
   workItemId: string;
   authority: VerificationAuthoritySnapshot;
-  source: VerificationSourceSnapshot;
   command: NodeCommandPlan;
   assets: VerificationAssets;
   profile: typeof VERIFICATION_PROFILE;
@@ -69,6 +68,12 @@ export interface VerificationPlan {
   };
   owner: TrustedToolInvocationProof;
 }
+
+export type VerificationPlan = VerificationPlanCommon &
+  (
+    | { contract: typeof VERIFICATION_PLAN_CONTRACT; source: VerificationSourceSnapshot }
+    | { contract: 'verification-plan/v2'; source: FilesystemVerificationSource }
+  );
 
 export interface VerificationExecutionReceipt {
   contract: typeof VERIFICATION_RECEIPT_CONTRACT;

@@ -4,7 +4,7 @@
 >
 > Effective date: 2026-10-11
 >
-> Registry version: 1.15
+> Registry version: 1.16
 >
 > Product owner: SpecForge 产品负责人
 >
@@ -43,7 +43,7 @@ SPS-1.0
 | docs/rule/specforge-active-development-rules.md | 当前活动开发规则（新会话必须完整读取）；经验规则唯一当前载体 | NO（DEVELOPMENT RULE） |
 | docs/rule/specforge-development-error-ledger-and-experience.md | 开发错误台账：历史错误、审计与经验演化证据；不再要求每会话全文读取，按任务关键词定向检索 | NO（HISTORICAL EVIDENCE + TARGETED SEARCH） |
 | docs/design/SpecForge架构一致性治理最终实施方案.md | 架构一致性与契约治理的从属技术合同 | NO |
-| docs/design/windows-lpac-node-readonly-contract.md | SPS §9.2.1–§9.2.5 / D20–D24 的有限隔离验证、单进程生产采用与受控工具/共同消费者/部署从属合同；各阶段门禁不得跳过 | NO |
+| docs/design/windows-lpac-node-readonly-contract.md | SPS §9.2.1–§9.2.6 / D20–D25 的有限隔离验证、单进程生产采用与受控工具/共同消费者/部署从属合同；各阶段门禁不得跳过 | NO |
 | docs/archive/design/SpecForge架构一致性治理最终实施方案.full-history-20261006.md | 2026-10-06 前完整治理实施方案的原样历史快照；只用于追溯规则演进 | NO（HISTORICAL EVIDENCE） |
 | docs/conventions/** | 当前实现合同的派生说明；必须可追溯到 SPS、已登记 Contract 或真实代码，不得独立定义产品 | NO（DERIVED REFERENCE） |
 | docs/user/**, docs/cli/** | 面向用户和运维者的当前版本使用说明；必须与已发布入口、安装器和运行合同一致 | NO（DERIVED OPERATING DOCUMENTATION） |
@@ -74,6 +74,7 @@ SPS-1.0
 | PO-001 | Migration 模块退出当前产品；schema validation 保留为文件 owner / contract 责任，不等同 Migration |
 | D23 | 用户明确“批准两项，继续完成全部修复”：允许在Bootstrap的ENOBUFS阻断下仅修复自身32MiB有界输出及回归，恢复真实READY后继续；依据D22完整单进程合成矩阵采用 `windows-lpac-node-single-process-readonly/v1` 进入产品闭环实施。先正式合同，再sf-orchestrator拥有的plan与sf-verifier拥有的run、不可关闭真实身份/状态/HardStop/独立验证许可、受信producer与不可变回执、共同消费者SP-I01、固定资产安装部署SP-D01，全部通过后才由原WI owner恢复同一WI。限制沿用D22，sf_safe_bash仍只读；不自动放行代码权限、宣告状态或合并业务。该决定批准实施和验收后部署，不声称产品链路已通过。对应SPS §9.2.4。 |
 | D24 | 用户批准有限恢复方案：按 SPS §9.2.5 在 D23 固定单进程 LPAC 内新增精确同步调用的单调差值观测。仅字面量 perf_hooks 解构 performance 与无参数 now，源/绑定/测量区间严格证明，计时命令 v2 与专用证明配对，旧 v1 保持。先正式合同，再正反例、三平台回归、共同消费者、取消恢复及正式部署真实工具验收；不放宽权限/预算、不批准业务 Candidate 或业务实现，完成后恢复原 WI 候选与 Gate。 |
+| D25 | 用户明确“批准该有限扩展，继续完整修复”：按 SPS §9.2.6 补齐显式冻结 filesystem 的验证源身份，绑定既有 scope/baseline 与当前物理源清单和所选字节；保留 Git plan/v1，新 filesystem plan/v2 严格判别。先正式合同、完整实现、同等隔离与共同消费者验收、正式部署，再从原 WI 真实断点恢复。不 git init、不改已批准业务 Task、不扩大 LPAC、不重放既有审批或实施。 |
 | D01 | events.jsonl 是持久化工作流状态事实源；state.json 是可重建 checkpoint/projection |
 | D02 | Daemon 是独立共享服务；生命周期由部署环境、CLI 或 service manager 管理；Thin Plugin 不启动/停止/重启 Daemon |
 | D03 | 当前用户级数据根为 <OpenCode config>/sf-user；用户主目录 ~/.specforge 退役为非当前写入目标 |

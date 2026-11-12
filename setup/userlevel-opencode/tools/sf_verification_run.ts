@@ -1,7 +1,7 @@
 import { tool } from '@opencode-ai/plugin'
 import { DaemonClient } from './lib/thin-client'
 export default tool({
-  description: 'sf-verifier 使用严格动作参数：prepare 只传 action、work_item_id、plan_id；run/cancel/recover 只传 action、work_item_id、attempt_record_id，禁止携带 plan_id。先 prepare 再 run；cancel/recover 只取消或回收该 Attempt。仅 Windows x64 固定 Node 24.19.0 单进程只读隔离，不推进工作流；其他平台或不支持的命令保持 not_executed/blocked，不改用 Shell。',
+  description: 'D25: 显式冻结 filesystem 使用 plan/v2 与严格物理源身份，Git 保持 plan/v1；不 git init、不修改已批准 Task，源漂移必须拒绝。 sf-verifier 使用严格动作参数：prepare 只传 action、work_item_id、plan_id；run/cancel/recover 只传 action、work_item_id、attempt_record_id，禁止携带 plan_id。先 prepare 再 run；cancel/recover 只取消或回收该 Attempt。仅 Windows x64 固定 Node 24.19.0 单进程只读隔离，不推进工作流；其他平台或不支持的命令保持 not_executed/blocked，不改用 Shell。',
   args: {
     action: tool.schema.enum(['prepare','run','cancel','recover']),
     work_item_id: tool.schema.string(),

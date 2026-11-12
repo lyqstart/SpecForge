@@ -4,7 +4,7 @@
 >
 > Specification ID: SPS-1.0
 >
-> Product release version: 1.0.27
+> Product release version: 1.0.28
 >
 > Product version epoch: 1
 >
@@ -683,7 +683,7 @@ Changed Files Audit 必须绑定本次读取的 Write Guard、HardStop resolutio
 
 每次运行须使用独立 SID/profile 与 Job，在挂起态创建进程，核验 token、有效权限与 Job 后才恢复。后代进程必须继承隔离和资源上限，禁止 breakaway，关闭最后 Job 句柄终止全部成员；墙钟、进程、总内存与输出有固定上限。仅接收有界 stdout/stderr 和真实退出事实，不回写或导入应用生成的项目文件。输出不完整、退出码未知、残留进程或隔离证据不足不能产生 passed。仅可回收归属已经证明的本次资源，不能改已有系统或业务 ACL。
 
-产品执行入口由 `sf_verification_plan` 的真实 sf-orchestrator owner 和 `sf_verification_run` 的真实 sf-verifier owner 组成，允许 implementation_running 的实施验证与 verification_running 的正式验证。两者均强制校验真实身份、权威状态、HardStop 与独立验证许可，不依赖可关闭的 RBAC 或调用者自报角色，不推进工作流，不恢复代码权限。Plan 不可覆盖，绑定项目/WI/Task、PSV/Manifest、当前分支和提交、完整输入原始字节、声明命令及实际 argv、固定 Node/第一方 launcher 指纹、profile 与预算；调用者只能选择正式 Task/命令身份。运行前、接受结果前及 Gate/Close 消费时重核源身份，漂移使旧结果失效。链接、硬链接、外部路径、未知字段、依赖和权限歧义在启动前拒绝。
+产品执行入口由 `sf_verification_plan` 的真实 sf-orchestrator owner 和 `sf_verification_run` 的真实 sf-verifier owner 组成，允许 implementation_running 的实施验证与 verification_running 的正式验证。两者均强制校验真实身份、权威状态、HardStop 与独立验证许可，不依赖可关闭的 RBAC 或调用者自报角色，不推进工作流，不恢复代码权限。Plan 不可覆盖，绑定项目/WI/Task、PSV/Manifest、按 §9.2.6 区分的 Git 或 filesystem 源身份、完整输入原始字节、声明命令及实际 argv、固定 Node/第一方 launcher 指纹、profile 与预算；调用者只能选择正式 Task/命令身份。运行前、接受结果前及 Gate/Close 消费时重核源身份，漂移使旧结果失效。链接、硬链接、外部路径、未知字段、依赖和权限歧义在启动前拒绝。
 
 原始执行回执由受信 Runtime owner 追加产生，与不可信应用输出分通道；Agent 不能通过 artifact_write 伪造。回执绑定计划、输入、实际执行身份、真实 UTC、数值退出码或明确未启动、资源限制、输出哈希和完整 Job 终止事实；独立 Attempt 保留失败、取消、崩溃和恢复历史，不补写通过，不盲重跑。Verification、Evidence、Formal Version 与 Close 共享同一回执校验器。静态有限解释器必须明确记录实际执行种类、版本化解析和逐行/正则/否定/短路语义，不冒充宿主 Shell 退出；不能证明原 Task 证据语义时保持 not_executed，由原 owner 处理合同冲突，不能手改封存 Task 或弱化验收。
 
@@ -713,7 +713,7 @@ Changed Files Audit 必须绑定本次读取的 Write Guard、HardStop resolutio
 
 产品负责人依据D22完整合成隔离矩阵，批准将 `windows-lpac-node-single-process-readonly/v1` 接入产品并继续完成正式工具、共同消费者、安装部署及原WI验证。D20零capability和旧多进程失败原样保留；本采用决定不把合成launcher变成业务工具，也不宣称产品验收已完成。D22固定Node24.19、Windows x64/LPAC/单registryRead、创建前child policy1、DETACHED、no-addons、Job1及文件/网络/预算边界保持不变；未知或不支持的命令不得降级执行。
 
-sf_verification_plan只能由实际sf-orchestrator创建；sf_verification_run只能由实际sf-verifier消费，强制身份核验不依赖enableRBAC，不信任调用参数或context自报agent。身份必须从Runtime已有绑定或经可信OpenCode运行事实证明，绑定项目、会话及实际调用；无法核验即拒绝。Plan绑定已批准Task及独立只读验证许可，与代码写许可分离，只在implementation_running/verification_running合法阶段工作，不推进状态。真实StateManager、HardStop、项目/WI/PSV/Manifest、Git提交/分支、完整输入和执行资产在计划、运行前后及消费时一致；源或许可漂移使结果失效。
+sf_verification_plan只能由实际sf-orchestrator创建；sf_verification_run只能由实际sf-verifier消费，强制身份核验不依赖enableRBAC，不信任调用参数或context自报agent。身份必须从Runtime已有绑定或经可信OpenCode运行事实证明，绑定项目、会话及实际调用；无法核验即拒绝。Plan绑定已批准Task及独立只读验证许可，与代码写许可分离，只在implementation_running/verification_running合法阶段工作，不推进状态。真实StateManager、HardStop、项目/WI/PSV/Manifest、按 §9.2.6 区分的 Git 或 filesystem 源身份、完整输入和执行资产在计划、运行前后及消费时一致；源或许可漂移使结果失效。
 
 执行期间持续复核实际工具调用的running归属；取消、调用结束或归属无法核验时，Runtime必须沿受控取消路径停止任务，不能仅依赖宿主HTTP断连事件。版本化不可变调用lease与执行回执共同绑定，由共同消费者核验；没有完整有效lease的执行不能作为passed证据。
 
@@ -734,6 +734,20 @@ Verification Report、Evidence Manifest、Verification Gate、Formal Version和C
 旧命令仍产生原 `readonly-node-command/v1` 与原证明；新增计时命令使用 `readonly-node-command/v2` 和 `single-file-bounded-monotonic-observation/v1`，严格配对并绑定完整输入，所有共同消费者重新编译和验新。Plan、Attempt、Lease、Receipt 的既有外层合同及原生隔离配置不因嵌套命令证明增加而机械升版；旧有效记录仍按原合同核验。未知版本、规则混用或不能证明语义保持时继续拒绝。
 
 必须完成正反例、绑定与逃逸攻防、旧 v1 回归、共同消费者和取消恢复检查、三平台全量回归，以及正式部署后真实角色工具和固定 LPAC 数值正反例，再恢复原 WI 的候选准备。非 Windows 平台不冒称运行 Windows 后端。此次决定授权产品能力修复与验收后部署，不批准业务 Candidate、不创建重复 WI、不手改 Runtime 真相源、不授权业务代码；完整业务候选与必要 Gate 就绪后仍须另行显式批准。
+
+### 9.2.6 冻结 filesystem 模式的验证源身份（D25）
+
+产品负责人批准有限 filesystem 验证扩展。Code Permission owner 继续独占版本控制模式、governance scope 与 filesystem baseline；Verification owner 只读绑定这些已存在的事实，不迁移模式、不初始化 Git、不改已批准 Task、不扩大 LPAC 能力。能力完成产品验收和正式部署后，重新读取原 WI 的真实权威状态和 owner，从合法断点恢复；不得因历史恢复说明而重放已经完成的 Candidate、批准、合并或实施。
+
+旧 Git 源保持 verification-plan/v1 的严格字段和身份域。新增 verification-plan/v2 只承载显式 verification-filesystem-source/v1，不伪造 HEAD/分支或把 filesystem 对象塞入旧 Git 结构；嵌套命令 v1/v2 独立演进。Attempt、Lease、Receipt 未变的字段合同继续 v1，以不可变 planId/sourceIdentity 绑定并由全部消费者严格校验。旧 Git scope 缺少模式字段可沿用既有 Git 前提；显式未知模式拒绝，filesystem 必须明确冻结，不从 .git 是否存在推断或自动恢复旧模式。
+
+filesystem 计划必须绑定原 WI/PSV、原始 scope/baseline 哈希、支持的 baseline 2.0/SHA-256、项目物理身份、有界完整源清单与所选输入原始字节。baseline 表示实施前快照，不要求当前合法实现等于历史内容；其治理记录不成为应用输入。使用专用严格扫描器，不复用会跳过读取失败的审计扫描器。仅复制字面量可达代码和必要祖先 package.json；不读取无关文件内容，不把完整项目、治理或凭据树交给应用。
+
+扫描必须证明路径、目录/文件类型、物理设备/文件身份及所选字节，拒绝大小写/平台别名、软/硬链接、reparse、特殊文件、越界、读取不完整与超预算。项目根或源子树出现 Git 元数据、原 WI 出现 Git context、模式/scope/baseline/Task/审批/源清单/所选内容漂移时失败关闭；不得降级到 Git 或普通宿主。项目边界外的祖先 Git 仓库不用于推断该 WI 模式。根 .specforge 只核验物理治理目录，其内容由权威 owner 读取，永不成为应用清单。
+
+源采集的第一方 Windows 物理检查须由构建期固定、哈希核验的 launcher 承担，受 owner 私有请求和数值预算约束；只读控制侧检查不增加应用能力、任意 shell 或新的用户工具。计划、prepare、执行前后和共同消费均重验模式/权威/源/资产。既有真实角色、StateManager、HardStop、独立只读许可、租约、取消和恢复规则不变；代码写许可撤销不等于撤销独立验证许可。
+
+验收必须包括不变的 Git 旧合同、版本混用拒绝、完整清单与同大小/mtime内容替换、物理身份和链接攻击、权限/状态/撤销/取消恢复、真实 Windows 无 Git 普通与计时正例和 50ms 数值失败，以及 Report/Evidence/Verification/Formal Version/Close 共同消费者。三平台全量回归、发行验证和正式安装后新 Daemon/专业工具验收完成后才恢复原业务。此决定不提供未执行的性能或浏览器证据，不授权业务返工或更宽执行能力。
 
 ## 9.3 HardStop
 

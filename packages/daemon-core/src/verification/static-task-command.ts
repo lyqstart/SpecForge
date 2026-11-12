@@ -124,7 +124,8 @@ function countLines(text: string, pattern: string, unicode: boolean): number {
 export async function collectStaticTaskInputs(
   root: string,
   command: string,
-  trackedPaths: readonly string[]
+  trackedPaths: readonly string[],
+  readSource: (file: string, limit?: number) => Promise<Buffer> = readVerificationFile
 ): Promise<{ sources: FrozenNodeSource[]; inputPaths: string[] }> {
   const declaration = parseStaticTaskDeclaration(command),
     inputPaths = [...new Set(declaration.paths)].sort(),
@@ -132,7 +133,7 @@ export async function collectStaticTaskInputs(
     sources: FrozenNodeSource[] = [];
   for (const name of inputPaths) {
     if (!tracked.has(name)) fail('INPUT_NOT_TRACKED');
-    const raw = await readVerificationFile(path.join(root, name), 32768),
+    const raw = await readSource(path.join(root, name), 32768),
       content = raw.toString('utf8');
     if (!Buffer.from(content).equals(raw) || raw.includes(0)) fail('ENCODING');
     sources.push({ path: name, content, sha256: sha(content) });

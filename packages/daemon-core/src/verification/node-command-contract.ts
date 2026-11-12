@@ -432,13 +432,14 @@ export function compileNodeCommand(
 export async function collectNodeCommandInputs(
   projectRoot: string,
   original: string,
-  trackedPaths: readonly string[]
+  trackedPaths: readonly string[],
+  readSource: (file: string, limit?: number) => Promise<Buffer> = readVerificationFile
 ): Promise<{
   sources: FrozenNodeSource[];
   inputPaths: string[];
 }> {
   if (isStaticTaskDeclaration(original))
-    return collectStaticTaskInputs(projectRoot, original, trackedPaths);
+    return collectStaticTaskInputs(projectRoot, original, trackedPaths, readSource);
   const args = tokenizeNodeDeclaration(original),
     tracked = new Set(trackedPaths),
     found = new Map<string, FrozenNodeSource>();
@@ -457,7 +458,7 @@ export async function collectNodeCommandInputs(
         !tracked.has(name)
       )
         fail('INPUT_NOT_TRACKED_CODE');
-      const raw = await readVerificationFile(path.join(projectRoot, name));
+      const raw = await readSource(path.join(projectRoot, name));
       text = raw.toString('utf8');
       if (!Buffer.from(text).equals(raw)) fail('SOURCE_ENCODING');
       found.set(name, { path: name, content: text, sha256: hash(text) });

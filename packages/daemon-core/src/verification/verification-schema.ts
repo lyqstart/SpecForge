@@ -4,6 +4,7 @@ import path from 'node:path';
 import type { TrustedToolInvocationProof } from '@specforge/types/trusted-tool-invocation';
 import { canonicalVerificationJson as json, verificationId as hash } from './owner-store';
 import { assertVerificationRelativePath } from './source-snapshot';
+import { validateFilesystemSource } from './filesystem-source';
 import {
   VERIFICATION_BUDGET,
   VERIFICATION_PROFILE,
@@ -146,7 +147,7 @@ export function validateVerificationPlan(value: unknown): asserts value is Verif
     'owner',
   ]);
   verificationRequire(
-    p.contract === 'verification-plan/v1' &&
+    (p.contract === 'verification-plan/v1' || p.contract === 'verification-plan/v2') &&
       p.profile === VERIFICATION_PROFILE &&
       typeof p.projectRoot === 'string' &&
       path.isAbsolute(p.projectRoot) &&
@@ -177,62 +178,71 @@ export function validateVerificationPlan(value: unknown): asserts value is Verif
   );
   assets(p.assets);
   budget(p.budget);
-  const s = verificationRecord(p.source, [
-    'projectRoot',
-    'head',
-    'branch',
-    'indexSha256',
-    'configSha256',
-    'files',
-    'trackedPaths',
-    'identity',
-  ]);
-  verificationRequire(
-    s.projectRoot === p.projectRoot &&
-      typeof s.head === 'string' &&
-      /^[a-f0-9]{40}$/.test(s.head) &&
-      typeof s.branch === 'string' &&
-      s.branch.length > 0 &&
-      Array.isArray(s.files) &&
-      s.files.length <= 2048 &&
-      Array.isArray(s.trackedPaths),
-    'SOURCE_SCHEMA_INVALID'
-  );
-  for (const field of ['indexSha256', 'configSha256', 'identity']) verificationHash(s[field]);
-  const paths = new Set<string>();
-  let bytes = 0;
-  for (const value of s.files) {
-    const f = verificationRecord(value, ['path', 'bytes', 'sha256', 'device', 'inode']);
-    verificationRequire(typeof f.path === 'string', 'INPUT_PATH_INVALID');
-    assertVerificationRelativePath(f.path);
+  const s = verificationRecord(p.source);
+  if (p.contract === 'verification-plan/v2') {
+    validateFilesystemSource(s);
     verificationRequire(
-      !f.path
-        .split('/')
-        .some(part => ['.git', SPEC_DIR_NAME, 'node_modules'].includes(part.toLowerCase())),
-      'PROTECTED_INPUT'
+      s.projectRoot === p.projectRoot && s.workItemId === p.workItemId,
+      'SOURCE_SUBJECT_INVALID'
     );
-    const identity = process.platform === 'win32' ? f.path.toLowerCase() : f.path;
+  } else {
+    verificationRecord(s, [
+      'projectRoot',
+      'head',
+      'branch',
+      'indexSha256',
+      'configSha256',
+      'files',
+      'trackedPaths',
+      'identity',
+    ]);
     verificationRequire(
-      !paths.has(identity) &&
-        Number.isSafeInteger(f.bytes) &&
-        (f.bytes as number) >= 0 &&
-        typeof f.device === 'string' &&
-        /^\d+$/.test(f.device) &&
-        typeof f.inode === 'string' &&
-        /^\d+$/.test(f.inode),
-      'INPUT_IDENTITY_INVALID'
+      s.projectRoot === p.projectRoot &&
+        typeof s.head === 'string' &&
+        /^[a-f0-9]{40}$/.test(s.head) &&
+        typeof s.branch === 'string' &&
+        s.branch.length > 0 &&
+        Array.isArray(s.files) &&
+        s.files.length <= 2048 &&
+        Array.isArray(s.trackedPaths),
+      'SOURCE_SCHEMA_INVALID'
     );
-    paths.add(identity);
-    bytes += f.bytes as number;
-    verificationHash(f.sha256);
+    for (const field of ['indexSha256', 'configSha256', 'identity']) verificationHash(s[field]);
+    const paths = new Set<string>();
+    let bytes = 0;
+    for (const value of s.files) {
+      const f = verificationRecord(value, ['path', 'bytes', 'sha256', 'device', 'inode']);
+      verificationRequire(typeof f.path === 'string', 'INPUT_PATH_INVALID');
+      assertVerificationRelativePath(f.path);
+      verificationRequire(
+        !f.path
+          .split('/')
+          .some(part => ['.git', SPEC_DIR_NAME, 'node_modules'].includes(part.toLowerCase())),
+        'PROTECTED_INPUT'
+      );
+      const identity = process.platform === 'win32' ? f.path.toLowerCase() : f.path;
+      verificationRequire(
+        !paths.has(identity) &&
+          Number.isSafeInteger(f.bytes) &&
+          (f.bytes as number) >= 0 &&
+          typeof f.device === 'string' &&
+          /^\d+$/.test(f.device) &&
+          typeof f.inode === 'string' &&
+          /^\d+$/.test(f.inode),
+        'INPUT_IDENTITY_INVALID'
+      );
+      paths.add(identity);
+      bytes += f.bytes as number;
+      verificationHash(f.sha256);
+    }
+    verificationRequire(
+      bytes <= 16777216 && s.trackedPaths.every(v => typeof v === 'string'),
+      'INPUT_BUDGET_INVALID'
+    );
+    for (const name of s.trackedPaths) assertVerificationRelativePath(name);
+    const { identity: _sourceId, ...sourceBody } = s;
+    verificationRequire(hash(json(sourceBody)) === s.identity, 'SOURCE_IDENTITY_INVALID');
   }
-  verificationRequire(
-    bytes <= 16777216 && s.trackedPaths.every(v => typeof v === 'string'),
-    'INPUT_BUDGET_INVALID'
-  );
-  for (const name of s.trackedPaths) assertVerificationRelativePath(name);
-  const { identity: _sourceId, ...sourceBody } = s;
-  verificationRequire(hash(json(sourceBody)) === s.identity, 'SOURCE_IDENTITY_INVALID');
   const a = verificationRecord(p.authority, [
     'state',
     'purpose',
@@ -269,6 +279,15 @@ export function validateVerificationPlan(value: unknown): asserts value is Verif
   );
   assertVerificationRelativePath(a.taskPath);
   const files = verificationRecord(a.files);
+  if (p.contract === 'verification-plan/v2') {
+    verificationRequire(
+      s.scopeSha256 ===
+        files[`${SPEC_DIR_NAME}/work-items/${p.workItemId}/governance_scope.json`] &&
+        s.baselineSha256 ===
+          files[`${SPEC_DIR_NAME}/work-items/${p.workItemId}/filesystem_baseline.json`],
+      'FILESYSTEM_AUTHORITY_BINDING'
+    );
+  }
   verificationRequire(
     Object.keys(files).length > 0 && Object.keys(files).length <= 2048,
     'AUTHORITY_FILES_INVALID'

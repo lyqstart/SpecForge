@@ -132,7 +132,11 @@ export async function captureVerificationAuthority(
     merge.status === 'not_applicable';
   if (!merge.valid || (merge.status !== 'success' && !codeOnlyNoMerge))
     throw new Error('VERIFICATION_SUCCESSFUL_SPEC_MERGE_REQUIRED');
-  await read(path.join(wiRoot, 'governance_scope.json'));
+  const scope = JSON.parse(
+    (await read(path.join(wiRoot, 'governance_scope.json'))).toString('utf8')
+  ) as Record<string, unknown>;
+  if (scope.version_control_mode === 'filesystem')
+    await read(path.join(wiRoot, 'filesystem_baseline.json'));
   const projectManifest = JSON.parse(
     (await read(projectSpecManifest(root))).toString('utf8')
   ) as Record<string, unknown>;

@@ -131,3 +131,22 @@ SEMANTIC_PROOF=single-file-bounded-monotonic-observation/v1
 5. 不重写测试源或更换解释器。实际 argv 仍为固定 Node/no-addons/preserve-symlinks/TAP/test/test-isolation=none/ENTRY；真实数值退出、完整输出、Job 结束和清理、Lease/Receipt 才能支持 passed。编译成功只证明声明的同步调用区间，不证明内部算法正确、惰性数据已消费或业务验收通过。
 
 验收须包含合法区间与真实数值失败、作用域/别名/逃逸/动态依赖/绝对时钟/其他 performance 成员及命令版本混用的拒绝；旧 v1 正反例不减少。Runtime、Report、Evidence、Gate、Formal Version、Close 同用严格 Schema/重编译与新鲜度；篡改、撤销、漂移、取消和中断不得通过。三平台回归与部署后新 daemon/固定资产/真实专业工具 LPAC 正反例分别取证。此处为合同和待验收要求，不宣称实现或部署已通过；完整业务实现只在其 Candidate 另获批准后进行。
+
+
+## D25 Filesystem 验证源合同
+
+AUTHORITY=SPS §9.2.6 / Registry D25
+PLAN_CONTRACT=verification-plan/v2
+SOURCE_CONTRACT=verification-filesystem-source/v1
+
+本节扩展 D23/D24 的源身份适用范围；其 Git plan/v1 及嵌套命令 v1/v2 保持原样。只有外层 v2 与显式 filesystem 源配对。所有字段严格校验，不允许未知字段、空 Git 身份或版本混用。源对象字段为 contract、projectRoot、workItemId、scopeSha256、baselineSha256、inventory、availablePaths、files、identity；inventory 记录完整稳定排序的 path/type/volume/fileId，含根路径空字符串与物理 .specforge 目录，但不枚举其内部。availablePaths 为可选普通文件路径，files 保持原 path/bytes/sha256/device/inode 原始字节格式。identity 对除 identity 外的完整 canonical JSON 求 SHA-256。源主体同时受 plan 的权威与资产绑定。
+
+模式从原 WI governance_scope 的显式 version_control_mode 读取。filesystem 要求 schema_version=1.0、同 WI/PSV、已冻结时间，以及无 git_head_at_freeze/git_branch_at_freeze 和 git_context.json。baseline 必须是原 owner 的 filesystem_baseline.json、schema_version=2.0、content_hash_algorithm=sha256、同物理项目根、有效时间和逐条合法 path/size/mtimeMs/sha256；缺失、旧格式、重复/别名、不支持的 reconciliation 或未知字段拒绝，不写回。baseline 可包含原治理路径，不能由此引入应用输入。scope active 不作为独立只读许可开关。Git 缺模式旧记录保持现有 Git 验证；显式非法模式一律拒绝。
+
+物理源扫描上限为 4096 个目录/文件记录、深度 64、每个相对路径 1024 UTF-16 字符；selected 上限 2048 文件、合计 16MiB。包含根与 .specforge 目录的身份；根 .specforge 内部由原权威读取路径管理。其余目录全部扫描，不使用 ignore/审计排除；发现任意 .git、嵌套 .specforge、node_modules、平台别名、reparse、非普通文件或多硬链接即拒绝。先检查祖先和目标，再通过不跟随 reparse 的句柄采集；持有不共享删除/写入的目录及所选文件句柄完成读取和前后身份核验，目录清单前后不一致即拒绝。未选文件只取路径/类型/身份，不读内容；所选输入另拒绝 .aws/.ssh/.config/.opencode 目录、.env 及其点号后缀、auth.json、credentials.json、host-profile.json、opencode.json/jsonc；这些名字的普通文件可仅作为清单元数据存在，不能被读取或复制为应用输入。该有界名单不宣称识别任意业务源码中的所有秘密；选中输入原始字节由同一物理身份核对到冻结副本。
+
+Windows 原生只读检查使用已有固定 specforge-verify.exe 的 --verification-source-inspect 入口，参数仅 owner 私有 source-requests/<nonce>.json 及其原始 SHA-256。请求严格字段 contract/projectRoot/selectedPaths，contract=verification-source-inspection/v1；nonce 为随机 GUID，位置必须属于实际 OpenCode 配置根的 verification-owner。请求最多 256KiB；输出为严格 contract/projectRoot/inventory/selectedFiles，selectedFiles 只含 path/bytes/sha256/volume/fileId/bytesBase64；所选原始字节从同一不跟随链接的锁定句柄读取并以严格 Base64 传回，依赖采集和冻结副本不得随后通过普通路径重读源码；stdout 至多 24MiB（仍只允许合计 16MiB 所选原始字节），stderr 至多 64KiB，控制侧墙钟 30s。拒绝、超时、截断或未知退出均无有效快照。无应用启动、文件写入、ACL 修改、运行时编译或下载；请求和原始结果由 owner 不可覆盖保存。非 Windows 后端明确拒绝，不拿模拟器结果宣称原生验收。
+
+Runtime 先证明真实调用 owner 和正式权威，再核验固定资产并读取源；先清单后字面量依赖采集，再取得所选字节快照。每次新鲜度检查使用相同模式分派和严格快照，禁止 filesystem 漂移后回退 Git。共同 Report/Evidence/Gate/Formal Version/Close 仍经同一 assertFresh 和回执验证；历史有效 Git 数据不增加字段或改变 canonical 域。权限、状态、取消、HardStop、Lease 和原生应用预算保持 D23/D24。
+
+以上为实现和验收义务，不是完成声明。必须独立验证真实无 Git professional-tool 普通/计时通过及真实 50ms 失败、源与权威漂移、目录/文件替换、别名/链接/reparse、超预算、取消/恢复及全部共同消费者，再完成同锁对照全量、三平台发行与默认部署验收。原 WI Core、静态、浏览器、性能证据逐项独立核验。

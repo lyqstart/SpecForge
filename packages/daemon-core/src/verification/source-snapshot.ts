@@ -197,7 +197,7 @@ export async function captureVerificationSource(
 }
 
 export async function readFrozenVerificationInputs(
-  snapshot: VerificationSourceSnapshot
+  snapshot: Pick<VerificationSourceSnapshot, 'projectRoot' | 'files'>
 ): Promise<Map<string, Buffer>> {
   const inputs = new Map<string, Buffer>();
   for (const file of snapshot.files) {
