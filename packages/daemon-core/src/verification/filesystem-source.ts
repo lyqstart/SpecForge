@@ -3,7 +3,7 @@ import * as fs from 'node:fs/promises';
 import path from 'node:path';
 import { randomUUID } from 'node:crypto';
 import { spawn } from 'node:child_process';
-import { workItemRoot } from '@specforge/types/directory-layout';
+import { SPEC_DIR_NAME, workItemRoot } from '@specforge/types/directory-layout';
 import {
   assertVerificationPath,
   readVerificationFile,
@@ -60,7 +60,7 @@ function relative(v: unknown): asserts v is string {
 function applicationPath(v: string): void {
   relative(v);
   requireFact(
-    !v.split('/').some(p => ['.git', '.specforge', 'node_modules'].includes(p.toLowerCase())),
+    !v.split('/').some(p => ['.git', SPEC_DIR_NAME, 'node_modules'].includes(p.toLowerCase())),
     'PROTECTED_INPUT'
   );
 }
@@ -92,7 +92,7 @@ function strictInventory(value: unknown): asserts value is PhysicalSourceEntry[]
     const name = row.path;
     if (name !== '') {
       relative(name);
-      if (name !== '.specforge') applicationPath(name);
+      if (name !== SPEC_DIR_NAME) applicationPath(name);
     }
     requireFact(
       previous === undefined ? name === '' && row.type === 'directory' : previous < name,
@@ -107,12 +107,12 @@ function strictInventory(value: unknown): asserts value is PhysicalSourceEntry[]
           'directory',
         'INVENTORY_PARENT'
       );
-    if (name === '.specforge') requireFact(row.type === 'directory', 'GOVERNANCE_DIRECTORY');
+    if (name === SPEC_DIR_NAME) requireFact(row.type === 'directory', 'GOVERNANCE_DIRECTORY');
     paths.set(key, String(row.type));
     physical.add(identity);
     previous = name;
   }
-  requireFact(paths.get('.specforge') === 'directory', 'GOVERNANCE_DIRECTORY_MISSING');
+  requireFact(paths.get(SPEC_DIR_NAME) === 'directory', 'GOVERNANCE_DIRECTORY_MISSING');
 }
 export function validateFilesystemSource(
   value: unknown
