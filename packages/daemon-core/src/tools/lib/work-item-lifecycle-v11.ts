@@ -15,7 +15,11 @@ import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 import { WORK_ITEM_METADATA_SCHEMA_VERSION } from './artifact-schema-validation';
 import { formatWorkItemId, parseWorkItemSequence } from './work-item-id-validator';
-import { writeWorkItemMetadata, type WorkItemMetadata } from './work-item-metadata';
+import {
+  readWorkItemMetadata,
+  writeWorkItemMetadata,
+  type WorkItemMetadata,
+} from './work-item-metadata';
 
 // ---------------------------------------------------------------------------
 // Work Item 创建
@@ -153,6 +157,10 @@ export async function initializeClosureFiles(
   if (!PROJECT_SPEC_VERSION_PATTERN.test(baseSpecVersion)) {
     throw new Error(`PROJECT_SPEC_VERSION_INVALID: ${baseSpecVersion}`);
   }
+  const metadata = await readWorkItemMetadata(workItemDir, workItemId);
+  if (metadata.workflow_path !== workflowPath || typeof metadata.workflow_type !== 'string') {
+    throw new Error('WORK_ITEM_BOOTSTRAP_SUBJECT_MISMATCH');
+  }
   const now = new Date().toISOString();
   const isCodeOnly = workflowPath === 'code_only_fast_path';
   void (workflowPath === 'task_change_path');
@@ -215,6 +223,7 @@ export async function initializeClosureFiles(
         schema_version: '1.0',
         work_item_id: workItemId,
         workflow_path: workflowPath ?? 'unknown',
+        workflow_type: metadata.workflow_type,
         base_spec_version: baseSpecVersion,
         merge_required: !isCodeOnly,
         entries: [],

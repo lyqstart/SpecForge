@@ -299,6 +299,7 @@ describe('v1.1 Work Item Lifecycle（§4）', () => {
       projectRoot: tmpDir,
       workItemId: 'WI-0002',
       userRequest: 'Test closure files',
+      workflowPath: 'code_only_fast_path',
     });
 
     await initializeClosureFiles(wiDir, 'WI-0002', 'code_only_fast_path', 'PSV-0001');

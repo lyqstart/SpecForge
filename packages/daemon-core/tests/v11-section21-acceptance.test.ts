@@ -1223,7 +1223,7 @@ describe('§21.5 Acceptance: User Decision Invalidation', () => {
       unknowns: [],
     };
 
-    const wiDir = await createWorkItem({ projectRoot, workItemId: wiId, userRequest: 'Test invalidation' });
+    const wiDir = await createWorkItem({ projectRoot, workItemId: wiId, userRequest: 'Test invalidation', workflowPath: 'requirement_change_path' });
     await initializeClosureFiles(wiDir, wiId, 'requirement_change_path', 'PSV-0001');
 
     // Write candidate_manifest and gate_summary
@@ -1310,7 +1310,7 @@ describe('§21.5 Acceptance: User Decision Invalidation', () => {
       unknowns: [],
     };
 
-    const wiDir = await createWorkItem({ projectRoot, workItemId: wiId, userRequest: 'Test merge_ready failure' });
+    const wiDir = await createWorkItem({ projectRoot, workItemId: wiId, userRequest: 'Test merge_ready failure', workflowPath: 'requirement_change_path' });
     await initializeClosureFiles(wiDir, wiId, 'requirement_change_path', 'PSV-0001');
 
     const trigger = generateTriggerResult(wiId, classification, []);
@@ -1373,7 +1373,7 @@ describe('§21.5 Acceptance: User Decision Invalidation', () => {
       unknowns: [],
     };
 
-    const wiDir = await createWorkItem({ projectRoot, workItemId: wiId, userRequest: 'Test regeneration' });
+    const wiDir = await createWorkItem({ projectRoot, workItemId: wiId, userRequest: 'Test regeneration', workflowPath: 'requirement_change_path' });
     await initializeClosureFiles(wiDir, wiId, 'requirement_change_path', 'PSV-0001');
 
     const trigger = generateTriggerResult(wiId, classification, []);
@@ -1451,7 +1451,7 @@ describe('§21.5 Acceptance: User Decision Invalidation', () => {
       unknowns: [],
     };
 
-    const wiDir = await createWorkItem({ projectRoot, workItemId: wiId, userRequest: 'Test hashes' });
+    const wiDir = await createWorkItem({ projectRoot, workItemId: wiId, userRequest: 'Test hashes', workflowPath: 'requirement_change_path' });
     await initializeClosureFiles(wiDir, wiId, 'requirement_change_path', 'PSV-0001');
 
     const trigger = generateTriggerResult(wiId, classification, []);

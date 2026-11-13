@@ -27,6 +27,10 @@ import { scalarText } from '@specforge/types';
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
+import {
+  prepareContractBootstrapManifest,
+  preserveContractBootstrapManifest,
+} from './contract-bootstrap-manifest';
 import { inspectProjectGovernanceContractConsumers } from './project-governance-v2.js';
 import {
   candidateManifestContentBlockCode,
@@ -1243,6 +1247,14 @@ async function writeContractCandidate(params: {
       entries: [],
     };
   }
+  const bootstrap = params.currentSubject
+    ? await prepareContractBootstrapManifest({
+        projectRoot: params.projectRoot,
+        workItemId: params.workItemId,
+        manifest,
+        subject: params.currentSubject,
+      })
+    : null;
   if (
     params.currentSubject &&
     (manifest.workflow_type !== params.currentSubject.workflow_type ||
@@ -1353,6 +1365,7 @@ async function writeContractCandidate(params: {
     };
   }
 
+  if (bootstrap) await preserveContractBootstrapManifest(bootstrap);
   await fs.mkdir(path.dirname(candidateAbs), { recursive: true });
   await fs.writeFile(candidateAbs, JSON.stringify(params.registry, null, 2) + '\n', 'utf-8');
   if (params.moduleCandidate) {

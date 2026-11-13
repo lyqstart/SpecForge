@@ -341,7 +341,7 @@ describe('§16 Rollback', () => {
     const rollbackWiId = 'WI-0011';
 
     // Create original WI with merge_report
-    const originalDir = await createWorkItem({ projectRoot, workItemId: originalWiId, userRequest: 'Rollback test' });
+    const originalDir = await createWorkItem({ projectRoot, workItemId: originalWiId, userRequest: 'Rollback test', workflowPath: 'requirement_change_path' });
     await initializeClosureFiles(originalDir, originalWiId, 'requirement_change_path', 'PSV-0001');
 
     // Simulate completed merge

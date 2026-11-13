@@ -4,7 +4,7 @@
 >
 > Specification ID: SPS-1.0
 >
-> Product release version: 1.0.31
+> Product release version: 1.0.32
 >
 > Product version epoch: 1
 >
@@ -485,6 +485,8 @@ superseded
 恢复事件必须记录原阻塞事件 ID 和当前证据的原始字节绑定，并在 WAL 的序列化写入边界比较前序状态事件身份；重复请求、并发漂移、缺失或损坏历史必须在追加前拒绝。历史阻塞、审批、Merge 和实施记录均保留，不重新执行已成功阶段，不修改已批准 Task，不释放代码权限，不直接产生验证通过或 Close。恢复后重新申请验证计划、由真实 Verifier 执行并经过原有 Evidence/Gate/Close 链。其他来源的 `blocked` 不获得此恢复路径。
 
 ## 6.3 Work Item transaction artifacts
+
+当前 Work Item 初始化清单必须从已验证的 Work Item 元数据绑定 `workflow_type`，并保持同一 `workflow_path` 和正式 PSV。对于历史 Runtime 生成的、仅含 `schema_version/work_item_id/workflow_path/base_spec_version/merge_required/entries` 六字段且 entries 为空的未封存 bootstrap 清单，Contract owner 可在既有可写候选阶段核验当前元数据、路径、PSV 与未授予代码权限后物化缺失身份；替换前必须在该 WI 的 `candidate_manifest_bootstrap_history/<原始字节SHA256>.json` 不可覆盖地保存旧清单。此兼容路径不接受显式冲突身份、其他形状、陈旧基线、链接或 HardStop，不改正式 Registry、不替代封存/Gate/批准，不允许 Agent 手工补写。blocked 工作项先通过既有合法状态恢复入口返回候选准备，登记工具不得在 blocked 状态写入。
 
 Work Item 至少能承载：
 

@@ -121,7 +121,7 @@ registerHandler('sf_contract_register', async (args, context, deps) => {
         Array.isArray(entry))
     )
       return { success: false, error: 'CONTRACT_REGISTER_KIND_AND_ENTRY_REQUIRED' };
-    return authorContractCandidate({
+    return await authorContractCandidate({
       projectRoot,
       workItemId,
       action,
