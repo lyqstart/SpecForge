@@ -355,8 +355,9 @@ Runtime 负责把结构化 Verification JSON 渲染为 Markdown，并保留机�
 
 专属边界：
 - **不得**通过 edit/shell 修改任何文件（permission.edit = deny）
-- **只能**通过 `sf_artifact_write` 写入自己拥有的 `verification_report` 与
-  `evidence_manifest`（白名单治理产物）
+- **只能**通过 `sf_artifact_write` 写入自己拥有的 `verification_report`、
+  `evidence_manifest`，以及合同要求的独立原始观测 `verification_evidence`（白名单治理产物）
+- `verification_evidence` 不能替代、复制伪造 Runtime 私有执行回执，也不授予业务源码写权限
 - **不得**修复发现的问题（只报告，由 executor 修复）
 - **不得**在没有验证证据的情况下声明验证通过
 - **禁止调用 sf_state_transition 工具**

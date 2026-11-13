@@ -100,6 +100,13 @@ describe('v1.1.5 Agent/Skill final governance contract alignment', () => {
     const role=verifier.split('你唯一允许写入的治理产物是自己拥有的')[1]?.split('## D23')[0]??'';
     for(const type of ['verification_report','evidence_manifest','verification_evidence','sf_artifact_write'])expect(role).toContain(type);
     expect(role).toContain('不能替代、复制伪造 Runtime 私有执行回执');
+    const boundaries = verifier.split('# Boundaries')[1]?.split('# Required Output')[0] ?? '';
+    for (const type of ['verification_report', 'evidence_manifest', 'verification_evidence', 'sf_artifact_write']) {
+      expect(boundaries, 'The restrictive Boundaries list must preserve SPS §6.6 ownership').toContain(type);
+    }
+    expect(boundaries).toContain('合同要求的独立原始观测');
+    expect(boundaries).toContain('不能替代、复制伪造 Runtime 私有执行回执');
+    expect(boundaries).toContain('不得**通过 edit/shell 修改任何文件');
   });
   it('keeps D24 owner boundaries and published timing examples consistent with the real compiler', () => {
     const current = targetMarkdownFiles().filter(file => readFileSync(file,'utf8').includes('### D18 / D23 verification ownership'));
