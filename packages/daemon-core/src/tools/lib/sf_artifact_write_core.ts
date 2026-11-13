@@ -305,9 +305,9 @@ export function renderVerificationReport(jsonContent: string): string | null {
     ...data.e2e_tests.map(c => c.status),
   ];
   const totalChecks = allChecks.length;
-  const passedChecks = allChecks.filter(s =>
-    ['pass', 'skip', 'skipped', 'not_applicable'].includes(s)
-  ).length;
+  const passedChecks = allChecks.filter(s => s === 'pass').length;
+  const skippedChecks = allChecks.filter(s => s === 'skipped').length;
+  const notApplicableChecks = allChecks.filter(s => s === 'not_applicable').length;
   const failedChecks = allChecks.filter(s => s === 'fail').length;
 
   const lines: string[] = [];
@@ -321,6 +321,8 @@ export function renderVerificationReport(jsonContent: string): string | null {
   lines.push(`| 总检查数 | ${totalChecks} |`);
   lines.push(`| 通过 | ${passedChecks} |`);
   lines.push(`| 失败 | ${failedChecks} |`);
+  lines.push(`| 跳过 | ${skippedChecks} |`);
+  lines.push(`| 不适用 | ${notApplicableChecks} |`);
   lines.push(`| 结论 | ${data.conclusion} |`);
   lines.push('');
 
