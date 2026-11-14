@@ -20,6 +20,55 @@ afterEach(async () => {
 });
 
 describe('D29 typed AC references with exact same-generation ownership', () => {
+  it.each([
+    'Ubiquitous',
+    'Event-driven',
+    'Unwanted-behavior',
+    'State-driven',
+    'Complex',
+    'Optional-feature',
+  ])('resolves a declared AC with the EARS annotation %s', annotation => {
+    for (const declaration of [
+      `- AC-AA-001-1 [${annotation}]: Return the approved record.`,
+      `#### AC-AA-001-1 [${annotation}]\nReturn the approved record.`,
+    ]) {
+      const result = inspectRequirementsGeneration([
+        requirement(declaration),
+        context('REQ-AA-001-1'),
+      ]);
+      expect(result.errors).toEqual([]);
+      expect(result.acceptanceDefinitions).toHaveLength(1);
+      expect(result.acceptanceDefinitions[0].body).toBe('Return the approved record.');
+      expect(result.declaredIds).toEqual(['REQ-AA-001']);
+    }
+  });
+  it('does not treat an annotation as a body or bypass ownership and uniqueness', () => {
+    for (const declaration of [
+      '- AC-AA-001-1 [Event-driven]:',
+      '#### AC-AA-001-1 [Event-driven]',
+    ]) {
+      expect(inspectRequirementsGeneration([requirement(declaration)]).errors.join('\n')).toContain(
+        'AC_BODY_EMPTY'
+      );
+    }
+    expect(
+      inspectRequirementsGeneration([
+        requirement('- AC-AA-001-1 [Event-driven]: First.\n- AC-AA-001-1: Second.'),
+      ]).errors.join('\n')
+    ).toContain('AC_DEFINITION_DUPLICATE');
+    expect(
+      inspectRequirementsGeneration([
+        requirement(),
+        context('- AC-AA-001-1 [Event-driven]: Hidden.'),
+      ]).errors.join('\n')
+    ).toContain('REFERENCE_CONTEXT_ACCEPTANCE_OR_STRATEGY_FORBIDDEN');
+    expect(
+      inspectRequirementsGeneration([
+        requirement('- AC-AA-001-1 [Unknown]: Unrecognized.'),
+        context('REQ-AA-001-1'),
+      ]).errors.join('\n')
+    ).toContain('AC_REFERENCE_UNRESOLVED');
+  });
   it.each(['REQ-AA-001-1', 'AC-AA-001-1'])(
     'resolves %s without adding a Requirement',
     reference => {

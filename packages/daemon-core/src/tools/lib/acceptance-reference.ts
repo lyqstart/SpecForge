@@ -23,7 +23,7 @@ export function typedReferenceTokens(content: string): string[] {
 export function acceptanceDefinitionMarkers(content: string): RegExpMatchArray[] {
   return [
     ...content.matchAll(
-      /^(?:[ \t]*[-*][ \t]+(AC-[A-Z0-9][A-Z0-9_-]*)[ \t]*[:：]|#{2,6}[ \t]+(AC-[A-Z0-9][A-Z0-9_-]*)\b)([^\r\n]*)/gm
+      /^(?:[ \t]*[-*][ \t]+(AC-[A-Z0-9][A-Z0-9_-]*)(?:[ \t]+\[(?:Ubiquitous|Event-driven|Unwanted-behavior|State-driven|Complex|Optional-feature)\])?[ \t]*[:：]|#{2,6}[ \t]+(AC-[A-Z0-9][A-Z0-9_-]*)\b(?:[ \t]+\[(?:Ubiquitous|Event-driven|Unwanted-behavior|State-driven|Complex|Optional-feature)\])?)([^\r\n]*)/gm
     ),
   ];
 }
