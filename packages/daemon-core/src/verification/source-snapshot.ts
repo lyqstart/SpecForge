@@ -102,6 +102,19 @@ function gitRead(root: string, args: string[]): Promise<string> {
   });
 }
 
+/** Drain both bounded read-only children before returning a failure to the owner. */
+async function gitReadPair(
+  root: string,
+  first: string[],
+  second: string[]
+): Promise<[string, string]> {
+  const results = await Promise.allSettled([gitRead(root, first), gitRead(root, second)]);
+  const [a, b] = results;
+  if (a.status === 'rejected') throw a.reason;
+  if (b.status === 'rejected') throw b.reason;
+  return [a.value, b.value];
+}
+
 export async function captureVerificationSource(
   projectRoot: string,
   inputPaths?: readonly string[]
@@ -131,9 +144,14 @@ export async function captureVerificationSource(
   const configBefore = verificationId(
     await readVerificationFile(path.join(root, '.git', 'config'))
   );
-  for (const name of (await gitRead(root, ['ls-files', '--others', '--exclude-standard', '-z']))
-    .split('\0')
-    .filter(Boolean)) {
+  // Both inventories are bracketed by the same physical index/configuration checks.
+  // Neither starts until the repository boundary and initial HEAD/branch are verified.
+  const [untracked, staged] = await gitReadPair(
+    root,
+    ['ls-files', '--others', '--exclude-standard', '-z'],
+    ['ls-files', '--stage', '-z']
+  );
+  for (const name of untracked.split('\0').filter(Boolean)) {
     assertVerificationRelativePath(name);
     if (!name.toLowerCase().startsWith(`${SPEC_DIR_NAME}/` as const))
       throw new Error('VERIFICATION_UNTRACKED_INPUT:' + name);
@@ -144,9 +162,7 @@ export async function captureVerificationSource(
   const selected = inputPaths === undefined ? null : new Set(inputPaths);
   if (selected) for (const name of selected) assertVerificationRelativePath(name);
   let total = 0;
-  for (const record of (await gitRead(root, ['ls-files', '--stage', '-z']))
-    .split('\0')
-    .filter(Boolean)) {
+  for (const record of staged.split('\0').filter(Boolean)) {
     const match = /^(100644|100755) [a-f0-9]{40} 0\t(.+)$/.exec(record);
     if (!match) throw new Error('VERIFICATION_INDEX_KIND_UNSUPPORTED');
     const relative = match[2];
@@ -186,9 +202,14 @@ export async function captureVerificationSource(
     files,
     trackedPaths,
   };
+  const [finalHead, finalBranch] = await gitReadPair(
+    root,
+    ['rev-parse', '--verify', 'HEAD'],
+    ['symbolic-ref', '--quiet', '--short', 'HEAD']
+  );
   if (
-    head !== (await gitRead(root, ['rev-parse', '--verify', 'HEAD'])).trim() ||
-    branch !== (await gitRead(root, ['symbolic-ref', '--quiet', '--short', 'HEAD'])).trim() ||
+    head !== finalHead.trim() ||
+    branch !== finalBranch.trim() ||
     indexBefore !== verificationId(await readVerificationFile(path.join(root, '.git', 'index'))) ||
     configBefore !== verificationId(await readVerificationFile(path.join(root, '.git', 'config')))
   )
