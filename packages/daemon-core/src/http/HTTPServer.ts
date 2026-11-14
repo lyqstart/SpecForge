@@ -506,20 +506,80 @@ export class HTTPServer {
   // ── Request Handling ──
 
   private handleRequest(req: http.IncomingMessage, res: http.ServerResponse): void {
+    // Early rejections may precede disconnect/error events from the client.
+    req.on('error', () => undefined);
+    if (req.method === 'OPTIONS') {
+      this.writeCorsPreflight(res);
+      req.resume();
+      return;
+    }
+    // Authenticate before collecting a body or allowing legacy CAS side effects.
+    const pathname = this.safeGetPathname(req);
+    if (!this.isPublicEndpoint(pathname)) {
+      const authResult = this.checkAuth(req);
+      if (authResult) {
+        res.setHeader('Connection', 'close');
+        this.sendJsonResponse(
+          res,
+          authResult.statusCode,
+          this.errorBody(authResult.code, authResult.message)
+        );
+        req.resume();
+        return;
+      }
+    }
+
     const chunks: Buffer[] = [];
+    const receiveLimit = this.config.getMaxControlledToolPayloadSize();
+    let received = 0;
+    let rejected = false;
+    const rejectOversized = () => {
+      rejected = true;
+      chunks.length = 0;
+      res.setHeader('Connection', 'close');
+      this.sendJsonResponse(
+        res,
+        413,
+        this.errorBody('PAYLOAD_TOO_LARGE', 'HTTP request envelope exceeds the byte budget', {
+          max_bytes: receiveLimit,
+        })
+      );
+    };
+    const declaredLength = req.headers['content-length'];
+    if (declaredLength !== undefined && Number(declaredLength) > receiveLimit) {
+      rejectOversized();
+      req.resume();
+      return;
+    }
 
     req.on('data', (chunk: Buffer | string) => {
-      chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+      if (rejected) return;
+      const bytes = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk);
+      received += bytes.length;
+      if (received > receiveLimit) {
+        rejectOversized();
+        return;
+      }
+      chunks.push(bytes);
     });
 
     req.on('end', () => {
+      if (rejected) return;
       promiseFromSync(() => this.handleRequestWithBody(req, res, Buffer.concat(chunks))).catch(
         (error: unknown) => this.handleHandlerError(res, error)
       );
     });
 
     req.on('error', () => {
-      this.sendJsonResponse(res, 500, this.errorBody('INTERNAL_ERROR', 'Internal Server Error'));
+      chunks.length = 0;
+      if (!rejected && !res.writableEnded) {
+        rejected = true;
+        this.sendJsonResponse(res, 500, this.errorBody('INTERNAL_ERROR', 'Internal Server Error'));
+      }
+    });
+    req.on('aborted', () => {
+      rejected = true;
+      chunks.length = 0;
     });
   }
 
@@ -533,8 +593,25 @@ export class HTTPServer {
       const pathname = this.safeGetPathname(req);
 
       // Check payload size
-      const maxSize = this.config.getMaxPayloadSize();
+      // Full arguments must reach both existing owners unchanged. This is an
+      // envelope budget, not a grant: native/Dispatcher checks still execute.
+      const controlledToolRequest =
+        method === 'POST' &&
+        (pathname === '/api/v1/tool/invoke' || pathname === '/api/v1/v11/write-guard/native');
+      const maxSize = controlledToolRequest
+        ? this.config.getMaxControlledToolPayloadSize()
+        : this.config.getMaxPayloadSize();
       if (rawBody.length > maxSize) {
+        if (this.isPublicEndpoint(pathname)) {
+          this.sendJsonResponse(
+            res,
+            413,
+            this.errorBody('PAYLOAD_TOO_LARGE', 'Public endpoint request exceeds the byte budget', {
+              max_bytes: maxSize,
+            })
+          );
+          return;
+        }
         try {
           rawBody = await this.storeAndReplaceDataField(rawBody, maxSize);
           console.log(

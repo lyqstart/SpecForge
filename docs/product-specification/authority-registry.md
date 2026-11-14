@@ -151,3 +151,5 @@ ADR-014 本身继续保留为 Authority Model Recovery 的历史决策证据，�
 原 WI 验证断点的受限恢复归 SPS §6.2 和现有状态协调/WAL owner。它落实用户要求从真实断点恢复且不得重放已成功阶段的既有边界；不属于新的应用执行权限或 Candidate 批准。实现、Agent 指令和安装资产必须共同消费事件身份、当前审批/实施证据、撤权和 HardStop 检查，不得仅增加一条无条件状态边。
 
 Contract 登记 bootstrap 身份一致性及历史空清单的严格物化归 SPS §6.3，由既有 Work Item 初始化与 Contract owner 负责。用户要求修复真实 POC 登记死锁；原件存档与身份复核不能由 Agent 手工写 manifest 替代，原 WI 使用既有候选准备恢复路径，不新增工作流身份或代码权限。
+
+受控工具完整请求传输归 SPS §7.3 与 `CONTROLLED-HTTP-ENVELOPE-001`。用户于 2026-11-14 要求修复 HTTP 413 后验收、部署并恢复原 POC；本次有限请求预算与收集前认证由 HTTP owner 负责，不改变产物 owner、冻结 Task、隔离或文件权限，也不授权公开披露业务数据。正文完整传输不能替代后续业务校验或验收证据。

@@ -130,6 +130,11 @@ export class DaemonConfig {
     return this.maxPayloadSize;
   }
 
+  /** SPS 7.3: complete authenticated tool envelope, including JSON escaping. */
+  getMaxControlledToolPayloadSize(): number {
+    return 1024 * 1024;
+  }
+
   getSchemaVersion(): string {
     return this.schemaVersion;
   }

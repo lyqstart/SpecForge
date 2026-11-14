@@ -207,6 +207,8 @@ TYPE_ENVIRONMENT_SOURCE=VERSIONED_TSCONFIG_AND_DECLARED_DEPENDENCIES
 
 ### 3.3 责任层与最小完整扩展
 
+`CONTROLLED-HTTP-ENVELOPE-001`（SPS §7.3）：HTTPServer 在受保护请求的正文收集前认证，并按实际流入字节实施 1 MiB 接收上限。仅两个精确 POST 路由 `/api/v1/tool/invoke` 与 `/api/v1/v11/write-guard/native` 将上限内完整 JSON 原样交给既有 owner；其他入口不继承工具路由预算。接收失败不得触发 CAS、Dispatcher 或业务写入；中文、JSON 转义、Content-Length 和分块传输必须按字节验收。既有客户端模板应以真实 HTTP 验证，不得仅以服务端模拟证明部署闭环。角色、状态、权限与隔离消费者不变。
+
 `DETACHED-GIT-BOOTSTRAP-001`（SPS §9.2）：已有 Git plan/create owner 承担无分支 detached 提交的实施前身份建立。计划先绑定新基线和 WI 分支、完整原提交、原索引及跟踪文件原始字节；受控执行绑定计划哈希与用户明确两分支名原话，使用无 hook 的有限 Git 原子引用事务、HEAD 绑定及标准 git_context。不得检出内容、改索引、新建提交或用参数伪装基线。跨进程互斥、每步命令四件套、不可变计划与阶段回执支持精确中间状态恢复，当前状态、refs、索引、内容或上下文漂移时 fail closed。旧分支建立路径和下游正常 Code Permission/Git Merge context 合同不变。
 
 问题必须定位到首次偏离的责任层：Standard、Contract、Workflow Skill、Agent、Tool Schema、

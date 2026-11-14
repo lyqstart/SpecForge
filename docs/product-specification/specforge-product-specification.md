@@ -4,7 +4,7 @@
 >
 > Specification ID: SPS-1.0
 >
-> Product release version: 1.0.32
+> Product release version: 1.0.33
 >
 > Product version epoch: 1
 >
@@ -610,6 +610,8 @@ Daemon 启动成功后在：
 写入连接发现信息，至少承载连接所需 endpoint/process/authentication facts。
 
 当前本机通信采用 loopback HTTP，事件流使用 SSE；客户端必须通过受控 authentication 访问。
+
+受控工具传输必须完整保留参数和上下文。`POST /api/v1/tool/invoke` 与 `POST /api/v1/v11/write-guard/native` 的完整 JSON 请求体预算为 1 MiB（1,048,576 UTF-8 字节，包含包装与转义），不得把正文长度当作请求长度。受保护请求须在收集正文或产生 CAS 等副作用前认证；所有 HTTP 请求的接收缓冲均受同一 1 MiB 硬上限约束，必须同时检查已声明长度和实际流入字节。超限返回 HTTP 413 / `PAYLOAD_TOO_LARGE`，不得进入业务 owner、裁剪、拆写或自动重试。普通入口保留 64 KiB 处理预算；既有 `data` 兼容处理仅在认证和接收上限内运行。此传输预算不授予文件权限、不跳过原始 Write Guard、角色、冻结、HardStop 或 Dispatcher 校验，也不增加公开 CAS 或分片写入能力。正式工具与写前检查必须使用相同预算，部署验收须覆盖二者及拒绝后的零业务写入。
 
 HTTP 成功必须代表对应 owner 已完成真实操作：状态读取进入项目 StateManager，状态推进进入受控 Dispatcher，会话列表来自 SessionRegistry。缺失 owner、拒绝的状态推进及未实现的旧 event-query/CAS/escaped-write 路由不得返回成功或伪造事件 ID；旧路由明确返回 unavailable/unsupported。此要求不新增公开 CAS 或查询产品能力。
 
