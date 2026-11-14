@@ -735,3 +735,7 @@ DD-* | constrained_by | <Project 或 Module Contract ID>
 9. Contract 值、schema、枚举成员发生变化，但消费者/来源等正式 Trace 边集合不变时，**不得制造 Governance Relation Delta**。
 10. 返回 success 前执行 `TRACE_DELTA_CANONICAL_ROW_SELF_CHECK`：每个数据行必须恰好四列，Operation 合法，Relation 合法，From/To 为正式 ID；任何一项无法证明则 blocked，不得交给 Gate。
 <!-- ERR-157_GOVERNANCE_RELATION_DELTA_CONTRACT:END -->
+
+### D29 验收项引用边界
+
+AC 正文由需求 owner 持有。`AC-<MODULE_CODE>-<NNN>-<K>` 和旧式 `REQ-<MODULE_CODE>-<NNN>-<K>` 仅在同代唯一 AC 与唯一所属 REQ 均存在时有效；旧式引用不创建 REQ、不通过去后缀建立需求覆盖。新产物优先引用显式 AC ID；不得为规范化引用改写冻结 Task、删除有效引用、放宽 Gate 或把引用有效报告为验收通过。

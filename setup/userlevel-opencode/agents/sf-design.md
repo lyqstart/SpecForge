@@ -818,3 +818,7 @@ constrained_by: <约束来源>
 3. 修改、删除或提升 Contract 前，必须从 Prospective Trace 反向取得全部消费 DD 和消费 Module，并在同一个 WI 中更新这些 Module Design。
 4. Module Contract 仅允许 owner Module 的 DD 消费。需要跨 Module 消费时，必须按正式 Promotion 流程创建新的 Project Contract ID，不得直接放宽旧 Module Contract。
 5. `trace_delta.md` 只表达变化，不得复制完整正式矩阵，也不得把 Module `trace.md` 当作独立权威文件维护；sf-design 不拥有该产物的写入权。
+
+### D29 验收项引用边界
+
+引用某条验收项时优先使用 `AC-<MODULE_CODE>-<NNN>-<K>`；已有 `REQ-<MODULE_CODE>-<NNN>-<K>` 仅由同代解析器解释为该 AC，不是父 REQ 的别名。必须存在唯一 AC 正文和唯一父 REQ；不得通过去后缀、复制正文、修改冻结 Task 或删引用避开拒绝。引用有效不证明实施或验收通过。

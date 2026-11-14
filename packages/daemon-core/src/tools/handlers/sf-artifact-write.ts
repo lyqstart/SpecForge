@@ -52,6 +52,7 @@ import {
   resolveSystemGovernanceRequirement,
 } from '../lib/sf_design_governance_policy';
 import { readWorkItemMetadata } from '../lib/work-item-metadata.js';
+import { parseRequirementDocument } from '../lib/requirements-generation.js';
 import {
   evidenceManifestSchemaBlockCode,
   precheckEvidenceManifestSchema,
@@ -335,6 +336,9 @@ function resolveTargetFilename(
   candidateModuleId?: string
 ): string | null {
   const moduleId = candidateModuleId ?? 'CORE';
+  if (fileType === 'candidate_requirements_index') {
+    return path.posix.join('candidates', LAYOUT.projectFiles.requirementsIndex);
+  }
   if (fileType === 'candidate_architecture') {
     return 'candidates/project/architecture.candidate.md';
   }
@@ -948,6 +952,7 @@ function isPlaceholderProjectConfigContent(content: string): boolean {
 const PROFESSIONAL_ARTIFACT_OWNERS = new Map<string, string>([
   ['requirements', 'sf-requirements'],
   ['candidate_requirements', 'sf-requirements'],
+  ['candidate_requirements_index', 'sf-requirements'],
   ['requirements_delta', 'sf-requirements'],
   ['design', 'sf-design'],
   ['candidate_design', 'sf-design'],
@@ -1036,6 +1041,7 @@ const EXECUTOR_FORBIDDEN_ARTIFACT_TYPES = new Set([
   'evidence_manifest',
   'verification_evidence',
   'candidate_requirements',
+  'candidate_requirements_index',
   'candidate_architecture',
   'candidate_data_model',
   'candidate_design',
@@ -1314,6 +1320,25 @@ registerHandler('sf_artifact_write', async (args, context, deps) => {
     content = rendered;
   }
   let candidateModuleId: string | undefined;
+  if (fileType === 'candidate_requirements_index') {
+    const parsed = parseRequirementDocument({
+      path: LAYOUT.projectFiles.requirementsIndex,
+      content,
+    });
+    if (
+      args['module_id'] !== undefined ||
+      parsed.role !== 'reference_context' ||
+      parsed.errors.length > 0
+    ) {
+      return {
+        success: false,
+        error: 'INVALID_REQUIREMENTS_INDEX_CONTEXT',
+        hard_stop: false,
+        retry_allowed: true,
+        validation_errors: parsed.errors,
+      };
+    }
+  }
   if (
     fileType === 'requirements' ||
     fileType === 'candidate_requirements' ||

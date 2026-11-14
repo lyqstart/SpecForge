@@ -1,4 +1,11 @@
 import { isValidRequirementId } from '@specforge/types';
+import {
+  acceptanceDefinitionMarkers,
+  parseAcceptanceDefinitions,
+  parseAcceptanceReference,
+  validateTypedReferences,
+  type AcceptanceDefinition,
+} from './acceptance-reference.js';
 
 export type RequirementDocument = { path: string; content: string; moduleCode?: string };
 export type RequirementRole = 'requirements' | 'reference_context';
@@ -62,7 +69,8 @@ export function parseRequirementDocument(document: RequirementDocument): {
       /^(?:#{1,6}\s+(?:验收标准|Acceptance\s+Criteria)(?:\s|[:：（(]|$)|\s*(?:[-*]\s*)?(?:\*\*)?(?:验收标准|Acceptance\s+Criteria|verification_strategy)(?:\s*[（(][^）)\r\n]*[）)])?(?:\*\*)?\s*(?:[:：]|$))/im.test(
         content
       ) ||
-      /^#{1,6}\s+AC-[A-Z0-9_-]+\b/im.test(content)
+      /^#{1,6}\s+AC-[A-Z0-9_-]+\b/im.test(content) ||
+      acceptanceDefinitionMarkers(content).length > 0
     ) {
       errors.push('REFERENCE_CONTEXT_ACCEPTANCE_OR_STRATEGY_FORBIDDEN');
     }
@@ -70,7 +78,7 @@ export function parseRequirementDocument(document: RequirementDocument): {
   }
   const references = requirementTokens(content);
   for (const id of references) {
-    if (!isValidRequirementId(id)) {
+    if (!isValidRequirementId(id) && !parseAcceptanceReference(id)) {
       errors.push(`${id}: requirement ID must use canonical REQ-<MODULE_CODE>-<NNN> format`);
     }
   }
@@ -82,6 +90,7 @@ export function inspectRequirementsGeneration(documents: RequirementDocument[]):
   errors: string[];
   declaredIds: string[];
   documents: Array<RequirementDocument & ReturnType<typeof parseRequirementDocument>>;
+  acceptanceDefinitions: AcceptanceDefinition[];
 } {
   const parsed = documents.map(document => ({
     ...document,
@@ -91,12 +100,25 @@ export function inspectRequirementsGeneration(documents: RequirementDocument[]):
     document.errors.map(error => `${document.path}: ${error}`)
   );
   const owners = new Map<string, RequirementDefinition[]>();
+  const acceptanceDefinitions: AcceptanceDefinition[] = [];
   for (const document of parsed) {
+    const beforeAcceptanceCount = acceptanceDefinitions.length;
     for (const definition of document.definitions) {
+      if (!isValidRequirementId(definition.id))
+        errors.push(`${document.path}: REQUIREMENT_DEFINITION_NONCANONICAL: ${definition.id}`);
+      const acceptance = parseAcceptanceDefinitions(definition);
+      acceptanceDefinitions.push(...acceptance.definitions);
+      errors.push(...acceptance.errors.map(error => `${document.path}: ${error}`));
       const matches = owners.get(definition.id) ?? [];
       matches.push(definition);
       owners.set(definition.id, matches);
     }
+    if (
+      document.role === 'requirements' &&
+      acceptanceDefinitionMarkers(document.content).length !==
+        acceptanceDefinitions.length - beforeAcceptanceCount
+    )
+      errors.push(`${document.path}: AC_DEFINITION_OUTSIDE_REQUIREMENT`);
   }
   for (const [id, definitions] of owners) {
     if (definitions.length > 1) {
@@ -105,15 +127,23 @@ export function inspectRequirementsGeneration(documents: RequirementDocument[]):
       );
     }
   }
-  for (const document of parsed) {
-    for (const id of document.references) {
-      if (!owners.has(id)) errors.push(`${document.path}: ${id}: formal requirement body missing`);
-    }
+  const acIds = new Set<string>();
+  for (const definition of acceptanceDefinitions) {
+    if (acIds.has(definition.id)) errors.push(`AC_DEFINITION_DUPLICATE: ${definition.id}`);
+    acIds.add(definition.id);
   }
+  const definitions = parsed.flatMap(document => document.definitions);
+  for (const document of parsed)
+    errors.push(
+      ...validateTypedReferences(document.content, definitions, acceptanceDefinitions).map(
+        error => `${document.path}: ${error}`
+      )
+    );
   return {
     errors: [...new Set(errors)],
     declaredIds: [...owners.keys()].filter(isValidRequirementId).sort(),
     documents: parsed,
+    acceptanceDefinitions,
   };
 }
 

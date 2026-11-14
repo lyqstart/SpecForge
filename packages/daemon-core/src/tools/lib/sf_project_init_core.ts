@@ -351,7 +351,13 @@ export async function ensureProjectInit(
         if (exists) {
           result.existed.push(entry.path);
         } else {
-          await writeFile(fullPath, PLACEHOLDER_CONTENT, 'utf-8');
+          await writeFile(
+            fullPath,
+            normalizedRel === 'project/requirements_index.md'
+              ? '---\nrequirements_role: reference_context\n---\n# Requirements Index\n\n> 需求正文由已登记模块持有；本索引不贡献需求或验收证据。\n'
+              : PLACEHOLDER_CONTENT,
+            'utf-8'
+          );
           result.created.push(entry.path);
         }
       }

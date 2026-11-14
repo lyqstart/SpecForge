@@ -11,6 +11,7 @@ import * as path from 'node:path';
 import * as crypto from 'node:crypto';
 import {
   SPEC_DIR_NAME,
+  LAYOUT,
   workItemCandidateDesign,
   workItemCandidateManifest,
   workItemCandidateModulesRoot,
@@ -350,6 +351,8 @@ export function targetPathForCandidate(type: unknown, candidatePath: string): st
     throw new TypeError('CANDIDATE_TYPE_STRING_REQUIRED');
   const t = (type ?? '').toLowerCase();
   const p = normalizeSlash(candidatePath).toLowerCase();
+  if (t === 'requirements_index')
+    return path.posix.join(SPEC_DIR_NAME, LAYOUT.projectFiles.requirementsIndex);
   const moduleRequirementsCandidate = p.match(
     /(?:^|\/)candidates\/project\/modules\/([^/]+)\/requirements\.candidate\.md$/
   );
@@ -510,6 +513,11 @@ function listCanonicalCandidateFiles(workItemDir: string): Array<{
     'candidates/project/extension_registry.json',
     `${SPEC_DIR_NAME}/project/extension_registry.json` as const,
     'extension_registry'
+  );
+  append(
+    path.posix.join('candidates', LAYOUT.projectFiles.requirementsIndex),
+    path.posix.join(SPEC_DIR_NAME, LAYOUT.projectFiles.requirementsIndex),
+    'requirements_index'
   );
 
   const modulesRoot = path.join(workItemDir, 'candidates', 'project', 'modules');
@@ -684,6 +692,7 @@ export function materializeCandidateManifestEntries(
     classification.contract_registry_only === true;
   const workflowPath = String(manifest?.workflow_path ?? '').trim();
   const knownMaterializedTypes = new Set([
+    'requirements_index',
     'architecture',
     'data_model',
     'requirements',
@@ -701,6 +710,7 @@ export function materializeCandidateManifestEntries(
       case 'data_model':
         return dataModelRequired;
       case 'requirements':
+      case 'requirements_index':
         return requirementsRequired;
       case 'design':
         return designRequired;

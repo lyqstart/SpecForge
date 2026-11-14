@@ -4,7 +4,7 @@
 >
 > Specification ID: SPS-1.0
 >
-> Product release version: 1.0.36
+> Product release version: 1.0.37
 >
 > Product version epoch: 1
 >
@@ -534,10 +534,13 @@ Candidate
 7. Runtime 每次进入 `candidate_preparing` 时，必须读取 `trigger_result.impact_scope.planned_code_paths` 并生成 Work Item 根的 `implementation_baseline.json`。该文件是 Runtime-owned 当前实现快照，至少记录规范化 scope、每个匹配文件的相对路径、大小、SHA-256、总文件数与稳定 `snapshot_id`；Agent 不得写入或替代它。
 8. Architecture、Design 与 Tasks Candidate 必须绑定同一 `implementation_baseline_id`。在 `candidate_preparing → candidate_prepared` 前，Runtime 必须复算基线并拒绝 snapshot 漂移；只要 planned scope 中有真实文件，Candidate basis 或专业 Candidate 中的 `all_files_new=true`、greenfield、新建文件、实现不存在等相反声明都必须失败关闭。修复必须更新真实 basis 与 Candidate，不得删除业务文件来迎合旧分析。
 9. `implementation_baseline.json` 属于固定 Candidate seal 集，Gate Attempt、Decision 与 Merge 必须像其他 seal 输入一样验证其存在性与字节身份。基线不能替代 Agent 对真实代码、入口、调用链、行为与测试的阅读，只提供可复核的最低事实边界。
-10. 当前代 Requirement 定义只允许 `REQ-<MODULE_CODE>-<NNN>` 三位序号；`REQ-N` 仅用于历史只读兼容。Requirements Gate 必须拒绝非规范位宽；Workflow Gate 必须枚举 Design、Tasks、Trace 和 Delta 中的每个规范形态 REQ token，并要求逐字解析到本代权威 Requirements 的唯一正文。不同位宽、短号、范围说明或“canonical 映射”不得视为相同 ID。
+10. 当前代 Requirement 定义只允许 `REQ-<MODULE_CODE>-<NNN>` 三位序号；`REQ-N` 仅用于历史只读兼容。Requirements Gate 必须拒绝非规范位宽；Workflow Gate 必须枚举 Design、Tasks、Trace 和 Delta 中的每个 REQ token，并要求逐字解析到本代权威 Requirements 的唯一正文。不同位宽、短号、范围说明或“canonical 映射”不得视为相同 Requirement ID；仅第14项显式规定的旧式验收项引用按 AC 类型解析，不形成 Requirement 别名。
 11. Candidate seal、冻结 Manifest 读取、兼容发现和所有 Gate 消费者必须使用同一个目标平台 resolved-path identity。Windows 上仅大小写不同但解析到同一文件的路径只能形成一个输入、一个哈希和一个定义 owner；POSIX 平台继续把大小写不同的路径视为不同身份。去重必须保留首个权威路径拼写，不得用删除文件、放宽重复定义 Gate 或忽略真实非规范引用来消除冲突。
 12. D28 有限需求引用范围扩展：Requirements 文档可在首部 YAML 元数据中显式声明 `requirements_role: reference_context`，只承载索引、说明与引用；未声明时按普通需求文档检查，显式普通角色为 `requirements`。未知、重复或位置错误的角色声明必须拒绝。`reference_context` 不得含正式需求定义、自己的验收标准或验证策略；贡献的需求数、验收覆盖与业务完成证据均为零，其每个 REQ 引用仍必须解析到同代唯一有效正文，不能替代缺失正文。纯引用文件不能使空需求集合成为业务通过。
 13. Requirements Gate、Workflow 引用完整性、Task 验证策略、Trace 覆盖、Merge 前后正式规格消费必须共享 D28 的集合、定义归属和文档角色语义。解析须先逐文件检查角色，再聚合；不能因拼接文件而丢失角色，也不能通过正文 token 回退把上下文引用计为定义。所有参与解析的正式/候选文件和登记/Manifest 必须纳入本次 Gate 输入身份与封存校验，任一输入变化使旧代检查与审批失效；缺正文、重复定义、错误归属、非规范引用和已有权限/HardStop 边界继续失败关闭。原业务由原专业 owner 在合法恢复后修订、重新封存并运行真实 Gate，D28 不修改冻结 Task，也不批准 Candidate。
+14. D29 有限验收项引用：`AC-<MODULE_CODE>-<NNN>-<K>` 是验收项身份，`K` 为无前导零的正整数。其定义必须位于同代唯一正式 `REQ-<MODULE_CODE>-<NNN>` 正文内，以 Markdown 列表项或下级标题声明 ID 和非空验收内容；定义模块、父需求和文件 owner 必须一致。旧式 `REQ-<MODULE_CODE>-<NNN>-<K>` 仅可作为该 AC 的引用，不能作为需求定义或通过截断后缀解析为父需求。普通 REQ 身份与位宽不变。显式 AC 与旧式引用都必须找到唯一有效 AC 和唯一父 REQ；缺失、重复、错误归属、空正文、跨代、非规范位宽或歧义均拒绝。所有正式入口、seal、Gate、Merge 前后及下游消费者共用同代解析和输入身份绑定；源文件或父需求变化使旧证据失效。AC 引用不增加需求数、不证明验收已执行或通过、不授予审批或写权限。冻结业务 Task 无需为这一有限解释改写，其原始字节及历史拒绝证据必须保留。
+
+15. D28 项目需求索引维护：新项目初始化仅创建显式 `reference_context` 的空索引，不从空索引推断需求齐备；重入初始化不得改写旧占位或用户已有索引。`sf-requirements` 通过唯一类型 `candidate_requirements_index` 写入 `candidates/project/requirements_index.md`，不接收模块归属或任意目标路径，且必须为无自有需求/验收定义的显式引用上下文。Runtime 在需求变更封存时将其纳入 Manifest、输入身份和 Gate；只有有效显式批准后的 Merge Runner 可替换正式 `requirements_index.md`。缺引用正文、错误角色、错误 owner、冻结写入或源漂移继续拒绝；不得按文件名自动豁免旧索引或由初始化/Agent 直接迁移正式真相源。
 
 ## 6.5 已合并无效 Project Spec 的补偿恢复
 

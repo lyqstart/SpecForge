@@ -5,9 +5,9 @@ import * as path from 'node:path';
 import { isValidRequirementId } from '@specforge/types';
 import {
   inspectRequirementsGeneration,
-  requirementTokens,
   type RequirementDocument,
 } from './requirements-generation.js';
+import { validateTypedReferences } from './acceptance-reference.js';
 
 export type RequirementReferenceIntegrityResult = {
   valid: boolean;
@@ -64,7 +64,6 @@ export async function validateCandidateRequirementReferences(input: {
     }
   }
   const declaredIds = [...definitionOwners.keys()].filter(isValidRequirementId).sort();
-  const declared = new Set(declaredIds);
 
   const candidatesRoot = path.join(input.workItemDir, 'candidates');
   const consumerFiles = await walkConsumerFiles(candidatesRoot);
@@ -85,17 +84,13 @@ export async function validateCandidateRequirementReferences(input: {
 
   for (const filePath of Array.from(new Set(consumerFiles)).sort()) {
     const content = await fs.readFile(filePath, 'utf-8');
-    for (const reference of requirementTokens(content)) {
-      if (!isValidRequirementId(reference)) {
-        errors.push(
-          `REQUIREMENT_REFERENCE_NONCANONICAL: ${filePath}: ${reference}; expected REQ-<MODULE_CODE>-<NNN>`
-        );
-      } else if (!declared.has(reference)) {
-        errors.push(
-          `REQUIREMENT_REFERENCE_UNRESOLVED: ${filePath}: ${reference} is not defined by the current authoritative Requirements set`
-        );
-      }
-    }
+    errors.push(
+      ...validateTypedReferences(
+        content,
+        generation.documents.flatMap(document => document.definitions),
+        generation.acceptanceDefinitions
+      ).map(error => `${filePath}: ${error}`)
+    );
   }
 
   return {

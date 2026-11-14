@@ -48,6 +48,8 @@ Windows/CMD、编码、PATH、npm shim、Git stdout/stderr、Bun 参数都属于
 
 任何定义变化都要沿调用图和消费图闭环。修改函数签名、Schema、路径、状态、Contract 时，必须覆盖全部生产入口、调用者、测试、部署副本和真实消费者。
 
+消费者接受某类产物不证明其生产闭环存在。涉及新文档角色或候选类型时，回归须从正式 owner 的受控写入开始，经过真实 Manifest 收集和同代消费者；不得只手工构造候选或 Manifest 来证明能力完整。初始化新文件与迁移既有正式文件的所有权必须分别核验。
+
 Candidate Gate 修订须先从 failed check 的实际布尔条件和输入来源区分非法关系与缺失必需关系；删除非法边不证明必需覆盖已经成立。跨设计声明和 Trace Delta 的修订须由各自产物 owner 完成并核对一致后再重新封存、重跑，不能以单文件词语检查代替整个失败条件的闭环。见 ERR-1902。
 <!-- source: ledger Part3/4 verbatim (audited), view L1903-2944 -->
 

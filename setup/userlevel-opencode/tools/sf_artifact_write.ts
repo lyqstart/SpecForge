@@ -2,6 +2,7 @@ import { tool } from "@opencode-ai/plugin";
 import { daemon, invokeVerificationConsumerTool } from "./lib/thin-client";
 export default tool({
   description:
+    " candidate_requirements_index 仅由 sf-requirements 写入独立项目索引候选，须显式 reference_context，不传 module_id；正式索引仅由批准后的 Merge Runner 替换。" +
     "将 SpecForge Work Item 受控产物写入白名单路径。正式 WI 产物必须使用 canonical file_type，不得用 work_log 承载 trigger_result/tasks/candidate_manifest/merge_report/evidence_manifest 等 required artifact。work_log只写执行归档，不会根据run_id、template或正文猜测/切换产物类型；日志提到正式产物不授予对该产物的写入。" +
     " JSON 产物的 content 必须是 JSON 字符串；如果上层传入对象，daemon 会尽量序列化，但 Agent 应优先使用 JSON.stringify 后的字符串。" +
     " 新项目第一次正式功能如果尚无有效 Project Architecture / Project Data Model，sf-design 必须在同一个 Requirement WI 中使用 candidate_architecture、candidate_data_model，并为已声明或受控新增 Module 使用 candidate_module_definition 写入真实 code_paths、使用 candidate_module_contract 建立 Module Contract；不得编造架构、数据模型或代码归属。" +
@@ -27,6 +28,7 @@ export default tool({
         "design",
         "design_delta",
         "candidate_requirements",
+        "candidate_requirements_index",
         "candidate_architecture",
         "candidate_data_model",
         "candidate_design",

@@ -500,6 +500,9 @@ Requirements Candidate（`requirements_candidate.md`）是拟写入正式规格�
 
 #### D28 同代需求正文与引用上下文（SPS §6.4）
 
+- 正式项目需求索引由本角色使用 `sf_artifact_write(file_type="candidate_requirements_index")` 生成 `candidates/project/requirements_index.md`；必须声明 `reference_context`，不传 `module_id`，不写正式索引。Runtime 在需求变更的封存中收集该候选，批准后的 Merge Runner 才替换正式索引。初始化留下的旧占位索引通过此路径修复，不得直接改 `.specforge/project/**` 或复制模块需求正文。
+- D29：验收项定义使用 `AC-<MODULE_CODE>-<NNN>-<K>`，K 为无前导零的正整数，在唯一所属 REQ 正文内以列表项或下级标题保留实质内容。旧式 `REQ-<MODULE_CODE>-<NNN>-<K>` 仅作为该 AC 的引用，不是 REQ 别名；必须同代唯一、父需求和 owner 一致。新文档优先使用显式 AC ID，不重写冻结 Task；引用解析不证明验收通过。
+
 - 普通需求正文由所属 Module 唯一拥有，标题使用规范 `REQ-<MODULE_CODE>-<NNN>`；每个正文内必须显式写出“验收标准”或 `Acceptance Criteria` 标签和实质验收内容，不能借用其他章节的标签。
 - 跨文件 REQ 引用解析到同代权威集合：已登记的未变更正式模块需求，加上本代冻结 Manifest 中的合法替换/删除。不要复制其他模块正文、虚构需求或改冻结 Task 来修 Gate。
 - 仅含索引、说明和引用的完整文件须在首部 frontmatter 显式声明 `requirements_role: reference_context`。它不含自己的正式 REQ 定义、验收标准或 verification_strategy，不贡献需求或验收覆盖；每个引用仍须有同代唯一有效正文。未声明、未知或重复角色不会获得豁免；普通角色为 `requirements`。
