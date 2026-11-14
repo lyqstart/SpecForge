@@ -26,6 +26,7 @@ Generated from literal `errorBody` calls in [HTTPServer](../src/http/HTTPServer.
 | `MISSING_TOOL` | `handleToolInvoke` |
 | `NOT_FOUND` | `handleApiEndpoint`, `handleRequestWithBody`, `handleStateRead` |
 | `NOT_IMPLEMENTED` | `handleToolInvoke` |
+| `PAYLOAD_TOO_LARGE` | `handleRequest`, `handleRequestWithBody` |
 | `PERMISSION_DENIED` | `handleToolInvoke` |
 | `PROJECT_CONTEXT_REQUIRED` | `handleStateRead`, `handleStateTransition`, `handleV11WriteGuardAudit` |
 | `REGISTER_FAILED` | `handleIngestRegister` |
