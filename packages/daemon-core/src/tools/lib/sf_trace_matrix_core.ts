@@ -11,6 +11,11 @@ import { logErrorToFile } from './utils';
 import { resolveWorkItemSpecArtifacts } from './governance-invariants-v11';
 import { parseRefsFields } from './sf_markdown_verification_parser';
 import { isValidDesignDecisionId, isValidRequirementId } from '@specforge/types';
+import { resolveRequirementsAuthority } from './requirements-authority.js';
+import {
+  inspectRequirementsGeneration,
+  parseRequirementDocument,
+} from './requirements-generation.js';
 
 // ============================================================
 // Types
@@ -40,6 +45,14 @@ export interface TraceMatrixResult {
  * 数字章节或正文 ID。正文中的格式示例不得与真实声明混合计数。
  */
 export function extractRequirementIds(content: string): string[] {
+  const parsed = parseRequirementDocument({ path: '<trace-input>', content });
+  if (
+    parsed.errors.some(
+      error => error.startsWith('REQUIREMENTS_ROLE_') || error.startsWith('REFERENCE_CONTEXT_')
+    )
+  )
+    throw new Error(parsed.errors.join('; '));
+  if (parsed.role === 'reference_context') return [];
   const headingLines = content
     .split(/\r?\n/)
     .map(line => /^#{2,6}\s+(.+)$/.exec(line)?.[1] ?? '')
@@ -167,11 +180,16 @@ export async function checkTraceMatrix(
   baseDir: string
 ): Promise<TraceMatrixResult> {
   try {
-    const [requirements, designs, tasks] = await Promise.all([
-      resolveWorkItemSpecArtifacts({ projectRoot: baseDir, workItemId, kind: 'requirements' }),
+    const [authority, designs, tasks] = await Promise.all([
+      resolveRequirementsAuthority({ projectRoot: baseDir, workItemId }),
       resolveWorkItemSpecArtifacts({ projectRoot: baseDir, workItemId, kind: 'design' }),
       resolveWorkItemSpecArtifacts({ projectRoot: baseDir, workItemId, kind: 'tasks' }),
     ]);
+    const requirements = authority.artifacts;
+    if (authority.sealed) {
+      const generation = inspectRequirementsGeneration(requirements);
+      if (generation.errors.length > 0) throw new Error(generation.errors.join('; '));
+    }
     if (requirements.length === 0)
       return createFailResult([], [], 'requirements artifact not found');
     if (designs.length === 0) return createFailResult([], [], 'design artifact not found');
@@ -180,16 +198,15 @@ export async function checkTraceMatrix(
     const authoritativeRequirements = requirements.filter(
       artifact => !isExplicitRequirementProjection(artifact.content)
     );
-    const requirementsContent = (
-      authoritativeRequirements.length > 0 ? authoritativeRequirements : requirements
-    )
-      .map(artifact => artifact.content)
-      .join('\n\n');
+    const requirementDocuments =
+      authoritativeRequirements.length > 0 ? authoritativeRequirements : requirements;
     const designContent = designs.map(artifact => artifact.content).join('\n\n');
     const tasksContent = tasks.map(artifact => artifact.content).join('\n\n');
 
     // Extract data
-    const requirementIds = extractRequirementIds(requirementsContent);
+    const requirementIds = unique(
+      requirementDocuments.flatMap(artifact => extractRequirementIds(artifact.content))
+    );
     const designReqRefs = extractDesignReqReferences(designContent)
       .map(ref => normalizeRequirementReference(ref, requirementIds))
       .filter((ref): ref is string => ref !== null);

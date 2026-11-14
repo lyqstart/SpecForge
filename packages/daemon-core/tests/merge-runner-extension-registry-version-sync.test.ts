@@ -44,7 +44,7 @@ describe('merge runner — extension_registry.json version sync', () => {
         decisions: '.specforge/project/decisions.md',
         trace_matrix: '.specforge/project/trace_matrix.md',
       },
-      modules: [],
+      modules: [{ module_code: 'CORE' }],
     });
 
     // Existing truth-source registry (also behind).
@@ -63,10 +63,15 @@ describe('merge runner — extension_registry.json version sync', () => {
       contracts: { shared_enums: [], invariants: [], public_interfaces: [], extension_points: [] },
     });
 
+    await mkdir(join(projectRoot, '.specforge/project/modules/CORE'), { recursive: true });
+    await writeFile(
+      join(projectRoot, '.specforge/project/modules/CORE/requirements.md'),
+      '## REQ-CORE-001 Registry version\nKeep versions synchronized.\n### Acceptance Criteria\nThe registry matches the manifest version.\n'
+    );
     await writeFile(
       join(workItemDir, 'candidates', 'project', 'requirements_index.md'),
-      '# Requirements Index\n\n- REQ-CORE-001\n',
-      'utf8',
+      '---\nrequirements_role: reference_context\n---\n# Requirements Index\n\n- REQ-CORE-001\n',
+      'utf8'
     );
 
     await writeJson(join(workItemDir, 'candidate_manifest.json'), {
@@ -133,7 +138,10 @@ describe('merge runner — extension_registry.json version sync', () => {
     expect(postMerge.status).toBe('passed');
 
     registry.project_spec_version = 'PSV-0005';
-    await writeJson(join(projectRoot, '.specforge', 'project', 'extension_registry.json'), registry);
+    await writeJson(
+      join(projectRoot, '.specforge', 'project', 'extension_registry.json'),
+      registry
+    );
     const driftedPostMerge = await runGate('post_merge_gate', {
       projectRoot,
       workItemDir,
@@ -143,8 +151,8 @@ describe('merge runner — extension_registry.json version sync', () => {
     expect(driftedPostMerge.status).toBe('failed');
     expect(
       driftedPostMerge.checks.find(
-        check => check.check_id === 'post_merge_project_spec_core_version_coherent',
-      ),
+        check => check.check_id === 'post_merge_project_spec_core_version_coherent'
+      )
     ).toMatchObject({ passed: false });
   });
 });

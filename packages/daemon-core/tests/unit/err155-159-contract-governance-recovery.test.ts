@@ -94,7 +94,10 @@ describe('ERR-155 controlled Project Contract update', () => {
 
   it('fails when the Contract ID does not exist', async () => {
     const root = await tempRoot();
-    await writeJson(path.join(root, '.specforge', 'project', 'extension_registry.json'), liveRegistry);
+    await writeJson(
+      path.join(root, '.specforge', 'project', 'extension_registry.json'),
+      liveRegistry
+    );
     const result = await authorContractCandidate({
       projectRoot: root,
       workItemId: 'WI-0002',
@@ -108,7 +111,10 @@ describe('ERR-155 controlled Project Contract update', () => {
 
   it('fails when the existing Contract kind differs', async () => {
     const root = await tempRoot();
-    await writeJson(path.join(root, '.specforge', 'project', 'extension_registry.json'), liveRegistry);
+    await writeJson(
+      path.join(root, '.specforge', 'project', 'extension_registry.json'),
+      liveRegistry
+    );
     const result = await authorContractCandidate({
       projectRoot: root,
       workItemId: 'WI-0002',
@@ -131,7 +137,22 @@ describe('ERR-156 classification-driven Requirements source', () => {
         business_rule_changed: false,
       },
     });
-    const formal = path.join(root, '.specforge', 'project', 'modules', 'workflow', 'requirements.md');
+    const formal = path.join(
+      root,
+      '.specforge',
+      'project',
+      'modules',
+      'workflow',
+      'requirements.md'
+    );
+    await writeJson(path.join(root, '.specforge', 'project', 'spec_manifest.json'), {
+      modules: [
+        {
+          module_code: 'WORKFLOW',
+          requirements: '.specforge/project/modules/workflow/requirements.md',
+        },
+      ],
+    });
     await fs.mkdir(path.dirname(formal), { recursive: true });
     await fs.writeFile(formal, '# Requirements\n\nREQ-WORKFLOW-001\n', 'utf-8');
     const result = await resolveTaskRequirementArtifacts(root, 'WI-0002');
@@ -166,7 +187,9 @@ describe('ERR-159 semantic Project Contract delta', () => {
       updated_at: 'new',
       updated_by_work_item: 'WI-0002',
     };
-    expect(projectContractSemanticProjection(after)).toEqual(projectContractSemanticProjection(liveRegistry));
+    expect(projectContractSemanticProjection(after)).toEqual(
+      projectContractSemanticProjection(liveRegistry)
+    );
     expect(hasProjectContractSemanticChange(liveRegistry, after)).toBe(false);
   });
 
@@ -181,7 +204,7 @@ describe('ERR-157 and ERR-158 installed-source contracts', () => {
   it('keeps Planner relation operations restricted to ADD/REMOVE', async () => {
     const content = await fs.readFile(
       path.resolve(repositoryRoot(), 'setup/userlevel-opencode/agents/sf-task-planner.md'),
-      'utf-8',
+      'utf-8'
     );
     expect(content).toContain('ERR-157_GOVERNANCE_RELATION_DELTA_CONTRACT:START');
     expect(content).toContain('只允许 `ADD` 和 `REMOVE`');
@@ -191,7 +214,7 @@ describe('ERR-157 and ERR-158 installed-source contracts', () => {
   it('keeps the Orchestrator operation boundary fail-closed', async () => {
     const content = await fs.readFile(
       path.resolve(repositoryRoot(), 'setup/userlevel-opencode/agents/sf-orchestrator.md'),
-      'utf-8',
+      'utf-8'
     );
     expect(content).toContain('ERR-158_OPERATION_BOUNDARY:START');
     expect(content).toContain('OPERATION_BOUNDARY');
@@ -201,12 +224,15 @@ describe('ERR-157 and ERR-158 installed-source contracts', () => {
   it('keeps daemon and user-level action schemas aligned', async () => {
     const [handler, userTool] = await Promise.all([
       fs.readFile(
-        path.resolve(repositoryRoot(), 'packages/daemon-core/src/tools/handlers/sf-contract-register.ts'),
-        'utf-8',
+        path.resolve(
+          repositoryRoot(),
+          'packages/daemon-core/src/tools/handlers/sf-contract-register.ts'
+        ),
+        'utf-8'
       ),
       fs.readFile(
         path.resolve(repositoryRoot(), 'setup/userlevel-opencode/tools/sf_contract_register.ts'),
-        'utf-8',
+        'utf-8'
       ),
     ]);
     expect(codeContains(handler, "['add','update','reset']")).toBe(true);

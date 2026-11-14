@@ -4,7 +4,7 @@
 >
 > Specification ID: SPS-1.0
 >
-> Product release version: 1.0.35
+> Product release version: 1.0.36
 >
 > Product version epoch: 1
 >
@@ -529,13 +529,15 @@ Candidate
 2. 每个 Gate Attempt 必须以不可覆盖证据封存本代 `candidate_manifest.json`、`candidates/**` 全部文件、`change_classification.md`、`impact_analysis.md` 和 `trigger_result.json` 的逐文件内容身份。Gate 自报 `input_files` 只能补充，不能缩小这一固定 seal 集。
 3. `gate_summary.md` 只汇总生成它的当前 Gate Attempt；不得把旧阶段、旧代或未在本 Attempt 执行的历史 Gate 报告合并为当前通过结论。
 4. User Decision Recorder 必须验证当前 seal 集与最近一次适用且通过的 Candidate Gate Attempt 快照一致，并从 Candidate Manifest 读取 `base_spec_version`；调用者不得提供或默认产品规格基线。Merge Runner 必须再次执行相同绑定校验，并验证 `base_spec_version` 与当前 Project Spec Version、`project_spec_precondition_sha256` 与当前 `spec_manifest.json` 原始字节哈希一致。
-5. Requirements Gate 必须把 Requirements Candidate 中出现的正式 `REQ-*` 标识与正式需求章节一一对应；每个标识必须有唯一正文、可验证验收标准和非空语义内容。仅在摘要表、索引、Trace、Design 或 Tasks 中出现不能建立需求。
+5. Requirements Gate 必须把 Requirements Candidate 中出现的正式 `REQ-*` 标识解析到同一代权威 Requirements 集合的唯一正式需求章节；每个定义必须有唯一正文、可验证验收标准和非空语义内容。该集合由当前正式模块登记与本代冻结 Manifest 的模块定义/Requirements 替换、删除共同投影而成，包含未修改的正式模块需求，不包含任意目录扫描发现或未登记文件。引用不创建需求，也不转移正文所属模块；正式定义的 Module 标识必须与所属模块一致。普通需求章节必须显式使用“验收标准”或 `Acceptance Criteria` 标签，不能借用别的章节或文件的标签。
 6. seal 后发现以上任一事实错误时，必须保留失败证据并经受控恢复回到 `candidate_preparing`，重新生成本代 Candidate、Gate 与显式批准；不得修改 sealed 文件、复用旧 Gate/审批，或运行调用者已知必败的 Gate 只为制造恢复状态。
 7. Runtime 每次进入 `candidate_preparing` 时，必须读取 `trigger_result.impact_scope.planned_code_paths` 并生成 Work Item 根的 `implementation_baseline.json`。该文件是 Runtime-owned 当前实现快照，至少记录规范化 scope、每个匹配文件的相对路径、大小、SHA-256、总文件数与稳定 `snapshot_id`；Agent 不得写入或替代它。
 8. Architecture、Design 与 Tasks Candidate 必须绑定同一 `implementation_baseline_id`。在 `candidate_preparing → candidate_prepared` 前，Runtime 必须复算基线并拒绝 snapshot 漂移；只要 planned scope 中有真实文件，Candidate basis 或专业 Candidate 中的 `all_files_new=true`、greenfield、新建文件、实现不存在等相反声明都必须失败关闭。修复必须更新真实 basis 与 Candidate，不得删除业务文件来迎合旧分析。
 9. `implementation_baseline.json` 属于固定 Candidate seal 集，Gate Attempt、Decision 与 Merge 必须像其他 seal 输入一样验证其存在性与字节身份。基线不能替代 Agent 对真实代码、入口、调用链、行为与测试的阅读，只提供可复核的最低事实边界。
 10. 当前代 Requirement 定义只允许 `REQ-<MODULE_CODE>-<NNN>` 三位序号；`REQ-N` 仅用于历史只读兼容。Requirements Gate 必须拒绝非规范位宽；Workflow Gate 必须枚举 Design、Tasks、Trace 和 Delta 中的每个规范形态 REQ token，并要求逐字解析到本代权威 Requirements 的唯一正文。不同位宽、短号、范围说明或“canonical 映射”不得视为相同 ID。
 11. Candidate seal、冻结 Manifest 读取、兼容发现和所有 Gate 消费者必须使用同一个目标平台 resolved-path identity。Windows 上仅大小写不同但解析到同一文件的路径只能形成一个输入、一个哈希和一个定义 owner；POSIX 平台继续把大小写不同的路径视为不同身份。去重必须保留首个权威路径拼写，不得用删除文件、放宽重复定义 Gate 或忽略真实非规范引用来消除冲突。
+12. D28 有限需求引用范围扩展：Requirements 文档可在首部 YAML 元数据中显式声明 `requirements_role: reference_context`，只承载索引、说明与引用；未声明时按普通需求文档检查，显式普通角色为 `requirements`。未知、重复或位置错误的角色声明必须拒绝。`reference_context` 不得含正式需求定义、自己的验收标准或验证策略；贡献的需求数、验收覆盖与业务完成证据均为零，其每个 REQ 引用仍必须解析到同代唯一有效正文，不能替代缺失正文。纯引用文件不能使空需求集合成为业务通过。
+13. Requirements Gate、Workflow 引用完整性、Task 验证策略、Trace 覆盖、Merge 前后正式规格消费必须共享 D28 的集合、定义归属和文档角色语义。解析须先逐文件检查角色，再聚合；不能因拼接文件而丢失角色，也不能通过正文 token 回退把上下文引用计为定义。所有参与解析的正式/候选文件和登记/Manifest 必须纳入本次 Gate 输入身份与封存校验，任一输入变化使旧代检查与审批失效；缺正文、重复定义、错误归属、非规范引用和已有权限/HardStop 边界继续失败关闭。原业务由原专业 owner 在合法恢复后修订、重新封存并运行真实 Gate，D28 不修改冻结 Task，也不批准 Candidate。
 
 ## 6.5 已合并无效 Project Spec 的补偿恢复
 

@@ -12,6 +12,7 @@ import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 import * as crypto from 'node:crypto';
+import { inspectRequirementsAuthority } from './requirements-authority.js';
 import {
   validateApprovedUserDecisionForMerge,
   entriesSemanticallyEqual,
@@ -774,6 +775,14 @@ export async function executeMerge(input: MergeInput): Promise<MergeResult> {
         'Non-code-only workflow requires at least one merge entry. candidate_manifest.entries is empty.'
       );
     }
+  }
+
+  if (!noProjectSpecMerge) {
+    const requirements = await inspectRequirementsAuthority({
+      projectRoot: input.projectRoot,
+      workItemId: input.workItemId,
+    });
+    preflightErrors.push(...requirements.errors);
   }
 
   if (manifest.project_spec_precondition_sha256) {

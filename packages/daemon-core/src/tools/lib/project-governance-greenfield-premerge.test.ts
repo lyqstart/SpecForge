@@ -60,6 +60,10 @@ describe('greenfield pre-merge Project Governance', () => {
     });
     await writeText(path.join(projectDir, 'modules', 'CORE', 'design.md'), '> TODO\n');
     await writeText(path.join(projectDir, 'modules', 'CORE', 'trace.md'), '> TODO\n');
+    await writeText(
+      path.join(projectDir, 'modules', 'CORE', 'requirements.md'),
+      '## REQ-CORE-001 Governance\nMaintain the project root.\n### Acceptance Criteria\nThe root exists.\n'
+    );
 
     const candidates = path.join(workItemDir, 'candidates');
     await writeText(
@@ -146,6 +150,10 @@ describe('greenfield pre-merge Project Governance', () => {
     );
 
     const entries = [
+      [
+        'candidates/project/modules/DOMAIN/requirements.candidate.md',
+        '.specforge/project/modules/DOMAIN/requirements.md',
+      ],
       ['candidates/project/architecture.candidate.md', '.specforge/project/architecture.md'],
       ['candidates/project/data_model.candidate.md', '.specforge/project/data_model.md'],
       [
@@ -187,6 +195,10 @@ describe('greenfield pre-merge Project Governance', () => {
       operation: 'replace',
     }));
 
+    await writeText(
+      path.join(candidates, 'project', 'modules', 'DOMAIN', 'requirements.candidate.md'),
+      '## REQ-DOMAIN-001 Domain\nImplement the approved domain.\n### Acceptance Criteria\nThe domain obeys its declared boundary.\n'
+    );
     await writeJson(path.join(workItemDir, 'candidate_manifest.json'), {
       schema_version: '1.1',
       work_item_id: 'WI-0001',

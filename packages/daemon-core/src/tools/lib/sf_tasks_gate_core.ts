@@ -11,6 +11,11 @@ import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
 import { resolveWorkItemSpecArtifacts } from './governance-invariants-v11';
+import { resolveRequirementsAuthority } from './requirements-authority.js';
+import {
+  requirementDefinitionContent,
+  inspectRequirementsGeneration,
+} from './requirements-generation.js';
 import type { GateResult } from './sf_gate_types';
 import { getTaskSections } from './sf_doc_lint_core';
 import { tryCheckCompatibility, logErrorToFile } from './utils';
@@ -221,6 +226,8 @@ type RequirementResolution = {
   classification: Record<RequirementClassificationKey, boolean | null>;
   classification_status: 'changed' | 'unchanged' | 'unknown_fail_closed';
   classification_files: string[];
+  input_files: string[];
+  authoritative: boolean;
 };
 
 const REQUIREMENT_CLASSIFICATION_KEYS: RequirementClassificationKey[] = [
@@ -298,29 +305,6 @@ async function readRequirementClassification(
   return { values, files };
 }
 
-async function collectFormalModuleRequirements(baseDir: string): Promise<SpecArtifact[]> {
-  const modulesRoot = path.join(baseDir, SPEC_DIR_NAME, 'project', 'modules');
-  const result: SpecArtifact[] = [];
-  const visit = async (directory: string): Promise<void> => {
-    let entries: import('node:fs').Dirent[];
-    try {
-      entries = await fs.readdir(directory, { withFileTypes: true });
-    } catch (error: any) {
-      if (error?.code === 'ENOENT') return;
-      throw error;
-    }
-    for (const entry of entries) {
-      const absolute = path.join(directory, entry.name);
-      if (entry.isDirectory()) await visit(absolute);
-      else if (entry.isFile() && entry.name === 'requirements.md') {
-        result.push({ content: await fs.readFile(absolute, 'utf-8'), path: absolute });
-      }
-    }
-  };
-  await visit(modulesRoot);
-  return result.sort((left, right) => left.path.localeCompare(right.path));
-}
-
 export async function resolveTaskRequirementArtifacts(
   baseDir: string,
   workItemId: string
@@ -330,17 +314,18 @@ export async function resolveTaskRequirementArtifacts(
   const anyChanged = REQUIREMENT_CLASSIFICATION_KEYS.some(key => values[key] === true);
   const allUnchanged = REQUIREMENT_CLASSIFICATION_KEYS.every(key => values[key] === false);
   const source: RequirementSource = allUnchanged ? 'formal_module_requirements' : 'candidate';
-  const artifacts =
-    source === 'candidate'
-      ? await resolveWorkItemSpecArtifacts({
-          projectRoot: baseDir,
-          workItemId,
-          kind: 'requirements',
-        })
-      : await collectFormalModuleRequirements(baseDir);
+  const authority = await resolveRequirementsAuthority({
+    projectRoot: baseDir,
+    workItemId,
+    formalOnly: allUnchanged,
+  });
   return {
     source,
-    artifacts,
+    artifacts: authority.artifacts,
+    input_files: authority.inputFiles,
+    authoritative:
+      authority.sealed ||
+      authority.inputFiles.some(file => path.basename(file) === 'spec_manifest.json'),
     classification: values,
     classification_status: anyChanged
       ? 'changed'
@@ -388,6 +373,7 @@ export async function checkTasksGate(workItemId: string, baseDir: string): Promi
       requirements_change_classification: requirementResolution.classification,
       requirements_classification_status: requirementResolution.classification_status,
       requirements_classification_files: requirementResolution.classification_files,
+      requirements_authority_input_files: requirementResolution.input_files,
       design_candidate_paths: designArtifacts.map(artifact => artifact.path),
     });
 
@@ -401,10 +387,11 @@ export async function checkTasksGate(workItemId: string, baseDir: string): Promi
       };
     }
 
-    const requirementsContent =
-      requirementArtifacts.map(artifact => artifact.content).join('\n\n') || null;
+    const requirementsContent = requirementDefinitionContent(requirementArtifacts) || null;
     const designContent = designArtifacts.map(artifact => artifact.content).join('\n\n') || null;
-    const blockingIssues: string[] = [];
+    const blockingIssues: string[] = requirementResolution.authoritative
+      ? inspectRequirementsGeneration(requirementArtifacts).errors
+      : [];
     const warnings: string[] = [];
 
     for (const artifact of taskArtifacts) {

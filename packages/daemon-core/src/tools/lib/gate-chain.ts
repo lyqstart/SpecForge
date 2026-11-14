@@ -40,6 +40,11 @@ import {
   type GovernanceCheckResult,
 } from './project-governance-v2.js';
 import { candidateSealInputPaths } from './candidate-generation-integrity.js';
+import {
+  captureRequirementsInputBinding,
+  assertRequirementsInputBinding,
+  type RequirementsInputBinding,
+} from './requirements-authority.js';
 interface GateMeta {
   gateId: GateIdV11;
   gateType: GateStrictness;
@@ -358,14 +363,24 @@ async function finalizeGateAttempt(input: {
   summaryStatus: GateSummaryStatus;
   summaryContent: string;
   summaryReports: GateReportV11[];
+  requirementBinding?: RequirementsInputBinding | null;
 }): Promise<void> {
   const sealInputPaths = await candidateSealInputPaths(input.ctx.workItemDir);
   const inputSnapshot = await buildGateAttemptInputSnapshot(
     input.ctx.projectRoot,
     input.summaryReports,
     process.platform,
-    sealInputPaths
+    [...sealInputPaths, ...(input.requirementBinding ?? []).map(entry => entry.path)]
   );
+  for (const expected of input.requirementBinding ?? []) {
+    const captured = inputSnapshot.find(
+      entry =>
+        gateAttemptInputIdentity(input.ctx.projectRoot, entry.path) ===
+        gateAttemptInputIdentity(input.ctx.projectRoot, expected.path)
+    );
+    if (!captured || captured.sha256 !== expected.sha256)
+      throw new Error('REQUIREMENTS_GENERATION_INPUT_DRIFT');
+  }
   await writeExclusiveJson(path.join(input.attempt.attemptPath, 'input-snapshot.json'), {
     schema_version: '1.0',
     attempt_id: input.attempt.attemptId,
@@ -510,6 +525,11 @@ export async function runRequiredGates(
   const reports: GateReportV11[] = [];
 
   try {
+    const requirementBinding = gateIds.some(
+      id => id === 'candidate_manifest_gate' || id === 'workflow_specific_gate'
+    )
+      ? await captureRequirementsInputBinding(ctx)
+      : null;
     for (const gateId of primaryGateIds) {
       const report = await runAndWrite(gateId, ctx, attempt);
       reports.push(report);
@@ -532,6 +552,7 @@ export async function runRequiredGates(
       reports.push(summaryReport);
     }
 
+    if (requirementBinding) await assertRequirementsInputBinding(ctx, requirementBinding);
     const finalSummary = await writeGateSummary(ctx, reports);
     await finalizeGateAttempt({
       ctx,
@@ -540,6 +561,7 @@ export async function runRequiredGates(
       summaryStatus: finalSummary.summaryStatus,
       summaryContent: finalSummary.summaryContent,
       summaryReports: finalSummary.summaryReports,
+      requirementBinding,
     });
     return {
       reports,

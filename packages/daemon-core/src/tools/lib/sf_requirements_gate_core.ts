@@ -10,14 +10,14 @@
 import { readFile } from 'node:fs/promises';
 import { basename, dirname, join } from 'node:path';
 import { workItemRoot } from '@specforge/types/directory-layout';
-import { resolveWorkItemSpecArtifacts } from './governance-invariants-v11';
 import { tryCheckCompatibility, logErrorToFile } from './utils';
 import { parseAllVerificationStrategies } from './sf_verification_types';
 import { buildTolerantHeaderRegex } from './sf_section_matcher';
 import { resolveRequirementsPath, checkEarsCompliance } from './sf_ears_parser';
 import { FILE_SIZE_LIMIT } from './sf_ears_types';
 import type { GateResult, GateModeSpec } from './sf_gate_types';
-import { isValidRequirementId } from '@specforge/types';
+import { resolveRequirementsAuthority } from './requirements-authority.js';
+import { inspectRequirementsGeneration } from './requirements-generation.js';
 
 export type { GateResult } from './sf_gate_types';
 export type { GateModeSpec } from './sf_gate_types';
@@ -444,12 +444,11 @@ async function existingRequirementsGateCheck(
   workItemId: string,
   baseDir: string
 ): Promise<GateResult> {
-  let artifacts: Array<{ content: string; path: string }>;
+  let authority: Awaited<ReturnType<typeof resolveRequirementsAuthority>>;
   try {
-    artifacts = await resolveWorkItemSpecArtifacts({
+    authority = await resolveRequirementsAuthority({
       projectRoot: baseDir,
       workItemId,
-      kind: 'requirements',
     });
   } catch (err: unknown) {
     return {
@@ -460,6 +459,7 @@ async function existingRequirementsGateCheck(
     };
   }
 
+  const artifacts = authority.artifacts;
   if (artifacts.length === 0) {
     return {
       status: 'fail',
@@ -469,12 +469,27 @@ async function existingRequirementsGateCheck(
     };
   }
 
-  const blockingIssues: string[] = [];
+  const generation = inspectRequirementsGeneration(artifacts);
+  const blockingIssues: string[] = [...generation.errors];
   const warnings: string[] = [];
 
-  for (const artifact of artifacts) {
+  if (
+    generation.documents.some(document => document.role === 'reference_context') &&
+    generation.declaredIds.length === 0
+  ) {
+    blockingIssues.push('REFERENCE_CONTEXT_CANNOT_SATISFY_EMPTY_REQUIREMENTS_GENERATION');
+  }
+  for (const artifact of generation.documents) {
     const content = artifact.content;
     const label = artifact.path.replace(/\\/g, '/');
+
+    if (artifact.role === 'reference_context') {
+      if (content.length > FILE_SIZE_LIMIT)
+        blockingIssues.push(
+          `${label}: Requirements file exceeds size limit (${FILE_SIZE_LIMIT} bytes)`
+        );
+      continue;
+    }
 
     if (!hasUserStories(content)) {
       blockingIssues.push(`${label}: 缺少用户故事（"用户故事" / "User Story" / "作为"）`);
@@ -484,10 +499,6 @@ async function existingRequirementsGateCheck(
     }
     if (!hasGlossary(content)) {
       blockingIssues.push(`${label}: 缺少术语表（"术语表" / "Glossary"）`);
-    }
-
-    for (const issue of validateFormalRequirementBodies(content)) {
-      blockingIssues.push(`${label}: ${issue}`);
     }
 
     const strategyResults = parseAllVerificationStrategies(content);
@@ -516,7 +527,10 @@ async function existingRequirementsGateCheck(
       blocking_issues: blockingIssues,
       warnings,
       next_action: 'revise',
-      details: { requirements_candidate_paths: artifacts.map(artifact => artifact.path) },
+      details: {
+        requirements_candidate_paths: artifacts.map(artifact => artifact.path),
+        requirements_authority_input_files: authority.inputFiles,
+      },
     };
   }
 
@@ -525,7 +539,10 @@ async function existingRequirementsGateCheck(
     blocking_issues: [],
     warnings,
     next_action: 'continue',
-    details: { requirements_candidate_paths: artifacts.map(artifact => artifact.path) },
+    details: {
+      requirements_candidate_paths: artifacts.map(artifact => artifact.path),
+      requirements_authority_input_files: authority.inputFiles,
+    },
   };
 }
 
@@ -566,60 +583,13 @@ export function hasGlossary(content: string): boolean {
  * Trace, Design and Tasks may reference an ID but cannot create a requirement.
  */
 export function validateFormalRequirementBodies(content: string): string[] {
-  const declaredIds = Array.from(
-    new Set(Array.from(content.matchAll(/\bREQ-[A-Z0-9][A-Z0-9_-]*\b/g), match => match[0]))
-  ).sort();
-  if (declaredIds.length === 0) return [];
-
-  const headings = Array.from(
-    content.matchAll(/^(#{2,6})\s+(?:Requirement\s+)?(REQ-[A-Z0-9][A-Z0-9_-]*)\b[^\r\n]*$/gim),
-    match => ({
-      id: match[2].toUpperCase(),
-      level: match[1].length,
-      start: match.index ?? 0,
-      bodyStart: (match.index ?? 0) + match[0].length,
-    })
-  );
-  const definitions = new Map<string, typeof headings>();
-  for (const heading of headings) {
-    const existing = definitions.get(heading.id) ?? [];
-    existing.push(heading);
-    definitions.set(heading.id, existing);
-  }
-
-  const issues: string[] = [];
-  for (const id of declaredIds) {
-    if (!isValidRequirementId(id)) {
-      issues.push(`${id}: requirement ID must use canonical REQ-<MODULE_CODE>-<NNN> format`);
-    }
-  }
-  for (const id of declaredIds) {
-    const matches = definitions.get(id) ?? [];
-    if (matches.length === 0) {
-      issues.push(`${id}: formal requirement body missing`);
-      continue;
-    }
-    if (matches.length > 1) {
-      issues.push(`${id}: formal requirement body must be unique, found ${matches.length}`);
-      continue;
-    }
-    const heading = matches[0];
-    const nextHeading = headings.find(
-      candidate => candidate.start > heading.start && candidate.level <= heading.level
+  const result = inspectRequirementsGeneration([{ path: '<single-file>', content }]);
+  return result.errors
+    .map(error => error.replace(/^<single-file>: /, ''))
+    .sort(
+      (left, right) =>
+        Number(right.includes('canonical REQ-')) - Number(left.includes('canonical REQ-'))
     );
-    const body = content.slice(heading.bodyStart, nextHeading?.start ?? content.length).trim();
-    const semanticBody = body
-      .replace(/^#{1,6}\s+.*$/gm, '')
-      .replace(/^\s*[-*]\s*(?:验收标准|Acceptance Criteria)\s*[:：]?\s*$/gim, '')
-      .trim();
-    if (!semanticBody) {
-      issues.push(`${id}: formal requirement body is empty`);
-    }
-    if (!/(?:验收标准|Acceptance Criteria)/i.test(body)) {
-      issues.push(`${id}: acceptance criteria missing from formal requirement body`);
-    }
-  }
-  return issues;
 }
 
 // ============================================================

@@ -5,6 +5,7 @@ import * as path from 'node:path';
 import { createHash } from 'node:crypto';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
+import { inspectRequirementsAuthority } from './requirements-authority.js';
 import {
   ContractRegistrySchema,
   extractModuleFromDdId,
@@ -1303,6 +1304,20 @@ export async function checkProjectGovernanceConsistency(input: {
 }): Promise<GovernanceCheckResult> {
   const model = await loadProjectModel(input.projectRoot, input.workItemDir, true);
   const checks: GovernanceCheck[] = [];
+
+  const requirements = await inspectRequirementsAuthority({
+    projectRoot: input.projectRoot,
+    workItemId: input.workItemId,
+    formalOnly: model.already_merged,
+  });
+  addCheck(
+    checks,
+    'requirements_generation_integrity',
+    'Requirements references resolve to the unique owning body in the same authority generation',
+    requirements.valid,
+    requirements.errors.join('; ') || undefined
+  );
+  model.inputFiles.push(...requirements.inputFiles);
 
   if (!model.active) {
     checks.push(
@@ -3177,6 +3192,19 @@ export async function checkFormalVersionEligibility(input: {
 }): Promise<GovernanceCheckResult> {
   const checks: GovernanceCheck[] = [];
   const inputFiles: string[] = [];
+  const requirements = await inspectRequirementsAuthority({
+    projectRoot: input.projectRoot,
+    workItemId: input.workItemId,
+    formalOnly: true,
+  });
+  addCheck(
+    checks,
+    'formal_requirements_generation_integrity',
+    'Formal Requirements retain definition ownership and zero-coverage context semantics',
+    requirements.valid,
+    requirements.errors.join('; ') || undefined
+  );
+  inputFiles.push(...requirements.inputFiles);
   const specMigrationNoCode = isSpecMigrationNoCodeWorkflow('', input.workflowPath);
   const executionIntegrity = await inspectVerificationEvidenceIntegrity({
     projectRoot: input.projectRoot,

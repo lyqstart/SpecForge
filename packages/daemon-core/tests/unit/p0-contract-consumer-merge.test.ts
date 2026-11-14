@@ -3,7 +3,29 @@ import * as fs from 'node:fs/promises';
 import * as os from 'node:os';
 import * as path from 'node:path';
 import { executeMerge } from '../../src/tools/lib/merge-runner-v11';
-import { approveSealedCandidateFixture } from '../helpers/candidate-generation-fixture';
+import { approveSealedCandidateFixture as approveCandidate } from '../helpers/candidate-generation-fixture';
+
+// Complete registered formal inputs before freezing the synthetic merge fixture.
+async function approveSealedCandidateFixture(input: Parameters<typeof approveCandidate>[0]) {
+  const manifest = JSON.parse(
+    await fs.readFile(path.join(input.projectRoot, '.specforge/project/spec_manifest.json'), 'utf8')
+  ) as { modules?: Array<{ module_code: string }> };
+  for (const module of manifest.modules ?? []) {
+    const target = path.join(
+      input.projectRoot,
+      '.specforge/project/modules',
+      module.module_code,
+      'requirements.md'
+    );
+    await fs.mkdir(path.dirname(target), { recursive: true });
+    await fs.writeFile(
+      target,
+      `# Requirements\n\n## REQ-${module.module_code}-001\nMaintain the registered module.\n### Acceptance Criteria\nThe module remains available.\n`,
+      { flag: 'wx' }
+    );
+  }
+  return approveCandidate(input);
+}
 
 async function writeJson(filePath: string, value: unknown): Promise<void> {
   await fs.mkdir(path.dirname(filePath), { recursive: true });
@@ -67,11 +89,11 @@ describe('P0 Contract consumer atomic merge', () => {
           public_interfaces: [],
           extension_points: [],
         },
-      },
+      }
     );
     await fs.writeFile(
       path.join(root, '.specforge', 'project', 'modules', 'ORDER', 'trace.md'),
-      'OLD MODULE TRACE\n',
+      'OLD MODULE TRACE\n'
     );
     await fs.writeFile(
       path.join(root, '.specforge', 'project', 'trace_matrix.md'),
@@ -86,7 +108,7 @@ describe('P0 Contract consumer atomic merge', () => {
         '|---|---|---|',
         '| DATA-001 | constrained_by | ARCH-001 |',
         '',
-      ].join('\n'),
+      ].join('\n')
     );
     await fs.mkdir(path.join(wiDir, 'candidates'), { recursive: true });
     await fs.writeFile(
@@ -108,7 +130,7 @@ describe('P0 Contract consumer atomic merge', () => {
         '| ADD | DD-ORDER-001 | constrained_by | PCON-001 |',
         '<!-- SPECFORGE_GOVERNANCE_DELTA_END -->',
         '',
-      ].join('\n'),
+      ].join('\n')
     );
     await writeJson(path.join(wiDir, 'candidate_manifest.json'), {
       schema_version: '1.0',
@@ -126,7 +148,12 @@ describe('P0 Contract consumer atomic merge', () => {
       ],
     });
 
-    await approveSealedCandidateFixture({ projectRoot: root, workItemDir: wiDir, workItemId, workflowPath: 'requirement_change_path' });
+    await approveSealedCandidateFixture({
+      projectRoot: root,
+      workItemDir: wiDir,
+      workItemId,
+      workflowPath: 'requirement_change_path',
+    });
     const result = await executeMerge({
       projectRoot: root,
       workItemId,
@@ -138,7 +165,7 @@ describe('P0 Contract consumer atomic merge', () => {
     expect(result.success).toBe(true);
     const formalTrace = await fs.readFile(
       path.join(root, '.specforge', 'project', 'trace_matrix.md'),
-      'utf-8',
+      'utf-8'
     );
     expect(formalTrace).toContain('REQ-NEW | AC-NEW | DD-ORDER-001');
     expect(formalTrace).not.toContain('REQ-OLD | AC-OLD | DD-ORDER-OLD');
@@ -148,16 +175,14 @@ describe('P0 Contract consumer atomic merge', () => {
     expect(formalTrace).not.toContain('ADD |');
     const moduleTrace = await fs.readFile(
       path.join(root, '.specforge', 'project', 'modules', 'ORDER', 'trace.md'),
-      'utf-8',
+      'utf-8'
     );
     expect(moduleTrace).toContain('GENERATED_FROM_PROJECT_TRACE: module projection');
     expect(moduleTrace).toContain('DD-ORDER-001 | constrained_by | PCON-001');
     const manifest = JSON.parse(
-      await fs.readFile(path.join(root, '.specforge', 'project', 'spec_manifest.json'), 'utf-8'),
+      await fs.readFile(path.join(root, '.specforge', 'project', 'spec_manifest.json'), 'utf-8')
     );
-    expect(manifest.last_merged_targets).toContain(
-      '.specforge/project/modules/ORDER/trace.md',
-    );
+    expect(manifest.last_merged_targets).toContain('.specforge/project/modules/ORDER/trace.md');
   });
 
   it('restores every previously written formal file when a later projection step fails', async () => {
@@ -198,17 +223,17 @@ describe('P0 Contract consumer atomic merge', () => {
     await fs.writeFile(path.join(project, 'requirements_index.md'), 'OLD REQUIREMENTS\n');
     await fs.writeFile(
       path.join(project, 'trace_matrix.md'),
-      '| From | Relation | To |\n|---|---|---|\n| DATA-001 | constrained_by | ARCH-001 |\n',
+      '| From | Relation | To |\n|---|---|---|\n| DATA-001 | constrained_by | ARCH-001 |\n'
     );
 
     await fs.mkdir(path.join(wiDir, 'candidates', 'project'), { recursive: true });
     await fs.writeFile(
       path.join(wiDir, 'candidates', 'project', 'requirements_index.md'),
-      'NEW REQUIREMENTS\n',
+      'NEW REQUIREMENTS\n'
     );
     await fs.writeFile(
       path.join(wiDir, 'candidates', 'trace_delta.md'),
-      'ADD | DD-PHOTO-001 | constrained_by | PCON-001\n',
+      'ADD | DD-PHOTO-001 | constrained_by | PCON-001\n'
     );
     await writeJson(path.join(wiDir, 'candidate_manifest.json'), {
       schema_version: '1.0',
@@ -232,7 +257,12 @@ describe('P0 Contract consumer atomic merge', () => {
       ],
     });
 
-    await approveSealedCandidateFixture({ projectRoot: root, workItemDir: wiDir, workItemId, workflowPath: 'requirement_change_path' });
+    await approveSealedCandidateFixture({
+      projectRoot: root,
+      workItemDir: wiDir,
+      workItemId,
+      workflowPath: 'requirement_change_path',
+    });
     const result = await executeMerge({
       projectRoot: root,
       workItemId,
@@ -245,13 +275,18 @@ describe('P0 Contract consumer atomic merge', () => {
     expect(result.rolled_back).toBe(true);
     expect(result.spec_manifest_updated).toBe(false);
     expect(result.project_spec_version).toBe('PSV-0001');
-    expect(await fs.readFile(path.join(project, 'requirements_index.md'), 'utf-8'))
-      .toBe('OLD REQUIREMENTS\n');
-    expect(await fs.readFile(path.join(project, 'trace_matrix.md'), 'utf-8'))
-      .not.toContain('DD-PHOTO-001');
-    expect(await fs.readFile(path.join(moduleRoot, 'trace.md'), 'utf-8'))
-      .toBe('OLD MODULE TRACE\n');
-    const manifest = JSON.parse(await fs.readFile(path.join(project, 'spec_manifest.json'), 'utf-8'));
+    expect(await fs.readFile(path.join(project, 'requirements_index.md'), 'utf-8')).toBe(
+      'OLD REQUIREMENTS\n'
+    );
+    expect(await fs.readFile(path.join(project, 'trace_matrix.md'), 'utf-8')).not.toContain(
+      'DD-PHOTO-001'
+    );
+    expect(await fs.readFile(path.join(moduleRoot, 'trace.md'), 'utf-8')).toBe(
+      'OLD MODULE TRACE\n'
+    );
+    const manifest = JSON.parse(
+      await fs.readFile(path.join(project, 'spec_manifest.json'), 'utf-8')
+    );
     expect(manifest.project_spec_version).toBe('PSV-0001');
     expect(manifest.last_merged_work_item).toBeUndefined();
   });
@@ -270,12 +305,12 @@ describe('P0 Contract consumer atomic merge', () => {
     });
     await fs.writeFile(
       path.join(root, '.specforge', 'project', 'trace_matrix.md'),
-      '| From | Relation | To |\n|---|---|---|\n| DATA-001 | constrained_by | ARCH-001 |\n',
+      '| From | Relation | To |\n|---|---|---|\n| DATA-001 | constrained_by | ARCH-001 |\n'
     );
     await fs.mkdir(path.join(wiDir, 'candidates'), { recursive: true });
     await fs.writeFile(
       path.join(wiDir, 'candidates', 'trace_delta.md'),
-      '| From | Relation | To |\n|---|---|---|\n| DD-ORDER-001 | constrained_by | PCON-001 |\n',
+      '| From | Relation | To |\n|---|---|---|\n| DD-ORDER-001 | constrained_by | PCON-001 |\n'
     );
     await writeJson(path.join(wiDir, 'candidate_manifest.json'), {
       schema_version: '1.0',
@@ -293,7 +328,12 @@ describe('P0 Contract consumer atomic merge', () => {
       ],
     });
 
-    await approveSealedCandidateFixture({ projectRoot: root, workItemDir: wiDir, workItemId, workflowPath: 'requirement_change_path' });
+    await approveSealedCandidateFixture({
+      projectRoot: root,
+      workItemDir: wiDir,
+      workItemId,
+      workflowPath: 'requirement_change_path',
+    });
     const result = await executeMerge({
       projectRoot: root,
       workItemId,
@@ -327,7 +367,7 @@ describe('P0 Contract consumer atomic merge', () => {
     });
     await fs.writeFile(
       path.join(project, 'trace_matrix.md'),
-      '| From | Relation | To |\n|---|---|---|\n| DATA-001 | constrained_by | ARCH-001 |\n',
+      '| From | Relation | To |\n|---|---|---|\n| DATA-001 | constrained_by | ARCH-001 |\n'
     );
     await fs.mkdir(path.join(project, 'modules', 'ORDER'), { recursive: true });
     await fs.writeFile(path.join(project, 'modules', 'ORDER', 'trace.md'), 'OLD\n');
@@ -336,7 +376,7 @@ describe('P0 Contract consumer atomic merge', () => {
     });
     await fs.writeFile(
       path.join(wiDir, 'candidates', 'project', 'modules', 'ORDER', 'trace.md'),
-      'INDEPENDENT MODULE TRACE\n',
+      'INDEPENDENT MODULE TRACE\n'
     );
     await writeJson(path.join(wiDir, 'candidate_manifest.json'), {
       schema_version: '1.0',
@@ -354,7 +394,12 @@ describe('P0 Contract consumer atomic merge', () => {
       ],
     });
 
-    await approveSealedCandidateFixture({ projectRoot: root, workItemDir: wiDir, workItemId, workflowPath: 'requirement_change_path' });
+    await approveSealedCandidateFixture({
+      projectRoot: root,
+      workItemDir: wiDir,
+      workItemId,
+      workflowPath: 'requirement_change_path',
+    });
     const result = await executeMerge({
       projectRoot: root,
       workItemId,
@@ -365,8 +410,9 @@ describe('P0 Contract consumer atomic merge', () => {
 
     expect(result.success).toBe(false);
     expect(result.errors.join('\n')).toContain('generated projection');
-    expect(await fs.readFile(path.join(project, 'modules', 'ORDER', 'trace.md'), 'utf-8'))
-      .toBe('OLD\n');
+    expect(await fs.readFile(path.join(project, 'modules', 'ORDER', 'trace.md'), 'utf-8')).toBe(
+      'OLD\n'
+    );
   });
 
   it('preserves the established legacy Trace Delta merge path when no governance relation graph exists', async () => {
@@ -411,7 +457,12 @@ describe('P0 Contract consumer atomic merge', () => {
       ],
     });
 
-    await approveSealedCandidateFixture({ projectRoot: root, workItemDir: wiDir, workItemId, workflowPath: 'requirement_change_path' });
+    await approveSealedCandidateFixture({
+      projectRoot: root,
+      workItemDir: wiDir,
+      workItemId,
+      workflowPath: 'requirement_change_path',
+    });
     const result = await executeMerge({
       projectRoot: root,
       workItemId,
@@ -421,9 +472,7 @@ describe('P0 Contract consumer atomic merge', () => {
     });
 
     expect(result.success).toBe(true);
-    expect(await fs.readFile(path.join(project, 'trace_matrix.md'), 'utf-8')).toBe(
-      legacyCandidate,
-    );
+    expect(await fs.readFile(path.join(project, 'trace_matrix.md'), 'utf-8')).toBe(legacyCandidate);
   });
 
   it('allows legacy Module trace candidates before governance relations are activated', async () => {
@@ -451,7 +500,7 @@ describe('P0 Contract consumer atomic merge', () => {
     });
     await fs.writeFile(
       path.join(wiDir, 'candidates', 'project', 'modules', 'ORDER', 'trace.md'),
-      'LEGACY MODULE TRACE\n',
+      'LEGACY MODULE TRACE\n'
     );
     await writeJson(path.join(wiDir, 'candidate_manifest.json'), {
       schema_version: '1.0',
@@ -469,7 +518,12 @@ describe('P0 Contract consumer atomic merge', () => {
       ],
     });
 
-    await approveSealedCandidateFixture({ projectRoot: root, workItemDir: wiDir, workItemId, workflowPath: 'requirement_change_path' });
+    await approveSealedCandidateFixture({
+      projectRoot: root,
+      workItemDir: wiDir,
+      workItemId,
+      workflowPath: 'requirement_change_path',
+    });
     const result = await executeMerge({
       projectRoot: root,
       workItemId,
@@ -480,8 +534,7 @@ describe('P0 Contract consumer atomic merge', () => {
 
     expect(result.success).toBe(true);
     expect(await fs.readFile(path.join(project, 'modules', 'ORDER', 'trace.md'), 'utf-8')).toBe(
-      'LEGACY MODULE TRACE\n',
+      'LEGACY MODULE TRACE\n'
     );
   });
-
 });

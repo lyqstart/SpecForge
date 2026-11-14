@@ -17,6 +17,7 @@ import {
   validateTaskArtifactContract,
 } from './sf_markdown_verification_parser';
 import { logErrorToFile } from './utils';
+import { parseRequirementDocument } from './requirements-generation.js';
 
 // ============================================================
 // Types
@@ -134,7 +135,15 @@ export async function lintDocument(
  * 警告: 需求标题应使用 REQ-MODULE-NNN 规范格式
  */
 function lintRequirements(content: string, fileName: string): DocLintResult {
-  const issues: LintIssue[] = [];
+  const parsed = parseRequirementDocument({ path: fileName, content });
+  const issues: LintIssue[] = parsed.errors
+    .filter(
+      error => error.startsWith('REQUIREMENTS_ROLE_') || error.startsWith('REFERENCE_CONTEXT_')
+    )
+    .map(message => ({ severity: 'error', message, location: fileName }));
+  if (parsed.role === 'reference_context') {
+    return { status: issues.length === 0 ? 'pass' : 'fail', issues };
+  }
 
   // Check for Introduction section (case-insensitive heading)
   if (!hasHeading(content, ['简介', 'introduction'])) {

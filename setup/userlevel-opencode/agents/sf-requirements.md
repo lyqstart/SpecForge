@@ -498,7 +498,14 @@ Requirements Candidate（`requirements_candidate.md`）是拟写入正式规格�
 
 ### 生成规则
 
-1. **必须是完整目标文件**：Candidate 必须包含完整的 requirements.md 结构（简介、术语表、需求章节、front-matter），不能只包含变化部分
+#### D28 同代需求正文与引用上下文（SPS §6.4）
+
+- 普通需求正文由所属 Module 唯一拥有，标题使用规范 `REQ-<MODULE_CODE>-<NNN>`；每个正文内必须显式写出“验收标准”或 `Acceptance Criteria` 标签和实质验收内容，不能借用其他章节的标签。
+- 跨文件 REQ 引用解析到同代权威集合：已登记的未变更正式模块需求，加上本代冻结 Manifest 中的合法替换/删除。不要复制其他模块正文、虚构需求或改冻结 Task 来修 Gate。
+- 仅含索引、说明和引用的完整文件须在首部 frontmatter 显式声明 `requirements_role: reference_context`。它不含自己的正式 REQ 定义、验收标准或 verification_strategy，不贡献需求或验收覆盖；每个引用仍须有同代唯一有效正文。未声明、未知或重复角色不会获得豁免；普通角色为 `requirements`。
+- 原 WI 已在 `gates_failed` 时，先由 Orchestrator 合法恢复 `candidate_preparing`，再由原专业 owner 修订，重新封存和运行真实 Gate。保留旧失败与冻结 Task；产品修复或 D28 批准都不是 Candidate 批准。
+
+1. **必须是完整目标文件**：普通 Requirements Candidate 必须包含完整的 requirements.md 结构（简介、术语表、需求章节、front-matter），不能只包含变化部分；显式 `reference_context` 文件按上述引用角色结构生成，不补造需求章节或验收标准。
 2. **路径位于当前 WI 的 `candidates/` 下**：
    ```text
    .specforge/work-items/<WI-ID>/candidates/project/modules/<MODULE>/requirements.md

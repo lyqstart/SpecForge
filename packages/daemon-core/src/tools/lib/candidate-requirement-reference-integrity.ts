@@ -3,6 +3,11 @@ import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 
 import { isValidRequirementId } from '@specforge/types';
+import {
+  inspectRequirementsGeneration,
+  requirementTokens,
+  type RequirementDocument,
+} from './requirements-generation.js';
 
 export type RequirementReferenceIntegrityResult = {
   valid: boolean;
@@ -10,21 +15,6 @@ export type RequirementReferenceIntegrityResult = {
   declared_requirement_ids: string[];
   input_files: string[];
 };
-
-const REQUIREMENT_TOKEN = /\bREQ-[A-Z][A-Z0-9]{1,11}-[0-9]+\b/g;
-
-function requirementTokens(content: string): string[] {
-  return Array.from(new Set(content.toUpperCase().match(REQUIREMENT_TOKEN) ?? [])).sort();
-}
-
-function requirementDefinitions(content: string): string[] {
-  const definitions: string[] = [];
-  for (const line of content.split(/\r?\n/)) {
-    const heading = /^#{2,6}\s+(?:Requirement\s+)?(REQ-[A-Z][A-Z0-9]{1,11}-[0-9]+)\b/i.exec(line);
-    if (heading) definitions.push(heading[1].toUpperCase());
-  }
-  return definitions;
-}
 
 async function walkConsumerFiles(root: string): Promise<string[]> {
   let entries: Dirent[];
@@ -51,12 +41,13 @@ async function walkConsumerFiles(root: string): Promise<string[]> {
 
 export async function validateCandidateRequirementReferences(input: {
   workItemDir: string;
-  requirementArtifacts: Array<{ path: string; content: string }>;
+  requirementArtifacts: RequirementDocument[];
 }): Promise<RequirementReferenceIntegrityResult> {
-  const errors: string[] = [];
+  const generation = inspectRequirementsGeneration(input.requirementArtifacts);
+  const errors: string[] = [...generation.errors];
   const definitionOwners = new Map<string, string[]>();
-  for (const artifact of input.requirementArtifacts) {
-    for (const id of requirementDefinitions(artifact.content)) {
+  for (const artifact of generation.documents) {
+    for (const { id } of artifact.definitions) {
       const owners = definitionOwners.get(id) ?? [];
       owners.push(artifact.path);
       definitionOwners.set(id, owners);

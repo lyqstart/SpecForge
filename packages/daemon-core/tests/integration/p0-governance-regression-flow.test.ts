@@ -79,9 +79,10 @@ function runtimeStatePath(): string {
 }
 
 function makeGateSummary(workItemId: string, status: string): string {
-  const userDecisionLine = status === 'passed'
-    ? 'All gates passed. User may approve to proceed to merge.'
-    : 'Some hard gates failed. User cannot approve until issues are resolved.';
+  const userDecisionLine =
+    status === 'passed'
+      ? 'All gates passed. User may approve to proceed to merge.'
+      : 'Some hard gates failed. User cannot approve until issues are resolved.';
 
   return [
     '# Gate Summary',
@@ -114,7 +115,11 @@ function makeGateSummary(workItemId: string, status: string): string {
   ].join('\n');
 }
 
-async function setRuntimeState(workItemId: string, state: string, workflowPath: WorkflowPath = DEFAULT_WORKFLOW_PATH): Promise<void> {
+async function setRuntimeState(
+  workItemId: string,
+  state: string,
+  workflowPath: WorkflowPath = DEFAULT_WORKFLOW_PATH
+): Promise<void> {
   const now = new Date().toISOString();
   await writeJson(runtimeStatePath(), {
     schema_version: '1.0',
@@ -139,7 +144,14 @@ async function setRuntimeState(workItemId: string, state: string, workflowPath: 
   });
 }
 
-async function transitionRuntimeState(workItemId: string, fromState: string, toState: string, actor: string, workflowType: string, metadata: Record<string, unknown> = {}): Promise<void> {
+async function transitionRuntimeState(
+  workItemId: string,
+  fromState: string,
+  toState: string,
+  actor: string,
+  workflowType: string,
+  metadata: Record<string, unknown> = {}
+): Promise<void> {
   const statePath = runtimeStatePath();
   const now = new Date().toISOString();
   const runtime = (await readJsonIfExists<Record<string, any>>(statePath)) ?? {};
@@ -197,9 +209,16 @@ function makeDeps(): ToolDeps {
           toState: string,
           actor: string,
           workflowType: string,
-          metadata: Record<string, unknown> = {},
+          metadata: Record<string, unknown> = {}
         ) => {
-          await transitionRuntimeState(workItemId, fromState, toState, actor, workflowType, metadata);
+          await transitionRuntimeState(
+            workItemId,
+            fromState,
+            toState,
+            actor,
+            workflowType,
+            metadata
+          );
           return { success: true };
         },
       }),
@@ -212,7 +231,11 @@ function makeDeps(): ToolDeps {
   };
 }
 
-async function invoke(tool: string, args: Record<string, unknown>, agent = 'sf-orchestrator'): Promise<any> {
+async function invoke(
+  tool: string,
+  args: Record<string, unknown>,
+  agent = 'sf-orchestrator'
+): Promise<any> {
   return dispatcher.dispatch({
     tool,
     args,
@@ -224,7 +247,10 @@ async function invoke(tool: string, args: Record<string, unknown>, agent = 'sf-o
   });
 }
 
-async function createSpecChangingFixture(workItemId: string, options: FixtureOptions = {}): Promise<string> {
+async function createSpecChangingFixture(
+  workItemId: string,
+  options: FixtureOptions = {}
+): Promise<string> {
   const workflowPath = options.workflowPath ?? DEFAULT_WORKFLOW_PATH;
   const state = options.state ?? 'approval_required';
   const gateSummaryStatus = options.gateSummaryStatus ?? 'passed';
@@ -236,6 +262,9 @@ async function createSpecChangingFixture(workItemId: string, options: FixtureOpt
     schema_version: '1.0',
     project_spec_version: 'PSV-0000',
     project_name: 'p0-governance-fixture',
+    modules: [
+      { module_code: 'CORE', requirements: '.specforge/project/modules/CORE/requirements.md' },
+    ],
     project: {
       requirements_index: '.specforge/project/requirements_index.md',
     },
@@ -247,7 +276,11 @@ async function createSpecChangingFixture(workItemId: string, options: FixtureOpt
   });
   await writeText(
     path.join(projectRoot, '.specforge', 'project', 'requirements_index.md'),
-    '# Existing Requirements\n'
+    '---\nrequirements_role: reference_context\n---\n# Requirements Index\nREQ-CORE-001\n'
+  );
+  await writeText(
+    path.join(projectRoot, '.specforge', 'project', 'modules', 'CORE', 'requirements.md'),
+    '# Requirements\n'
   );
 
   await writeJson(path.join(dir, 'work_item.json'), {
@@ -299,16 +332,34 @@ async function createSpecChangingFixture(workItemId: string, options: FixtureOpt
   });
 
   await writeText(path.join(dir, 'intake.md'), '# Intake\nAdd a governed feature.\n');
-  await writeText(path.join(dir, 'change_classification.md'), '# Change Classification\nrequirement_change_path\n');
-  await writeText(path.join(dir, 'impact_analysis.md'), '# Impact Analysis\nProject spec changes required.\n');
-  await writeText(path.join(dir, 'tasks.md'), '# Tasks\n- [x] Implement governed feature (REQ-CORE-001)\n\nallowed_write_files:\n- src/index.ts\n');
+  await writeText(
+    path.join(dir, 'change_classification.md'),
+    '# Change Classification\nrequirement_change_path\n'
+  );
+  await writeText(
+    path.join(dir, 'impact_analysis.md'),
+    '# Impact Analysis\nProject spec changes required.\n'
+  );
+  await writeText(
+    path.join(dir, 'tasks.md'),
+    '# Tasks\n- [x] Implement governed feature (REQ-CORE-001)\n\nallowed_write_files:\n- src/index.ts\n'
+  );
   await writeText(path.join(dir, 'trace_delta.md'), '# Trace Delta\nREQ-CORE-001 -> TASK-001\n');
-  await writeText(path.join(dir, 'verification_report.md'), '# Verification Report\nEvidence reviewed and pass.\n');
-  await writeText(path.join(dir, 'changed_files_audit.md'), `# Changed Files Audit\n\nContract: changed-files-audit/v1\nWork Item: ${workItemId}\n## Result: PASS\n- Total files: 0\n- In scope: 0\n- Out of scope: 0\n- Violations: 0\n- Blocked write attempts: 0\n`);
-  await writeText(path.join(dir, 'gate_summary.md'), makeGateSummary(workItemId, gateSummaryStatus));
+  await writeText(
+    path.join(dir, 'verification_report.md'),
+    '# Verification Report\nEvidence reviewed and pass.\n'
+  );
+  await writeText(
+    path.join(dir, 'changed_files_audit.md'),
+    `# Changed Files Audit\n\nContract: changed-files-audit/v1\nWork Item: ${workItemId}\n## Result: PASS\n- Total files: 0\n- In scope: 0\n- Out of scope: 0\n- Violations: 0\n- Blocked write attempts: 0\n`
+  );
+  await writeText(
+    path.join(dir, 'gate_summary.md'),
+    makeGateSummary(workItemId, gateSummaryStatus)
+  );
 
   await writeText(
-    path.join(dir, 'candidates', 'requirements.md'),
+    path.join(dir, 'candidates', 'modules', 'CORE', 'requirements.candidate.md'),
     [
       '# Requirements',
       '',
@@ -345,8 +396,8 @@ async function createSpecChangingFixture(workItemId: string, options: FixtureOpt
     merge_required: true,
     entries: [
       {
-        candidate_path: 'candidates/requirements.md',
-        target_path: '.specforge/project/requirements_index.md',
+        candidate_path: 'candidates/modules/CORE/requirements.candidate.md',
+        target_path: '.specforge/project/modules/CORE/requirements.md',
         operation: 'replace',
         type: 'requirements',
       },
@@ -393,7 +444,10 @@ async function approveFixture(workItemId: string): Promise<any> {
 }
 
 async function approveAndMergeFixture(workItemId: string): Promise<void> {
-  await createSpecChangingFixture(workItemId, { state: 'approval_required', gateSummaryStatus: 'passed' });
+  await createSpecChangingFixture(workItemId, {
+    state: 'approval_required',
+    gateSummaryStatus: 'passed',
+  });
   const approval = await approveFixture(workItemId);
   expect(approval.success).toBe(true);
 
@@ -426,7 +480,10 @@ describe('SpecForge v1.1 Post-P0 governance regression flow', () => {
 
   it('rejects user_approved when Gate failed', async () => {
     const workItemId = 'WI-9001';
-    await createSpecChangingFixture(workItemId, { state: 'gates_failed', gateSummaryStatus: 'failed' });
+    await createSpecChangingFixture(workItemId, {
+      state: 'gates_failed',
+      gateSummaryStatus: 'failed',
+    });
 
     const result = await approveFixture(workItemId);
 
@@ -442,7 +499,10 @@ describe('SpecForge v1.1 Post-P0 governance regression flow', () => {
 
   it('rejects user_approved while gates are still running', async () => {
     const workItemId = 'WI-9002';
-    await createSpecChangingFixture(workItemId, { state: 'gates_running', gateSummaryStatus: 'passed' });
+    await createSpecChangingFixture(workItemId, {
+      state: 'gates_running',
+      gateSummaryStatus: 'passed',
+    });
 
     const result = await approveFixture(workItemId);
 
@@ -454,7 +514,10 @@ describe('SpecForge v1.1 Post-P0 governance regression flow', () => {
 
   it('records sf-orchestrator only as recorded_by while decided_by remains user and state advances to approved', async () => {
     const workItemId = 'WI-9003';
-    await createSpecChangingFixture(workItemId, { state: 'approval_required', gateSummaryStatus: 'passed' });
+    await createSpecChangingFixture(workItemId, {
+      state: 'approval_required',
+      gateSummaryStatus: 'passed',
+    });
 
     const result = await approveFixture(workItemId);
 
@@ -479,7 +542,10 @@ describe('SpecForge v1.1 Post-P0 governance regression flow', () => {
 
   it('auto-advances gates_running to approval_required after all required gates pass', async () => {
     const workItemId = 'WI-9004';
-    await createSpecChangingFixture(workItemId, { state: 'gates_running', gateSummaryStatus: 'passed' });
+    await createSpecChangingFixture(workItemId, {
+      state: 'gates_running',
+      gateSummaryStatus: 'passed',
+    });
 
     const result = await invoke('sf_gate_run', {
       work_item_id: workItemId,
@@ -488,11 +554,11 @@ describe('SpecForge v1.1 Post-P0 governance regression flow', () => {
 
     expect(result.success).toBe(true);
     const workflowGate = await readJsonIfExists(
-      path.join(wiDir(workItemId), 'gates', 'workflow_specific_gate.json'),
+      path.join(wiDir(workItemId), 'gates', 'workflow_specific_gate.json')
     );
     expect(
       result.summary_status,
-      JSON.stringify({ result, workflow_gate: workflowGate }, null, 2),
+      JSON.stringify({ result, workflow_gate: workflowGate }, null, 2)
     ).toBe('passed');
     expect(result.state_auto_advance?.advanced).toBe(true);
     expect(result.state_auto_advance?.from_state).toBe('gates_running');
@@ -509,7 +575,10 @@ describe('SpecForge v1.1 Post-P0 governance regression flow', () => {
   it('rejects code_permission enable before successful merge for spec-changing workflows', async () => {
     const workItemId = 'WI-9005';
     await createSpecChangingFixture(workItemId, { state: 'approved', gateSummaryStatus: 'passed' });
-    await writeText(path.join(wiDir(workItemId), 'merge_report.md'), '# Merge Report\n\nStatus: failed\n\n## Summary\n\n- Successful: 0\n');
+    await writeText(
+      path.join(wiDir(workItemId), 'merge_report.md'),
+      '# Merge Report\n\nStatus: failed\n\n## Summary\n\n- Successful: 0\n'
+    );
 
     const result = await invoke('sf_code_permission', {
       work_item_id: workItemId,
@@ -550,14 +619,15 @@ describe('SpecForge v1.1 Post-P0 governance regression flow', () => {
       expect.arrayContaining([
         { path: 'src/index.ts', operation: 'create' },
         { path: 'src/index.ts', operation: 'modify' },
-      ]),
+      ])
     );
     expect(
-      workItem.allowed_write_files.some((entry: { path: string; operation: string }) =>
-        path.isAbsolute(entry.path) &&
-        entry.path.replace(/\\/g, '/').endsWith('/src/index.ts') &&
-        entry.operation === 'modify',
-      ),
+      workItem.allowed_write_files.some(
+        (entry: { path: string; operation: string }) =>
+          path.isAbsolute(entry.path) &&
+          entry.path.replace(/\\/g, '/').endsWith('/src/index.ts') &&
+          entry.operation === 'modify'
+      )
     ).toBe(true);
   });
 
@@ -592,13 +662,13 @@ describe('SpecForge v1.1 Post-P0 governance regression flow', () => {
 
     await writeText(
       path.join(projectRoot, 'src', 'index.ts'),
-      'export const governedFeature = true;\n',
+      'export const governedFeature = true;\n'
     );
     await git(['add', '--', 'src/index.ts']);
     await git(['commit', '-m', 'feat: implement governed fixture']);
     await writeText(
       path.join(wiDir(workItemId), 'changed_files_audit.md'),
-      `# Changed Files Audit\n\nContract: changed-files-audit/v1\nWork Item: ${workItemId}\n## Result: PASS\n- Total files: 1\n- In scope: 1\n- Out of scope: 0\n- Violations: 0\n- Blocked write attempts: 0\n\n## Entries\n\n- [create] src/index.ts → in_scope\n`,
+      `# Changed Files Audit\n\nContract: changed-files-audit/v1\nWork Item: ${workItemId}\n## Result: PASS\n- Total files: 1\n- In scope: 1\n- Out of scope: 0\n- Violations: 0\n- Blocked write attempts: 0\n\n## Entries\n\n- [create] src/index.ts → in_scope\n`
     );
 
     const revokeResult = await invoke('sf_code_permission', {
@@ -610,10 +680,17 @@ describe('SpecForge v1.1 Post-P0 governance regression flow', () => {
     const dir = wiDir(workItemId);
     const manifestPath = path.join(dir, 'candidate_manifest.json');
     const manifest = await readJson<Record<string, any>>(manifestPath);
-    manifest.entries = manifest.entries.map((entry: Record<string, any>) => ({ ...entry, normalized: true }));
+    manifest.entries = manifest.entries.map((entry: Record<string, any>) => ({
+      ...entry,
+      normalized: true,
+    }));
     manifest.reason = 'post-merge normalization changed the approved manifest bytes';
     await writeJson(manifestPath, manifest);
-    await writeText(path.join(dir, 'gate_summary.md'), makeGateSummary(workItemId, 'passed') + '\nPost-merge close attempt regenerated this summary.\n');
+    await writeText(
+      path.join(dir, 'gate_summary.md'),
+      makeGateSummary(workItemId, 'passed') +
+        '\nPost-merge close attempt regenerated this summary.\n'
+    );
 
     await setRuntimeState(workItemId, 'implementation_done', DEFAULT_WORKFLOW_PATH);
     const workItemPath = path.join(dir, 'work_item.json');

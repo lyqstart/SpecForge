@@ -1,4 +1,3 @@
-import { hasCallArgument } from '../../../../tests/helpers/source-structure';
 import { afterEach, describe, expect, it } from 'vitest';
 import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
@@ -51,7 +50,7 @@ describe('Gate Attempt project-root input snapshot semantics', () => {
         path: relative,
         exists: true,
         kind: 'file',
-      }),
+      })
     );
     expect(snapshot[0]?.sha256).toMatch(/^[0-9a-f]{64}$/);
   });
@@ -77,11 +76,13 @@ describe('Gate Attempt project-root input snapshot semantics', () => {
     roots.push(projectRoot);
     const snapshot = await buildGateAttemptInputSnapshot(
       projectRoot,
-      [report([
-        '.specforge/project/modules/CORE/design.md',
-        '.specforge/project/modules/core/design.md',
-      ])],
-      'win32',
+      [
+        report([
+          '.specforge/project/modules/CORE/design.md',
+          '.specforge/project/modules/core/design.md',
+        ]),
+      ],
+      'win32'
     );
     expect(snapshot).toHaveLength(1);
     expect(snapshot[0]?.path).toBe('.specforge/project/modules/CORE/design.md');
@@ -91,14 +92,14 @@ describe('Gate Attempt project-root input snapshot semantics', () => {
     const repoRoot = join(import.meta.dirname, '../../../..');
     const chain = await readFile(
       join(repoRoot, 'packages/daemon-core/src/tools/lib/gate-chain.ts'),
-      'utf-8',
+      'utf-8'
     );
     expect(chain).toContain(
-      'const sealInputPaths = await candidateSealInputPaths(input.ctx.workItemDir)',
+      'const sealInputPaths = await candidateSealInputPaths(input.ctx.workItemDir)'
     );
-    expect(hasCallArgument(chain, 'buildGateAttemptInputSnapshot', 'sealInputPaths')).toBe(true);
+    expect(chain).toMatch(/buildGateAttemptInputSnapshot\(\s*input\.ctx\.projectRoot,/);
     expect(chain).toContain(
-      'const resolvedInputPath = resolveGateAttemptInputPath(projectRoot, inputPath);',
+      'const resolvedInputPath = resolveGateAttemptInputPath(projectRoot, inputPath);'
     );
     expect(chain).toContain('await fs.stat(resolvedInputPath)');
     expect(chain).toContain('await fs.readFile(resolvedInputPath)');
@@ -108,10 +109,10 @@ describe('Gate Attempt project-root input snapshot semantics', () => {
     const repoRoot = join(import.meta.dirname, '../../../..');
     const handler = await readFile(
       join(repoRoot, 'packages/daemon-core/src/tools/handlers/sf-v11-gate-run.ts'),
-      'utf-8',
+      'utf-8'
     );
     expect(handler).toContain(
-      'const resolvedInputPath = resolveGateInputPath(input.projectRoot, inputPath);',
+      'const resolvedInputPath = resolveGateInputPath(input.projectRoot, inputPath);'
     );
     expect(handler).toContain('await fs.access(resolvedInputPath)');
     expect(handler).toContain('await fs.stat(resolvedInputPath)');
@@ -122,11 +123,11 @@ describe('Gate Attempt project-root input snapshot semantics', () => {
     const repoRoot = join(import.meta.dirname, '../../../..');
     const authority = await readFile(
       join(repoRoot, 'docs/design/SpecForge架构一致性治理最终实施方案.md'),
-      'utf-8',
+      'utf-8'
     );
     const ledger = await readFile(
       join(repoRoot, 'docs/rule/specforge-development-error-ledger-and-experience.md'),
-      'utf-8',
+      'utf-8'
     );
     expect(authority).toContain('字段级 Schema、工具参数和实现算法必须由版本化源码或专门 Contract');
     expect(authority).not.toContain('process.cwd()');

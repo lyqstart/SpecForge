@@ -77,6 +77,7 @@ SPS-1.0
 | D25 | 用户明确“批准该有限扩展，继续完整修复”：按 SPS §9.2.6 补齐显式冻结 filesystem 的验证源身份，绑定既有 scope/baseline 与当前物理源清单和所选字节；保留 Git plan/v1，新 filesystem plan/v2 严格判别。先正式合同、完整实现、同等隔离与共同消费者验收、正式部署，再从原 WI 真实断点恢复。不 git init、不改已批准业务 Task、不扩大 LPAC、不重放既有审批或实施。 |
 | D26 | 用户批准有限语义扩展及 sf-verifier 指令冲突修复：按 SPS §9.2.7 引入受词法绑定、完整引用/写入检查和冻结本地源图约束的数组数值读取、Object.keys 与有限记录键读取；新命令 v3/有限键证明严格配对，旧 v1/v2 保持，未知继续拒绝。先合同、实现、完整验收和同步部署，再恢复原 t7 WI 真实断点；不放宽隔离/权限、不改冻结业务 Task、不批准业务 Candidate。 |
 | D27 | 用户批准有限冻结 UTF-8 数据读取扩展，完成验收后恢复原 WI。按 SPS §9.2.8 引入 v4/冻结数据证明严格配对，Runtime 从已批准 Task 与冻结 scope 交集推导数据权限；保持原命令、物理身份、哈希、全部共同消费者复核与原隔离/权限。旧 v1/v2/v3 不变，不开放通用 fs，不改冻结 Task，不批准 Candidate，不包含公开发布授权。 |
+| D28 | 用户批准有限 Requirements 语义扩展，验收后恢复原 WI。按 SPS §6.4，在同代已登记正式模块与冻结候选替换的权威集合中逐字解析唯一 REQ 正文；显式 `reference_context` 角色只允许上下文/引用，需求与验收覆盖贡献为零。统一 producer、Gate、Task、Trace 与正式规格消费者，绑定全部实际输入；缺正文、重复、错误归属、非规范引用、隐藏定义及失效审批继续拒绝。先合同、实现、完整验收和同步部署，再从原 WI 真实断点恢复；不改冻结 Task、不放宽权限/隔离、不批准 Candidate，不包含新候选公开发布授权。 |
 | D01 | events.jsonl 是持久化工作流状态事实源；state.json 是可重建 checkpoint/projection |
 | D02 | Daemon 是独立共享服务；生命周期由部署环境、CLI 或 service manager 管理；Thin Plugin 不启动/停止/重启 Daemon |
 | D03 | 当前用户级数据根为 <OpenCode config>/sf-user；用户主目录 ~/.specforge 退役为非当前写入目标 |

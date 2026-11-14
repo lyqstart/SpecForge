@@ -79,6 +79,7 @@ import {
 import { specMigrationCandidateRequiresTraceDelta } from './spec-migration-trace-contract.js';
 import { validateCandidateProjectSpecBinding } from './candidate-generation-integrity.js';
 import { validateCandidateRequirementReferences } from './candidate-requirement-reference-integrity.js';
+import { inspectRequirementsAuthority } from './requirements-authority.js';
 
 function projectSpecRepairPlanPath(workItemDir: string): string {
   return path.join(workItemDir, 'project_spec_repair_plan.json');
@@ -1473,6 +1474,18 @@ registerGate('close_gate', 'hard_gate', true, async ctx => {
  */
 registerGate('post_merge_gate', 'hard_gate', true, async ctx => {
   const checks: GateReportCheck[] = [];
+  const requirements = await inspectRequirementsAuthority({
+    projectRoot: ctx.projectRoot,
+    workItemId: ctx.workItemId,
+    formalOnly: true,
+  });
+  checks.push({
+    check_id: 'post_merge_requirements_generation_integrity',
+    description:
+      'Formal Requirements preserve same-generation unique definitions and context roles',
+    passed: requirements.valid,
+    details: requirements.errors.join('; ') || undefined,
+  });
 
   // 1. merge_report.md exists, is current, and belongs to this Work Item.
   const mergeReportPath = path.join(ctx.workItemDir, 'merge_report.md');
@@ -1516,6 +1529,7 @@ registerGate('post_merge_gate', 'hard_gate', true, async ctx => {
   return makeReport(ctx.workItemId, 'post_merge_gate', 'hard_gate', true, checks, [
     mergeReportPath,
     ...coreVersion.input_files,
+    ...requirements.inputFiles,
   ]);
 });
 
@@ -1759,6 +1773,7 @@ function gateResultInputFiles(result: GateResult): string[] {
   const values = [
     details['design_candidate_paths'],
     details['requirements_candidate_paths'],
+    details['requirements_authority_input_files'],
     details['task_candidate_paths'],
     details['investigation_plan_path'],
     details['findings_report_path'],
@@ -1972,6 +1987,18 @@ async function runWorkflowSpecificGate(ctx: GateContext): Promise<GateResult> {
     declared_requirement_ids: referenceIntegrity.declared_requirement_ids,
     input_files: referenceIntegrity.input_files,
   };
+  details['requirements_authority_input_files'] = [
+    ...new Set([
+      ...requirementResolution.input_files,
+      ...requirementResolution.classification_files,
+      ...referenceIntegrity.input_files,
+      ...results.flatMap(result =>
+        Array.isArray(result.details?.['requirements_authority_input_files'])
+          ? (result.details['requirements_authority_input_files'] as string[])
+          : []
+      ),
+    ]),
+  ];
   return {
     status: blocked ? 'blocked' : blockingIssues.length > 0 ? 'fail' : 'pass',
     blocking_issues: blockingIssues,
