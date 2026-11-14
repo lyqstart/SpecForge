@@ -59,7 +59,7 @@ export function parseRequirementDocument(document: RequirementDocument): {
   if (role === 'reference_context') {
     if (definitions.length > 0) errors.push('REFERENCE_CONTEXT_DEFINITION_FORBIDDEN');
     if (
-      /^(?:#{1,6}\s+(?:验收标准|Acceptance\s+Criteria)(?:\s|[:：（(]|$)|\s*(?:[-*]\s*)?(?:\*\*)?(?:验收标准|Acceptance\s+Criteria|verification_strategy)(?:\*\*)?\s*(?:[:：]|$))/im.test(
+      /^(?:#{1,6}\s+(?:验收标准|Acceptance\s+Criteria)(?:\s|[:：（(]|$)|\s*(?:[-*]\s*)?(?:\*\*)?(?:验收标准|Acceptance\s+Criteria|verification_strategy)(?:\s*[（(][^）)\r\n]*[）)])?(?:\*\*)?\s*(?:[:：]|$))/im.test(
         content
       ) ||
       /^#{1,6}\s+AC-[A-Z0-9_-]+\b/im.test(content)

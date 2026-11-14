@@ -42,6 +42,9 @@ describe('D28 Requirements generation semantics', () => {
       '## Acceptance Criteria',
       '- 验收标准：返回记录',
       '**Acceptance Criteria**: return the record',
+      '- 验收标准（Acceptance Criteria）:',
+      '- **验收标准（Acceptance Criteria）**：',
+      '- Acceptance Criteria (owned):',
       '## AC-AA-001',
     ]) {
       expect(

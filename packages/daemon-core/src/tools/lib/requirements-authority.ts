@@ -3,6 +3,11 @@ import * as path from 'node:path';
 import { createHash } from 'node:crypto';
 import { resolveSpecModuleIdentity } from '@specforge/types';
 import {
+  projectRoot as projectSpecRoot,
+  workItemRoot,
+  moduleRequirements,
+} from '@specforge/types/directory-layout';
+import {
   resolveWorkItemSpecArtifacts,
   targetPathForCandidate,
 } from './governance-invariants-v11.js';
@@ -65,8 +70,8 @@ export async function resolveRequirementsAuthority(input: {
   formalOnly?: boolean;
 }): Promise<RequirementsAuthority> {
   const root = path.resolve(input.projectRoot);
-  const project = path.join(root, '.specforge/project');
-  const wi = path.join(root, '.specforge/work-items', input.workItemId);
+  const project = projectSpecRoot(root);
+  const wi = workItemRoot(root, input.workItemId);
   const candidateRoot = path.join(wi, 'candidates');
   const inputFiles = new Set<string>();
   async function read(file: string, boundary: string, optional = false): Promise<string | null> {
@@ -111,9 +116,7 @@ export async function resolveRequirementsAuthority(input: {
     const entry = typeof raw === 'object' && raw !== null ? record(raw) : {};
     const file = path.resolve(
       root,
-      text(
-        entry.requirements ?? `.specforge/project/modules/${identity.moduleCode}/requirements.md`
-      )
+      text(entry.requirements ?? moduleRequirements(root, identity.moduleCode))
     );
     if (!isSameOrDescendantResolvedPath(file, path.join(project, 'modules')))
       throw new Error('REQUIREMENTS_MODULE_PATH_INVALID');
