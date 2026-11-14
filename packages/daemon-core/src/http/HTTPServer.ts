@@ -518,7 +518,6 @@ export class HTTPServer {
     if (!this.isPublicEndpoint(pathname)) {
       const authResult = this.checkAuth(req);
       if (authResult) {
-        res.setHeader('Connection', 'close');
         this.sendJsonResponse(
           res,
           authResult.statusCode,
@@ -536,7 +535,9 @@ export class HTTPServer {
     const rejectOversized = () => {
       rejected = true;
       chunks.length = 0;
-      res.setHeader('Connection', 'close');
+      // Keep the response readable while the parser drains the rejected upload.
+      // Closing immediately can reset the socket before clients receive the 413.
+      // Further data is discarded below; it never reaches buffering or dispatch.
       this.sendJsonResponse(
         res,
         413,

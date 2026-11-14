@@ -65,20 +65,31 @@ describe('controlled HTTP full-envelope admission', () => {
     options: { auth?: boolean; chunked?: boolean } = {}
   ) {
     return new Promise<{ status: number; body: string }>((resolve, reject) => {
+      const agent = new http.Agent({ keepAlive: true });
       const headers: http.OutgoingHttpHeaders = { 'Content-Type': 'application/json' };
       if (options.auth !== false) headers.authorization = `Bearer ${token}`;
       if (!options.chunked) headers['Content-Length'] = Buffer.byteLength(body);
       const req = http.request(
-        { hostname: '127.0.0.1', port, path: route, method: 'POST', headers },
+        { agent, hostname: '127.0.0.1', port, path: route, method: 'POST', headers },
         res => {
           let data = '';
           res.on('data', chunk => {
             data += chunk;
           });
-          res.on('end', () => resolve({ status: res.statusCode ?? 0, body: data }));
+          res.on('end', () => {
+            agent.destroy();
+            resolve({ status: res.statusCode ?? 0, body: data });
+          });
+          res.on('error', error => {
+            agent.destroy();
+            reject(error);
+          });
         }
       );
-      req.on('error', reject);
+      req.on('error', error => {
+        agent.destroy();
+        reject(error);
+      });
       if (options.chunked) {
         const bytes = Buffer.from(body);
         for (let offset = 0; offset < bytes.length; offset += 4096)
@@ -143,13 +154,25 @@ describe('controlled HTTP full-envelope admission', () => {
   it('authenticates before oversized-data CAS or handlers', async () => {
     const store = vi.fn();
     Object.assign(server, { cas: { store } });
-    const result = await request(INVOKE, JSON.stringify({ data: 'x'.repeat(70000) }), {
+    const result = await request(INVOKE, JSON.stringify({ data: 'x'.repeat(LIMIT + 1) }), {
       auth: false,
     });
     expect(result.status).toBe(401);
     expect(store).not.toHaveBeenCalled();
     expect(dispatch).not.toHaveBeenCalled();
   });
+
+  it.each([INVOKE, NATIVE])(
+    'delivers complete early rejection responses during repeated uploads to %s',
+    async route => {
+      for (let attempt = 0; attempt < 20; attempt++) {
+        const result = await request(route, ' '.repeat(LIMIT + 1));
+        expect(result.status).toBe(413);
+        expect(JSON.parse(result.body).error.code).toBe('PAYLOAD_TOO_LARGE');
+      }
+      expect(dispatch).not.toHaveBeenCalled();
+    }
+  );
 
   it('never lets an unauthenticated public endpoint create CAS content', async () => {
     const store = vi.fn();
