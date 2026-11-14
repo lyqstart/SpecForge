@@ -169,3 +169,17 @@ Object 仅可作为无别名、无遮蔽的直接 Object.keys(record) 接收者�
 v3 使用真实词法声明区分局部变量名称与宿主属性名：例如局部 before/after 不等于 node:test 钩子。危险属性访问、对象键与宿主标识符仍拒绝；node:test 仅允许精确 const 解构 test 及直接同步、无参数、无选项的测试回调，不能借局部别名引入其他测试宿主成员。旧 v1/v2 不因该区分改变行为。
 
 v3 首期源码图仅包含 .cjs；动态 import、ESM 声明/导出及计时组合继续拒绝。对象简写同时是值引用和键声明，不能把简写包装视为未逃逸；解构赋值、闭包写入和循环绑定改写均纳入完整引用检查。
+
+## D27 有限冻结 UTF-8 数据读取合同
+
+AUTHORITY=SPS §9.2.8 / Registry D27
+COMMAND_CONTRACT=readonly-node-command/v4
+SEMANTIC_PROOF=single-process-frozen-utf8-read/v1
+
+仅 node -e 封闭同步语法。const fs 绑定字面量 require('fs'/'node:fs') 只能被直接 readFileSync(规范相对字面量, 'utf8') 消费；字符串字面量/读取结果、字符串 includes/连接、! 与 &&/||、if/else、有限字符串数组 const for-of、直接 console.log/error 和整数 0–255 process.exit 可组合。不支持任何赋值、可选访问、函数、别名、解构、对象、反射、其他宿主接口或动态路径。完整语法树逐节点检查；未访问或无法证明的语法不得默许。原代码不改写。
+
+Runtime 在 captureVerificationAuthority 后按其文件哈希重新读取已批准 Task 和 governance_scope，校验 scope 的 schema_version、WI、PSV、frozen_at 与具体 allowed_write_files。白名单为所有已批准 Task 的 allowed_write_files 与冻结 scope 具体文件集合的精确交集，跨 Task 读取合法；缺失/漂移拒绝。白名单不作为工具参数或 plan 新字段，不改变旧计划 canonical 身份。v4 每次重编译均由该权威重新推导权限。
+
+数据路径使用现有规范相对路径判据并拒绝治理/Git/依赖和私有凭据路径；只有精确可用路径、严格 UTF-8 普通文件可读取。原有物理防链接/身份、2048 文件/合计 16MiB 和固定原生预算保持。数据文件不进入 JS AST；全部字面量边须与 semanticProof.inputHashes、source.files、冻结复制清单完全对应。Runtime assertFresh 为 Report/Evidence/Gate/Formal Version/Close 提供共同复核；版本/规则/kind 必须严格配对。旧 v1/v2/v3、计时及静态谓词不因 v4 重标或放宽。
+
+先独立合成正例、真实非零退出/stderr、权限/路径/词法/编码/预算攻击与旧版回归，再完成完整本地、三平台发行、正式安装和真实 OpenCode LPAC 验收及取消恢复。原业务命令只在原 WI 合法阶段运行，不得用普通宿主执行或合成结果冒充业务通过。新合同不宣称实现已验收。

@@ -4,7 +4,7 @@
 >
 > Specification ID: SPS-1.0
 >
-> Product release version: 1.0.33
+> Product release version: 1.0.34
 >
 > Product version epoch: 1
 >
@@ -766,6 +766,16 @@ filesystem 计划必须绑定原 WI/PSV、原始 scope/baseline 哈希、支持�
 旧 v1/v2 有效声明与记录保持原身份及验证语义；当前 v3 不承接计时/新键组合。原命令和源字节不重写，实际执行仍使用固定 Node 与原隔离配置。Runtime、Report、Evidence、Gate、Formal Version、Close 使用相同严格版本配对、重新编译与新鲜度判据。安全拒绝诊断须在正式 detached 部署可获取，仅允许有界阶段与原因枚举，不回显源、路径、堆栈、任意异常或提供方内容。
 
 先完成合同、实现、正反例与完整三平台回归/发行、官方安装和真实 OpenCode 专业工具 LPAC 验收，再部署并从原 WI 的真实断点继续；不重放已成功恢复或把原业务未执行证据记为通过。Verifier 指令须与 §6.6 的既有原始观测产物所有权一致，Runtime 私有执行回执仍不属于 Agent 写入面。
+
+### 9.2.8 有限冻结 UTF-8 数据读取（D27）
+
+产品负责人批准在 D23–D26 的原隔离、权限、真实 owner 和冻结源链中增加有限数据读取。新增 readonly-node-command/v4 严格配对 single-process-frozen-utf8-read/v1，仅接受 node -e 的封闭同步语法：const 绑定字面量 require('fs') 或 require('node:fs')，其引用仅限直接 readFileSync(字面量规范相对路径, 'utf8')；字符串常量与读取结果、有限字符串数组的 const for-of、includes、布尔条件、字符串连接、直接 console.log/error 和字面量 process.exit。未知语法、动态路径、解构、别名、重绑定、逃逸、反射、其他 fs API 和通用宿主对象均拒绝。
+
+Runtime 从当前审批绑定的完整 Task 文件集合与同 WI/PSV 的冻结 governance_scope.allowed_write_files 取交集，形成数据白名单；允许同 WI 跨 Task 的已批准文件读取，不接受调用者提供权限。仅完整、严格 UTF-8 普通文件可进入数据图，路径必须规范且精确匹配；治理、Git、依赖、用户私有路径、设备、大小写别名、链接、reparse、多硬链接、特殊文件、缺失及超预算均拒绝。数据与 JavaScript 源分别证明，不能把文档当代码解析或跳过物理身份。数据边与原始字节哈希进入现有 Git/filesystem 源身份、plan、冻结复制清单及执行前后新鲜度检查；应用只能读取 owner 的冻结副本。
+
+原命令、Task、源字节及旧 v1/v2/v3 canonical 身份保持不变。Runtime、Report、Evidence、Gate、Formal Version、Close 共同严格校验 v4 配对并根据同一权威白名单和冻结字节重新证明。任何混版、漏绑定、漂移或未知结果均拒绝，不生成 passed。固定 Node、LPAC、registryRead、Job1、无写盘/网络/子进程及全部现有预算保持不变；不增加工具、状态边、角色、代码许可或 Candidate 批准。
+
+完成正反例、攻击/陈旧/混版回归、旧版本回归、完整本地及三平台发行验收、正式安装一致性与真实 OpenCode 专业工具的 LPAC 数值正反例和恢复验收后，才能恢复原 WI 的真实执行断点。编译成功、合成材料或传输成功不构成原业务证据。公开发布另需用户授权，不包含在本次有限语义裁决中。
 
 ## 9.3 HardStop
 

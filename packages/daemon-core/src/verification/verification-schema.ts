@@ -315,9 +315,12 @@ export function validateVerificationPlan(value: unknown): asserts value is Verif
     'semanticProof',
   ]);
   verificationRequire(
-    ['readonly-node-command/v1', 'readonly-node-command/v2', 'readonly-node-command/v3'].includes(
-      String(c.contract)
-    ) &&
+    [
+      'readonly-node-command/v1',
+      'readonly-node-command/v2',
+      'readonly-node-command/v3',
+      'readonly-node-command/v4',
+    ].includes(String(c.contract)) &&
       c.original === a.command &&
       ['node-test-file', 'node-inline'].includes(String(c.kind)) &&
       Array.isArray(c.argv) &&
@@ -345,7 +348,10 @@ export function validateVerificationPlan(value: unknown): asserts value is Verif
         c.kind === 'node-test-file' &&
         typeof c.entry === 'string' &&
         c.entry.endsWith('.cjs') &&
-        semantic.rule === 'single-file-finite-local-keys/v1'),
+        semantic.rule === 'single-file-finite-local-keys/v1') ||
+      (c.contract === 'readonly-node-command/v4' &&
+        c.kind === 'node-inline' &&
+        semantic.rule === 'single-process-frozen-utf8-read/v1'),
     'SEMANTIC_PROOF_INVALID'
   );
   for (const [name, identity] of Object.entries(verificationRecord(semantic.inputHashes))) {
@@ -355,6 +361,14 @@ export function validateVerificationPlan(value: unknown): asserts value is Verif
       (s.files as Array<Record<string, unknown>>).some(
         f => f.path === name && f.sha256 === identity
       ),
+      'PROOF_INPUT_MISMATCH'
+    );
+  }
+  if (c.contract === 'readonly-node-command/v4') {
+    const names = Object.keys(verificationRecord(semantic.inputHashes)).sort();
+    verificationRequire(
+      names.length > 0 &&
+        json(names) === json((s.files as Array<Record<string, unknown>>).map(f => f.path).sort()),
       'PROOF_INPUT_MISMATCH'
     );
   }

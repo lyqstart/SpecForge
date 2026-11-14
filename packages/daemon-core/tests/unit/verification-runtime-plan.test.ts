@@ -53,6 +53,33 @@ async function fixture(){
 afterEach(async()=>{vi.restoreAllMocks();for(const root of roots.splice(0)){const full=path.resolve(root);if(path.dirname(full)!==path.resolve(os.tmpdir())||!path.basename(full).startsWith('sf-verification-runtime-unit-'))throw Error('UNSAFE_TEST_CLEANUP');await fs.rm(full,{recursive:true,force:true});}});
 
 describe('verification Runtime plan/permission owner (unit dependencies)',()=>{
+  it('binds v4 data to approved Task union intersected with frozen scope and rejects laundering and drift',async()=>{
+    const f=await fixture(), doc='docs/result.md', second='docs/other.md';
+    await write(path.join(f.project,doc),'synthetic result');await write(path.join(f.project,second),'synthetic other');
+    git(f.project,['add',doc,second]);git(f.project,['-c','user.name=Synthetic','-c','user.email=synthetic@localhost.invalid','commit','-q','-m','synthetic data']);
+    const command=`node -e "const fs=require('fs');const t=fs.readFileSync('${doc}','utf8');const d=fs.readFileSync('${second}','utf8');if(!t.includes('result')||!d.includes('other')){console.error('missing');process.exit(1)};console.log('ok')"`;
+    const taskFile=path.join(f.wiRoot,'candidates','tasks.md');
+    await write(taskFile,`### TASK-${wi}-001 First\n\n- **refs**: [DD-TEST-001, REQ-TEST-001]\n- **allowed_write_files**: [${doc}]\n- **verification_commands**:\n  - unit:\n    - \`${command}\`\n\n### TASK-${wi}-002 Second\n\n- **refs**: [DD-TEST-001, REQ-TEST-001]\n- **allowed_write_files**: [${second}]\n- **verification_commands**:\n  - unit:\n    - \`node -e "console.log('ok')"\`\n`);
+    const scope={schema_version:'1.0',work_item_id:wi,project_spec_version:'PSV-0002',active:false,frozen_at:new Date().toISOString(),allowed_write_files:[doc]};
+    await write(path.join(f.wiRoot,'governance_scope.json'),scope);
+    const decisionFile=path.join(f.wiRoot,'user_decision.json'),decision=JSON.parse(await fs.readFile(decisionFile,'utf8'));
+    decision.candidate_hash=await computeCandidateHash(f.wiRoot);await write(decisionFile,decision);
+    await expect(f.service.plan(f.args,f.context('utf8NoScope'))).rejects.toThrow('FROZEN_UTF8_PROOF');
+    scope.allowed_write_files.push(second);await write(path.join(f.wiRoot,'governance_scope.json'),scope);
+    const result=await f.service.plan(f.args,f.context('utf8Plan'));
+    expect(result.success).toBe(true);const plan=await f.service.getPlan(result.plan_id as string);
+    expect(plan.command.contract).toBe('readonly-node-command/v4');expect(plan.source.files.map(s=>s.path).sort()).toEqual([second,doc].sort());
+    expect(()=>validateVerificationPlan(plan)).not.toThrow();
+    const missing=structuredClone(plan);delete missing.command.semanticProof.inputHashes[doc];
+    expect(()=>validateVerificationPlan(missing)).toThrow('PROOF_INPUT_MISMATCH');
+    for(const [contract,rule] of [['readonly-node-command/v3','single-process-frozen-utf8-read/v1'],['readonly-node-command/v4','single-file-finite-local-keys/v1']]){
+      const forged=structuredClone(plan);Object.assign(forged.command,{contract});Object.assign(forged.command.semanticProof,{rule});expect(()=>validateVerificationPlan(forged)).toThrow();
+    }
+    f.setRole('sf-verifier');const prepared=await f.service.run({action:'prepare',work_item_id:wi,plan_id:result.plan_id},f.context('utf8Prepare'));
+    expect(prepared.application_started).toBe(false);
+    await fs.writeFile(path.join(f.project,second),'synthetic OTHER');
+    await expect(f.service.run({action:'run',work_item_id:wi,attempt_record_id:prepared.attempt_record_id},f.context('utf8Drift'))).rejects.toThrow('SOURCE_CHANGED');
+  });
   it('freezes v3 source identity and rejects version laundering and source drift before execution',async()=>{
     const f=await fixture();
     await write(path.join(f.project,'src','finite.cjs'),'module.exports={sum};function sum(a,b){return a+b;}');

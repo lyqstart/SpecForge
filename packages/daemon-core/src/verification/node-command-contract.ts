@@ -3,6 +3,13 @@ import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
 /** Finite Task command grammar and conservative proof for single-file isolation normalization. */
 import path from 'node:path';
 import {
+  UTF8_COMMAND_CONTRACT,
+  UTF8_PROOF_RULE,
+  hasFrozenUtf8Dependency,
+  proveFrozenUtf8,
+  compileFrozenUtf8,
+} from './frozen-utf8-proof';
+import {
   FINITE_COMMAND_CONTRACT,
   FINITE_PROOF_RULE,
   proveFiniteSource,
@@ -32,7 +39,8 @@ export interface NodeCommandPlan {
   contract:
     | typeof NODE_COMMAND_CONTRACT
     | typeof MONOTONIC_COMMAND_CONTRACT
-    | typeof FINITE_COMMAND_CONTRACT;
+    | typeof FINITE_COMMAND_CONTRACT
+    | typeof UTF8_COMMAND_CONTRACT;
   original: string;
   kind: 'node-test-file' | 'node-inline';
   argv: string[];
@@ -43,7 +51,8 @@ export interface NodeCommandPlan {
       | 'single-file-no-host-observation/v1'
       | 'finite-posix-readonly-predicate/v1'
       | typeof MONOTONIC_PROOF_RULE
-      | typeof FINITE_PROOF_RULE;
+      | typeof FINITE_PROOF_RULE
+      | typeof UTF8_PROOF_RULE;
     inputHashes: Record<string, string>;
   };
 }
@@ -199,12 +208,15 @@ function sourcePath(value: string): string {
 
 export function compileNodeCommand(
   original: string,
-  sources: readonly FrozenNodeSource[]
+  sources: readonly FrozenNodeSource[],
+  approvedDataPaths: readonly string[] = []
 ): NodeCommandPlan {
   if (isStaticTaskDeclaration(original)) return compileStaticTaskCommand(original, sources);
   const argv = tokenizeNodeDeclaration(original);
   if (argv[0] !== 'node' || argv.length !== 3 || !['--test', '-e'].includes(argv[1]))
     fail('FIXED_NODE_GRAMMAR');
+  if (argv[1] === '-e' && hasFrozenUtf8Dependency(argv[2]))
+    return compileFrozenUtf8(original, argv[2], sources, approvedDataPaths);
   const kind = argv[1] === '--test' ? 'node-test-file' : 'node-inline';
   const entry = kind === 'node-test-file' ? sourcePath(argv[2]) : null;
   const inlineSource = kind === 'node-inline' ? argv[2] : null;
@@ -467,7 +479,8 @@ export async function collectNodeCommandInputs(
   projectRoot: string,
   original: string,
   trackedPaths: readonly string[],
-  readSource: (file: string, limit?: number) => Promise<Buffer> = readVerificationFile
+  readSource: (file: string, limit?: number) => Promise<Buffer> = readVerificationFile,
+  approvedDataPaths: readonly string[] = []
 ): Promise<{
   sources: FrozenNodeSource[];
   inputPaths: string[];
@@ -480,6 +493,21 @@ export async function collectNodeCommandInputs(
   const metadata = new Set<string>();
   if (args.length !== 3 || args[0] !== 'node' || !['--test', '-e'].includes(args[1]))
     fail('FIXED_NODE_GRAMMAR');
+  if (args[1] === '-e' && hasFrozenUtf8Dependency(args[2])) {
+    const inputPaths = proveFrozenUtf8(args[2], approvedDataPaths);
+    // Prove the entire graph before reading even its first byte.
+    if (inputPaths.some(name => !tracked.has(name))) fail('INPUT_NOT_TRACKED_DATA');
+    let bytes = 0;
+    for (const name of inputPaths) {
+      const raw = await readSource(path.join(projectRoot, name), 16 * 1024 * 1024);
+      bytes += raw.length;
+      const content = raw.toString('utf8');
+      if (bytes > 16 * 1024 * 1024 || !Buffer.from(content).equals(raw))
+        fail('SOURCE_ENCODING_OR_BUDGET');
+      found.set(name, { path: name, content, sha256: hash(content) });
+    }
+    return { sources: [...found.values()], inputPaths };
+  }
   async function inspect(name: string, inline?: string): Promise<void> {
     if (found.has(name)) return;
     let text = inline;

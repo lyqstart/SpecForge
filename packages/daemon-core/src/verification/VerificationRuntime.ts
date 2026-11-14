@@ -9,6 +9,7 @@ import type {
 import type { ToolDeps, ToolInvokeRequest } from '../tools/ToolDispatcher';
 import { captureVerificationAuthority, type VerificationTaskSelector } from './authority-snapshot';
 import { collectNodeCommandInputs, compileNodeCommand } from './node-command-contract';
+import { approvedFrozenDataPaths } from './frozen-data-authority';
 import {
   VerificationOwnerStore,
   assertVerificationPath,
@@ -411,20 +412,23 @@ export class VerificationRuntime {
     requireFact(source.identity === plan.source.identity, 'SOURCE_CHANGED');
     requireFact(json(await this.assets()) === json(plan.assets), 'ASSETS_CHANGED');
     const inputs = await this.readSourceInputs(plan);
+    const approvedDataPaths = await approvedFrozenDataPaths(plan.projectRoot, authority);
     const selected = await collectNodeCommandInputs(
       plan.projectRoot,
       plan.command.original,
       'availablePaths' in source ? source.availablePaths : source.trackedPaths,
       mode === 'filesystem'
         ? filesystemSourceReader(plan.projectRoot, this.store.root, plan.assets)
-        : undefined
+        : undefined,
+      approvedDataPaths
     );
     requireFact(
       json(selected.inputPaths) === json(plan.source.files.map(f => f.path).sort()),
       'INPUT_GRAPH_CHANGED'
     );
     requireFact(
-      json(compileNodeCommand(plan.command.original, selected.sources)) === json(plan.command),
+      json(compileNodeCommand(plan.command.original, selected.sources, approvedDataPaths)) ===
+        json(plan.command),
       'COMMAND_PROOF_CHANGED'
     );
     // Read the frozen input bytes too; authenticated plan data cannot excuse a changed private copy.
@@ -522,16 +526,18 @@ export class VerificationRuntime {
           ? await captureFilesystemSource(root, authority, [], this.store.root, filesystemAssets)
           : await captureVerificationSource(root, []);
         diagnosticStage = 'input_graph';
+        const approvedDataPaths = await approvedFrozenDataPaths(root, authority);
         const selected = await collectNodeCommandInputs(
           root,
           authority.command,
           'availablePaths' in inventory ? inventory.availablePaths : inventory.trackedPaths,
           filesystemAssets
             ? filesystemSourceReader(root, this.store.root, filesystemAssets)
-            : undefined
+            : undefined,
+          approvedDataPaths
         );
         diagnosticStage = 'command_proof';
-        const command = compileNodeCommand(authority.command, selected.sources);
+        const command = compileNodeCommand(authority.command, selected.sources, approvedDataPaths);
         diagnosticStage = 'source_inputs';
         const sourceBinding = filesystemAssets
           ? {
