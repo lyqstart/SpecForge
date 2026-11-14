@@ -146,7 +146,7 @@ export function proveFrozenUtf8(source: string, approvedPaths: readonly string[]
     if (ts.isVariableStatement(node)) {
       if (
         node.modifiers?.length ||
-        (node.declarationList.flags & ts.NodeFlags.BlockScoped) !== ts.NodeFlags.Const
+        (node.declarationList.flags & ts.NodeFlags.BlockScoped) !== Number(ts.NodeFlags.Const)
       )
         fail();
       for (const declaration of node.declarationList.declarations) {
@@ -164,7 +164,7 @@ export function proveFrozenUtf8(source: string, approvedPaths: readonly string[]
             init.typeArguments ||
             init.arguments.length !== 1 ||
             !ts.isStringLiteral(init.arguments[0]) ||
-            !['fs', 'node:fs'].includes((init.arguments[0] as ts.StringLiteral).text)
+            !['fs', 'node:fs'].includes(init.arguments[0].text)
           )
             fail();
           bind(declaration.name, 'fs', scope);
@@ -181,7 +181,7 @@ export function proveFrozenUtf8(source: string, approvedPaths: readonly string[]
             args.length !== 2 ||
             !ts.isStringLiteral(args[0]) ||
             !ts.isStringLiteral(args[1]) ||
-            (args[1] as ts.StringLiteral).text !== 'utf8'
+            args[1].text !== 'utf8'
           )
             fail();
           const name = (args[0] as ts.StringLiteral).text;
@@ -200,7 +200,7 @@ export function proveFrozenUtf8(source: string, approvedPaths: readonly string[]
       if (
         node.awaitModifier ||
         !ts.isVariableDeclarationList(node.initializer) ||
-        (node.initializer.flags & ts.NodeFlags.BlockScoped) !== ts.NodeFlags.Const ||
+        (node.initializer.flags & ts.NodeFlags.BlockScoped) !== Number(ts.NodeFlags.Const) ||
         node.initializer.declarations.length !== 1 ||
         !ts.isArrayLiteralExpression(node.expression) ||
         node.expression.elements.length > 2048 ||
