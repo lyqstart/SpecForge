@@ -1049,10 +1049,7 @@ async function loadProjectModel(
     }
   }
 
-  const designOwners = new Map<string, string>();
-  for (const module of modules) {
-    for (const designId of module.design_ids) designOwners.set(designId, module.module_code);
-  }
+  const designOwners = designOwnerMap({ modules });
   traceIssues.push(
     ...validateGovernanceTraceSemantics({
       edges: trace,
@@ -1169,10 +1166,17 @@ function allIds(model: ProjectModel): Set<string> {
   ]);
 }
 
-function designOwnerMap(model: ProjectModel): Map<string, string> {
+function designOwnerMap(model: Pick<ProjectModel, 'modules'>): Map<string, string> {
   const owners = new Map<string, string>();
   for (const module of model.modules) {
-    for (const designId of module.design_ids) owners.set(designId, module.module_code);
+    for (const designId of module.design_ids) {
+      // A foreign DD reference does not transfer its canonical module ownership.
+      // Require the owning module's own design to contain the ID; a reference in
+      // another module cannot create an otherwise missing governance endpoint.
+      if (extractModuleFromDdId(designId) === module.module_code) {
+        owners.set(designId, module.module_code);
+      }
+    }
   }
   return owners;
 }

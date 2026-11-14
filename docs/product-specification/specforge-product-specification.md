@@ -4,7 +4,7 @@
 >
 > Specification ID: SPS-1.0
 >
-> Product release version: 1.0.34
+> Product release version: 1.0.35
 >
 > Product version epoch: 1
 >
@@ -359,6 +359,7 @@ Project Spec Core 的结构与版本必须保持原子一致：
 - `spec_manifest.json.project_spec_version` 是当前 Project Spec Version 的权威值；Core 中任何复制该字段的结构化文件都必须在同一次 Atomic Spec Merge 中同步到相同值。
 - `extension_registry.json` 存在时，其 `project_spec_version` 必须与 `spec_manifest.json` 完全一致；Post-Merge Gate、Formal Version Gate 与 Close Gate 必须失败关闭版本缺失或不一致，不能把成功的 merge report 当作一致性的替代证据。
 - Architecture ID 必须使用 `ARCH-<DOMAIN>-<NNN>`，Data ID 必须使用 `DATA-<DOMAIN>-<NNN>`，Module Design ID 必须使用 `DD-<MODULE_CODE>-<NNN>`；其中 `<DOMAIN>` / `<MODULE_CODE>` 必须为 2 至 12 位、以大写字母开头且其余字符只允许大写字母或数字，`<NNN>` 为三位十进制序号。
+- Module Design 的归属由规范 ID 中的 Module 标识与该 Module 自身 Design 中的对象共同确认；其他 Module 文中的引用不得转移归属，也不得补出所属 Module 中缺失的对象。模块枚举顺序不得改变 Contract consumer、Trace 合法性或模块投影的归属判断；真实跨 Module 的 Internal Contract 消费仍必须拒绝。
 - 一旦 Architecture、Data Model、Module Definition 或相应 Candidate 声明了正式治理对象，格式错误、对象缺失或治理闭包不完整必须失败关闭；不得因解析结果为空而降级到 compatibility mode。
 - compatibility mode 只适用于尚未声明或合并正式 Architecture/Data/Module 治理对象的历史项目；它不能用于掩盖已存在但无法解析的正式规格。
 
