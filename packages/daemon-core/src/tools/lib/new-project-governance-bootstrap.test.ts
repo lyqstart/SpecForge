@@ -75,6 +75,7 @@ describe('new project governance bootstrap', () => {
       workflow_type: 'feature',
       workflow_path: 'requirement_change_path',
       status: 'triggered',
+      classification: { requirement_changed: true },
     });
     await writeJson(path.join(workItemDir, 'candidate_manifest.json'), {
       schema_version: '1.0',
@@ -107,6 +108,11 @@ describe('new project governance bootstrap', () => {
       return result;
     }
 
+    await writeCandidate(
+      'candidate_requirements',
+      '## REQ-CORE-001 Establish governance\nUser Story: establish the project boundary.\n### Acceptance Criteria\n- AC-CORE-001-1 [Ubiquitous]: THE SYSTEM SHALL retain the declared CORE boundary.\n',
+      'sf-requirements'
+    );
     await writeCandidate(
       'candidate_architecture',
       '# Project Architecture\n\nARCH-CORE-001 defines the initial project boundary.\n'
@@ -198,6 +204,7 @@ describe('new project governance bootstrap', () => {
         return entry.target_path;
       })
     );
+    expect(targets).toContain('.specforge/project/modules/CORE/requirements.md');
     expect(targets).toContain('.specforge/project/architecture.md');
     expect(targets).toContain('.specforge/project/data_model.md');
     expect(targets).toContain('.specforge/project/modules/CORE/module.json');
@@ -208,6 +215,10 @@ describe('new project governance bootstrap', () => {
 
     const projectDir = path.join(projectRoot, '.specforge', 'project');
     const candidateRoot = path.join(workItemDir, 'candidates', 'project');
+    await fs.copyFile(
+      path.join(candidateRoot, 'modules', 'CORE', 'requirements.candidate.md'),
+      path.join(projectDir, 'modules', 'CORE', 'requirements.md')
+    );
     await fs.copyFile(
       path.join(candidateRoot, 'architecture.candidate.md'),
       path.join(projectDir, 'architecture.md')

@@ -68,45 +68,55 @@ async function makeProject(): Promise<{
   await mkdir(join(workItemDir, 'candidates', 'project', 'modules', 'CORE'), { recursive: true });
   await mkdir(projectDir, { recursive: true });
   const specManifestBytes = Buffer.from(
-    JSON.stringify({ schema_version: '1.0', project_spec_version: 'PSV-0002' }, null, 2) + '\n',
+    JSON.stringify({ schema_version: '1.0', project_spec_version: 'PSV-0002' }, null, 2) + '\n'
   );
   await writeFile(join(projectDir, 'spec_manifest.json'), specManifestBytes);
   await writeFile(
     join(workItemDir, 'candidate_manifest.json'),
-    JSON.stringify({
-      schema_version: '1.0',
-      work_item_id: 'WI-0001',
-      workflow_path: 'requirement_change_path',
-      base_spec_version: 'PSV-0002',
-      project_spec_precondition_sha256: hash(specManifestBytes),
-      merge_required: true,
-      entries: [{
-        type: 'requirements',
-        candidate_path: 'candidates/project/modules/CORE/requirements.candidate.md',
-        target_path: '.specforge/project/modules/CORE/requirements.md',
-        operation: 'replace',
-      }],
-    }, null, 2) + '\n',
+    JSON.stringify(
+      {
+        schema_version: '1.0',
+        work_item_id: 'WI-0001',
+        workflow_path: 'requirement_change_path',
+        base_spec_version: 'PSV-0002',
+        project_spec_precondition_sha256: hash(specManifestBytes),
+        merge_required: true,
+        entries: [
+          {
+            type: 'requirements',
+            candidate_path: 'candidates/project/modules/CORE/requirements.candidate.md',
+            target_path: '.specforge/project/modules/CORE/requirements.md',
+            operation: 'replace',
+          },
+        ],
+      },
+      null,
+      2
+    ) + '\n'
   );
   await writeFile(join(workItemDir, 'change_classification.md'), '# Classification\n');
   await writeFile(join(workItemDir, 'impact_analysis.md'), '# Impact\n');
   await writeFile(join(workItemDir, 'trigger_result.json'), '{}\n');
   await writeFile(
     join(workItemDir, 'implementation_baseline.json'),
-    JSON.stringify({
-      schema_version: '1.0',
-      work_item_id: 'WI-0001',
-      captured_at: '2026-10-15T00:00:00.000Z',
-      snapshot_id: hash('empty implementation baseline'),
-      planned_code_paths: [],
-      current_file_count: 0,
-      all_planned_paths_missing: true,
-      entries: [],
-    }, null, 2) + '\n',
+    JSON.stringify(
+      {
+        schema_version: '1.0',
+        work_item_id: 'WI-0001',
+        captured_at: '2026-10-15T00:00:00.000Z',
+        snapshot_id: hash('empty implementation baseline'),
+        planned_code_paths: [],
+        current_file_count: 0,
+        all_planned_paths_missing: true,
+        entries: [],
+      },
+      null,
+      2
+    ) + '\n'
   );
   await writeFile(
     join(workItemDir, 'candidates', 'project', 'modules', 'CORE', 'requirements.candidate.md'),
-    '# Requirements\n',
+    '# Requirements\n'
   );
   return { projectRoot, workItemDir, specManifestBytes };
 }
@@ -130,7 +140,7 @@ async function writePassingAttempt(input: {
     'project',
     'modules',
     'CORE',
-    'requirements.candidate.md',
+    'requirements.candidate.md'
   );
   const effectiveSealPaths = input.omitCandidateFile
     ? sealPaths.filter(value => value !== candidatePath)
@@ -139,33 +149,41 @@ async function writePassingAttempt(input: {
     input.projectRoot,
     [report],
     process.platform,
-    effectiveSealPaths,
+    effectiveSealPaths
   );
   await writeFile(
     join(attemptPath, 'attempt-result.json'),
-    JSON.stringify({
-      schema_version: '1.0',
-      attempt_id: attemptId,
-      work_item_id: 'WI-0001',
-      source: 'gate_run',
-      started_at: '2026-10-15T00:00:00.000Z',
-      completed_at: '2026-10-15T00:00:01.000Z',
-      requested_gate_ids: ['candidate_manifest_gate'],
-      current_report_gate_ids: ['candidate_manifest_gate'],
-      summary_report_gate_ids: ['candidate_manifest_gate'],
-      summary_status: 'passed',
-      input_snapshot: 'input-snapshot.json',
-    }, null, 2),
+    JSON.stringify(
+      {
+        schema_version: '1.0',
+        attempt_id: attemptId,
+        work_item_id: 'WI-0001',
+        source: 'gate_run',
+        started_at: '2026-10-15T00:00:00.000Z',
+        completed_at: '2026-10-15T00:00:01.000Z',
+        requested_gate_ids: ['candidate_manifest_gate'],
+        current_report_gate_ids: ['candidate_manifest_gate'],
+        summary_report_gate_ids: ['candidate_manifest_gate'],
+        summary_status: 'passed',
+        input_snapshot: 'input-snapshot.json',
+      },
+      null,
+      2
+    )
   );
   await writeFile(
     join(attemptPath, 'input-snapshot.json'),
-    JSON.stringify({
-      schema_version: '1.0',
-      attempt_id: attemptId,
-      work_item_id: 'WI-0001',
-      captured_at: '2026-10-15T00:00:01.000Z',
-      inputs: snapshot,
-    }, null, 2),
+    JSON.stringify(
+      {
+        schema_version: '1.0',
+        attempt_id: attemptId,
+        work_item_id: 'WI-0001',
+        captured_at: '2026-10-15T00:00:01.000Z',
+        inputs: snapshot,
+      },
+      null,
+      2
+    )
   );
   return hash(summary);
 }
@@ -196,7 +214,7 @@ describe('Candidate generation integrity', () => {
       'project',
       'modules',
       'CORE',
-      'requirements.candidate.md',
+      'requirements.candidate.md'
     );
     await writeFile(
       requirementsPath,
@@ -207,11 +225,11 @@ describe('Candidate generation integrity', () => {
         '### Acceptance Criteria',
         '- board visible',
         '',
-      ].join('\n'),
+      ].join('\n')
     );
     await writeFile(
       join(workItemDir, 'requirements_delta.md'),
-      '# Delta\n\nReferences the noncanonical identifier REQ-CORE-0001.\n',
+      '# Delta\n\nReferences the noncanonical identifier REQ-CORE-0001.\n'
     );
 
     const artifacts = await resolveWorkItemSpecArtifacts({
@@ -219,16 +237,32 @@ describe('Candidate generation integrity', () => {
       workItemId: 'WI-0001',
       kind: 'requirements',
     });
-    const lowerPath=join(workItemDir,'candidates','project','modules','core','requirements.candidate.md');
-    const lowerExists=await access(lowerPath).then(()=>true,(error:NodeJS.ErrnoException)=>{if(error.code==='ENOENT')return false;throw error;});
-    const distinctPosixAlias=process.platform!=='win32'&&lowerExists;
-    expect(artifacts.map(artifact=>artifact.path)).toEqual(distinctPosixAlias?[requirementsPath,lowerPath]:[requirementsPath]);
+    const lowerPath = join(
+      workItemDir,
+      'candidates',
+      'project',
+      'modules',
+      'core',
+      'requirements.candidate.md'
+    );
+    const lowerExists = await access(lowerPath).then(
+      () => true,
+      (error: NodeJS.ErrnoException) => {
+        if (error.code === 'ENOENT') return false;
+        throw error;
+      }
+    );
+    const distinctPosixAlias = process.platform !== 'win32' && lowerExists;
+    expect(artifacts.map(artifact => artifact.path)).toEqual(
+      distinctPosixAlias ? [requirementsPath, lowerPath] : [requirementsPath]
+    );
 
     const result = await validateCandidateRequirementReferences({
       workItemDir,
       requirementArtifacts: artifacts,
     });
-    if(distinctPosixAlias)expect(result.errors.join('\n')).toContain('REQUIREMENT_DEFINITION_DUPLICATE');
+    if (distinctPosixAlias)
+      expect(result.errors.join('\n')).toContain('REQUIREMENT_DEFINITION_DUPLICATE');
     else expect(result.errors.join('\n')).not.toContain('REQUIREMENT_DEFINITION_DUPLICATE');
     expect(result.errors.join('\n')).toContain('REQUIREMENT_REFERENCE_NONCANONICAL');
     expect(result.errors.join('\n')).toContain('REQ-CORE-0001');
@@ -253,9 +287,9 @@ describe('Candidate generation integrity', () => {
       });
       expect(artifacts).toHaveLength(1);
       expect(artifacts[0].path.replace(/\\/g, '/')).toContain(
-        'candidates/project/modules/CORE/requirements.candidate.md',
+        'candidates/project/modules/CORE/requirements.candidate.md'
       );
-    },
+    }
   );
 
   it('binds Candidate baseline to current Project Spec version and raw bytes', async () => {
@@ -288,7 +322,7 @@ describe('Candidate generation integrity', () => {
 
     await writeFile(
       join(workItemDir, 'candidates', 'project', 'modules', 'CORE', 'requirements.candidate.md'),
-      '# Changed after Gate\n',
+      '# Changed after Gate\n'
     );
     const stale = await validatePassingCandidateGateAttempt({
       projectRoot,
@@ -355,10 +389,10 @@ describe('Candidate generation integrity', () => {
 
 | ID | Summary |
 | --- | --- |
-| REQ-CORE-0001 | board |
-| REQ-CORE-0002 | undo |
+| REQ-CORE-001 | board |
+| REQ-CORE-002 | undo |
 
-## REQ-CORE-0001 Board
+## REQ-CORE-001 Board
 
 User Story: render the board.
 
@@ -367,20 +401,22 @@ User Story: render the board.
 - The board is visible.
 `;
     expect(validateFormalRequirementBodies(incomplete)).toEqual([
-      'REQ-CORE-0001: requirement ID must use canonical REQ-<MODULE_CODE>-<NNN> format',
-      'REQ-CORE-0002: requirement ID must use canonical REQ-<MODULE_CODE>-<NNN> format',
-      'REQ-CORE-0002: formal requirement body missing',
+      'REQUIREMENT_REFERENCE_UNRESOLVED: REQ-CORE-002: formal requirement body missing or not unique',
     ]);
 
     const missingAcceptance = `# Requirements
 
-## REQ-CORE-0001 Board
+## REQ-CORE-001 Board
 
 User Story: render the board.
 `;
+    expect(
+      validateFormalRequirementBodies(incomplete.replaceAll('REQ-CORE-001', 'REQ-CORE-0001')).join(
+        '\n'
+      )
+    ).toContain('NONCANONICAL');
     expect(validateFormalRequirementBodies(missingAcceptance)).toEqual([
-      'REQ-CORE-0001: requirement ID must use canonical REQ-<MODULE_CODE>-<NNN> format',
-      'REQ-CORE-0001: acceptance criteria missing from formal requirement body',
+      'REQ-CORE-001: acceptance criteria missing from formal requirement body',
     ]);
   });
 
@@ -395,11 +431,11 @@ User Story: render the board.
       join(workItemDir, 'trigger_result.json'),
       JSON.stringify({
         impact_scope: { planned_code_paths: ['src/main.ts', 'src/new.ts'] },
-      }),
+      })
     );
     await writeFile(
       join(workItemDir, 'impact_analysis.md'),
-      '# Impact\n\n```json\n{"all_files_new":true}\n```\n',
+      '# Impact\n\n```json\n{"all_files_new":true}\n```\n'
     );
 
     const materialized = await materializeImplementationBaseline(projectRoot, 'WI-0001');
@@ -407,36 +443,42 @@ User Story: render the board.
     expect(materialized.baseline.entries[0].matched_files[0].path).toBe('src/main.ts');
     await writeFile(
       join(workItemDir, 'candidates', 'design.candidate.md'),
-      `implementation_baseline_id: ${materialized.baseline.snapshot_id}\n\n当前业务实现不存在。\n`,
+      `implementation_baseline_id: ${materialized.baseline.snapshot_id}\n\n当前业务实现不存在。\n`
     );
     await writeFile(
       join(workItemDir, 'candidates', 'tasks.md'),
-      `implementation_baseline_id: ${materialized.baseline.snapshot_id}\n\n- **Current Implementation**: none\n`,
+      `implementation_baseline_id: ${materialized.baseline.snapshot_id}\n\n- **Current Implementation**: none\n`
     );
 
-    const invalid = await validateImplementationTruthBeforeSeal({ projectRoot, workItemId: 'WI-0001' });
+    const invalid = await validateImplementationTruthBeforeSeal({
+      projectRoot,
+      workItemId: 'WI-0001',
+    });
     expect(invalid.valid).toBe(false);
     expect(invalid.errors.join('\n')).toContain('IMPLEMENTATION_BASELINE_CONTRADICTION');
     expect(invalid.errors.join('\n')).toContain('all_files_new');
 
     await writeFile(
       join(workItemDir, 'impact_analysis.md'),
-      '# Impact\n\n```json\n{"all_files_new":false}\n```\n',
+      '# Impact\n\n```json\n{"all_files_new":false}\n```\n'
     );
     await writeFile(
       join(workItemDir, 'candidates', 'design.candidate.md'),
-      `implementation_baseline_id: ${materialized.baseline.snapshot_id}\n\n现有入口位于 src/main.ts。\n`,
+      `implementation_baseline_id: ${materialized.baseline.snapshot_id}\n\n现有入口位于 src/main.ts。\n`
     );
     await writeFile(
       join(workItemDir, 'candidates', 'tasks.md'),
-      `implementation_baseline_id: ${materialized.baseline.snapshot_id}\n\n- **Current Implementation**: src/main.ts 已存在，执行修改。\n`,
+      `implementation_baseline_id: ${materialized.baseline.snapshot_id}\n\n- **Current Implementation**: src/main.ts 已存在，执行修改。\n`
     );
     expect(
-      await validateImplementationTruthBeforeSeal({ projectRoot, workItemId: 'WI-0001' }),
+      await validateImplementationTruthBeforeSeal({ projectRoot, workItemId: 'WI-0001' })
     ).toMatchObject({ valid: true, errors: [] });
 
     await writeFile(join(projectRoot, 'src', 'main.ts'), 'export const value = 2;\n');
-    const stale = await validateImplementationTruthBeforeSeal({ projectRoot, workItemId: 'WI-0001' });
+    const stale = await validateImplementationTruthBeforeSeal({
+      projectRoot,
+      workItemId: 'WI-0001',
+    });
     expect(stale.valid).toBe(false);
     expect(stale.errors.join('\n')).toContain('IMPLEMENTATION_BASELINE_STALE');
   });
@@ -459,7 +501,7 @@ User Story: render the board.
     await writeFile(requirementsPath, requirementsContent);
     await writeFile(
       join(candidatesDir, 'design.candidate.md'),
-      '# Design\n\nRefs: REQ-CORE-001, REQ-CORE-002, REQ-CORE-0001\n',
+      '# Design\n\nRefs: REQ-CORE-001, REQ-CORE-002, REQ-CORE-0001\n'
     );
 
     const invalid = await validateCandidateRequirementReferences({
@@ -472,15 +514,12 @@ User Story: render the board.
     expect(invalid.errors.join('\n')).toContain('REQUIREMENT_REFERENCE_NONCANONICAL');
     expect(invalid.errors.join('\n')).toContain('REQ-CORE-0001');
 
-    await writeFile(
-      join(candidatesDir, 'design.candidate.md'),
-      '# Design\n\nRefs: REQ-CORE-001\n',
-    );
+    await writeFile(join(candidatesDir, 'design.candidate.md'), '# Design\n\nRefs: REQ-CORE-001\n');
     expect(
       await validateCandidateRequirementReferences({
         workItemDir,
         requirementArtifacts: [{ path: requirementsPath, content: requirementsContent }],
-      }),
+      })
     ).toMatchObject({ valid: true, errors: [], declared_requirement_ids: ['REQ-CORE-001'] });
   });
 });

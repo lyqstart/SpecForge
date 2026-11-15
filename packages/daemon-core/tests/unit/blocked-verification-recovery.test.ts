@@ -31,6 +31,11 @@ async function fixture(prior = 'verification_running') {
   const project = await fs.mkdtemp(path.join(os.tmpdir(), 'sf-blocked-verification-'));
   roots.push(project);
   await ensureProjectInit(project, 'Synthetic recovery unit fixture');
+  // This recovery fixture claims completed upstream governance, so seed its formal requirement.
+  await write(
+    path.join(project, '.specforge/project/modules/CORE/requirements.md'),
+    '## REQ-CORE-001 Verify the value\nUser Story: read the approved value.\n### Acceptance Criteria\n- AC-CORE-001-1 [Event-driven]: WHEN checked, THE SYSTEM SHALL expose value 1.\n'
+  );
   const wiRoot = path.join(project, '.specforge/work-items', wi),
     now = new Date().toISOString();
   const baseline = takeSnapshot(project);
@@ -172,6 +177,16 @@ afterEach(async () => {
 });
 
 describe('bounded blocked verification recovery', () => {
+  it('rejects recovery when only an index remains and preserves the event history', async () => {
+    const f = await fixture();
+    await fs.writeFile(
+      path.join(f.project, '.specforge/project/modules/CORE/requirements.md'),
+      '> TODO: missing upstream requirement\n'
+    );
+    const before = await fs.readFile(f.events);
+    await expect(transitionWithEvidence(f.input)).rejects.toThrow('PROJECT_GOVERNANCE_INVALID');
+    expect(await fs.readFile(f.events)).toEqual(before);
+  });
   it.each([false, true])(
     'validates the actual Git implementation binding (dirty=%s)',
     async dirty => {
