@@ -293,8 +293,7 @@ registerHandler('sf_hard_stop_resolve', async (args, context, deps) => {
         !deps.toolInvocationVerifier?.verifyGateRepairAuthorization ||
         !context ||
         typeof context.sessionID !== 'string' ||
-        typeof context.messageID !== 'string' ||
-        typeof context.callID !== 'string'
+        typeof context.messageID !== 'string'
       )
         throw new Error('GATE_REPAIR_RUNTIME_PROVENANCE_REQUIRED');
       gateProof = await deps.toolInvocationVerifier.verifyGateRepairAuthorization({
@@ -319,7 +318,11 @@ registerHandler('sf_hard_stop_resolve', async (args, context, deps) => {
         fresh.historySha256 !== status.historySha256 ||
         latch?.hard_stop_id !== active.hard_stop_id ||
         latch?.blocked_target !== target ||
-        gateProof.invocation.callId !== context.callID ||
+        gateProof.invocation.source !== 'runtime-tool-invocation/v1' ||
+        gateProof.invocation.tool !== 'sf_hard_stop_resolve' ||
+        gateProof.invocation.agent !== 'sf-orchestrator' ||
+        typeof gateProof.invocation.callId !== 'string' ||
+        gateProof.invocation.callId.length === 0 ||
         gateProof.invocation.sessionId !== context.sessionID ||
         gateProof.invocation.messageId !== context.messageID ||
         gateProof.attemptId !== status.attemptId ||

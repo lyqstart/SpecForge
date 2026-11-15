@@ -62,7 +62,6 @@ function request(ctx: Awaited<ReturnType<typeof fixture>>) {
     agent: 'sf-orchestrator',
     sessionID: 'ses_actual',
     messageID: 'msg_actual',
-    callID: 'call_actual',
   };
   const proof = {
     source: 'gate-repair-diagnostic/v1',
@@ -75,7 +74,7 @@ function request(ctx: Awaited<ReturnType<typeof fixture>>) {
       source: 'runtime-tool-invocation/v1',
       sessionId: context.sessionID,
       messageId: context.messageID,
-      callId: context.callID,
+      callId: 'call_actual',
       agent: context.agent,
       directory: ctx.projectRoot,
       tool: 'sf_hard_stop_resolve',

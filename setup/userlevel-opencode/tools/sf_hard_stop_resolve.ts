@@ -1,5 +1,5 @@
 import { tool } from "@opencode-ai/plugin";
-import { daemon } from "./lib/thin-client";
+import { daemon, DaemonClient } from "./lib/thin-client";
 
 export default tool({
   description:
@@ -133,12 +133,20 @@ export default tool({
       .describe("授权原因说明"),
   },
   async execute(args, context) {
-    const result = await daemon.invokeTool("sf_hard_stop_resolve", args, {
-      sessionID: context.sessionID,
-      agent: context.agent,
-      directory: context.directory,
-      worktree: context.worktree,
-    });
+    const diagnostic = Boolean(args.diagnostic_user_message_id);
+    const client = diagnostic ? new DaemonClient(180000) : daemon;
+    const result = await client.invokeTool(
+      "sf_hard_stop_resolve",
+      args,
+      {
+        sessionID: context.sessionID,
+        messageID: context.messageID,
+        agent: context.agent,
+        directory: context.directory,
+        worktree: context.worktree,
+      },
+      diagnostic ? { signal: context.abort, retry: false } : undefined,
+    );
     if (typeof result === "string") return result;
     return JSON.stringify(result, null, 2);
   },
