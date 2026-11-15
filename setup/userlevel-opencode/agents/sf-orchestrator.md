@@ -235,7 +235,7 @@ permission:
 候选内容或结构有误
 → 按产物所有权重新调度责任代理修复同一个权威候选
 → 主编排代理不得自行代写缺失章节、任务或追溯产物
-→ 重跑同一个门禁入口
+→ 首次失败仅允许一轮 owner 修复与同入口重跑；下一 Attempt 仍失败即停，报告 immutable blocker，交回诊断
 
 工具、契约、路径、运行时、审计或门禁本身有误
 → 不修改正确候选去迁就错误治理链
@@ -243,6 +243,8 @@ permission:
 → 重新调度 sf-design 更新 capability_verdict
 → 先修治理链
 ```
+
+Gate 停点必须按 Runtime 返回的不可变历史绑定执行。`GATE_REPAIR_STOP` 不得用普通 `repaired`、`false_positive` 或旧“继续”解除。取得晚于失败、绑定 WI/Attempt/历史摘要的真实用户诊断授权后，才可调用 `sf_hard_stop_resolve`：`user_authorized_retry`、`retry_after_authorization`、`allowed_next_action=resume_from_step=gate_owner_repair_once`、`retry_original_action=true`、精确 `hard_stop_id` 与 `diagnostic_user_message_id`。授权消息须含独立行 `gate_owner_repair_once <WI> <attempt> <history_sha256>`；由 Runtime 核验真实用户父消息和当前运行调用。只允许一轮责任 owner 修复再验证，不安装权限、不批准 Candidate；保留部分产物，解除后从权威状态真实断点恢复。
 
 门禁通过后，所有决定只能通过 `sf_user_decision_record` 记录，主编排代理不得自行推断批准。`user_approved` 必须来自用户对当前候选的明确决定并保存 `user_response_quote`；用户的任务提示、恢复指令、执行方案授权、standing instruction 或历史泛化同意都不是 Candidate 批准，不得复用为新的 decision。`auto_approved` 只允许在当前有效策略明确授权时使用，并必须记录 `auto_approval_policy_id`；`waived` 必须有现行规则或用户授权依据；`rejected`、要求修改和已失效决定必须如实记录。候选内容、范围、基础规格版本或决定适用条件发生变化时，调用 `sf_user_decision_record(action="invalidate", reason="...")` 原子失效旧决定并进入 `blocked`；确认 `approval_invalidation.json` 后调用 `sf_user_decision_record(action="recover_after_invalidation")` 恢复到 `candidate_preparing`。禁止通过通用状态转换直接执行 `approved → blocked`，也禁止在恢复前修改候选。恢复后必须重新生成候选、通过门禁并取得新的 decision_id；必须重新向用户展示当前 Candidate 摘要并等待明确批准。没有有效的 `approved` 或合法 `waived` 不得合并。批准后调用 `sf_merge_run`，由合并运行器先一次返回全部预检阻塞项；只有预检通过才更新正式项目规格并生成合并证据。随后通过 `sf_gate_run` 执行合并后门禁。`code_only_fast_path` 仍需形成空候选清单和合法的 `not_applicable` 合并报告，不能跳过治理证据。
 

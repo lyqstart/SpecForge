@@ -10,6 +10,7 @@ import { createHash } from 'node:crypto';
 import {
   validateCurrentGateAttemptResultValue,
   validateCurrentGateAttemptStartValue,
+  GateRepairContextSchema,
   type GateAttemptInputSnapshotEntry,
 } from '@specforge/types';
 import {
@@ -40,6 +41,8 @@ import {
   type GovernanceCheckResult,
 } from './project-governance-v2.js';
 import { candidateSealInputPaths } from './candidate-generation-integrity.js';
+import { guardHardStop } from './hard-stop-latch';
+import { getRequiredGates } from './required-gates';
 import {
   captureRequirementsInputBinding,
   assertRequirementsInputBinding,
@@ -211,6 +214,8 @@ async function createGateAttempt(
   requestedGateIds: GateIdV11[]
 ): Promise<GateAttemptContext> {
   const existingNumbers = await precheckExistingGateAttempts(ctx);
+  const stop = guardHardStop(ctx.projectRoot, ctx.workItemId, 'sf_v11_gate_run');
+  if (!stop.allowed) throw new Error(stop.error ?? 'GATE_REPAIR_STOP');
   const root = gateAttemptsRoot(ctx);
   await fs.mkdir(root, { recursive: true });
 
@@ -222,6 +227,24 @@ async function createGateAttempt(
       const gatesPath = path.join(attemptPath, 'gates');
       await fs.mkdir(gatesPath);
       const startedAt = new Date().toISOString();
+      const repairContext = GateRepairContextSchema.parse({
+        schema_version: '1.0',
+        work_item_id: ctx.workItemId,
+        attempt_id: attemptId,
+        workflow_path: ctx.workflowPath ?? 'unknown',
+        workflow_type: ctx.workflowType,
+        candidate_phase: ctx.candidatePhase ?? 'full',
+        required_candidate_gate_ids: getRequiredGates(
+          ctx.workflowPath ?? 'unknown',
+          'candidate',
+          ctx.candidatePhase ?? 'full',
+          ctx.workflowType
+        ),
+      });
+      await writeExclusiveJson(
+        path.join(attemptPath, 'candidate-repair-context.json'),
+        repairContext
+      );
       await writeExclusiveJson(path.join(attemptPath, 'attempt-start.json'), {
         schema_version: '1.0',
         attempt_id: attemptId,
@@ -238,7 +261,8 @@ async function createGateAttempt(
         requestedGateIds,
       };
     } catch (error) {
-      if ((error as NodeJS.ErrnoException).code === 'EEXIST') continue;
+      if ((error as NodeJS.ErrnoException).code === 'EEXIST')
+        throw new Error('GATE_ATTEMPT_CONCURRENT_CREATION: re-read authoritative history');
       throw error;
     }
   }

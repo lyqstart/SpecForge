@@ -3,7 +3,11 @@ export interface TrustedToolInvocationRequest {
   sessionId: string;
   messageId: string;
   directory: string;
-  tool: "sf_verification_plan" | "sf_verification_run" | "sf_state_transition";
+  tool:
+    | "sf_verification_plan"
+    | "sf_verification_run"
+    | "sf_state_transition"
+    | "sf_hard_stop_resolve";
   args: Record<string, unknown>;
 }
 export interface TrustedToolInvocationProof {
@@ -23,4 +27,26 @@ export interface ToolInvocationVerifier {
   verifyToolInvocation(
     input: TrustedToolInvocationRequest,
   ): Promise<TrustedToolInvocationProof>;
+  verifyGateRepairAuthorization?(
+    input: GateRepairAuthorizationRequest,
+  ): Promise<GateRepairAuthorizationProof>;
+}
+
+export interface GateRepairAuthorizationRequest {
+  invocation: TrustedToolInvocationRequest;
+  userMessageId: string;
+  userText: string;
+  workItemId: string;
+  attemptId: string;
+  historySha256: string;
+  completedAt: string;
+}
+export interface GateRepairAuthorizationProof {
+  source: "gate-repair-diagnostic/v1";
+  invocation: TrustedToolInvocationProof;
+  userMessageId: string;
+  userTextSha256: string;
+  userCreatedAt: number;
+  attemptId: string;
+  historySha256: string;
 }

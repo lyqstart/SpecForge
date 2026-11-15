@@ -4,7 +4,7 @@
 >
 > Specification ID: SPS-1.0
 >
-> Product release version: 1.0.37
+> Product release version: 1.0.38
 >
 > Product version epoch: 1
 >
@@ -539,6 +539,10 @@ Candidate
 12. D28 有限需求引用范围扩展：Requirements 文档可在首部 YAML 元数据中显式声明 `requirements_role: reference_context`，只承载索引、说明与引用；未声明时按普通需求文档检查，显式普通角色为 `requirements`。未知、重复或位置错误的角色声明必须拒绝。`reference_context` 不得含正式需求定义、自己的验收标准或验证策略；贡献的需求数、验收覆盖与业务完成证据均为零，其每个 REQ 引用仍必须解析到同代唯一有效正文，不能替代缺失正文。纯引用文件不能使空需求集合成为业务通过。
 13. Requirements Gate、Workflow 引用完整性、Task 验证策略、Trace 覆盖、Merge 前后正式规格消费必须共享 D28 的集合、定义归属和文档角色语义。解析须先逐文件检查角色，再聚合；不能因拼接文件而丢失角色，也不能通过正文 token 回退把上下文引用计为定义。所有参与解析的正式/候选文件和登记/Manifest 必须纳入本次 Gate 输入身份与封存校验，任一输入变化使旧代检查与审批失效；缺正文、重复定义、错误归属、非规范引用和已有权限/HardStop 边界继续失败关闭。原业务由原专业 owner 在合法恢复后修订、重新封存并运行真实 Gate，D28 不修改冻结 Task，也不批准 Candidate。
 14. D29 有限验收项引用：`AC-<MODULE_CODE>-<NNN>-<K>` 是验收项身份，`K` 为无前导零的正整数。其定义必须位于同代唯一正式 `REQ-<MODULE_CODE>-<NNN>` 正文内，以 Markdown 列表项或下级标题声明 ID 和非空验收内容；ID 后允许既有 EARS 标签 `[Ubiquitous]`、`[Event-driven]`、`[Unwanted-behavior]`、`[State-driven]`、`[Complex]`、`[Optional-feature]`，标签本身不计为正文；定义模块、父需求和文件 owner 必须一致。旧式 `REQ-<MODULE_CODE>-<NNN>-<K>` 仅可作为该 AC 的引用，不能作为需求定义或通过截断后缀解析为父需求。普通 REQ 身份与位宽不变。显式 AC 与旧式引用都必须找到唯一有效 AC 和唯一父 REQ；缺失、重复、错误归属、空正文、跨代、非规范位宽或歧义均拒绝。所有正式入口、seal、Gate、Merge 前后及下游消费者共用同代解析和输入身份绑定；源文件或父需求变化使旧证据失效。AC 引用不增加需求数、不证明验收已执行或通过、不授予审批或写权限。冻结业务 Task 无需为这一有限解释改写，其原始字节及历史拒绝证据必须保留。
+15. D30 Gate 修复停点：同一 WI 首次 Candidate Gate 失败后，只允许根据该不可变 Attempt 的 blocking issues 完成一轮责任 owner 修复；下一 Candidate Attempt 仍失败时，Runtime 必须锁住后续业务写入、状态推进、封存及 Gate 重试，交回诊断。停点从连续、完整、身份一致的不可变 Attempt 历史推导，不能只靠 Agent 提示或进程内计数。部分 Gate 通过、别名、重新封存、重启和换工具不能重置预算；只有完整适用 Candidate Gate 集真实通过才结束该失败周期，skipped/waived 不作为重置依据。历史缺失、损坏、未完成或结果矛盾时失败关闭，不能推定还有预算。已有 WI 同样执行此规则，保留历史与部分产物。
+16. D30 诊断恢复复用 work-item HardStop 与 sf_hard_stop_resolve，不增加权限或 Candidate 审批。达到停点后，仅可通过 sf-orchestrator 的真实运行调用，绑定当前失败 Attempt、不可变历史摘要及当前 HardStop，并取得同一 Runtime 会话中本次用户诊断授权消息的来源证明，允许一次修复再验证。授权消息须晚于被授权失败且明确绑定 WI、Attempt、历史摘要和单轮诊断恢复动作；调用者转述、旧消息、其他会话、普通 repaired/false_positive 或安装写权限均不能解除此停点。验证后重新核对绑定，再追加不可变恢复证据并清除该 latch；记录已提交而清 latch 中断的恢复必须幂等，不能重复获得预算。恢复不推进业务状态，不重复已完成步骤；新一轮失败再次停住。
+17. D30 不可变 Attempt 的独立 `candidate-repair-context.json` 合同版本为 `1.0`，由 Gate owner 在创建 Attempt 时独占写入 WI/Attempt 身份、工作流路径/类型、Candidate 阶段及适用 Candidate Gate 集，和原 start/result/report/snapshot/summary 一起绑定历史摘要；旧 Attempt 字节不得迁移改写。缺少该上下文的旧通过记录不能自动重置修复预算，旧失败仍参与停点判断。上下文与共享 Gate 集解析不一致时拒绝。Gate 与同一项目已在途受控写入不得重叠；冲突请求在产生业务副作用前返回忙碌拒绝，随后必须重读状态。诊断与只读检查仍可执行。
+
 
 15. D28 项目需求索引维护：新项目初始化仅创建显式 `reference_context` 的空索引，不从空索引推断需求齐备；重入初始化不得改写旧占位或用户已有索引。`sf-requirements` 通过唯一类型 `candidate_requirements_index` 写入 `candidates/project/requirements_index.md`，不接收模块归属或任意目标路径，且必须为无自有需求/验收定义的显式引用上下文。Runtime 在需求变更封存时将其纳入 Manifest、输入身份和 Gate；只有有效显式批准后的 Merge Runner 可替换正式 `requirements_index.md`。缺引用正文、错误角色、错误 owner、冻结写入或源漂移继续拒绝；不得按文件名自动豁免旧索引或由初始化/Agent 直接迁移正式真相源。
 

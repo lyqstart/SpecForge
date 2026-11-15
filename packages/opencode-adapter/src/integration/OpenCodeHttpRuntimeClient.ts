@@ -9,6 +9,8 @@ import { createHash } from 'node:crypto';
 import type {
   TrustedToolInvocationRequest,
   TrustedToolInvocationProof,
+  GateRepairAuthorizationRequest,
+  GateRepairAuthorizationProof,
 } from '@specforge/types/trusted-tool-invocation';
 
 export type OpenCodeToolInvocationRequest = TrustedToolInvocationRequest;
@@ -110,7 +112,9 @@ export class OpenCodeHttpRuntimeClient implements OpenCodeRuntimeClient {
     input: OpenCodeToolInvocationRequest
   ): Promise<OpenCodeToolInvocationProof> {
     const expectedAgent =
-      input.tool === 'sf_verification_plan' || input.tool === 'sf_state_transition'
+      input.tool === 'sf_verification_plan' ||
+      input.tool === 'sf_state_transition' ||
+      input.tool === 'sf_hard_stop_resolve'
         ? 'sf-orchestrator'
         : input.tool === 'sf_verification_run'
           ? 'sf-verifier'
@@ -208,6 +212,78 @@ export class OpenCodeHttpRuntimeClient implements OpenCodeRuntimeClient {
       ...projection,
       observedAt: new Date().toISOString(),
       runtimeProjectionSha256: hash(canonicalJson(projection)),
+    };
+  }
+
+  async verifyGateRepairAuthorization(
+    input: GateRepairAuthorizationRequest
+  ): Promise<GateRepairAuthorizationProof> {
+    if (
+      input.invocation.tool !== 'sf_hard_stop_resolve' ||
+      !/^msg_[A-Za-z0-9]+$/.test(input.userMessageId) ||
+      !/^attempt-\d{4}$/.test(input.attemptId) ||
+      !/^[a-f0-9]{64}$/.test(input.historySha256)
+    )
+      throw new OpenCodeRuntimeError('GATE_REPAIR_AUTHORIZATION_IDENTITY_REQUIRED');
+    const invocation = await this.verifyToolInvocation(input.invocation);
+    const base = `/session/${encodeURIComponent(invocation.sessionId)}/message/`;
+    const assistant = this.unwrap(
+      await this.requestJson(
+        'GET',
+        this.withDirectory(base + encodeURIComponent(invocation.messageId), invocation.directory)
+      )
+    );
+    const user = this.unwrap(
+      await this.requestJson(
+        'GET',
+        this.withDirectory(base + encodeURIComponent(input.userMessageId), invocation.directory)
+      )
+    );
+    if (
+      !this.isRecord(assistant) ||
+      !this.isRecord(assistant['info']) ||
+      assistant['info']['parentID'] !== input.userMessageId ||
+      !this.isRecord(user) ||
+      !this.isRecord(user['info']) ||
+      !Array.isArray(user['parts'])
+    )
+      throw new OpenCodeRuntimeError('GATE_REPAIR_USER_PROVENANCE_REQUIRED');
+    const info = user['info'];
+    const time = info['time'];
+    const texts = user['parts'].filter(part => this.isRecord(part) && part['type'] === 'text');
+    const marker = `gate_owner_repair_once ${input.workItemId} ${input.attemptId} ${input.historySha256}`;
+    if (
+      info['id'] !== input.userMessageId ||
+      info['sessionID'] !== invocation.sessionId ||
+      info['role'] !== 'user' ||
+      !this.isRecord(time) ||
+      typeof time['created'] !== 'number' ||
+      !Number.isSafeInteger(time['created']) ||
+      !Number.isFinite(Date.parse(input.completedAt)) ||
+      time['created'] <= Date.parse(input.completedAt) ||
+      time['created'] > invocation.startedAt ||
+      texts.length !== 1 ||
+      !this.isRecord(texts[0]) ||
+      texts[0]['sessionID'] !== invocation.sessionId ||
+      texts[0]['messageID'] !== input.userMessageId ||
+      texts[0]['synthetic'] === true ||
+      texts[0]['ignored'] === true ||
+      texts[0]['text'] !== input.userText ||
+      !input.userText.split(/\r?\n/).includes(marker)
+    )
+      throw new OpenCodeRuntimeError('GATE_REPAIR_FRESH_BOUND_USER_AUTHORIZATION_REQUIRED');
+    // Recheck the running call after reading user evidence; no stale completed tool authorizes a grant.
+    const fresh = await this.verifyToolInvocation(input.invocation);
+    if (fresh.callId !== invocation.callId || fresh.inputSha256 !== invocation.inputSha256)
+      throw new OpenCodeRuntimeError('GATE_REPAIR_INVOCATION_DRIFT');
+    return {
+      source: 'gate-repair-diagnostic/v1',
+      invocation: fresh,
+      userMessageId: input.userMessageId,
+      userTextSha256: createHash('sha256').update(input.userText).digest('hex'),
+      userCreatedAt: time['created'],
+      attemptId: input.attemptId,
+      historySha256: input.historySha256,
     };
   }
 

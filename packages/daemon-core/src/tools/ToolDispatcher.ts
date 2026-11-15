@@ -12,6 +12,7 @@ import { resolveToolPermission, extractActor, extractEnableRBAC } from './lib/to
 import { recordDaemonObservation } from '../observability/observability-recorder';
 import { createSfTraceId, getTraceIdFromContext } from '../observability/trace';
 import { guardHardStop, isHardStopRecoveryTool } from './lib/hard-stop-latch';
+import { withGateOperationBarrier } from './lib/gate-operation-barrier';
 import { readAuthoritativeWorkItems } from './lib/authoritative-work-items';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
@@ -193,6 +194,18 @@ export class ToolDispatcher {
 
   async dispatch(req: ToolInvokeRequest): Promise<unknown> {
     const projectRoot = resolveProjectRoot(req.context);
+    return withGateOperationBarrier(
+      projectRoot,
+      req.tool,
+      isHardStopRecoveryTool(req.tool) && req.tool !== 'sf_hard_stop_resolve',
+      () => this.dispatchProjectOperation(req, projectRoot)
+    );
+  }
+
+  private async dispatchProjectOperation(
+    req: ToolInvokeRequest,
+    projectRoot: string
+  ): Promise<unknown> {
     // Every dispatcher consumer (including legacy HTTP and kernel calls) must
     // exclude recovery before any project-scoped observation or handler work.
     if (this.deps.projectManager?.withProjectOperation) {

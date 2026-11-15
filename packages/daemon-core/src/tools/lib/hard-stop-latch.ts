@@ -15,6 +15,7 @@ import {
 } from '@specforge/types';
 import { createHardStopLatchSchemaDescriptor } from '@specforge/types/schema-contract';
 import { isValidWorkItemId as isCanonicalWorkItemId } from './work-item-id-validator';
+import { GATE_REPAIR_ACTION, GATE_REPAIR_STOP, readGateRepairStatus } from './gate-repair-stop';
 
 export type { HardStopRecord, HardStopScope } from '@specforge/types';
 
@@ -183,6 +184,31 @@ export function isHardStopRecoveryTool(toolName: string): boolean {
   return ALLOWED_TOOLS_WHEN_BLOCKED.has(normalizeToolName(toolName));
 }
 
+export function enforceGateRepairStop(
+  projectRoot: string,
+  workItemId: string
+): HardStopRecord | null {
+  if (!isValidWorkItemId(workItemId)) return null;
+  const status = readGateRepairStatus(projectRoot, workItemId);
+  if (!status.blocked) return null;
+  return setHardStop(
+    projectRoot,
+    workItemId,
+    'Candidate Gate failed again after its single repair round. Diagnostic authorization is required.',
+    'sf_v11_gate_run',
+    'work_item',
+    {
+      policy_code: GATE_REPAIR_STOP,
+      blocked_action: 'candidate_mutation_or_retry',
+      blocked_target: `${status.attemptId}:${status.historySha256}`,
+      blocked_step: status.attemptId ?? 'candidate_gate',
+      resume_step: GATE_REPAIR_ACTION,
+      retry_original_action: false,
+      safe_alternative_tool: 'sf_state_read',
+    }
+  );
+}
+
 export function guardHardStop(
   projectRoot: string,
   workItemId: string,
@@ -190,6 +216,15 @@ export function guardHardStop(
 ): HardStopGuardResult {
   if (isHardStopRecoveryTool(toolName)) {
     return { allowed: true };
+  }
+
+  try {
+    enforceGateRepairStop(projectRoot, workItemId);
+  } catch (error) {
+    return {
+      allowed: false,
+      error: error instanceof Error ? error.message : 'GATE_REPAIR_HISTORY_INVALID',
+    };
   }
 
   // Project-scoped HardStop must also be enforced when a call has no WI context.

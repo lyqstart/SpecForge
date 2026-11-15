@@ -180,6 +180,7 @@ export {
   GATE_ATTEMPT_SCHEMA_VERSION,
   GateReportCheckSchema,
   GateAttemptStartSchema,
+  GateRepairContextSchema,
   GateAttemptInputSnapshotEntrySchema,
   GateAttemptInputSnapshotSchema,
   GateAttemptSuccessResultSchema,
@@ -390,7 +391,7 @@ export {
   evaluateMergeReport,
   type MergeReportStatus,
   type MergeReportVerdict,
-} from './merge-report-contract.js';
+} from "./merge-report-contract.js";
 
 // ---- Neutral LLM Kernel boundary ----
 export type {
@@ -404,14 +405,18 @@ export type {
   SessionStatus,
   ModelCapabilities,
   OutputFormat,
-} from './llm-kernel-contract.js';
+} from "./llm-kernel-contract.js";
 
-export type { TrustedToolInvocationRequest, TrustedToolInvocationProof, ToolInvocationVerifier } from './trusted-tool-invocation.js';
+export type {
+  TrustedToolInvocationRequest,
+  TrustedToolInvocationProof,
+  ToolInvocationVerifier,
+} from "./trusted-tool-invocation.js";
 
-export { promiseFromSync } from './promise-contract.js';
+export { promiseFromSync } from "./promise-contract.js";
 
-export { scalarText, diagnosticScalarText } from './scalar-text.js';
+export { scalarText, diagnosticScalarText } from "./scalar-text.js";
 
-export { parseJsonObject } from './json-boundary.js';
+export { parseJsonObject } from "./json-boundary.js";
 
-export { hasAsciiControl } from './character-boundaries.js';
+export { hasAsciiControl } from "./character-boundaries.js";

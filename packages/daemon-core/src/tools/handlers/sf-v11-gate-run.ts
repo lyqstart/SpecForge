@@ -15,6 +15,7 @@ import { runRequiredGates } from '../lib/gate-runner-v11';
 import type { GateIdV11, GateReportV11 } from '../lib/gate-runner-v11';
 import { getRequiredGates, type CandidateGatePhaseV11 } from '../lib/required-gates';
 import { readAuthoritativeState, transitionWithEvidence } from '../lib/state-coordinator-v11';
+import { enforceGateRepairStop } from '../lib/hard-stop-latch';
 import * as path from 'node:path';
 import * as fs from 'node:fs/promises';
 import { createHash } from 'node:crypto';
@@ -1270,8 +1271,11 @@ registerHandler('sf_v11_gate_run', async (args, context, deps) => {
       currentState,
     });
 
+    const repairStop = enforceGateRepairStop(projectRoot, workItemId);
+
     return {
       success: true,
+      repair_stop: repairStop,
       work_item_id: workItemId,
       workflow_path: workflowPath,
       workflow_type: workflowType,

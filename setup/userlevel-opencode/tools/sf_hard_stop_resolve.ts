@@ -6,6 +6,12 @@ export default tool({
     "结构化恢复 Work Item HardStop。Runtime 会按 work_item_id 定位唯一权威活跃 HardStop，hard_stop_id 仅用于可选的一致性保护；安全类阻断可由 Orchestrator 在不扩大权限的前提下自动改走合法路径；扩大权限、风险接受或用户授权重试仍必须引用真实用户原话。",
   args: {
     work_item_id: tool.schema.string().describe("Work Item ID"),
+    diagnostic_user_message_id: tool.schema
+      .string()
+      .optional()
+      .describe(
+        "Gate 单轮修复停点专用：本次真实用户诊断授权消息 ID。消息须包含独立行 gate_owner_repair_once <WI> <attempt> <history_sha256>；Runtime 核验来源、当前调用、时序及历史绑定，不能使用 Agent 转述。",
+      ),
     hard_stop_id: tool.schema
       .string()
       .optional()
