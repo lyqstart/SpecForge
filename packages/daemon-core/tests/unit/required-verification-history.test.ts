@@ -23,6 +23,16 @@ function proof(outcome: 'passed' | 'failed' | 'unavailable' = 'passed', offset =
     ...(outcome === 'passed' ? { actual_sha256: 'c'.repeat(64), identity: { dev: '1', ino: '2', size: '3', mtimeNs: '4', ctimeNs: '5' } } : { failure_code: 'REQUIRED_FILE_UNAVAILABLE' }) }, offset);
 }
 describe('required verification strict durable replay', () => {
+  it('uses platform path identity across distinct registration events', () => {
+    const next = declaration();
+    next.requirements[0]!.id = 'RV-upper';
+    next.requirements[0]!.path = 'candidates/TRACE_DELTA.md';
+    const events = [registration(), record('registered', { declaration: next, source: source(next, 30) }, 30)];
+    if (process.platform === 'win32') expect(() => replayRequiredVerificationHistory(events, 'WI-0001')).toThrow('ACTIVE_DUPLICATE');
+    else expect(replayRequiredVerificationHistory(events, 'WI-0001').active).toHaveLength(2);
+    next.requirements[0]!.path = 'candidates/trace_delta.md';
+    expect(() => replayRequiredVerificationHistory([registration(), record('registered', { declaration: next, source: source(next, 30) }, 30)], 'WI-0001')).toThrow('ACTIVE_DUPLICATE');
+  });
   it('retains pending requirements without inferring success from registration', () => {
     const replay = replayRequiredVerificationHistory([registration()], 'WI-0001');
     expect(replay.active).toHaveLength(1); expect(replay.active[0]!.proof).toBeUndefined();

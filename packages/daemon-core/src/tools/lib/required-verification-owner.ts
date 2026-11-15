@@ -5,7 +5,10 @@ import type {
   ToolInvocationVerifier,
   RequiredVerificationSourceRequest,
 } from '@specforge/types/trusted-tool-invocation';
-import { RequiredVerificationSourceSchema } from '@specforge/types/required-verification-contract';
+import {
+  RequiredVerificationSourceSchema,
+  requiredVerificationPathIdentity,
+} from '@specforge/types/required-verification-contract';
 import type {
   RequiredProofRecord,
   RequiredVerificationDeclaration,
@@ -162,7 +165,8 @@ export class RequiredVerificationOwner {
         state.active.some(
           item =>
             item.requirement.id === requirement.id ||
-            item.requirement.path.toLowerCase() === requirement.path.toLowerCase()
+            requiredVerificationPathIdentity(item.requirement.path) ===
+              requiredVerificationPathIdentity(requirement.path)
         )
       )
     ) {

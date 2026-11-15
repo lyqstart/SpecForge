@@ -39,6 +39,8 @@ Git for Windows 的配置文件空设备输入使用经实际 Git 验证的 `NUL
 Windows/CMD、编码、PATH、npm shim、Git stdout/stderr、Bun 参数都属于系统接口，不是“运行细节”。跨越边界前必须明确输入、输出、编码、转义和调用方式。
 <!-- source: ledger Part3/4 verbatim (audited), view L1903-2944 -->
 
+路径身份须遵守正式合同的平台规则，声明解析、范围匹配、事件重放与写入 owner 必须共同消费；Windows 大小写折叠不能推广到 POSIX。平台参数模拟只证明函数语义，不能替代原生平台文件系统与完整业务链验收。
+
 ## EXP-003：状态快照不是不变量
 
 一次 `git status`、一个 modified 数量或某个目录存在，只是观察。脚本只能固化业务不变量，不能把瞬时状态写死成下一轮前置条件。

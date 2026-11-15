@@ -3,6 +3,7 @@ import {
   parseRequiredVerificationDeclaration,
   REQUIRED_VERIFICATION_BEGIN,
   REQUIRED_VERIFICATION_END,
+  requiredVerificationPathIdentity,
 } from '../../../types/src/required-verification-contract';
 
 const declaration = () => ({
@@ -53,13 +54,21 @@ describe('D31 finite source declaration', () => {
     value.requirements[0]!.expected_sha256 = 'b';
     expect(() => parseRequiredVerificationDeclaration(source(value))).toThrow();
   });
-  it('rejects duplicate IDs and case-aliased targets', () => {
+  it('uses host path identity and always rejects duplicate IDs or exact paths', () => {
     const value = declaration();
     value.requirements.push({ ...value.requirements[0]!, id: 'RV-other', path: 'candidates/TRACE_DELTA.md' });
+    if (process.platform === 'win32') expect(() => parseRequiredVerificationDeclaration(source(value))).toThrow();
+    else expect(parseRequiredVerificationDeclaration(source(value))).toEqual(value);
+    value.requirements[1]!.path = value.requirements[0]!.path;
     expect(() => parseRequiredVerificationDeclaration(source(value))).toThrow();
     value.requirements[1]!.path = 'candidates/design.md';
     value.requirements[1]!.id = 'RV-trace';
     expect(() => parseRequiredVerificationDeclaration(source(value))).toThrow();
+  });
+  it.each(['win32', 'linux', 'darwin'] as const)('preserves the specified platform identity: %s', platform => {
+    const lower = requiredVerificationPathIdentity('candidates/trace.md', platform);
+    const upper = requiredVerificationPathIdentity('candidates/TRACE.md', platform);
+    expect(lower === upper).toBe(platform === 'win32');
   });
   it('requires an explicit current-history binding for replacement or cancellation', () => {
     const value = { ...declaration(), requirements: [] };

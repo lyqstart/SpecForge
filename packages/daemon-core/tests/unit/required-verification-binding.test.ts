@@ -59,7 +59,8 @@ describe('required verification actual authority binding', () => {
   it('rejects ambiguous aliases and deleted candidate entries', async () => {
     const f = await fixture(); f.manifest.entries.push({ ...f.manifest.entries[0]!, candidate_path: 'candidates/TRACE_DELTA.md' }); await f.writeManifest();
     const ambiguous = await readRequiredVerificationBinding(f.root, 'WI-0001');
-    expect(() => assertRequiredVerificationScope(declaration(ambiguous), ambiguous)).toThrow('SCOPE_OR_OWNER');
+    if (process.platform === 'win32') expect(() => assertRequiredVerificationScope(declaration(ambiguous), ambiguous)).toThrow('SCOPE_OR_OWNER');
+    else expect(() => assertRequiredVerificationScope(declaration(ambiguous), ambiguous)).not.toThrow();
     f.manifest.entries.pop(); f.manifest.entries[0]!.operation = 'delete'; await f.writeManifest();
     const deleted = await readRequiredVerificationBinding(f.root, 'WI-0001');
     expect(() => assertRequiredVerificationScope(declaration(deleted), deleted)).toThrow('SCOPE_OR_OWNER');

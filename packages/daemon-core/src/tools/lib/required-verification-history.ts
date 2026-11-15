@@ -2,6 +2,7 @@ import {
   RequiredRegistrationRecordSchema,
   RequiredProofRecordSchema,
   RequiredConsumptionRecordSchema,
+  requiredVerificationPathIdentity,
 } from '@specforge/types/required-verification-contract';
 import type {
   RequiredProofRecord,
@@ -76,7 +77,8 @@ export function replayRequiredVerificationHistory(events: Event[], workItemId: s
           [...active.values()].some(
             item =>
               item.requirement.id === requirement.id ||
-              item.requirement.path.toLowerCase() === requirement.path.toLowerCase()
+              requiredVerificationPathIdentity(item.requirement.path) ===
+                requiredVerificationPathIdentity(requirement.path)
           )
         )
           throw new Error('REQUIRED_VERIFICATION_ACTIVE_DUPLICATE');

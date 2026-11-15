@@ -1,6 +1,14 @@
 /** D31: explicit finite requirements, never inferred from natural-language findings. */
 import { z } from "zod";
 
+/** SPS 6.4(11): canonical relative paths retain case identity on POSIX. */
+export function requiredVerificationPathIdentity(
+  value: string,
+  platform: NodeJS.Platform = process.platform,
+): string {
+  return platform === "win32" ? value.toLowerCase() : value;
+}
+
 export const REQUIRED_VERIFICATION_BEGIN =
   "SPECFORGE_REQUIRED_VERIFICATION_V1_BEGIN";
 export const REQUIRED_VERIFICATION_END =
@@ -59,7 +67,7 @@ export const RequiredVerificationDeclarationSchema = z
     const ids = new Set<string>();
     const paths = new Set<string>();
     for (const item of value.requirements) {
-      const normalizedPath = item.path.toLowerCase();
+      const normalizedPath = requiredVerificationPathIdentity(item.path);
       if (ids.has(item.id) || paths.has(normalizedPath)) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,

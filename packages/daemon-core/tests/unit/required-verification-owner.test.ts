@@ -160,6 +160,31 @@ async function fixture() {
   };
 }
 describe('required verification owner with actual persistent state and files', () => {
+  it('keeps case-distinct POSIX registrations independent and rejects Windows aliases without appending', async () => {
+    const f = await fixture();
+    const manifestFile = path.join(f.wi, 'candidate_manifest.json');
+    const manifest = JSON.parse(await fs.readFile(manifestFile, 'utf8'));
+    // On Windows scope binding itself rejects aliases. On POSIX both finite entries exist.
+    manifest.entries.push({ ...manifest.entries[0], candidate_path: 'candidates/TRACE_DELTA.md' });
+    await fs.writeFile(manifestFile, JSON.stringify(manifest));
+    const binding = await readRequiredVerificationBinding(f.root, 'WI-0001');
+    f.setDeclaration({ ...f.declaration(), candidate_generation: binding.generation });
+    if (process.platform === 'win32') {
+      await expect(f.owner.captureSource(f.root, f.request())).rejects.toThrow('SCOPE_OR_OWNER');
+      expect(await f.manager().readRequiredVerificationHistory('WI-0001')).toHaveLength(0);
+    } else {
+      await f.owner.captureSource(f.root, f.request());
+      const first = f.declaration();
+      f.setDeclaration({ ...first, requirements: [{ ...first.requirements[0]!, id: 'RV-upper', path: 'candidates/TRACE_DELTA.md', expected_sha256: verificationId('separate bytes\n') }] });
+      await f.owner.captureSource(f.root, f.request());
+      await f.restart();
+      const status = await f.owner.inspect(f.root, 'WI-0001');
+      expect(status.requirements).toHaveLength(2);
+      // Registration is not proof of either file, including on case-insensitive POSIX volumes.
+      await expect(f.owner.assertReady(f.root, 'WI-0001')).rejects.toThrow('PENDING_OR_FAILED');
+    }
+    expect(await fs.readFile(path.join(f.wi, 'candidates/tasks.md'), 'utf8')).toBe('frozen task sentinel');
+  });
   it('does not append a declaration or a proof through an existing HardStop', async () => {
     const first = await fixture();
     setHardStop(first.root, 'WI-0001', 'synthetic safety stop', 'sf_test');

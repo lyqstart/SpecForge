@@ -2,6 +2,7 @@ import path from 'node:path';
 import { CandidateManifestSchema } from '@specforge/types';
 import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
 import type { RequiredVerificationDeclaration } from '@specforge/types/required-verification-contract';
+import { requiredVerificationPathIdentity } from '@specforge/types/required-verification-contract';
 import {
   readVerificationFile,
   canonicalVerificationJson,
@@ -83,7 +84,9 @@ export function assertRequiredVerificationScope(
     throw new Error('REQUIRED_VERIFICATION_GENERATION_MISMATCH');
   for (const requirement of declaration.requirements) {
     const matches = binding.manifest.entries.filter(
-      entry => entry.candidate_path.toLowerCase() === requirement.path.toLowerCase()
+      entry =>
+        requiredVerificationPathIdentity(entry.candidate_path) ===
+        requiredVerificationPathIdentity(requirement.path)
     );
     if (
       matches.length !== 1 ||
