@@ -13,6 +13,7 @@ import {
 } from '@specforge/types';
 import { readHardStopResolutionLog } from './hard-stop-resolution-log';
 import { getRequiredGates } from './required-gates';
+import { isCurrentGateEvidenceAttempt } from './gate-execution-scope';
 
 export const GATE_REPAIR_STOP = 'GATE_REPAIR_STOP';
 export const GATE_REPAIR_ACTION = 'gate_owner_repair_once';
@@ -37,9 +38,13 @@ const fail = (reason: string): never => {
 };
 
 /** Synchronous so a final check and latch/log mutation cannot interleave in the daemon. */
-export function readGateRepairStatus(projectRoot: string, workItemId: string): GateRepairStatus {
+export function readGateRepairStatus(
+  projectRoot: string,
+  workItemId: string,
+  evidenceConsumption = false
+): GateRepairStatus {
   try {
-    return inspectGateRepairStatus(projectRoot, workItemId);
+    return inspectGateRepairStatus(projectRoot, workItemId, evidenceConsumption);
   } catch (error) {
     if (error instanceof Error && error.message.startsWith('GATE_REPAIR_HISTORY_INVALID:'))
       throw error;
@@ -49,7 +54,11 @@ export function readGateRepairStatus(projectRoot: string, workItemId: string): G
   }
 }
 
-function inspectGateRepairStatus(projectRoot: string, workItemId: string): GateRepairStatus {
+function inspectGateRepairStatus(
+  projectRoot: string,
+  workItemId: string,
+  evidenceConsumption: boolean
+): GateRepairStatus {
   const wi = path.join(projectRoot, SPEC_DIR_NAME, 'work-items', workItemId);
   const root = path.join(wi, 'gate_attempts');
   const result: GateRepairStatus = {
@@ -85,6 +94,10 @@ function inspectGateRepairStatus(projectRoot: string, workItemId: string): GateR
     if (entry.name !== id || !entry.isDirectory() || entry.isSymbolicLink())
       fail('non-contiguous sequence');
     const dir = path.join(root, id);
+    // An unfinished tail is visible only to its live Gate's internal read consumer.
+    // Every completed predecessor is still validated and contributes to the budget.
+    if (evidenceConsumption && index === entries.length - 1 && isCurrentGateEvidenceAttempt(dir))
+      continue;
     const document = (name: string): unknown => {
       const raw = read(path.join(dir, name));
       history.update(`${id}/${name}:${sha(raw)}\n`);

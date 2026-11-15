@@ -7,7 +7,7 @@ import {
 } from '@specforge/types/directory-layout';
 import { evaluateMergeReport, validateCurrentUserDecisionValue } from '@specforge/types';
 import { readAuthoritativeState } from '../tools/lib/state-coordinator-v11';
-import { guardHardStop } from '../tools/lib/hard-stop-latch';
+import { guardHardStop, guardVerificationEvidenceHardStop } from '../tools/lib/hard-stop-latch';
 import { readWorkItemMetadata } from '../tools/lib/work-item-metadata';
 import { validateWorkItemId } from '../tools/lib/work-item-id-validator';
 import { candidateManifestContentBlockCode } from '../tools/lib/candidate-manifest-owner';
@@ -57,7 +57,9 @@ export async function captureVerificationAuthority(
   const root = path.resolve(input.projectRoot),
     wiRoot = workItemRoot(root, input.workItemId);
   await assertVerificationPath(wiRoot);
-  const hardStop = guardHardStop(root, input.workItemId, 'sf_verification_run');
+  const hardStop = input.consumePurpose
+    ? guardVerificationEvidenceHardStop(root, input.workItemId)
+    : guardHardStop(root, input.workItemId, 'sf_verification_run');
   if (!hardStop.allowed) throw new Error(hardStop.error);
   const state = await readAuthoritativeState({
     deps: input.deps,

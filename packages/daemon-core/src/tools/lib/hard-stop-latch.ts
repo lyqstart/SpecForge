@@ -186,10 +186,11 @@ export function isHardStopRecoveryTool(toolName: string): boolean {
 
 export function enforceGateRepairStop(
   projectRoot: string,
-  workItemId: string
+  workItemId: string,
+  evidenceConsumption = false
 ): HardStopRecord | null {
   if (!isValidWorkItemId(workItemId)) return null;
-  const status = readGateRepairStatus(projectRoot, workItemId);
+  const status = readGateRepairStatus(projectRoot, workItemId, evidenceConsumption);
   if (!status.blocked) return null;
   return setHardStop(
     projectRoot,
@@ -214,12 +215,29 @@ export function guardHardStop(
   workItemId: string,
   toolName: string
 ): HardStopGuardResult {
+  return guardHardStopInternal(projectRoot, workItemId, toolName, false);
+}
+
+/** Read-only receipt consumption inside the actual live Gate chain, never run/prepare. */
+export function guardVerificationEvidenceHardStop(
+  projectRoot: string,
+  workItemId: string
+): HardStopGuardResult {
+  return guardHardStopInternal(projectRoot, workItemId, 'sf_verification_run', true);
+}
+
+function guardHardStopInternal(
+  projectRoot: string,
+  workItemId: string,
+  toolName: string,
+  evidenceConsumption: boolean
+): HardStopGuardResult {
   if (isHardStopRecoveryTool(toolName)) {
     return { allowed: true };
   }
 
   try {
-    enforceGateRepairStop(projectRoot, workItemId);
+    enforceGateRepairStop(projectRoot, workItemId, evidenceConsumption);
   } catch (error) {
     return {
       allowed: false,

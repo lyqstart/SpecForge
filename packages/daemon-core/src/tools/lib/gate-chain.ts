@@ -42,6 +42,7 @@ import {
 } from './project-governance-v2.js';
 import { candidateSealInputPaths } from './candidate-generation-integrity.js';
 import { guardHardStop } from './hard-stop-latch';
+import { withGateExecutionScope } from './gate-execution-scope';
 import { getRequiredGates } from './required-gates';
 import {
   captureRequirementsInputBinding,
@@ -541,61 +542,63 @@ export async function runRequiredGates(
   }
 
   const attempt = await createGateAttempt(ctx, gateIds);
-  const wantsSummaryGate = gateIds.includes('gate_summary_gate');
-  const wantsFormalVersionGate = gateIds.includes('formal_version_gate');
-  const primaryGateIds = gateIds.filter(
-    gateId => gateId !== 'gate_summary_gate' && gateId !== 'formal_version_gate'
-  );
-  const reports: GateReportV11[] = [];
+  return withGateExecutionScope(attempt.attemptPath, async () => {
+    const wantsSummaryGate = gateIds.includes('gate_summary_gate');
+    const wantsFormalVersionGate = gateIds.includes('formal_version_gate');
+    const primaryGateIds = gateIds.filter(
+      gateId => gateId !== 'gate_summary_gate' && gateId !== 'formal_version_gate'
+    );
+    const reports: GateReportV11[] = [];
 
-  try {
-    const requirementBinding = gateIds.some(
-      id => id === 'candidate_manifest_gate' || id === 'workflow_specific_gate'
-    )
-      ? await captureRequirementsInputBinding(ctx)
-      : null;
-    for (const gateId of primaryGateIds) {
-      const report = await runAndWrite(gateId, ctx, attempt);
-      reports.push(report);
-      if (gateId === 'verification_gate' && report.status === 'passed') {
-        const formal = await runAndWrite('formal_version_gate', ctx, attempt);
-        reports.push(formal);
+    try {
+      const requirementBinding = gateIds.some(
+        id => id === 'candidate_manifest_gate' || id === 'workflow_specific_gate'
+      )
+        ? await captureRequirementsInputBinding(ctx)
+        : null;
+      for (const gateId of primaryGateIds) {
+        const report = await runAndWrite(gateId, ctx, attempt);
+        reports.push(report);
+        if (gateId === 'verification_gate' && report.status === 'passed') {
+          const formal = await runAndWrite('formal_version_gate', ctx, attempt);
+          reports.push(formal);
+        }
       }
-    }
 
-    if (
-      wantsFormalVersionGate &&
-      !reports.some(report => report.gate_id === 'formal_version_gate')
-    ) {
-      reports.push(await runAndWrite('formal_version_gate', ctx, attempt));
-    }
+      if (
+        wantsFormalVersionGate &&
+        !reports.some(report => report.gate_id === 'formal_version_gate')
+      ) {
+        reports.push(await runAndWrite('formal_version_gate', ctx, attempt));
+      }
 
-    await writeGateSummary(ctx, reports);
-    if (wantsSummaryGate) {
-      const summaryReport = await runAndWrite('gate_summary_gate', ctx, attempt);
-      reports.push(summaryReport);
-    }
+      await writeGateSummary(ctx, reports);
+      if (wantsSummaryGate) {
+        const summaryReport = await runAndWrite('gate_summary_gate', ctx, attempt);
+        reports.push(summaryReport);
+      }
 
-    if (requirementBinding) await assertRequirementsInputBinding(ctx, requirementBinding);
-    const finalSummary = await writeGateSummary(ctx, reports);
-    await finalizeGateAttempt({
-      ctx,
-      attempt,
-      reports,
-      summaryStatus: finalSummary.summaryStatus,
-      summaryContent: finalSummary.summaryContent,
-      summaryReports: finalSummary.summaryReports,
-      requirementBinding,
-    });
-    return {
-      reports,
-      summaryStatus: finalSummary.summaryStatus,
-      summaryPath: finalSummary.summaryPath,
-      attemptId: attempt.attemptId,
-      attemptPath: attempt.attemptPath,
-    };
-  } catch (error) {
-    await failGateAttempt(ctx, attempt, reports, error);
-    throw error;
-  }
+      if (requirementBinding) await assertRequirementsInputBinding(ctx, requirementBinding);
+      const finalSummary = await writeGateSummary(ctx, reports);
+      await finalizeGateAttempt({
+        ctx,
+        attempt,
+        reports,
+        summaryStatus: finalSummary.summaryStatus,
+        summaryContent: finalSummary.summaryContent,
+        summaryReports: finalSummary.summaryReports,
+        requirementBinding,
+      });
+      return {
+        reports,
+        summaryStatus: finalSummary.summaryStatus,
+        summaryPath: finalSummary.summaryPath,
+        attemptId: attempt.attemptId,
+        attemptPath: attempt.attemptPath,
+      };
+    } catch (error) {
+      await failGateAttempt(ctx, attempt, reports, error);
+      throw error;
+    }
+  });
 }
