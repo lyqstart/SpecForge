@@ -113,7 +113,10 @@ describe('durable Gate repair stop from actual immutable producer', () => {
       JSON.stringify({ work_item_id: ctx.workItemId })
     );
     expect((await runRequiredGates(['entry_gate'], ctx)).summaryStatus).toBe('passed');
-    expect(readGateRepairStatus(ctx.projectRoot, ctx.workItemId).failures).toBe(1);
+    expect(readGateRepairStatus(ctx.projectRoot, ctx.workItemId)).toMatchObject({
+      failures: 1,
+      attemptId: 'attempt-0001',
+    });
     await fs.writeFile(
       path.join(ctx.workItemDir, 'work_item.json'),
       JSON.stringify({ work_item_id: 'BROKEN' })
@@ -220,7 +223,7 @@ describe('durable Gate repair stop from actual immutable producer', () => {
     expect(response.error).toBe('GATE_REPAIR_AUTHORIZATION_DRIFT');
     expect(readWorkItemHardStop(ctx.projectRoot, ctx.workItemId)).not.toBeNull();
   });
-  it('only a complete all-passed context resets a failure cycle; skipped and legacy passes do not', async () => {
+  it('complete all-passed sets reset modern and conservative legacy history; skipped does not', async () => {
     const ctx = await fixture();
     await runRequiredGates(['entry_gate'], ctx);
     const full = getRequiredGates(ctx.workflowPath, 'candidate', 'full', ctx.workflowType);
@@ -249,7 +252,52 @@ describe('durable Gate repair stop from actual immutable producer', () => {
     entry.status = 'passed';
     await fs.writeFile(entryPath, JSON.stringify(entry));
     await fs.unlink(path.join(dir, 'candidate-repair-context.json'));
+    expect(readGateRepairStatus(ctx.projectRoot, ctx.workItemId)).toMatchObject({
+      failures: 0,
+      attemptId: null,
+      completedAt: null,
+    });
+  });
+  it('terminal Candidate errors stop immediately and allow exactly one proven diagnostic recovery', async () => {
+    const ctx = await fixture();
+    await runRequiredGates(['entry_gate'], ctx);
+    const dir = path.join(ctx.workItemDir, 'gate_attempts', 'attempt-0001');
+    const resultPath = path.join(dir, 'attempt-result.json');
+    const original = JSON.parse(await fs.readFile(resultPath, 'utf8'));
+    // Synthetic terminal error projection with the exact production error schema.
+    const { summary_status, summary_report_gate_ids, input_snapshot, ...base } = original;
+    await fs.writeFile(
+      resultPath,
+      JSON.stringify({
+        ...base,
+        current_report_gate_ids: [],
+        execution_status: 'error',
+        error: 'runner interrupted',
+      })
+    );
+    await fs.unlink(path.join(dir, 'input-snapshot.json'));
+    await fs.unlink(path.join(dir, 'gate_summary.md'));
+    expect(readGateRepairStatus(ctx.projectRoot, ctx.workItemId)).toMatchObject({
+      blocked: true,
+      failures: 1,
+      attemptId: 'attempt-0001',
+    });
+    expect(guardHardStop(ctx.projectRoot, ctx.workItemId, 'sf_artifact_write').allowed).toBe(false);
+    const input = request(ctx);
+    expect(
+      (
+        await getHandler('sf_hard_stop_resolve')!(input.args, input.context, {
+          toolInvocationVerifier: { verifyGateRepairAuthorization: async () => input.proof },
+        } as any)
+      ).success
+    ).toBe(true);
     expect(readGateRepairStatus(ctx.projectRoot, ctx.workItemId).failures).toBe(1);
+    await runRequiredGates(['entry_gate'], ctx);
+    expect(readGateRepairStatus(ctx.projectRoot, ctx.workItemId)).toMatchObject({
+      blocked: true,
+      failures: 2,
+      attemptId: 'attempt-0002',
+    });
   });
   it('rejects incomplete and contradictory history before any business mutation', async () => {
     const ctx = await fixture();

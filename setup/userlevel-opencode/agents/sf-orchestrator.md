@@ -235,7 +235,7 @@ permission:
 候选内容或结构有误
 → 按产物所有权重新调度责任代理修复同一个权威候选
 → 主编排代理不得自行代写缺失章节、任务或追溯产物
-→ 首次失败仅允许一轮 owner 修复与同入口重跑；下一 Attempt 仍失败即停，报告 immutable blocker，交回诊断
+→ 首次正常完成但未通过仅允许一轮 owner 修复与同入口重跑；下一 Attempt 仍失败即停；终态 execution_status=error 立即停，报告 immutable blocker，交回诊断
 
 工具、契约、路径、运行时、审计或门禁本身有误
 → 不修改正确候选去迁就错误治理链

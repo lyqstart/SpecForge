@@ -4,6 +4,7 @@ import * as path from 'node:path';
 import { createHash } from 'node:crypto';
 import {
   SPEC_DIR_NAME,
+  GATE_IDS,
   validateCurrentGateAttemptStartValue,
   validateCurrentGateAttemptResultValue,
   validateCurrentGateAttemptInputSnapshotValue,
@@ -78,6 +79,7 @@ function inspectGateRepairStatus(projectRoot: string, workItemId: string): GateR
   if (fs.existsSync(logFile)) read(logFile);
   const resolutions = readHardStopResolutionLog(wi);
   const history = createHash('sha256');
+  let unresolvedExecutionError = false;
   for (const [index, entry] of entries.entries()) {
     const id = `attempt-${String(index + 1).padStart(4, '0')}`;
     if (entry.name !== id || !entry.isDirectory() || entry.isSymbolicLink())
@@ -115,31 +117,38 @@ function inspectGateRepairStatus(projectRoot: string, workItemId: string): GateR
       return report!;
     });
     const candidate = start.requested_gate_ids.some(gate => !postCandidate.has(gate));
-    if ('execution_status' in end) fail('incomplete Gate execution requires diagnosis');
-    if (!('summary_status' in end)) throw new Error('unreachable');
-    const snapshot = validateCurrentGateAttemptInputSnapshotValue(
-      document('input-snapshot.json')
-    ).value;
-    if (!snapshot || snapshot.work_item_id !== workItemId || snapshot.attempt_id !== id)
-      fail('snapshot identity');
-    const summary = read(path.join(dir, 'gate_summary.md'));
-    history.update(`${id}/gate_summary.md:${sha(summary)}\n`);
+    const terminalError = 'execution_status' in end;
+    if (!terminalError || fs.existsSync(path.join(dir, 'input-snapshot.json'))) {
+      const snapshot = validateCurrentGateAttemptInputSnapshotValue(
+        document('input-snapshot.json')
+      ).value;
+      if (!snapshot || snapshot.work_item_id !== workItemId || snapshot.attempt_id !== id)
+        fail('snapshot identity');
+    }
+    if (!terminalError || fs.existsSync(path.join(dir, 'gate_summary.md'))) {
+      const summary = read(path.join(dir, 'gate_summary.md'));
+      history.update(`${id}/gate_summary.md:${sha(summary)}\n`);
+    }
     const expected = new Set(start.requested_gate_ids);
     if (
       reports.some(report => report.gate_id === 'verification_gate' && report.status === 'passed')
     )
       expected.add('formal_version_gate');
-    if (
+    if (terminalError) {
+      if (end.current_report_gate_ids.some(gate => !expected.has(gate)))
+        fail('error report coverage');
+    } else if (
       [...expected].sort().join() !== [...end.current_report_gate_ids].sort().join() ||
       [...end.summary_report_gate_ids].sort().join() !==
         [...end.current_report_gate_ids].sort().join()
     )
       fail('report coverage');
     const failed = reports.some(report => report.required && report.status === 'failed');
-    if (failed !== (end.summary_status === 'failed')) fail('summary disagrees with reports');
+    if (!terminalError && failed !== (end.summary_status === 'failed'))
+      fail('summary disagrees with reports');
     // New Attempts freeze the applicable gate set alongside their start evidence.
-    // Historical Attempts without it cannot manufacture a reset from a partial pass.
-    let full: string[] = [];
+    // Legacy reset requires the conservative union, never today's mutable WI context.
+    let full: string[] = GATE_IDS.filter(gate => !postCandidate.has(gate));
     if (fs.existsSync(path.join(dir, 'candidate-repair-context.json'))) {
       const context = GateRepairContextSchema.parse(document('candidate-repair-context.json'));
       if (context.work_item_id !== workItemId || context.attempt_id !== id)
@@ -155,28 +164,36 @@ function inspectGateRepairStatus(projectRoot: string, workItemId: string): GateR
     }
     if (
       candidate &&
-      reports.some(
-        report =>
-          !postCandidate.has(report.gate_id) && report.required && report.status === 'failed'
-      )
-    )
+      (terminalError ||
+        reports.some(
+          report =>
+            !postCandidate.has(report.gate_id) && report.required && report.status === 'failed'
+        ))
+    ) {
       result.failures += 1;
-    else if (
+      unresolvedExecutionError ||= terminalError;
+      result.attemptId = id;
+      result.completedAt = end.completed_at;
+    } else if (
       candidate &&
+      !terminalError &&
       end.summary_status === 'passed' &&
       full.length > 0 &&
       full.every(gate =>
         reports.some(report => report.gate_id === gate && report.status === 'passed')
       )
-    )
+    ) {
       result.failures = 0;
+      unresolvedExecutionError = false;
+      result.attemptId = null;
+      result.completedAt = null;
+    }
     result.historySha256 = history.copy().digest('hex');
-    result.attemptId = id;
-    result.completedAt = end.completed_at;
     const grants = resolutions.filter(
       resolution =>
         resolution.original_hard_stop.policy_code === GATE_REPAIR_STOP &&
-        resolution.original_hard_stop.blocked_target === `${id}:${result.historySha256}`
+        resolution.original_hard_stop.blocked_target ===
+          `${result.attemptId}:${result.historySha256}`
     );
     if (grants.length > 1) fail('duplicate diagnostic grant');
     if (grants.length === 1) {
@@ -193,7 +210,7 @@ function inspectGateRepairStatus(projectRoot: string, workItemId: string): GateR
       }>;
       const proof = evidence[0];
       if (
-        result.failures < 2 ||
+        (result.failures < 2 && !unresolvedExecutionError) ||
         grant.resolution_type !== 'user_authorized_retry' ||
         !grant.user_decision_required ||
         grant.allowed_next_action !== GATE_REPAIR_ACTION ||
@@ -201,18 +218,20 @@ function inspectGateRepairStatus(projectRoot: string, workItemId: string): GateR
         evidence.length !== 1 ||
         !proof ||
         proof.historySha256 !== result.historySha256 ||
-        proof.attemptId !== id ||
+        proof.attemptId !== result.attemptId ||
         !/^msg_[A-Za-z0-9]+$/.test(proof.userMessageId) ||
         proof.userTextSha256 !== sha(grant.user_response_quote ?? '') ||
         proof.invocation?.tool !== 'sf_hard_stop_resolve' ||
         proof.invocation.agent !== 'sf-orchestrator' ||
         proof.invocation.source !== 'runtime-tool-invocation/v1' ||
-        Date.parse(grant.resolved_at) < Date.parse(end.completed_at)
+        !result.completedAt ||
+        Date.parse(grant.resolved_at) < Date.parse(result.completedAt)
       )
         fail('unproved diagnostic grant');
       result.failures = 1;
+      unresolvedExecutionError = false;
     }
   }
-  result.blocked = result.failures >= 2;
+  result.blocked = result.failures >= 2 || unresolvedExecutionError;
   return result;
 }

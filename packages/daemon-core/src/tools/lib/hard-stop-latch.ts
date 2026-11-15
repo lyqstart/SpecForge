@@ -194,7 +194,7 @@ export function enforceGateRepairStop(
   return setHardStop(
     projectRoot,
     workItemId,
-    'Candidate Gate failed again after its single repair round. Diagnostic authorization is required.',
+    'Candidate Gate repair budget exhausted or execution ended in error. Diagnostic authorization is required.',
     'sf_v11_gate_run',
     'work_item',
     {
