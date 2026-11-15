@@ -35,7 +35,7 @@ export default tool({
       .string()
       .optional()
       .describe(
-        "仅在扩大权限、用户授权重试、风险接受或安装授权时必填；必须逐字引用当前真实用户原话",
+        "仅在扩大权限、用户授权重试、风险接受或安装授权时必填；必须逐字引用当前真实用户原话。Gate 诊断须包含完整当前消息及首尾空白、末尾 LF/CRLF，不能 trim、改换行或只引用绑定行",
       ),
     reason: tool.schema.string().optional().describe("解除原因说明"),
     scope: tool.schema

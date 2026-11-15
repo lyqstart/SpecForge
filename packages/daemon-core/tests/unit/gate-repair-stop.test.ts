@@ -151,6 +151,79 @@ describe('durable Gate repair stop from actual immutable producer', () => {
     );
     expect(response.error).toBe('GATE_REPAIR_RUNTIME_PROVENANCE_REQUIRED');
   });
+  const exactTextCases = [
+    { name: 'terminal LF', wrap: (quote: string) => `${quote}\n` },
+    { name: 'CRLF', wrap: (quote: string) => `${quote.replace(/\n/g, '\r\n')}\r\n` },
+    { name: 'edge whitespace', wrap: (quote: string) => `  ${quote}\n \t` },
+  ];
+  it.each(exactTextCases)(
+    'preserves exact $name user text through proof and audit',
+    async ({ wrap }) => {
+      const ctx = await stopped(),
+        input = request(ctx);
+      const original = wrap(input.args.user_response_quote);
+      input.args.user_response_quote = original;
+      input.proof.userTextSha256 = createHash('sha256').update(original).digest('hex');
+      const response = await getHandler('sf_hard_stop_resolve')!(input.args, input.context, {
+        toolInvocationVerifier: {
+          verifyGateRepairAuthorization: async ({ userText }: { userText: string }) => {
+            if (userText !== original) {
+              throw new Error('GATE_REPAIR_FRESH_BOUND_USER_AUTHORIZATION_REQUIRED');
+            }
+            return input.proof;
+          },
+        },
+      } as any);
+      expect(response.success).toBe(true);
+      const entry = JSON.parse(
+        await fs.readFile(path.join(ctx.workItemDir, 'hard_stop_resolution.jsonl'), 'utf8')
+      );
+      expect(entry.user_response_quote).toBe(original);
+      expect(entry.evidence[0].userTextSha256).toBe(input.proof.userTextSha256);
+      expect(readGateRepairStatus(ctx.projectRoot, ctx.workItemId).failures).toBe(1);
+    }
+  );
+  it.each(exactTextCases)('still rejects a caller-normalized $name quote', async ({ wrap }) => {
+    const ctx = await stopped(),
+      input = request(ctx);
+    const original = wrap(input.args.user_response_quote);
+    input.args.user_response_quote = original.trim();
+    const response = await getHandler('sf_hard_stop_resolve')!(input.args, input.context, {
+      toolInvocationVerifier: {
+        verifyGateRepairAuthorization: async ({ userText }: { userText: string }) => {
+          if (userText !== original) {
+            throw new Error('GATE_REPAIR_FRESH_BOUND_USER_AUTHORIZATION_REQUIRED');
+          }
+          return input.proof;
+        },
+      },
+    } as any);
+    expect(response.error).toBe('GATE_REPAIR_FRESH_BOUND_USER_AUTHORIZATION_REQUIRED');
+    expect(readWorkItemHardStop(ctx.projectRoot, ctx.workItemId)).not.toBeNull();
+    await expect(
+      fs.stat(path.join(ctx.workItemDir, 'hard_stop_resolution.jsonl'))
+    ).rejects.toThrow();
+  });
+  it('rejects a whitespace-only quote before requesting Runtime authorization', async () => {
+    const ctx = await stopped(),
+      input = request(ctx);
+    let requested = false;
+    const response = await getHandler('sf_hard_stop_resolve')!(
+      { ...input.args, user_response_quote: ' '.repeat(20) },
+      input.context,
+      {
+        toolInvocationVerifier: {
+          verifyGateRepairAuthorization: async () => {
+            requested = true;
+            return input.proof;
+          },
+        },
+      } as any
+    );
+    expect(response.error).toBe('USER_RESPONSE_QUOTE_REQUIRED');
+    expect(requested).toBe(false);
+    expect(readWorkItemHardStop(ctx.projectRoot, ctx.workItemId)).not.toBeNull();
+  });
   it('authorizes exactly one round, preserves both failures, and stops on its next failure', async () => {
     const ctx = await stopped(),
       input = request(ctx);

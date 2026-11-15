@@ -1,6 +1,6 @@
 {
   "name": "@specforge/types",
-  "version": "1.0.38",
+  "version": "1.0.39",
   "description": "Shared TypeScript types for SpecForge modules",
   "type": "module",
   "main": "dist/index.js",

@@ -155,7 +155,8 @@ registerHandler('sf_hard_stop_resolve', async (args, context, deps) => {
     };
   }
 
-  const userQuote = scalarText(args['user_response_quote'] ?? '').trim();
+  const rawUserQuote = scalarText(args['user_response_quote'] ?? '');
+  let userQuote = rawUserQuote.trim();
   const userDecisionRequired =
     USER_DECISION_RESOLUTION_TYPES.has(resolutionType) || shouldInstallAuthorization(args);
   const systemPlan = strongSystemRecoveryPlan(args);
@@ -259,6 +260,9 @@ registerHandler('sf_hard_stop_resolve', async (args, context, deps) => {
   const currentState = currentAuthoritativeProjectionState(baseDir, workItemId);
   let gateProof: GateRepairAuthorizationProof | undefined;
   if (active.policy_code === GATE_REPAIR_STOP) {
+    // Presence checks above may trim a copy; Runtime provenance and the audit
+    // must retain the exact user-message text, including boundary whitespace.
+    userQuote = rawUserQuote;
     try {
       const status = readGateRepairStatus(baseDir, workItemId);
       const target = `${status.attemptId}:${status.historySha256}`;

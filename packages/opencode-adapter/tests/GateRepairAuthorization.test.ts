@@ -1,12 +1,18 @@
 import { describe, expect, it } from 'vitest';
 import path from 'node:path';
+import { createHash } from 'node:crypto';
 import { OpenCodeHttpRuntimeClient } from '../src/integration/OpenCodeHttpRuntimeClient';
 
-function fixture(change?: (user: any, assistant: any) => void) {
+function fixture(
+  change?: (user: any, assistant: any) => void,
+  transformQuote: (quote: string) => string = quote => quote
+) {
   const now = Date.now(),
     directory = path.resolve('synthetic-gate-repair-project');
   const history = 'c'.repeat(64);
-  const quote = `Authorize one diagnosed repair.\ngate_owner_repair_once WI-0001 attempt-0002 ${history}`;
+  const quote = transformQuote(
+    `Authorize one diagnosed repair.\ngate_owner_repair_once WI-0001 attempt-0002 ${history}`
+  );
   const args = {
     work_item_id: 'WI-0001',
     user_response_quote: quote,
@@ -72,6 +78,27 @@ describe('Gate diagnostic authorization from actual Runtime projections', () => 
     expect(proof.source).toBe('gate-repair-diagnostic/v1');
     expect(proof.invocation.callId).toBe('call_actual');
     expect(proof.historySha256).toBe(request.historySha256);
+  });
+  const exactTextCases = [
+    { name: 'terminal LF', wrap: (quote: string) => `${quote}\n` },
+    { name: 'CRLF', wrap: (quote: string) => `${quote.replace(/\n/g, '\r\n')}\r\n` },
+    { name: 'edge whitespace', wrap: (quote: string) => `  ${quote}\n \t` },
+  ];
+  it.each(exactTextCases)('binds the complete $name text digest', async ({ wrap }) => {
+    const { client, request } = fixture(undefined, wrap);
+    const proof = await client.verifyGateRepairAuthorization(request);
+    expect(proof.userTextSha256).toBe(createHash('sha256').update(request.userText).digest('hex'));
+    expect(proof.userTextSha256).not.toBe(
+      createHash('sha256').update(request.userText.trim()).digest('hex')
+    );
+  });
+  it.each(exactTextCases)('rejects normalized $name despite the same marker', async ({ wrap }) => {
+    const { client, request } = fixture(undefined, wrap);
+    request.userText = request.userText.trim();
+    request.invocation.args.user_response_quote = request.userText;
+    await expect(client.verifyGateRepairAuthorization(request)).rejects.toThrow(
+      'GATE_REPAIR_FRESH_BOUND_USER_AUTHORIZATION_REQUIRED'
+    );
   });
   it.each([
     [
