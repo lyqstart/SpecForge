@@ -1,3 +1,4 @@
+import { executeMergeForFixture as executeMerge } from '../helpers/required-verification-fixture';
 /**
  * contract-authoring — unit tests.
  *
@@ -16,7 +17,7 @@ import * as os from 'node:os';
 import { authorContractCandidate } from '../../src/tools/lib/contract-authoring';
 import { validateCandidateManifestJson } from '../../src/tools/lib/artifact-schema-validation';
 import { inferManifestEntries } from '../../src/tools/lib/governance-invariants-v11';
-import { executeMerge } from '../../src/tools/lib/merge-runner-v11';
+
 import { approveSealedCandidateFixture } from '../helpers/candidate-generation-fixture';
 
 describe('contract-authoring', () => {

@@ -13,6 +13,7 @@ import type { AgentHandoff } from '../lib/agent-handoff-v11';
 import { validateWorkItemId } from '../lib/work-item-id-validator';
 import { readWorkItemMetadata } from '../lib/work-item-metadata';
 import { workItemRoot } from '@specforge/types/directory-layout';
+import { RequiredVerificationOwner } from '../lib/required-verification-owner';
 
 function normalizeAgentName(value: unknown): string {
   return scalarText(value ?? '')
@@ -21,19 +22,51 @@ function normalizeAgentName(value: unknown): string {
     .replace(/_/g, '-');
 }
 
-registerHandler('sf_v11_handoff', async (args, context, _deps) => {
+registerHandler('sf_v11_handoff', async (args, context, deps) => {
   const projectRoot =
     (context?.directory as string) || (context?.worktree as string) || process.cwd();
   const action = (args['action'] as string) || 'validate';
 
   try {
+    if (action === 'required_status' || action === 'verify_required') {
+      const workItemId = args.work_item_id;
+      if (typeof workItemId !== 'string' || validateWorkItemId(workItemId))
+        return { success: false, error: 'VALID_WORK_ITEM_ID_REQUIRED' };
+      const owner = new RequiredVerificationOwner(deps);
+      if (action === 'required_status')
+        return { success: true, ...(await owner.inspect(projectRoot, workItemId)) };
+      if (
+        typeof context?.sessionID !== 'string' ||
+        typeof context?.callID !== 'string' ||
+        typeof args.requirement_key !== 'string'
+      )
+        return { success: false, error: 'REQUIRED_VERIFICATION_PROOF_CALL_REQUIRED' };
+      return await owner.verify(
+        projectRoot,
+        {
+          sessionId: context.sessionID,
+          callId: context.callID,
+          directory: projectRoot,
+          tool: typeof context.requested_tool === 'string' ? context.requested_tool : 'sf_handoff',
+          args,
+        },
+        workItemId,
+        args.requirement_key
+      );
+    }
     if (action === 'validate') {
       const handoff = args['handoff'];
       if (!handoff) {
         return { success: false, error: 'handoff object is required' };
       }
       const result = validateHandoff(handoff);
-      return { success: true, action: 'validate', ...result };
+      return {
+        success: true,
+        action: 'validate',
+        ...result,
+        structural_only: true,
+        required_verification_ready: false,
+      };
     }
 
     if (action === 'write') {
@@ -73,7 +106,24 @@ registerHandler('sf_v11_handoff', async (args, context, _deps) => {
         };
       }
       const filePath = await writeHandoff(wiDir, handoff);
-      return { success: true, action: 'write', path: filePath };
+      try {
+        await new RequiredVerificationOwner(deps).assertReady(projectRoot, workItemId);
+        return {
+          success: true,
+          action: 'write',
+          path: filePath,
+          required_verification_ready: true,
+        };
+      } catch {
+        // Diagnostic handoffs remain append-only; persistence is not readiness.
+        return {
+          success: true,
+          action: 'write',
+          path: filePath,
+          required_verification_ready: false,
+          required_verification_error: 'REQUIRED_VERIFICATION_NOT_READY',
+        };
+      }
     }
 
     if (action === 'validate_all') {
@@ -99,15 +149,26 @@ registerHandler('sf_v11_handoff', async (args, context, _deps) => {
         createdAfter,
       });
       const hasExpectation = Boolean(expectedAgent || expectedStage || createdAfter);
+      let requiredReady = true;
+      try {
+        await new RequiredVerificationOwner(deps).assertReady(projectRoot, workItemId);
+      } catch {
+        requiredReady = false;
+      }
       const complete =
-        result.invalid === 0 && result.total > 0 && (!hasExpectation || result.matching > 0);
+        requiredReady &&
+        result.invalid === 0 &&
+        result.total > 0 &&
+        (!hasExpectation || result.matching > 0);
       const error = complete
         ? undefined
-        : result.total === 0
-          ? 'HANDOFFS_REQUIRED'
-          : result.invalid > 0
-            ? 'HANDOFF_COLLECTION_INVALID'
-            : 'HANDOFF_EXPECTATION_NOT_MET';
+        : !requiredReady
+          ? 'REQUIRED_VERIFICATION_NOT_READY'
+          : result.total === 0
+            ? 'HANDOFFS_REQUIRED'
+            : result.invalid > 0
+              ? 'HANDOFF_COLLECTION_INVALID'
+              : 'HANDOFF_EXPECTATION_NOT_MET';
       await recordHandoffValidationState(
         wiDir,
         { expectedAgent, expectedStage, createdAfter },
@@ -123,7 +184,7 @@ registerHandler('sf_v11_handoff', async (args, context, _deps) => {
 
     return {
       success: false,
-      error: `Unknown action: ${action}. Use 'validate', 'write', or 'validate_all'.`,
+      error: `Unknown action: ${action}. Use 'validate', 'write', 'validate_all', 'required_status', or 'verify_required'.`,
     };
   } catch (err: any) {
     return { success: false, error: err.message };

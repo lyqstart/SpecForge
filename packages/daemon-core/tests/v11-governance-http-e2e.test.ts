@@ -1,3 +1,4 @@
+import { recordUserDecisionForFixture as recordUserDecision } from './helpers/required-verification-fixture';
 /**
  * v11-governance-http-e2e.test.ts — HTTP Round-Trip Governance E2E
  *
@@ -21,9 +22,10 @@ import { HTTPServer, HTTPServerDeps } from '../src/http/HTTPServer';
 import { EventBus } from '../src/event-bus/EventBus';
 import { DaemonConfig } from '../src/daemon/DaemonConfig';
 import { ToolDispatcher } from '../src/tools/ToolDispatcher';
+import { requiredVerificationDepsForFixture } from './helpers/required-verification-fixture';
 import { captureSemanticClosureProvenance } from '../src/tools/lib/semantic-closure-provenance.js';
 import { generateTriggerResult } from '../src/tools/lib/workflow-path-selector-v11';
-import { recordUserDecision } from '../src/tools/lib/user-decision-recorder-v11.js';
+
 import { resolveAuditProbes } from './helpers/resolve-audit-probes.js';
 
 // Import ALL handler registrations (side-effects)
@@ -46,7 +48,10 @@ async function gitOutput(cwd: string, args: string[]): Promise<string> {
 
 function httpPost(port: number, token: string, urlPath: string, payload: unknown): Promise<{ status: number; json: any }> {
   return new Promise((resolve, reject) => {
-    const body = JSON.stringify(payload);
+    const invocation = payload as { context?: Record<string, unknown> };
+    const body = JSON.stringify(urlPath === '/api/v1/tool/invoke' ? {
+      ...invocation, context: { ...invocation.context, sessionID: 'ses_httpfixture', callID: 'call_httpfixture' },
+    } : payload);
     const req = http.request({
       hostname: '127.0.0.1',
       port,
@@ -120,7 +125,7 @@ describe('v1.1 Governance HTTP Round-Trip E2E', () => {
       }),
     };
 
-    const dispatcher = new ToolDispatcher({
+    const dispatcher = new ToolDispatcher(requiredVerificationDepsForFixture({
       stateManager: {},
       workflowEngine: {},
       projectManager: mockProjectManager,
@@ -129,7 +134,7 @@ describe('v1.1 Governance HTTP Round-Trip E2E', () => {
       permissionEngine: {},
       cas: {},
       sessionRegistry: {},
-    });
+    }));
 
     const config = new DaemonConfig([]);
     const eventBus = new EventBus();

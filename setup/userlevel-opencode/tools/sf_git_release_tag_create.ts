@@ -10,7 +10,7 @@ export default tool({
     confirmed: tool.schema.boolean().describe("用户是否确认创建标签，必须为 true"),
   },
   async execute(args, context) {
-    const result = await daemon.invokeTool(TOOL_NAME, args, { sessionID: context.sessionID, agent: context.agent, directory: context.directory, worktree: context.worktree })
+    const result = await daemon.invokeTool(TOOL_NAME, args, { callID: Reflect.get(context, "callID"), sessionID: context.sessionID, agent: context.agent, directory: context.directory, worktree: context.worktree })
     if (typeof result === 'string') return result
     return JSON.stringify(result, null, 2)
   },

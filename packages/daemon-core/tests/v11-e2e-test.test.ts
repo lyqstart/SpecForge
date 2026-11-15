@@ -1,3 +1,4 @@
+import { recordUserDecisionForFixture as recordUserDecision, runGateForFixture as runGate, runRequiredGatesForFixture as runRequiredGates } from './helpers/required-verification-fixture';
 /**
  * v11-e2e-test.ts — §21/§22 End-to-end integration test
  *
@@ -19,8 +20,8 @@ import { selectWorkflowPath, generateTriggerResult } from '../src/tools/lib/work
 import { isValidV11Transition } from '../src/tools/lib/state-machine-v11';
 import { checkWrite, performChangedFilesAudit } from '../src/tools/lib/write-guard-v11';
 import { releaseCodePermission, revokeCodePermission, checkCodePermission } from '../src/tools/lib/code-permission-service-v11';
-import { recordUserDecision, invalidateUserDecision } from '../src/tools/lib/user-decision-recorder-v11';
-import { runGate, runRequiredGates } from '../src/tools/lib/gate-runner-v11';
+import { invalidateUserDecision } from '../src/tools/lib/user-decision-recorder-v11';
+
 import { validateHandoff, writeHandoff } from '../src/tools/lib/agent-handoff-v11';
 import type { AgentHandoff } from '../src/tools/lib/agent-handoff-v11';
 import { generateRollbackPlan, generateRollbackDelta, markOriginalSuperseded } from '../src/tools/lib/rollback-runner-v11';
@@ -143,6 +144,7 @@ describe('§22 End-to-end: requirement_change_path full chain', () => {
 
     // Step 15: Run Gate Summary Gate (§9)
     const summaryGateReport = await runGate('gate_summary_gate', {
+      projectRoot: tempDir,
       workItemId: wiId,
       workItemDir: wiDir,
       gateConfig: {},
@@ -171,6 +173,7 @@ describe('§22 End-to-end: requirement_change_path full chain', () => {
 
     // Step 18: Run merge_ready_gate (§11)
     const mergeGateReport = await runGate('merge_ready_gate', {
+      projectRoot: tempDir,
       workItemId: wiId,
       workItemDir: wiDir,
       gateConfig: {},
@@ -248,6 +251,7 @@ describe('§22 End-to-end: requirement_change_path full chain', () => {
 
     // Step 25: Run close_gate (§15)
     const closeGateReport = await runGate('close_gate', {
+      projectRoot: tempDir,
       workItemId: wiId,
       workItemDir: wiDir,
       gateConfig: {},

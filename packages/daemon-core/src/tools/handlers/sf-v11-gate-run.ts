@@ -1092,6 +1092,8 @@ registerHandler('sf_v11_gate_run', async (args, context, deps) => {
   }
 
   try {
+    const requiredVerification = new RequiredVerificationOwner(deps);
+    await requiredVerification.assertReady(projectRoot, workItemId);
     const workflowFacts = await readWorkflowFacts(projectRoot, workItemId);
     if (
       workflowFacts.workflowType !== undefined &&
@@ -1242,6 +1244,7 @@ registerHandler('sf_v11_gate_run', async (args, context, deps) => {
       }
     }
     const ctx = {
+      requiredVerification,
       executionEvidenceConsumer: deps.verificationRuntime,
       workItemId,
       workItemDir,
@@ -1313,3 +1316,4 @@ registerHandler('sf_v11_gate_run', async (args, context, deps) => {
     };
   }
 });
+import { RequiredVerificationOwner } from '../lib/required-verification-owner';

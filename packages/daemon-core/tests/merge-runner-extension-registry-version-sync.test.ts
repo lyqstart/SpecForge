@@ -1,3 +1,4 @@
+import { executeMergeForFixture as executeMerge, runGateForFixture as runGate } from './helpers/required-verification-fixture';
 /**
  * Regression: extension_registry.json must have its duplicated
  * project_spec_version synced on every Project Spec version increment, even
@@ -11,8 +12,8 @@ import { mkdtemp, mkdir, readFile, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { executeMerge } from '../src/tools/lib/merge-runner-v11';
-import { runGate } from '../src/tools/lib/gate-report';
+
+
 import '../src/tools/lib/gate-runner-v11';
 import { approveSealedCandidateFixture } from './helpers/candidate-generation-fixture';
 

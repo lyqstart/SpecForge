@@ -1,3 +1,4 @@
+import { recordUserDecisionForFixture as recordUserDecision } from '../helpers/required-verification-fixture';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import * as fs from 'node:fs/promises';
 import * as os from 'node:os';
@@ -6,7 +7,7 @@ import * as path from 'node:path';
 import '../../src/tools/handlers/sf-v11-close-gate.js';
 import { getHandler } from '../../src/tools/ToolDispatcher.js';
 import { isValidV11TransitionForWorkflow } from '../../src/tools/lib/state-machine-v11.js';
-import { recordUserDecision } from '../../src/tools/lib/user-decision-recorder-v11.js';
+
 import { verifyRecoveryArchive } from '../../src/tools/lib/invalid-merged-spec-closure-recovery.js';
 
 async function writeText(filePath: string, content: string): Promise<void> {

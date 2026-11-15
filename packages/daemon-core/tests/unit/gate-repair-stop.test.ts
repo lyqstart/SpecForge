@@ -1,9 +1,10 @@
+import { runRequiredGatesForFixture as runRequiredGates } from '../helpers/required-verification-fixture';
 import { afterEach, describe, expect, it } from 'vitest';
 import * as fs from 'node:fs/promises';
 import path from 'node:path';
 import { tmpdir } from 'node:os';
 import { createHash } from 'node:crypto';
-import { runRequiredGates } from '../../src/tools/lib/gate-runner-v11';
+
 import { getRequiredGates } from '../../src/tools/lib/required-gates';
 import { readGateRepairStatus, GATE_REPAIR_ACTION } from '../../src/tools/lib/gate-repair-stop';
 import { guardHardStop, readWorkItemHardStop } from '../../src/tools/lib/hard-stop-latch';

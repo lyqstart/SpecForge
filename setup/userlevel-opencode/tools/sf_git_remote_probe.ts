@@ -7,7 +7,7 @@ export default tool({
     remote_name: tool.schema.string().optional().describe("远程名，默认 origin"),
   },
   async execute(args, context) {
-    const result = await daemon.invokeTool(TOOL_NAME, args, { sessionID: context.sessionID, agent: context.agent, directory: context.directory, worktree: context.worktree })
+    const result = await daemon.invokeTool(TOOL_NAME, args, { callID: Reflect.get(context, "callID"), sessionID: context.sessionID, agent: context.agent, directory: context.directory, worktree: context.worktree })
     if (typeof result === 'string') return result
     return JSON.stringify(result, null, 2)
   },

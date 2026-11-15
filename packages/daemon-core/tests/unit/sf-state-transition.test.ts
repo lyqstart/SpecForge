@@ -1,3 +1,4 @@
+import { getHandlerForFixture as getHandler } from '../helpers/required-verification-fixture';
 /**
  * sf_state_transition handler unit tests
  *
@@ -14,7 +15,7 @@
 
 import { describe, it, expect, beforeAll, beforeEach, afterEach, vi } from "vitest";
 import { createHash } from "node:crypto";
-import { getHandler } from "../../src/tools/ToolDispatcher";
+
 // Import triggers registerHandler side-effect
 import "../../src/tools/handlers/sf-state-transition";
 import * as fs from "node:fs/promises";

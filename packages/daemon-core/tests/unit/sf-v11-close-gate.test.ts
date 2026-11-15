@@ -1,3 +1,4 @@
+import { recordUserDecisionForFixture as recordUserDecision } from '../helpers/required-verification-fixture';
 /**
  * sf-v11-close-gate.test.ts — Close Gate handler integration test.
  *
@@ -28,7 +29,8 @@ import {
   applyRevokedPermissionFacts,
   revokeCodePermission,
 } from '../../src/tools/lib/code-permission-service-v11.js';
-import { recordUserDecision } from '../../src/tools/lib/user-decision-recorder-v11.js';
+
+import { requiredVerificationForFixture } from '../helpers/required-verification-fixture';
 import { bindWriteGuardAudit } from '../../src/tools/lib/write-guard-audit-binding.js';
 
 function semanticClosure(workItemId: string): SemanticClosureManifest {
@@ -236,6 +238,8 @@ async function createMinimalWorkItem(
     }) + '\n'
   );
   await recordUserDecision({
+    projectRoot,
+    requiredVerification: requiredVerificationForFixture(projectRoot),
     workItemDir: wiDir,
     workItemId,
     workflowPath: 'code_only_fast_path',

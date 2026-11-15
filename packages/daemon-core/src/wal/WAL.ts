@@ -51,11 +51,34 @@ export class WAL {
 
   async appendEvent(
     event: Event,
-    previousTransition?: { workItemId: string; eventId: string | null }
+    previousTransition?: { workItemId: string; eventId: string | null },
+    previousRequiredVerification?: { workItemId: string; eventId: string | null }
   ): Promise<void> {
     if (!isCurrentRuntimeEvent(event)) throw new Error('WAL_EVENT_SCHEMA_INVALID');
+    const requiredVerification = event.action.startsWith('required_verification.');
+    if (requiredVerification !== Boolean(previousRequiredVerification))
+      throw new Error('WAL_REQUIRED_VERIFICATION_CAS_REQUIRED');
     await this.serialized(async () => {
       const { events } = await this.readHistory();
+      if (previousRequiredVerification) {
+        const { workItemId, eventId } = previousRequiredVerification;
+        const latest = events
+          .filter(
+            item =>
+              item.action.startsWith('required_verification.') &&
+              item.payload.work_item_id === workItemId
+          )
+          .at(-1);
+        if (
+          previousTransition ||
+          event.payload.work_item_id !== workItemId ||
+          event.projectId !== workItemId ||
+          event.actor !== 'required_verification_owner' ||
+          event.metadata.source !== 'daemon' ||
+          (latest?.eventId ?? null) !== eventId
+        )
+          throw new Error('WAL_REQUIRED_VERIFICATION_CONFLICT');
+      }
       if (previousTransition) {
         const latest = events
           .filter(

@@ -8,7 +8,7 @@ export default tool({
     commands: tool.schema.array(tool.schema.string()).optional().describe("仅记录建议命令，本工具不执行，也不产生测试通过证据；只读操作遵守 D18，受支持测试须走 D23 受控计划/执行。"),
   },
   async execute(args, context) {
-    const result = await daemon.invokeTool(TOOL_NAME, args, { sessionID: context.sessionID, agent: context.agent, directory: context.directory, worktree: context.worktree })
+    const result = await daemon.invokeTool(TOOL_NAME, args, { callID: Reflect.get(context, "callID"), sessionID: context.sessionID, agent: context.agent, directory: context.directory, worktree: context.worktree })
     if (typeof result === 'string') return result
     return JSON.stringify(result, null, 2)
   },

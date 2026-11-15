@@ -31,14 +31,15 @@ const handoff = tool.schema.object({
 
 export default tool({
   description:
-    "持久化或校验专业 Agent 的结构化 handoff。专业 Agent 返回成功前必须 action=write；主编排代理使用 validate_all 核验，不得以聊天摘要替代。",
+    "持久化或校验专业 Agent handoff。write 成功仅表示保存，required_verification_ready=false 时禁止成功交接；主编排消费 validate_all 完整就绪结果。required_status 返回当前 WI 代际、历史与必需项 key（不是证明）；verify_required 仅由对应候选文件原 owner 按 key 取得受控完整字节 SHA-256 证明。失败、缺失或漂移时停止依赖动作，不绕过权限或代批 Candidate。",
   args: {
-    action: tool.schema.enum(["validate", "write", "validate_all"]),
+    action: tool.schema.enum(["validate", "write", "validate_all", "required_status", "verify_required"]),
     work_item_id: tool.schema.string().optional(),
     handoff: handoff.optional(),
     expected_agent: tool.schema.string().optional(),
     expected_stage: tool.schema.string().optional(),
     created_after: tool.schema.string().optional(),
+    requirement_key: tool.schema.string().optional(),
   },
   async execute(args, context) {
     const result = await daemon.invokeTool("sf_handoff", args, context);

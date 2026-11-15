@@ -141,7 +141,7 @@ export default tool({
       ),
   },
   async execute(args, context) {
-    const result = await daemon.invokeTool("sf_semantic_closure_run", args, {
+    const result = await daemon.invokeTool("sf_semantic_closure_run", args, { callID: Reflect.get(context, "callID"),
       sessionID: context.sessionID,
       agent: context.agent,
       directory: context.directory,

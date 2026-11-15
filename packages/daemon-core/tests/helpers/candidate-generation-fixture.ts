@@ -9,6 +9,7 @@ import {
 import { buildGateAttemptInputSnapshot } from '../../src/tools/lib/gate-chain';
 import type { GateReportV11 } from '../../src/tools/lib/gate-runner-v11';
 import { recordUserDecision } from '../../src/tools/lib/user-decision-recorder-v11';
+import { requiredVerificationForFixture } from './required-verification-fixture';
 
 function sha256(bytes: string | Uint8Array): string {
   return `sha256:${createHash('sha256').update(bytes).digest('hex')}`;
@@ -180,6 +181,8 @@ export async function approveSealedCandidateFixture(input: {
 }): Promise<void> {
   const sealed = await sealPassingCandidateAttemptFixture(input);
   await recordUserDecision({
+    projectRoot: input.projectRoot,
+    requiredVerification: requiredVerificationForFixture(input.projectRoot),
     workItemDir: input.workItemDir,
     workItemId: input.workItemId,
     workflowPath: input.workflowPath,

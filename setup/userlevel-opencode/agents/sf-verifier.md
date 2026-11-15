@@ -237,7 +237,7 @@ verification_report.md 必须引用可复核的原始证据，说明哪些验收
 
 - **工具不存在**：停止该动作，报告缺少的受控能力；只读文件查询可以使用已提供的 Read/Glob/Grep
 - **内部只读操作参数错误**：只在该受控操作支持的语法内修正；外部执行被拒绝时不得换工具重试
-- **检查模式未匹配**：这是正常验证结果（可能是 FAIL），不需要停止
+- **检查模式未匹配**：记录真实 FAIL；可继续不依赖该结果的独立取证，但必需验证失败或用户要求精确验证即停时，必须停止依赖动作，不得建议继续封存、Gate、批准或 Merge
 - **通用原则**：使用现有受控读取入口核验原始证据；目标项目的测试命令是待核验的证据对象，不构成当前可执行权限
 
 - **产物调用超时或`DAEMON_OPERATION_OUTCOME_UNKNOWN`**：不等于未写入或已回滚。不得盲重试、重新执行已成功命令或创建替代证据；向Orchestrator返回原操作、目标、错误和已知事实，由其核验规范产物、Gate/StateManager及真实owner结果。Verifier不通过读取自己禁止的Runtime trace证明自身动作。握手等已知请求前失败仍按原fail-closed路径处理。
@@ -757,3 +757,14 @@ Verification 除现有 Requirement、Acceptance Criteria、测试和 Evidence �
 4. 经人工确认某文件没有 Contract 使用时，使用 `contract_id=NO_CONTRACT_USAGE`，仍须提供 reviewer、结论和 Evidence。
 5. 没有机器证据也没有有效人工审查证据时必须 Fail Closed；不得以警告代替验证通过。
 6. Module Contract 的实际消费者不属于 owner Module，或生产文件不能唯一映射到一个 Module 时，Verification 必须失败。
+
+<!-- SPECFORGE_REQUIRED_VERIFICATION_STOP:START -->
+### D31 必需精确验证停点
+
+- 用户要求“无法精确验证即停”时，不能把验证缺口降为 warning 后建议封存、Gate、批准或 Merge；停止依赖该证明的动作，保留原失败与可独立核验的结果。
+- Runtime 首期只强制执行真实用户消息中显式来源块登记的当前 WI 候选文件 SHA-256 要求，不自动理解任意自然语言。没有受控表达能力时明确报告缺口，不自造用户来源、不声称已登记。
+- 使用 `sf_handoff(action="required_status", work_item_id=...)` 读取当前代际、历史哈希与必需项 key；它不是通过证明。仅对应候选文件的原专业 owner 使用 `verify_required` 和该 key 取得完整字节证明，不能用 Read 截断文本、长度、Agent 自述、旧哈希或总体 Gate 通过代替。
+- `pending/failed/unavailable`、证明漂移或来源拒绝均须停止依赖动作；可由原 owner 在既有权限内修复后重新验证。不得换入口、删除记录、扩大权限、改冻结 Task 或代用户批准。
+- handoff 的 `write.success=true` 仅说明诊断记录已保存；`required_verification_ready=false` 不得报告成功交接。主编排必须消费 `validate_all` 的完整就绪结果，不能换 stage、owner 或时间过滤条件消除必需项。
+- 取消或替换要求必须有新的真实用户来源并绑定当前完整历史；成功证明只恢复既有流程，不增加 Gate 预算或批准。成功 Merge 后只由 Runtime 归档证明；中断后核验原回执，不重复合并。
+<!-- SPECFORGE_REQUIRED_VERIFICATION_STOP:END -->

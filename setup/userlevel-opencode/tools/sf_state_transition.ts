@@ -38,7 +38,7 @@ export default tool({
     const result = await client.invokeTool(
       "sf_state_transition",
       args,
-      {
+      { callID: Reflect.get(context, "callID"),
         sessionID: context.sessionID,
         messageID: context.messageID,
         agent: context.agent,

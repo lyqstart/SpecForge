@@ -635,6 +635,17 @@ registerHandler('sf_state_transition', async (args, context, deps) => {
         state_advanced: false,
       };
     }
+    try {
+      await new RequiredVerificationOwner(deps).assertReady(projectPath, workItemId);
+    } catch (error) {
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : String(error),
+        code: 'REQUIRED_VERIFICATION_NOT_READY',
+        state_advanced: false,
+        retry_allowed: true,
+      };
+    }
     const unresolvedHandoffFailures = await readUnresolvedHandoffValidationFailures(workItemDir);
     if (unresolvedHandoffFailures.length > 0) {
       return {
@@ -855,3 +866,4 @@ registerHandler('sf_state_transition', async (args, context, deps) => {
     transition_result: transitionResult.transition_result,
   };
 });
+import { RequiredVerificationOwner } from '../lib/required-verification-owner';

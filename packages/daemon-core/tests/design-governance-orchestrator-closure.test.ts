@@ -1,3 +1,4 @@
+import { runGateForFixture as runGate, executeMergeForFixture as executeMerge } from './helpers/required-verification-fixture';
 import { codeContains } from '../../../tests/helpers/source-structure';
 import { authoritativeStateFixture } from './helpers/authoritative-state-fixture';
 import { existsSync, readFileSync } from 'node:fs';
@@ -12,12 +13,13 @@ import '../src/tools/handlers/sf-state-transition.js';
 import '../src/tools/handlers/sf-v11-work-item-create.js';
 import '../src/tools/handlers/sf-artifact-write.js';
 import { getHandler, registerHandler, ToolDispatcher } from '../src/tools/ToolDispatcher.js';
+import { requiredVerificationDepsForFixture } from './helpers/required-verification-fixture';
 import { setHardStop } from '../src/tools/lib/hard-stop-latch.js';
 import { ensureProjectInit } from '../src/tools/lib/sf_project_init_core.js';
 import { computeGateSummaryStatus } from '../src/tools/lib/gate-chain.js';
-import { generateGateSummaryMd, runGate } from '../src/tools/lib/gate-runner-v11.js';
+import { generateGateSummaryMd } from '../src/tools/lib/gate-runner-v11.js';
 import { validateCandidateManifestJson } from '../src/tools/lib/artifact-schema-validation.js';
-import { executeMerge } from '../src/tools/lib/merge-runner-v11.js';
+
 
 function repoRoot(): string {
   const cwd = process.cwd();
@@ -292,11 +294,11 @@ describe('Orchestrator governance execution closure', () => {
     });
     setHardStop(projectRoot, workItemId, 'TEST_HARD_STOP', 'test');
 
-    const dispatcher = new ToolDispatcher(authoritativeStateFixture({ 'WI-0001': 'candidate_preparing' }));
+    const dispatcher = new ToolDispatcher(requiredVerificationDepsForFixture(authoritativeStateFixture({ 'WI-0001': 'candidate_preparing' })));
     const result = (await dispatcher.dispatch({
       tool: 'sf_test_governance_write',
       args: {},
-      context: { directory: projectRoot },
+      context: { directory: projectRoot, sessionID: 'ses_fixture', callID: 'call_fixture' },
     })) as any;
 
     expect(result.success).toBe(false);
@@ -317,11 +319,11 @@ describe('Orchestrator governance execution closure', () => {
     });
     setHardStop(projectRoot, 'WI-0001', 'TEST_MULTI_WI_HARD_STOP', 'test');
 
-    const dispatcher = new ToolDispatcher(authoritativeStateFixture({ 'WI-0001': 'candidate_preparing', 'WI-0002': 'implementation_ready' }));
+    const dispatcher = new ToolDispatcher(requiredVerificationDepsForFixture(authoritativeStateFixture({ 'WI-0001': 'candidate_preparing', 'WI-0002': 'implementation_ready' })));
     const ambiguous = (await dispatcher.dispatch({
       tool: 'sf_test_multi_wi_write',
       args: {},
-      context: { directory: projectRoot },
+      context: { directory: projectRoot, sessionID: 'ses_fixture', callID: 'call_fixture' },
     })) as any;
 
     expect(ambiguous.success).toBe(false);
@@ -333,7 +335,7 @@ describe('Orchestrator governance execution closure', () => {
     const explicitUnblocked = (await dispatcher.dispatch({
       tool: 'sf_test_multi_wi_write',
       args: { work_item_id: 'WI-0002' },
-      context: { directory: projectRoot },
+      context: { directory: projectRoot, sessionID: 'ses_fixture', callID: 'call_fixture' },
     })) as any;
 
     expect(explicitUnblocked.success).toBe(true);
@@ -345,11 +347,11 @@ describe('Orchestrator governance execution closure', () => {
     registerHandler('sf_test_project_write', handler);
     setHardStop(projectRoot, 'PROJECT', 'TEST_PROJECT_HARD_STOP', 'test', 'project');
 
-    const dispatcher = new ToolDispatcher({} as any);
+    const dispatcher = new ToolDispatcher(requiredVerificationDepsForFixture({} as any));
     const result = (await dispatcher.dispatch({
       tool: 'sf_test_project_write',
       args: {},
-      context: { directory: projectRoot },
+      context: { directory: projectRoot, sessionID: 'ses_fixture', callID: 'call_fixture' },
     })) as any;
 
     expect(result.success).toBe(false);

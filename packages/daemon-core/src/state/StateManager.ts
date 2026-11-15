@@ -341,6 +341,78 @@ export class StateManager {
     return event ? structuredClone(event) : null;
   }
 
+  /** D31 consumes the same validated, retained history as workflow state. */
+  private assertRequiredConsumptionProvenance(event: Event, events: Event[]): void {
+    if (event.action !== 'required_verification.consumed') return;
+    const transition = events.find(
+      item => item.eventId === event.payload.merge_transition_event_id
+    );
+    const context = transition?.payload.transition_context as Record<string, unknown> | undefined;
+    const binding = context?.required_verification_merge as Record<string, unknown> | undefined;
+    if (
+      transition?.action !== 'state.transition' ||
+      transition.actor !== 'merge_runner' ||
+      transition.projectId !== event.projectId ||
+      transition.payload.work_item_id !== event.projectId ||
+      transition.payload.from_state !== 'merging' ||
+      transition.payload.to_state !== 'merged' ||
+      transition.ts > event.ts ||
+      context?.source !== 'sf_v11_merge' ||
+      context.merge_status !== 'success' ||
+      !binding ||
+      binding.history_sha256 !== event.payload.prior_history_sha256 ||
+      binding.merge_report_sha256 !== event.payload.merge_report_sha256 ||
+      binding.resulting_spec_sha256 !== event.payload.resulting_spec_sha256
+    )
+      throw new Error('REQUIRED_VERIFICATION_CONSUMPTION_PROVENANCE_INVALID');
+  }
+
+  async readRequiredVerificationHistory(workItemId: string): Promise<Event[]> {
+    const { events } = await this.wal.readAllEvents();
+    await this.assertHistoryWitnesses(events);
+    this.assertTransitionHistory(events);
+    await this.rebuildValidatedEvents(events);
+    const records = events.filter(event => event.action.startsWith('required_verification.'));
+    for (const event of records) {
+      this.assertRequiredConsumptionProvenance(event, events);
+      if (
+        event.actor !== 'required_verification_owner' ||
+        event.metadata.source !== 'daemon' ||
+        typeof event.payload.work_item_id !== 'string' ||
+        event.projectId !== event.payload.work_item_id
+      )
+        throw new Error('REQUIRED_VERIFICATION_HISTORY_INVALID');
+    }
+    return structuredClone(records.filter(event => event.payload.work_item_id === workItemId));
+  }
+
+  /** Only the required-verification owner calls this; it never advances the WI. */
+  async appendRequiredVerificationEvent(
+    workItemId: string,
+    action: 'registered' | 'proof' | 'replaced' | 'consumed',
+    payload: Record<string, unknown>,
+    previousEventId: string | null
+  ): Promise<Event> {
+    await this.readRequiredVerificationHistory(workItemId);
+    if (!this.workItemStates.has(workItemId))
+      throw new Error('REQUIRED_VERIFICATION_WORK_ITEM_MISSING');
+    if ('work_item_id' in payload) throw new Error('REQUIRED_VERIFICATION_RESERVED_FIELD');
+    const event = this.wal.createEvent(
+      workItemId,
+      'system',
+      `required_verification.${action}`,
+      { ...payload, work_item_id: workItemId },
+      'required_verification_owner'
+    );
+    if (action === 'consumed')
+      this.assertRequiredConsumptionProvenance(event, (await this.wal.readAllEvents()).events);
+    await this.wal.appendEvent(event, undefined, { workItemId, eventId: previousEventId });
+    this._lastEventId = event.eventId;
+    this._lastEventTs = event.ts;
+    await this.persistState();
+    return structuredClone(event);
+  }
+
   private assertTransitionHistory(events: Event[]): void {
     const replayed = new Map<string, string>();
     for (const event of events) {

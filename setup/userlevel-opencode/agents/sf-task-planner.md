@@ -739,3 +739,14 @@ DD-* | constrained_by | <Project 或 Module Contract ID>
 ### D29 验收项引用边界
 
 AC 正文由需求 owner 持有。`AC-<MODULE_CODE>-<NNN>-<K>` 和旧式 `REQ-<MODULE_CODE>-<NNN>-<K>` 仅在同代唯一 AC 与唯一所属 REQ 均存在时有效；旧式引用不创建 REQ、不通过去后缀建立需求覆盖。新产物优先引用显式 AC ID；不得为规范化引用改写冻结 Task、删除有效引用、放宽 Gate 或把引用有效报告为验收通过。
+
+<!-- SPECFORGE_REQUIRED_VERIFICATION_STOP:START -->
+### D31 必需精确验证停点
+
+- 用户要求“无法精确验证即停”时，不能把验证缺口降为 warning 后建议封存、Gate、批准或 Merge；停止依赖该证明的动作，保留原失败与可独立核验的结果。
+- Runtime 首期只强制执行真实用户消息中显式来源块登记的当前 WI 候选文件 SHA-256 要求，不自动理解任意自然语言。没有受控表达能力时明确报告缺口，不自造用户来源、不声称已登记。
+- 使用 `sf_handoff(action="required_status", work_item_id=...)` 读取当前代际、历史哈希与必需项 key；它不是通过证明。仅对应候选文件的原专业 owner 使用 `verify_required` 和该 key 取得完整字节证明，不能用 Read 截断文本、长度、Agent 自述、旧哈希或总体 Gate 通过代替。
+- `pending/failed/unavailable`、证明漂移或来源拒绝均须停止依赖动作；可由原 owner 在既有权限内修复后重新验证。不得换入口、删除记录、扩大权限、改冻结 Task 或代用户批准。
+- handoff 的 `write.success=true` 仅说明诊断记录已保存；`required_verification_ready=false` 不得报告成功交接。主编排必须消费 `validate_all` 的完整就绪结果，不能换 stage、owner 或时间过滤条件消除必需项。
+- 取消或替换要求必须有新的真实用户来源并绑定当前完整历史；成功证明只恢复既有流程，不增加 Gate 预算或批准。成功 Merge 后只由 Runtime 归档证明；中断后核验原回执，不重复合并。
+<!-- SPECFORGE_REQUIRED_VERIFICATION_STOP:END -->

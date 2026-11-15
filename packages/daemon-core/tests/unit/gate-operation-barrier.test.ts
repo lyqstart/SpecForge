@@ -3,7 +3,8 @@ import path from 'node:path';
 import { withGateOperationBarrier } from '../../src/tools/lib/gate-operation-barrier';
 
 describe('Gate failure commit excludes overlapping controlled writes', () => {
-  it.each(['sf_v11_gate_run', 'sf-gate-run'])(
+  it.each(['sf_v11_gate_run', 'sf-gate-run', 'sf_required_verification_capture', 'sf_required_verification_proof',
+    'sf_state_transition', 'sf_handoff', 'sf_v11_handoff', 'sf_user_decision_record', 'sf_v11_decision', 'sf_merge_run', 'sf_v11_merge'])(
     'blocks writes and another Gate while %s is active, but permits diagnostics',
     async tool => {
       const root = path.resolve('synthetic-barrier');

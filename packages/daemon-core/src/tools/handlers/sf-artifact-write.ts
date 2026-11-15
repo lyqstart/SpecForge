@@ -1,3 +1,4 @@
+import { PROFESSIONAL_ARTIFACT_OWNERS } from '../lib/professional-artifact-owners';
 import { diagnosticScalarText, scalarText } from '@specforge/types';
 /**
  * sf-artifact-write.ts — v1.1 Controlled Artifact Writer
@@ -949,29 +950,7 @@ function isPlaceholderProjectConfigContent(content: string): boolean {
   const normalized = content.trim().toLowerCase();
   return !normalized || ['todo', 'tbd', 'placeholder', '# todo', '# tbd'].includes(normalized);
 }
-const PROFESSIONAL_ARTIFACT_OWNERS = new Map<string, string>([
-  ['requirements', 'sf-requirements'],
-  ['candidate_requirements', 'sf-requirements'],
-  ['candidate_requirements_index', 'sf-requirements'],
-  ['requirements_delta', 'sf-requirements'],
-  ['design', 'sf-design'],
-  ['candidate_design', 'sf-design'],
-  ['design_delta', 'sf-design'],
-  ['candidate_architecture', 'sf-design'],
-  ['candidate_data_model', 'sf-design'],
-  ['candidate_module_definition', 'sf-design'],
-  ['candidate_module_contract', 'sf-design'],
-  ['tasks', 'sf-task-planner'],
-  ['candidate_tasks', 'sf-task-planner'],
-  ['trace_delta', 'sf-task-planner'],
-  ['candidate_trace_delta', 'sf-task-planner'],
-  ['candidate_module_trace', 'sf-task-planner'],
-  ['investigation_plan', 'sf-investigator'],
-  ['findings_report', 'sf-investigator'],
-  ['verification_report', 'sf-verifier'],
-  ['evidence_manifest', 'sf-verifier'],
-  ['verification_evidence', 'sf-verifier'],
-]);
+
 const VERIFICATION_INPUT_ARTIFACT_TYPES = new Set(['verification_report', 'evidence_manifest']);
 const CONTROL_TOOL_OWNED_ARTIFACT_TYPES = new Set(['merge_report']);
 

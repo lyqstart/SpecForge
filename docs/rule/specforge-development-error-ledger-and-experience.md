@@ -33513,3 +33513,21 @@ Candidate 字节完整性不能替代内容事实完整性。进入候选编制�
 - 行政证据提交54361e0e的1522项原始Git字节验证及commit均成功；切换main、快进合并和HEAD复核也已成功。随后git push退出128，原文为schannel failed to receive handshake/SSL TLS connection failed。不能说本地合并失败、重复merge或直接假定远端状态；新部署daemon/模型结果不受影响。
 - 先记录实际命令回执并重新只读核验远端main；恢复时保留已完成的本地提交/快进，只有新追加的这条错误与恢复载体属于新的行政提交。最终push保持非force，远端若已收到目标则不重复；远端出现未知提交则拒绝。不得关闭TLS验证、重跑产品升级或模型。
 - 适用EXP-007/008/023/037/038/041/085/113/193/201/296；若确需验证其他TLS后端，只能先对同一官方远端做启用证书验证的只读对照，不能把假设当作网络根因。
+
+### ERR-2250：不同 Zod 主版本的 Schema 直接组合导致持久合同回放失败
+- D31 required-history-a01 定向回归 5 项失败，原始异常为 Invalid element at key declaration: expected a Zod schema。实际共享 types 合同使用 Zod 3，daemon-core 使用 Zod 4；新增回放器把前者 Schema 直接嵌入后者。不能将这类结构兼容失败当成业务输入拒绝或通过。
+- 修正将来源、登记、证明和物理身份 Schema 统一回共享合同模块，由同一 Schema owner 构造；daemon 只消费其解析器和推导类型。required-history-a02 的 7 项回归、types-build-a04、daemon-build-a02、adapter-build-a06 通过；原失败保留于 docs/archive/2026-11-15-required-verification-stop/。这不代表完整产品验收或部署完成。
+- 复用 EXP-004/008/022/282；增加共享 Schema 跨包组合前核验实际主版本与运行时解析闭环的前置规则。
+
+### ERR-2251：新增必需证据门禁必须保留既有准入顺序、权限查询边界及真实调用身份
+- D31 首轮 daemon 全量回归保留了 211 项失败、1 个未处理错误；第二轮保留了 63 项失败。不能把所有失败归为旧测试问题，也不能删除强制证据校验来恢复通过。真实 handler 夹具必须显式消费 StateManager/WAL；只读历史核验不得为测试方便初始化 state.json，不能以硬编码空要求冒充历史验证。
+- 源码与回归共同暴露了写入执行来源门禁误用于旧 Write Guard 权限查询、Dispatcher 来源登记先于既有 RBAC/HardStop，以及部分模板裁剪真实 callID 的接线缺口。修正区分查询与执行：查询继续受原权限规则约束且明确 invocation_verified=false；真正写前 hook 仍强制真实来源。Dispatcher 将准入、来源登记及 handler 放在同一个排他操作中，原 owner 的登记/证明追加也拒绝已有 HardStop。
+- SDK 类型未列 callID 不能证明运行时没有该字段。隔离 OpenCode 1.18.35 的 execute-context-a01 实测执行上下文确有 callID；默认值探针也保存实际参数与调用记录。模板只转交该真实字段，不能制造 ID 或以调用者参数替代。user_decision wrapper 的既有兼容归一化移到 Runtime owner，保持原始调用参数可比对，不补造审批原话。
+- 原始失败、真实核验与修正回归保留在 docs/archive/2026-11-15-required-verification-stop/。这些为开发阶段取证，不代表全量验收、LPAC、公开发布或默认部署完成。复用 EXP-004/008/022/274/282/287。
+
+
+
+### ERR-2252：新增历史证明消费者不能使用手写状态快照冒充 Runtime 夹具
+- P0 剩余五项失败的实际返回值为 WAL_CHECKPOINT_INVALID：旧测试仅手写 state.json 且没有完整事件身份。改用真实 StateManager 生成隔离测试状态与留存 WAL 后，原批准/Gate/Merge/Close 断言全部通过；没有删除产品的历史完整性检查，也不表示原业务 Candidate 获批。
+- 第三轮 daemon 回归为 278 文件通过、2927 项通过、1 项 skipped，跳过项单独保留；随后静态格式/类型修正和新增恢复反例仍须绑定新源码验收。重复 JSON 键会被默认解析器覆盖，D31 显式来源块增加逐对象、解码后重名拒绝，保留有限合同。
+- 隔离真实 OpenCode 的当前构建委派探针核验父用户消息、子角色与真实 callID；仅证明来源链，不替代完整安装器/LPAC/业务链。全部命令原始输出与失败保留于本阶段 archive。路径猜测和 Windows 通配符检索失败未计为已读；后续优先实际文件清单和 rg -g。复用 EXP-007/008/022/282。

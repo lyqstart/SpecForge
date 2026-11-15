@@ -1,3 +1,4 @@
+import { runGateForFixture as runGate } from '../helpers/required-verification-fixture';
 /**
  * spec_consistency_gate (step 3a) — unit tests.
  *
@@ -10,7 +11,7 @@ import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
 import * as os from "node:os";
-import { runGate } from "../../src/tools/lib/gate-runner-v11";
+
 
 describe("spec_consistency_gate — contract reference reconciliation", () => {
   let projectRoot: string;

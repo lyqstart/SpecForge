@@ -30,6 +30,38 @@ export interface ToolInvocationVerifier {
   verifyGateRepairAuthorization?(
     input: GateRepairAuthorizationRequest,
   ): Promise<GateRepairAuthorizationProof>;
+  readRequiredVerificationSource?(
+    input: RequiredVerificationSourceRequest,
+  ): Promise<RequiredVerificationSourceProof>;
+}
+
+export interface RequiredVerificationSourceRequest {
+  sessionId: string;
+  callId: string;
+  messageId?: string;
+  directory: string;
+  tool: string;
+  args: Record<string, unknown>;
+}
+
+export interface RequiredVerificationSourceProof {
+  source: "required-verification-source/v1";
+  sessionId: string;
+  messageId: string;
+  callId: string;
+  tool: string;
+  inputSha256: string;
+  agent: string;
+  directory: string;
+  userSessionId: string;
+  userMessageId: string;
+  userTextSha256: string;
+  userCreatedAt: number;
+  observedAt: string;
+  declaration:
+    | import("./required-verification-contract.js").RequiredVerificationDeclaration
+    | null;
+  chainSha256: string;
 }
 
 export interface GateRepairAuthorizationRequest {

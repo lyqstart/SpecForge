@@ -1,3 +1,4 @@
+import { recordUserDecisionForFixture as recordUserDecision } from '../helpers/required-verification-fixture';
 /**
  * governance-closure-core.test.ts — Core layer governance tests
  *
@@ -34,7 +35,7 @@ import '../../src/tools/handlers/sf-hard-stop-resolve.js';
 import { resolveAuditProbes } from '../helpers/resolve-audit-probes.js';
 import { getHandler } from '../../src/tools/ToolDispatcher.js';
 import { captureSemanticClosureProvenance } from '../../src/tools/lib/semantic-closure-provenance.js';
-import { recordUserDecision } from '../../src/tools/lib/user-decision-recorder-v11.js';
+
 
 // ---------------------------------------------------------------------------
 // Helpers

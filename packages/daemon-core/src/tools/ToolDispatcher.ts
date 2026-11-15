@@ -13,6 +13,8 @@ import { recordDaemonObservation } from '../observability/observability-recorder
 import { createSfTraceId, getTraceIdFromContext } from '../observability/trace';
 import { guardHardStop, isHardStopRecoveryTool } from './lib/hard-stop-latch';
 import { withGateOperationBarrier } from './lib/gate-operation-barrier';
+import { RequiredVerificationOwner } from './lib/required-verification-owner';
+import { isRequiredVerificationReadOnlyCall } from './lib/required-verification-consumer';
 import { readAuthoritativeWorkItems } from './lib/authoritative-work-items';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
@@ -36,6 +38,7 @@ export interface ToolInvokeRequest {
         worktree?: string;
         projectPath?: string;
         trace_id?: string;
+        requested_tool?: string;
       }
     | Record<string, unknown>;
 }
@@ -196,7 +199,9 @@ export class ToolDispatcher {
     const projectRoot = resolveProjectRoot(req.context);
     return withGateOperationBarrier(
       projectRoot,
-      req.tool,
+      // Admission, source capture and the dependent handler share one exclusive
+      // operation: no registration before RBAC/HardStop and no inter-phase gap.
+      isHardStopRecoveryTool(req.tool) ? req.tool : 'sf_required_verification_capture',
       isHardStopRecoveryTool(req.tool) && req.tool !== 'sf_hard_stop_resolve',
       () => this.dispatchProjectOperation(req, projectRoot)
     );
@@ -439,6 +444,30 @@ export class ToolDispatcher {
       return result;
     }
 
+    if (
+      !isHardStopRecoveryTool(req.tool) &&
+      !isRequiredVerificationReadOnlyCall(req.tool, req.args)
+    ) {
+      if (typeof req.context?.sessionID !== 'string' || typeof req.context?.callID !== 'string')
+        return { success: false, error: 'REQUIRED_VERIFICATION_SOURCE_IDENTITY_REQUIRED' };
+      try {
+        await new RequiredVerificationOwner(this.deps).captureSource(projectRoot, {
+          sessionId: req.context.sessionID,
+          callId: req.context.callID,
+          directory: projectRoot,
+          tool: req.tool,
+          args: req.args,
+        });
+      } catch (error) {
+        const message = error instanceof Error ? error.message : '';
+        return {
+          success: false,
+          error: /^[A-Z0-9_]{1,128}$/.test(message)
+            ? message
+            : 'REQUIRED_VERIFICATION_SOURCE_UNAVAILABLE',
+        };
+      }
+    }
     try {
       const result = await handler(
         req.args,

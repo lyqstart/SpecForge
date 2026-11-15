@@ -10,7 +10,7 @@ export default tool({
       .describe("文档类型"),
   },
   async execute(args, context) {
-    const result = await daemon.invokeTool("sf_doc_lint", args, {
+    const result = await daemon.invokeTool("sf_doc_lint", args, { callID: Reflect.get(context, "callID"),
       sessionID: context.sessionID,
       agent: context.agent,
       directory: context.directory,

@@ -1,14 +1,16 @@
+import { executeMergeForFixture as executeMerge } from './helpers/required-verification-fixture';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import * as fs from 'node:fs/promises';
 import * as os from 'node:os';
 import * as path from 'node:path';
 import { ToolDispatcher, type ToolDeps } from '../src/tools/ToolDispatcher';
+import { requiredVerificationDepsForFixture } from './helpers/required-verification-fixture';
 import '../src/tools/index';
 import {
   isCandidateFrozenState,
   isCandidateGovernancePath,
 } from '../src/tools/lib/candidate-freeze-v11';
-import { executeMerge } from '../src/tools/lib/merge-runner-v11';
+
 
 let projectRoot: string;
 let currentState: string;
@@ -57,7 +59,7 @@ async function invoke(
   return dispatcher.dispatch({
     tool,
     args,
-    context: { directory: projectRoot, agent, sessionID: 'candidate-approval-test' },
+    context: { directory: projectRoot, agent, sessionID: 'ses_candidatefixture', callID: 'call_candidatefixture' },
   });
 }
 
@@ -66,7 +68,7 @@ describe('Candidate / approval / state governance', () => {
     projectRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'sf-candidate-approval-'));
     currentState = 'approved';
     transitionFailure = false;
-    dispatcher = new ToolDispatcher(makeDeps());
+    dispatcher = new ToolDispatcher(requiredVerificationDepsForFixture(makeDeps()));
   });
 
   afterEach(async () => {

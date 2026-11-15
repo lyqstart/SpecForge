@@ -1,3 +1,4 @@
+import { requiredVerificationDepsForFixture } from '../helpers/required-verification-fixture';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import * as http from 'node:http';
 import * as fs from 'node:fs/promises';
@@ -29,11 +30,11 @@ describe('controlled HTTP full-envelope admission', () => {
     await fs.mkdir(runtime, { recursive: true });
     vi.stubEnv('OPENCODE_CONFIG_DIR', configRoot);
     dispatch.mockReset().mockResolvedValue({ success: true });
-    server = new HTTPServer({
+    server = new HTTPServer(requiredVerificationDepsForFixture({
       config: new DaemonConfig([]),
       eventBus: new EventBus(),
       toolDispatcher: { dispatch } as never,
-    });
+    }));
     server.setToken(token);
     ({ port } = await server.start());
     const handshakePath = join(runtime, 'handshake.json');
@@ -107,7 +108,7 @@ describe('controlled HTTP full-envelope admission', () => {
       content: '需求\\"\n'.repeat(9000),
     };
     expect(Buffer.byteLength(JSON.stringify(args))).toBeGreaterThan(65536);
-    await plugin.checkNativeTool(owned, 'sf_artifact_write', args);
+    await plugin.checkNativeTool(owned, 'sf_artifact_write', args, { sessionID: 'ses_fixture', callID: 'call_fixture' });
     const result = await new DaemonClient().invokeTool(
       'sf_artifact_write',
       args,
@@ -130,7 +131,7 @@ describe('controlled HTTP full-envelope admission', () => {
         route === INVOKE
           ? { tool: 'sf_artifact_write', args: { content: '', data: 'literal' } }
           : {
-              projectPath: owned,
+              projectPath: owned, invocation: { sessionID: 'ses_fixture', callID: 'call_fixture' },
               tool: 'sf_artifact_write',
               args: { content: '', data: 'literal' },
             };
@@ -213,7 +214,7 @@ describe('controlled HTTP full-envelope admission', () => {
   it('keeps unknown native tools denied with full large arguments', async () => {
     const result = await request(
       NATIVE,
-      JSON.stringify({ projectPath: owned, tool: 'invalid', args: { content: 'x'.repeat(70000) } })
+      JSON.stringify({ projectPath: owned, invocation: { sessionID: 'ses_fixture', callID: 'call_fixture' }, tool: 'invalid', args: { content: 'x'.repeat(70000) } })
     );
     expect(result.status).toBe(200);
     expect(JSON.parse(result.body).data.allowed).toBe(false);

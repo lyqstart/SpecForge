@@ -1,3 +1,4 @@
+import { requiredVerificationDepsForFixture } from '../helpers/required-verification-fixture';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
@@ -21,7 +22,7 @@ function fixture() {
   fs.mkdirSync(path.join(root, '.specforge/runtime'), { recursive: true });
   fs.writeFileSync(path.join(root, '.specforge/runtime/state.json'), JSON.stringify({ workItems: [{ work_item_id: 'WI-0001', current_state: 'implementation_running' }] }));
   const manager = { rebuildState: vi.fn(async () => {}), listWorkItems: () => [{ work_item_id: 'WI-0001', current_state: 'implementation_running' }] };
-  return { root, manager, deps: { projectManager: { getProjectStateManager: async () => manager } } };
+  return { root, manager, deps: requiredVerificationDepsForFixture({ projectManager: { getProjectStateManager: async () => manager } }) };
 }
 describe('native and shell execution boundaries', () => {
   it('blocks dispatch when authoritative state cannot be read', async () => {
@@ -47,7 +48,7 @@ describe('native and shell execution boundaries', () => {
       checkNativeTool: client.checkNativeTool.bind(client),
     }, notify: () => {} });
     const executeWrite = async (filePath: string) => {
-      await hooks['tool.execute.before']({ tool: 'write' }, { args: { filePath } });
+      await hooks['tool.execute.before']({ tool: 'write', sessionID: 'ses_fixture', callID: 'call_fixture' }, { args: { filePath } });
       fs.writeFileSync(path.join(root, filePath), 'approved');
     };
     try {
@@ -64,14 +65,14 @@ describe('native and shell execution boundaries', () => {
   });
   it('allows an authorized native file and rejects an unauthorized file', async () => {
     const { root, deps, manager } = fixture();
-    expect((await checkNativeTool(deps, root, 'write', { filePath: 'allowed.txt' })).allowed).toBe(true);
-    expect((await checkNativeTool(deps, root, 'write', { filePath: 'denied.txt' })).allowed).toBe(false);
+    expect((await checkNativeTool(deps, root, 'write', { filePath: 'allowed.txt' }, { sessionID: 'ses_fixture', callID: 'call_fixture' })).allowed).toBe(true);
+    expect((await checkNativeTool(deps, root, 'write', { filePath: 'denied.txt' }, { sessionID: 'ses_fixture', callID: 'call_fixture' })).allowed).toBe(false);
     expect(manager.rebuildState).toHaveBeenCalled();
     expect(fs.existsSync(path.join(root, 'denied.txt'))).toBe(false);
   });
   it('does not trust a stale projection after authoritative close', async () => {
     const { root, deps, manager } = fixture(); manager.listWorkItems = () => [{ work_item_id: 'WI-0001', current_state: 'closed' }];
-    expect((await checkNativeTool(deps, root, 'write', { filePath: 'allowed.txt' })).allowed).toBe(false);
+    expect((await checkNativeTool(deps, root, 'write', { filePath: 'allowed.txt' }, { sessionID: 'ses_fixture', callID: 'call_fixture' })).allowed).toBe(false);
     expect(enforceRuntimeWriteGuardForShell({ projectRoot: root, workItemId: 'WI-0001', command: 'echo hi > allowed.txt' }).allowed).toBe(false);
   });
   it('rejects native arbitrary execution and unknown tools', async () => {

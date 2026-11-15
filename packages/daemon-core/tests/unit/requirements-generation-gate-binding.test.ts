@@ -1,9 +1,10 @@
+import { runRequiredGatesForFixture as runRequiredGates } from '../helpers/required-verification-fixture';
 import { afterEach, describe, expect, it } from 'vitest';
 import { mkdtemp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { createHash } from 'node:crypto';
-import { registerGate, runRequiredGates } from '../../src/tools/lib/gate-chain';
+import { registerGate } from '../../src/tools/lib/gate-chain';
 import { makeReport, type GateContext } from '../../src/tools/lib/gate-report';
 
 const roots: string[] = [];

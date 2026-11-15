@@ -1,4 +1,5 @@
 import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
+import { readVerificationFileSnapshot, verificationId } from '../../verification/owner-store';
 /**
  * sf-v11-merge — v1.1 Merge Runner handler
  *
@@ -87,6 +88,11 @@ async function advanceMergeState(input: {
   status: string;
   mergedCount: number;
   evidenceOnly: boolean;
+  requiredVerificationMerge?: {
+    history_sha256: string;
+    merge_report_sha256: string;
+    resulting_spec_sha256: string;
+  };
 }): Promise<any> {
   if (input.status === 'not_applicable') {
     const validNoMergePath =
@@ -225,6 +231,9 @@ async function advanceMergeState(input: {
           source: 'sf_v11_merge',
           merge_status: input.status,
           merged_count: input.mergedCount,
+          ...(input.requiredVerificationMerge
+            ? { required_verification_merge: input.requiredVerificationMerge }
+            : {}),
         },
       })
     );
@@ -272,7 +281,22 @@ registerHandler('sf_v11_merge', async (args, context, deps) => {
   }
 
   try {
+    const requiredVerification = new RequiredVerificationOwner(deps);
+    const before = await readAuthoritativeState({ deps, projectRoot, workItemId });
+    if (before.current_state === 'merged') {
+      const consumed = await requiredVerification.consumeMerged(projectRoot, workItemId);
+      if (consumed)
+        return {
+          success: true,
+          status: 'success',
+          work_item_id: workItemId,
+          recovered_required_verification: consumed,
+          merge_replayed: false,
+        };
+    }
+    const requiredProof = await requiredVerification.assertReady(projectRoot, workItemId);
     const result = await executeMerge({
+      requiredVerification,
       projectRoot,
       workItemId,
       workItemDir,
@@ -283,6 +307,28 @@ registerHandler('sf_v11_merge', async (args, context, deps) => {
     const status = result.status ?? (result.success ? 'success' : 'failed');
     const mergedCount = result.merged_files.filter(f => f.status === 'success').length;
     const workflowFacts = await readWorkflowFacts(workItemDir);
+    const requiredVerificationMerge =
+      result.success && status === 'success' && requiredProof.required > 0
+        ? {
+            history_sha256: requiredProof.history_sha256,
+            merge_report_sha256: verificationId(
+              (
+                await readVerificationFileSnapshot(
+                  path.join(workItemDir, 'merge_report.md'),
+                  2 * 1024 * 1024
+                )
+              ).bytes
+            ),
+            resulting_spec_sha256: verificationId(
+              (
+                await readVerificationFileSnapshot(
+                  path.join(projectRoot, SPEC_DIR_NAME, 'project', 'spec_manifest.json'),
+                  2 * 1024 * 1024
+                )
+              ).bytes
+            ),
+          }
+        : undefined;
 
     const stateAutoAdvance = result.success
       ? await advanceMergeState({
@@ -296,8 +342,11 @@ registerHandler('sf_v11_merge', async (args, context, deps) => {
           status,
           mergedCount,
           evidenceOnly: workflowFacts.evidenceOnly,
+          requiredVerificationMerge,
         })
       : { attempted: false, reason: 'merge_failed' };
+    if (requiredVerificationMerge)
+      await requiredVerification.consumeMerged(projectRoot, workItemId);
 
     return {
       success: result.success,
@@ -315,3 +364,4 @@ registerHandler('sf_v11_merge', async (args, context, deps) => {
     return { success: false, status: 'failed', error: err.message };
   }
 });
+import { RequiredVerificationOwner } from '../lib/required-verification-owner';

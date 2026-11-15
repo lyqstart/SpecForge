@@ -286,14 +286,14 @@ export class ReconnectingDaemonClient implements Disposable {
     return this.degraded;
   }
 
-  async checkNativeTool(projectPath: string, tool: string, args: Record<string, unknown>): Promise<void> {
+  async checkNativeTool(projectPath: string, tool: string, args: Record<string, unknown>, invocation?: { sessionID?: string; callID?: string }): Promise<void> {
     if (this.disposed) throw new Error('WRITE_GUARD_UNAVAILABLE');
     const handshake = await readHandshake(this.options.handshakePath);
     if (!handshake) throw new Error('WRITE_GUARD_UNAVAILABLE: daemon handshake missing');
     const response = await fetch(`${this.options.healthzUrl}:${handshake.port}/api/v1/v11/write-guard/native`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${handshake.token}` },
-      body: JSON.stringify({ projectPath, tool, args }),
+      body: JSON.stringify({ projectPath, tool, args, invocation }),
       signal: AbortSignal.timeout(5000),
     });
     if (!response.ok) throw new Error(`WRITE_GUARD_UNAVAILABLE: HTTP ${response.status}`);

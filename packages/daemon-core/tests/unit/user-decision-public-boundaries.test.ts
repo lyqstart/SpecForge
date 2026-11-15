@@ -1,11 +1,13 @@
+import { getHandlerForFixture as getHandler } from '../helpers/required-verification-fixture';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { mkdtemp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import '../../src/tools/handlers/sf-v11-decision.js';
+import { normalizeDecisionRecorderArguments } from '../../src/tools/handlers/sf-v11-decision.js';
 import '../../src/tools/handlers/sf-v11-gate-run.js';
 import '../../src/tools/handlers/sf-v11-merge.js';
-import { getHandler } from '../../src/tools/ToolDispatcher.js';
+
 
 const roots: string[] = [];
 
@@ -51,6 +53,17 @@ function stateDeps(currentState: string) {
 }
 
 describe('User Decision public schema boundaries', () => {
+  it('keeps compatibility interpretation inside the owner without rewriting source arguments or inventing approval evidence', () => {
+    const original = Object.freeze({ approved: true, comments: 'task request', decision_type: 'waived' });
+    expect(normalizeDecisionRecorderArguments(original)).toEqual({
+      approved: true, comments: 'task request', action: 'record', decision_status: 'approved', decision_type: 'user_approved',
+    });
+    expect(original).not.toHaveProperty('decision_status');
+    expect(normalizeDecisionRecorderArguments(original)).not.toHaveProperty('user_response_quote');
+    expect(normalizeDecisionRecorderArguments({ approved: false })).toMatchObject({ decision_status: 'rejected', decision_type: 'rejected' });
+    expect(normalizeDecisionRecorderArguments({ decision_status: 'waived' })).toMatchObject({ decision_type: 'waived' });
+    expect(normalizeDecisionRecorderArguments({ action: 'invalidate', approved: true })).not.toHaveProperty('decision_status');
+  });
   it('Decision Recorder does not overwrite an unknown existing schema', async () => {
     const fixture = await createUnknownDecisionFixture('WI-7201');
     const result = await getHandler('sf_v11_decision')!(

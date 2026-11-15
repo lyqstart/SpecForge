@@ -1,9 +1,10 @@
+import { getHandlerForFixture as getHandler } from '../helpers/required-verification-fixture';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import * as fs from 'node:fs/promises';
 import * as os from 'node:os';
 import * as path from 'node:path';
 
-import { getHandler, type ToolDeps } from '../../src/tools/ToolDispatcher';
+import { type ToolDeps } from '../../src/tools/ToolDispatcher';
 import '../../src/tools/index';
 import { validateChangeClassification } from '../../src/tools/lib/change-classification';
 import { requiredGreenfieldClassificationFields } from '../../src/tools/handlers/sf-v11-work-item-create';

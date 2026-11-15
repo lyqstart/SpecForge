@@ -408,6 +408,18 @@ export async function transitionWithEvidence(
   if (!input.deps?.projectManager)
     throw new Error('STATE_COORDINATOR_TRANSITION_FAILED: ProjectManager not available');
   await validateTransitionRequest(input);
+  if (
+    [
+      'candidate_prepared',
+      'gates_running',
+      'gates_passed',
+      'approval_required',
+      'approved',
+    ].includes(input.toState)
+  )
+    await new RequiredVerificationOwner(
+      input.deps as import('./required-verification-owner').RequiredVerificationOwnerDependencies
+    ).assertReady(input.projectRoot, input.workItemId);
   const verificationRecovery = await inspectBlockedVerificationRecovery(input);
   const projectSm = await input.deps.projectManager.getProjectStateManager(input.projectRoot);
   await projectSm.transition(
@@ -662,3 +674,4 @@ export async function recoverInvalidMergedSpecClosureWithEvidence(input: {
     },
   };
 }
+import { RequiredVerificationOwner } from './required-verification-owner';

@@ -279,7 +279,22 @@ export function validateUserApprovalBoundary(
   return { ok: true };
 }
 
+/** Preserve the established compatibility mapping after actual-call source
+ * verification, rather than changing the input in the user-level wrapper. */
+export function normalizeDecisionRecorderArguments(input: Record<string, unknown>) {
+  const args = { ...input };
+  if (!args.action) args.action = 'record';
+  if (args.action === 'record' && !args.decision_status && typeof args.approved === 'boolean') {
+    args.decision_status = args.approved ? 'approved' : 'rejected';
+    args.decision_type = args.approved ? 'user_approved' : 'rejected';
+  }
+  if (args.action === 'record' && !args.decision_type && args.decision_status === 'waived')
+    args.decision_type = 'waived';
+  return args;
+}
+
 registerHandler('sf_v11_decision', async (args, context, deps) => {
+  args = normalizeDecisionRecorderArguments(args);
   const projectRoot =
     (context?.directory as string) || (context?.worktree as string) || process.cwd();
   const workItemId = args['work_item_id'] as string;
@@ -558,6 +573,8 @@ registerHandler('sf_v11_decision', async (args, context, deps) => {
     const autoApprovalPolicyId =
       scalarText(args['auto_approval_policy_id'] ?? '').trim() || undefined;
     const decision = await recordUserDecision({
+      projectRoot,
+      requiredVerification: new RequiredVerificationOwner(deps),
       workItemDir,
       workItemId,
       workflowPath,
@@ -633,3 +650,4 @@ registerHandler('sf_v11_decision', async (args, context, deps) => {
     return { success: false, error: err.message };
   }
 });
+import { RequiredVerificationOwner } from '../lib/required-verification-owner';

@@ -1,3 +1,4 @@
+import { requiredVerificationDepsForFixture } from '../helpers/required-verification-fixture';
 import { describe, expect, it, vi } from 'vitest';
 import * as fs from 'node:fs/promises';
 import { join } from 'node:path';
@@ -30,12 +31,12 @@ describe('Thin Plugin first start through real HTTP and Project Init owner', () 
       handleOpenCodeEvent: vi.fn(async () => undefined),
       getProjectPath: () => project,
     };
-    const server = new HTTPServer({
+    const server = new HTTPServer(requiredVerificationDepsForFixture({
       config: new DaemonConfig(),
       eventBus: bus,
       projectManager: manager,
       sessionRegistry,
-    } as never);
+    }) as never);
     const token = 'owned-synthetic-http-token';
     server.setToken(token);
     let client: ReconnectingDaemonClient | undefined;
@@ -68,7 +69,7 @@ describe('Thin Plugin first start through real HTTP and Project Init owner', () 
       expect(notify).toHaveBeenCalledTimes(1);
       expect(await fs.readdir(project)).toEqual([]);
       expect(sessionRegistry.registerPluginSession).not.toHaveBeenCalled();
-      await hooks['tool.execute.before']({ tool: 'sf_project_init' }, { args: {} });
+      await hooks['tool.execute.before']({ tool: 'sf_project_init', sessionID: 'ses_fixture', callID: 'call_fixture' }, { args: {} });
       const response = await fetch(`http://127.0.0.1:${port}/api/v1/project/ensure`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },

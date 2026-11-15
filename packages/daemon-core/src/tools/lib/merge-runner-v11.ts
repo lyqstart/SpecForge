@@ -49,6 +49,7 @@ import { validateModuleDefinitionCandidateJson } from './artifact-schema-validat
 import { isSameOrDescendantResolvedPath } from './path-identity.js';
 
 export interface MergeInput {
+  requiredVerification?: RequiredVerificationConsumer;
   projectRoot: string;
   workItemId: string;
   workItemDir: string;
@@ -688,6 +689,11 @@ async function projectTraceProjection(input: {
 }
 
 export async function executeMerge(input: MergeInput): Promise<MergeResult> {
+  const requiredProof = await assertRequiredVerificationReady(
+    input.requiredVerification,
+    input.projectRoot,
+    input.workItemId
+  );
   const result: MergeResult = {
     success: true,
     merged_files: [],
@@ -915,6 +921,12 @@ export async function executeMerge(input: MergeInput): Promise<MergeResult> {
     ),
   ]);
   const snapshots = await snapshotFiles(transactionTargets);
+  await assertRequiredVerificationReady(
+    input.requiredVerification,
+    input.projectRoot,
+    input.workItemId,
+    requiredProof.history_sha256
+  );
 
   try {
     for (const entry of entries) {
@@ -1180,3 +1192,7 @@ async function generateMergeReport(input: MergeInput, result: MergeResult): Prom
   lines.push('', '## Evidence', '', '- merge_runner_execution_log');
   await fs.writeFile(path.join(input.workItemDir, 'merge_report.md'), lines.join('\n'), 'utf-8');
 }
+import {
+  assertRequiredVerificationReady,
+  type RequiredVerificationConsumer,
+} from './required-verification-consumer';

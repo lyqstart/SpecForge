@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 import * as fs from 'node:fs/promises';
 import path from 'node:path';
 import os from 'node:os';
-import { VerificationOwnerStore, verificationId, canonicalVerificationJson } from '../../src/verification/owner-store';
+import { VerificationOwnerStore, verificationId, canonicalVerificationJson, readVerificationFileSnapshot } from '../../src/verification/owner-store';
 
 const roots: string[] = [];
 async function fixture() {
@@ -19,6 +19,24 @@ afterEach(async () => {
 });
 
 describe('Runtime verification owner immutable store', () => {
+  it('captures exact bytes and physical identity within an explicit byte budget', async () => {
+    const store = await fixture(), file = path.join(store.root, 'finite.bin');
+    await fs.writeFile(file, Buffer.from([0, 1, 255, 10]));
+    const snapshot = await readVerificationFileSnapshot(file, 4);
+    expect(snapshot.bytes).toEqual(Buffer.from([0, 1, 255, 10]));
+    expect(snapshot.identity.size).toBe('4');
+    await expect(readVerificationFileSnapshot(file, 3)).rejects.toThrow('FILE_INVALID');
+    await expect(readVerificationFileSnapshot(file, -1)).rejects.toThrow('BUDGET_INVALID');
+  });
+  it('distinguishes replacing a file with identical bytes from the original physical file', async () => {
+    const store = await fixture(), file = path.join(store.root, 'finite.bin'), replacement = path.join(store.root, 'replacement.bin');
+    await fs.writeFile(file, 'same');
+    const before = await readVerificationFileSnapshot(file, 4);
+    await fs.writeFile(replacement, 'same'); await fs.rename(replacement, file);
+    const after = await readVerificationFileSnapshot(file, 4);
+    expect(after.bytes).toEqual(before.bytes);
+    expect(after.identity.ino).not.toBe(before.identity.ino);
+  });
   it('persists authenticated objects across owner restart', async () => {
     const store = await fixture(), payload = { wi: 'WI-0001', project: 'owned-project', passed: false };
     const id = await store.put('plan', payload);

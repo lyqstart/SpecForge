@@ -45,7 +45,7 @@ export default tool({
     category_description: tool.schema.string().optional().describe("新分类描述"),
   },
   async execute(args, context) {
-    const result = await daemon.invokeTool("sf_knowledge_base", args, {
+    const result = await daemon.invokeTool("sf_knowledge_base", args, { callID: Reflect.get(context, "callID"),
       sessionID: context.sessionID,
       agent: context.agent,
       directory: context.directory,

@@ -10,7 +10,7 @@ export default tool({
   },
   async execute(args, context) {
     return JSON.stringify(await new DaemonClient(180000).invokeTool('sf_verification_run', args,
-      {sessionID:context.sessionID,messageID:context.messageID,directory:context.directory,worktree:context.worktree,agent:context.agent},
+      { callID: Reflect.get(context, "callID"),sessionID:context.sessionID,messageID:context.messageID,directory:context.directory,worktree:context.worktree,agent:context.agent},
       {signal:context.abort,retry:false}));
   },
 })

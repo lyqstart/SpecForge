@@ -15,7 +15,7 @@ export default tool({
     branch_name: tool.schema.string().optional().describe("用户拟确认的新 WI 工作分支名"),
   },
   async execute(args, context) {
-    const result = await daemon.invokeTool(TOOL_NAME, args, {
+    const result = await daemon.invokeTool(TOOL_NAME, args, { callID: Reflect.get(context, "callID"),
       sessionID: context.sessionID,
       agent: context.agent,
       directory: context.directory,

@@ -1,3 +1,4 @@
+import { runRequiredGatesForFixture as runRequiredGates } from '../helpers/required-verification-fixture';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import * as fs from 'node:fs/promises';
 import * as os from 'node:os';
@@ -17,7 +18,7 @@ import {
 import { evaluateVerificationGateAutoAdvanceEligibility } from '../../src/tools/handlers/sf-v11-gate-run.js';
 import { saveBaseline, takeSnapshot } from '../../src/tools/lib/filesystem-diff.js';
 import { transitionWithEvidence } from '../../src/tools/lib/state-coordinator-v11.js';
-import { runRequiredGates } from '../../src/tools/lib/gate-runner-v11.js';
+
 import { getHandler } from '../../src/tools/ToolDispatcher.js';
 
 const execFileAsync = promisify(execFile);

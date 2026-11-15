@@ -80,14 +80,30 @@ export async function readVerificationFile(
   file: string,
   limit = 16 * 1024 * 1024
 ): Promise<Buffer> {
+  return (await readVerificationFileSnapshot(file, limit)).bytes;
+}
+
+/** Bounded bytes and the identity of the same open file, for durable exact proofs. */
+export async function readVerificationFileSnapshot(file: string, limit = 16 * 1024 * 1024) {
+  if (!Number.isSafeInteger(limit) || limit < 0)
+    throw new Error('VERIFICATION_FILE_BUDGET_INVALID');
   await assertVerificationPath(file);
   const handle = await fs.open(file, 'r');
   try {
     const before = await handle.stat({ bigint: true });
     if (!before.isFile() || before.nlink !== 1n || before.size > BigInt(limit))
       throw new Error('VERIFICATION_FILE_INVALID');
-    const bytes = await handle.readFile(),
-      after = await handle.stat({ bigint: true }),
+    // One extra byte detects growth without an unbounded readFile allocation.
+    const buffer = Buffer.alloc(Number(before.size) + 1);
+    let offset = 0;
+    while (offset < buffer.length) {
+      const { bytesRead } = await handle.read(buffer, offset, buffer.length - offset, offset);
+      if (bytesRead === 0) break;
+      offset += bytesRead;
+    }
+    const bytes = buffer.subarray(0, offset);
+    await assertVerificationPath(file);
+    const after = await handle.stat({ bigint: true }),
       current = await fs.lstat(file, { bigint: true });
     if (
       BigInt(bytes.length) !== before.size ||
@@ -102,7 +118,16 @@ export async function readVerificationFile(
       current.isSymbolicLink()
     )
       throw new Error('VERIFICATION_FILE_CHANGED');
-    return bytes;
+    return {
+      bytes,
+      identity: {
+        dev: before.dev.toString(),
+        ino: before.ino.toString(),
+        size: before.size.toString(),
+        mtimeNs: before.mtimeNs.toString(),
+        ctimeNs: before.ctimeNs.toString(),
+      },
+    };
   } finally {
     await handle.close();
   }

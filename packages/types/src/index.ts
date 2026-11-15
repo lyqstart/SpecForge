@@ -420,3 +420,11 @@ export { scalarText, diagnosticScalarText } from "./scalar-text.js";
 export { parseJsonObject } from "./json-boundary.js";
 
 export { hasAsciiControl } from "./character-boundaries.js";
+
+export {
+  REQUIRED_VERIFICATION_BEGIN,
+  REQUIRED_VERIFICATION_END,
+  RequiredVerificationDeclarationSchema,
+  parseRequiredVerificationDeclaration,
+} from "./required-verification-contract.js";
+export type { RequiredVerificationDeclaration } from "./required-verification-contract.js";

@@ -1,13 +1,14 @@
+import { executeMergeForFixture as executeMerge, recordUserDecisionForFixture as recordUserDecision } from './helpers/required-verification-fixture';
 import { createHash } from 'node:crypto';
 import { mkdtemp, mkdir, readFile, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { executeMerge } from '../src/tools/lib/merge-runner-v11';
+
 import { candidateSealInputPaths } from '../src/tools/lib/candidate-generation-integrity';
 import { buildGateAttemptInputSnapshot } from '../src/tools/lib/gate-chain';
 import type { GateReportV11 } from '../src/tools/lib/gate-runner-v11';
-import { recordUserDecision } from '../src/tools/lib/user-decision-recorder-v11';
+
 
 async function writeJson(filePath: string, value: unknown): Promise<void> {
   await mkdir(dirname(filePath), { recursive: true });

@@ -11,7 +11,7 @@ export default tool({
     pull_first: tool.schema.boolean().optional().describe("合并前是否 pull --ff-only，默认 true"),
   },
   async execute(args, context) {
-    const result = await daemon.invokeTool(TOOL_NAME, args, { sessionID: context.sessionID, agent: context.agent, directory: context.directory, worktree: context.worktree })
+    const result = await daemon.invokeTool(TOOL_NAME, args, { callID: Reflect.get(context, "callID"), sessionID: context.sessionID, agent: context.agent, directory: context.directory, worktree: context.worktree })
     if (typeof result === 'string') return result
     return JSON.stringify(result, null, 2)
   },

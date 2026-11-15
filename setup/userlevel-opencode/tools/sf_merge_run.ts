@@ -13,7 +13,7 @@ export default tool({
       .describe("兼容字段：为 true 时只验证前置条件，不执行实际合并；v1.1 handler 可忽略未实现字段。"),
   },
   async execute(args, context) {
-    const result = await daemon.invokeTool("sf_merge_run", args, {
+    const result = await daemon.invokeTool("sf_merge_run", args, { callID: Reflect.get(context, "callID"),
       sessionID: context.sessionID,
       agent: context.agent,
       directory: context.directory,

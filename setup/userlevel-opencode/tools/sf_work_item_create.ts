@@ -32,7 +32,7 @@ export default tool({
   },
 
   async execute(args, context) {
-    const result = await daemon.invokeTool("sf_work_item_create", args, {
+    const result = await daemon.invokeTool("sf_work_item_create", args, { callID: Reflect.get(context, "callID"),
       sessionID: context.sessionID,
       agent: context.agent,
       directory: context.directory,

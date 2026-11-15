@@ -96,9 +96,11 @@ describe('Architecture governance v7 closure', () => {
     expect(writer).toContain('candidates/project/data_model.candidate.md');
     expect(writer).toContain("fileType === 'candidate_module_contract'");
     expect(writer).toContain('contracts.candidate.json');
-    expect(writer).toContain("['candidate_architecture', 'sf-design']");
-    expect(writer).toContain("['candidate_data_model', 'sf-design']");
-    expect(writer).toContain("['candidate_module_contract', 'sf-design']");
+    const owners = source('src/tools/lib/professional-artifact-owners.ts');
+    expect(writer).toContain('professional-artifact-owners');
+    expect(owners).toContain("['candidate_architecture', 'sf-design']");
+    expect(owners).toContain("['candidate_data_model', 'sf-design']");
+    expect(owners).toContain("['candidate_module_contract', 'sf-design']");
     expect(writer).toContain('augmentGovernanceCandidateEntries(rawEntries, wiDir)');
     expect(writer).toContain("'candidates/project/architecture.candidate.md'");
     expect(writer).toContain("'candidates/project/data_model.candidate.md'");

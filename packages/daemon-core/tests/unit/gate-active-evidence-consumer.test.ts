@@ -1,8 +1,9 @@
+import { runRequiredGatesForFixture as runRequiredGates } from '../helpers/required-verification-fixture';
 import { afterEach, describe, expect, it } from 'vitest';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { tmpdir } from 'node:os';
-import { registerGate, runRequiredGates } from '../../src/tools/lib/gate-chain';
+import { registerGate } from '../../src/tools/lib/gate-chain';
 import { makeReport } from '../../src/tools/lib/gate-report';
 import {
   guardHardStop,

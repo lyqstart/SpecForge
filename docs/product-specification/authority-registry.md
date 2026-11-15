@@ -80,6 +80,7 @@ SPS-1.0
 | D28 | 用户批准有限 Requirements 语义扩展，验收后恢复原 WI。按 SPS §6.4，在同代已登记正式模块与冻结候选替换的权威集合中逐字解析唯一 REQ 正文；显式 `reference_context` 角色只允许上下文/引用，需求与验收覆盖贡献为零。统一 producer、Gate、Task、Trace 与正式规格消费者，绑定全部实际输入；缺正文、重复、错误归属、非规范引用、隐藏定义及失效审批继续拒绝。先合同、实现、完整验收和同步部署，再从原 WI 真实断点恢复；不改冻结 Task、不放宽权限/隔离、不批准 Candidate，不包含新候选公开发布授权。 |
 | D29 | 用户批准有限 AC 类型引用兼容。按 SPS §6.4(14)，旧式 `REQ-<MODULE_CODE>-<NNN>-<K>` 只引用同代唯一 `AC-<MODULE_CODE>-<NNN>-<K>`，该 AC 必须有非空正文并属于同代唯一规范父 REQ；不创建或映射 Requirement 身份，不把引用当成验收通过。D16 的普通 REQ 精确身份规则不变，AC 类型是显式独立例外。错误归属、重复、缺失、非规范位宽、跨代和身份漂移继续拒绝；全部消费者共同绑定输入。先合同、实现、完整验收和同步部署，再恢复原 WI；冻结 Task 字节、历史失败、隔离、权限和显式 Candidate 审批保持不变。本裁决不包含新产品公开发布授权。 |
 | D30 | 用户于 2026-11-15 要求修复 Gate 停点未可靠执行。SPS §6.4(15–16) 将现有单轮修复停点落实到 Runtime 写前门禁与不可变 Attempt 历史，并复用 HardStop 实现来源可核验、历史绑定、仅一轮的诊断恢复。先合同、实现、完整验收及同步部署，再恢复原 POC WI；不得更改冻结 Task、放宽隔离或权限、代批 Candidate。产品修复授权不包含新增公开发布披露。 |
+| D31 | 用户批准有限“必需验证项”扩展：按 SPS §6.5.1，以真实指令来源绑定当前 WI 候选文件的精确 SHA-256 要求，Runtime 对缺失、失败或漂移的必需证明执行持久阻断；handoff 就绪、封存、Gate、审批和 Merge 共同复核，保留失败并仅通过受控重新取证恢复。先正式合同、实现、完整验收与同步部署，再审查原 POC Candidate；不改冻结 Task、不放宽隔离／权限、不代批 Candidate，不包含新的公开发布授权。 |
 | D01 | events.jsonl 是持久化工作流状态事实源；state.json 是可重建 checkpoint/projection |
 | D02 | Daemon 是独立共享服务；生命周期由部署环境、CLI 或 service manager 管理；Thin Plugin 不启动/停止/重启 Daemon |
 | D03 | 当前用户级数据根为 <OpenCode config>/sf-user；用户主目录 ~/.specforge 退役为非当前写入目标 |

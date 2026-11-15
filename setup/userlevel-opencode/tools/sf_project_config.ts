@@ -9,6 +9,6 @@ export default tool({
     restore_sha256: tool.schema.string().optional().describe('restore 使用此前成功更新返回的 previous_sha256'),
   },
   async execute(args, context) {
-    return JSON.stringify(await daemon.invokeTool('sf_project_config', args, { sessionID: context.sessionID, agent: context.agent, directory: context.directory, worktree: context.worktree }));
+    return JSON.stringify(await daemon.invokeTool('sf_project_config', args, { callID: Reflect.get(context, "callID"), sessionID: context.sessionID, agent: context.agent, directory: context.directory, worktree: context.worktree }));
   },
 })

@@ -1,10 +1,11 @@
+import { getHandlerForFixture as getHandler } from '../helpers/required-verification-fixture';
 import { afterEach, describe, expect, it } from 'vitest';
 import * as fs from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { createHash } from 'node:crypto';
 import { materializeImplementationBaseline, validateImplementationTruthBeforeSeal } from '../../src/tools/lib/implementation-baseline';
-import { getHandler } from '../../src/tools/ToolDispatcher';
+
 import '../../src/tools/handlers/sf-v11-gate-run';
 
 const roots: string[] = [];

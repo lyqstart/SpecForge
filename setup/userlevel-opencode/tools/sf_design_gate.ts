@@ -9,7 +9,7 @@ export default tool({
       .describe('工作流类型，默认 "feature_spec"'),
   },
   async execute(args, context) {
-    const result = await daemon.invokeTool("sf_design_gate", args, {
+    const result = await daemon.invokeTool("sf_design_gate", args, { callID: Reflect.get(context, "callID"),
       sessionID: context.sessionID,
       agent: context.agent,
       directory: context.directory,

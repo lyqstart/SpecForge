@@ -1,3 +1,4 @@
+import { runGateForFixture as runActualGate } from '../helpers/required-verification-fixture';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import * as fs from 'node:fs/promises';
 import * as os from 'node:os';
@@ -9,7 +10,7 @@ import {
   evaluateVerificationGovernanceContract as evaluateActualVerificationGovernanceContract,
   extractStructuredVerificationReport,
 } from '../../src/tools/lib/verification-governance-contract.js';
-import { runGate as runActualGate } from '../../src/tools/lib/gate-runner-v11.js';
+
 import type {ExecutionEvidenceConsumer} from '../../src/verification/execution-evidence-consumer';
 // Graph/schema unit fixture only. Native execution and receipt authenticity have
 // separate real public-chain acceptance; this explicit dependency is a test double.

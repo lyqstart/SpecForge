@@ -6,9 +6,15 @@ import { readAuthoritativeWorkItems } from './authoritative-work-items';
 import { readWorkItemMetadata } from './work-item-metadata';
 import { checkWrite } from './write-guard-v11';
 import { isCandidateFrozenState } from './candidate-freeze-v11';
-import { checkHardStop } from './hard-stop-latch';
+import { checkHardStop, isHardStopRecoveryTool } from './hard-stop-latch';
 import { appendWriteGuardLog } from './write-guard-log';
 import { isControlledHttpTool } from './controlled-http-tools';
+import {
+  RequiredVerificationOwner,
+  type RequiredVerificationOwnerDependencies,
+} from './required-verification-owner';
+import { withGateOperationBarrier } from './gate-operation-barrier';
+import { isRequiredVerificationReadOnlyCall } from './required-verification-consumer';
 
 const NON_WRITING_TOOLS = new Set([
   'read',
@@ -31,8 +37,56 @@ export async function checkNativeTool(
   deps: any,
   projectRoot: string,
   tool: string,
-  args: Record<string, unknown>
+  args: Record<string, unknown>,
+  invocation?: { sessionID?: string; callID?: string }
 ) {
+  if (
+    !isHardStopRecoveryTool(tool) &&
+    !isRequiredVerificationReadOnlyCall(tool, args) &&
+    (tool === 'task' || tool.startsWith('sf_') || tool === 'edit' || tool === 'write')
+  ) {
+    if (typeof invocation?.sessionID !== 'string' || typeof invocation?.callID !== 'string')
+      return { allowed: false, reason: 'REQUIRED_VERIFICATION_SOURCE_IDENTITY_REQUIRED' };
+    const input = {
+      sessionId: invocation.sessionID,
+      callId: invocation.callID,
+      directory: projectRoot,
+      tool,
+      args,
+    };
+    try {
+      const capture = () =>
+        new RequiredVerificationOwner(deps as RequiredVerificationOwnerDependencies).captureSource(
+          projectRoot,
+          input
+        );
+      const result = await withGateOperationBarrier(
+        projectRoot,
+        'sf_required_verification_capture',
+        false,
+        () =>
+          deps.projectManager?.withProjectOperation
+            ? deps.projectManager.withProjectOperation(projectRoot, capture)
+            : capture()
+      );
+      if (result && typeof result === 'object' && 'success' in result && result.success === false)
+        return {
+          allowed: false,
+          reason:
+            'error' in result && typeof result.error === 'string'
+              ? result.error
+              : 'REQUIRED_VERIFICATION_CAPTURE_UNAVAILABLE',
+        };
+    } catch (error) {
+      const message = error instanceof Error ? error.message : '';
+      return {
+        allowed: false,
+        reason: /^[A-Z0-9_]{1,128}$/.test(message)
+          ? message
+          : 'REQUIRED_VERIFICATION_SOURCE_UNAVAILABLE',
+      };
+    }
+  }
   if (
     NON_WRITING_TOOLS.has(tool) ||
     isControlledHttpTool(tool) ||
@@ -48,6 +102,17 @@ export async function checkNativeTool(
         'NATIVE_TOOL_REQUIRES_CONTROLLED_EXECUTION: sf_safe_bash supports internal reads only; verification requires the approved sf_verification_plan / sf_verification_run path and platform/profile. Scripts, builds and tests were not executed; do not retry through a shell or helper.',
     };
   }
+  return checkNativeWritePermission(deps, projectRoot, tool, args);
+}
+
+/** Permission query only: it cannot authorize or execute a host invocation.
+ * The real before-tool boundary must independently capture its source first. */
+export async function checkNativeWritePermission(
+  deps: any,
+  projectRoot: string,
+  tool: string,
+  args: Record<string, unknown>
+) {
   if (!path.isAbsolute(projectRoot) || typeof args.filePath !== 'string' || !args.filePath) {
     return { allowed: false, reason: 'WRITE_TARGET_REQUIRED' };
   }

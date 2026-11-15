@@ -1,3 +1,4 @@
+import { requiredVerificationDepsForFixture } from '../helpers/required-verification-fixture';
 import { afterEach, describe, expect, it } from 'vitest';
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
@@ -150,9 +151,9 @@ describe('controlled detached Git bootstrap', { timeout: 60000 }, () => {
   });
   it('rejects wrong Runtime state and missing real confirmation through the actual dispatcher', async () => {
     const f = await fixture();
-    const dispatcher = new ToolDispatcher({} as any);
-    expect(await dispatcher.dispatch({ tool: 'sf_git_branch_create', args: { work_item_id: 'WI-0001', branch_name: f.input.branchName, base_branch: 'main', bootstrap_plan_sha256: '0'.repeat(64) }, context: { directory: f.root, agent: 'sf-orchestrator' } })).toMatchObject({ success: false, error: 'BRANCH_NAME_CONFIRMATION_REQUIRED' });
-    const result = await dispatcher.dispatch({ tool: 'sf_git_branch_plan', args: { work_item_id: 'WI-0001', title: 'greet', bootstrap_from_detached: true, expected_head: f.head, base_branch: 'main', branch_name: f.input.branchName }, context: { directory: f.root, agent: 'sf-orchestrator' } });
+    const dispatcher = new ToolDispatcher(requiredVerificationDepsForFixture({}) as any);
+    expect(await dispatcher.dispatch({ tool: 'sf_git_branch_create', args: { work_item_id: 'WI-0001', branch_name: f.input.branchName, base_branch: 'main', bootstrap_plan_sha256: '0'.repeat(64) }, context: { directory: f.root, agent: 'sf-orchestrator', sessionID: 'ses_fixture', callID: 'call_fixture' } })).toMatchObject({ success: false, error: 'BRANCH_NAME_CONFIRMATION_REQUIRED' });
+    const result = await dispatcher.dispatch({ tool: 'sf_git_branch_plan', args: { work_item_id: 'WI-0001', title: 'greet', bootstrap_from_detached: true, expected_head: f.head, base_branch: 'main', branch_name: f.input.branchName }, context: { directory: f.root, agent: 'sf-orchestrator', sessionID: 'ses_fixture', callID: 'call_fixture' } });
     expect(result).toMatchObject({ success: false }); expect(await git(f.root, 'for-each-ref', '--format=%(refname)')).toBe('');
   });
   it('consumes actual StateManager events through the real public dispatcher while preserving state and recording normal context', async () => {
@@ -161,8 +162,8 @@ describe('controlled detached Git bootstrap', { timeout: 60000 }, () => {
     // Candidate approval flow. The deployed original session provides that proof.
     await sm.transition('WI-0001', '', 'post_merge_verified', 'fixture', 'feature_spec');
     const wal = await fs.readFile(path.join(f.root, '.specforge/runtime/events.jsonl'));
-    const dispatcher = new ToolDispatcher({ projectManager: { getProjectStateManager: async () => sm } } as any);
-    const context = { directory: f.root, worktree: f.root, agent: 'sf-orchestrator' };
+    const dispatcher = new ToolDispatcher(requiredVerificationDepsForFixture({ projectManager: { getProjectStateManager: async () => sm } }) as any);
+    const context = { directory: f.root, worktree: f.root, agent: 'sf-orchestrator', sessionID: 'ses_fixture', callID: 'call_fixture' };
     const plan: any = await dispatcher.dispatch({ tool: 'sf_git_branch_plan', context, args: { work_item_id: 'WI-0001', title: 'greet', bootstrap_from_detached: true, expected_head: f.head, base_branch: 'main', branch_name: f.input.branchName } });
     expect(plan.success).toBe(true);
     const result = await dispatcher.dispatch({ tool: 'sf_git_branch_create', context, args: { work_item_id: 'WI-0001', base_branch: 'main', branch_name: f.input.branchName, confirmed: true,

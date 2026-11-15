@@ -4,7 +4,7 @@
 >
 > Specification ID: SPS-1.0
 >
-> Product release version: 1.0.39
+> Product release version: 1.0.40
 >
 > Product version epoch: 1
 >
@@ -560,6 +560,32 @@ Candidate
 6. 受控补偿事件只允许 `closed → candidate_preparing`，且不得把该边加入普通状态转移表；恢复记录必须绑定旧代证据 Manifest、无效性检查结果、原 Merge 版本和操作者明确确认；
 7. 恢复后必须使用当前 Project Spec Version 重新生成 Candidate，重新执行适用 Gate，重新取得针对新 Candidate 的显式用户批准，再执行新的 Atomic Spec Merge、Verification / Formal Version 与 Close；原审批、原 Gate 和原 Merge 不得作为新代通过证据；
 8. 必须复用原 Work Item，保留原状态事件、失败、HardStop、Merge 和 Close 历史；不得手改 `.specforge` 真相源、删除旧证据或创建替代 Work Item。
+
+## 6.5.1 D31 必需精确验证与持久停点
+
+必需验证不能由 Agent 的自然语言完成声明、handoff 结构有效、关键词命中、文件长度或 Gate 总体通过替代。首期仅支持显式来源绑定的 `candidate-exact-file-sha256/v1`：把当前 WI 候选文件的预期原始字节 SHA-256 登记为必需项。任意自然语言不得通过正则猜测为产品合同；说明性 unknowns 与必需验证项严格分离，未登记的自然语言承诺不宣称已获 Runtime 强制执行。
+
+受控编排／委派入口须在依赖动作前核验完整声明与真实 Runtime 用户消息来源，绑定 WI、当前 Candidate 代际及正式规格基线、责任 owner、有限候选路径和预期哈希。调用者自述、截断、部分登记、跨会话、旧代或来源不明的声明均拒绝；已经声明但未登记的要求不能因跳过 handoff 或直接调用工具而绕过。登记不得新增候选路径权限或替代批准。
+
+首期只接受已有当前 Candidate Manifest 中唯一登记的非删除、非 Task 文件，责任角色复用正式产物写入的 owner 表。代际身份由 Runtime 对 WI、正式规格 Manifest 原始哈希、实现快照身份、分类／影响／触发原件哈希和 Candidate Manifest 的范围字段共同计算；范围字段不包含待修复候选内容的 `candidate_hash` 和派生 `manifest_hash`。因此同范围候选内容修复可重新取证，范围、归属、实现或正式基线漂移则继续阻断，不能靠重新封存清除要求。必需项与证明事件复用 StateManager 的完整留存 WAL，通过同 WI 上一条必需验证事件身份执行原子比较追加，不建立独立可覆盖的当前状态文件。
+
+Runtime owner 追加保存要求、失败与证明。pending、unavailable、failed 是持久停点，重启、换会话／stage／过滤条件、重新封存和新的 handoff 均不得消除；Agent 不得自行删除、豁免或把它改为说明性警告。合法 owner 可在既有范围内修复，并为同一要求重新取得证明；变更或取消要求须有新的可核验用户裁决，旧记录保留。
+
+显式来源块以独立整行 `SPECFORGE_REQUIRED_VERIFICATION_V1_BEGIN` 与 `SPECFORGE_REQUIRED_VERIFICATION_V1_END` 包围严格 JSON，登记完整 requirements 集合。任何层级的重复 JSON 字段名（包括转义后同名）均拒绝，不得以最后一个值覆盖前值解释用户要求。普通登记必须非空；替换或取消只能由新的真实用户来源块携带 `replacement.prior_history_sha256`，逐字绑定当前 WI 完整必需验证事件历史的规范 JSON 哈希。替换表示新的完整集合，空集合仅在这种显式替换中表示取消；历史漂移、来源重用或 Agent 自述不得替代本次裁决。重复消费已成功应用的同一来源须幂等，不能再生成一轮替换授权。
+
+精确验证只读取已登记、归属明确的当前 WI 普通 Candidate 文件，通过受控 owner 复核路径、物理身份与完整原始字节，再返回绑定要求、实际文件身份、哈希、真实调用和 Runtime 时间的证明。越界、符号链接／reparse／多硬链接、目录、缺失、未知或超预算输入失败关闭。不开放通用文件 API、shell、联网、ACL、LPAC 扩展或冻结 Task 修改。
+
+handoff 就绪、封存、Gate、User Decision 与 Merge 必须共同消费同一必需证明判据；直接入口、别名和已封存候选同样复核。证明缺失、无效或输入漂移时必须在依赖副作用前拒绝；哈希相等只证明内容身份，不证明业务语义、运行或人工验收通过。完成证明不自动推进状态，不新增 Gate 修复预算，不安装权限，也不批准 Candidate。
+
+受控工具与原生委派／写入入口不得省略真实调用身份以绕过来源登记；既有只读诊断及 HardStop 专属恢复边界保持不变。证据登记、证明生成和依赖证明的交接／封存／Gate／审批／合并必须与受控写入互斥，读取后和副作用前复核完整历史身份。拒绝用户决策仍可保留，不将其误认作批准就绪。
+
+既有 Write Guard 权限查询仍只核验路径与权限并保留审计日志，其结果不证明真实调用来源已验证，也不执行写入；实际原生 before-tool 入口仍须独立完成来源登记及全部权限检查，不得把查询返回的 allowed 当作省略执行门禁的凭证。
+
+无副作用的 handoff 单条结构校验 `validate` 与必需项查询 `required_status` 不要求为查询本身登记来源，前者明确返回 structural_only、后者明确不核验新鲜度；两者都不证明 handoff 就绪。写入、`verify_required`、`validate_all` 及后续依赖动作不得借用这两个查询的结果省略真实来源与共同证明判据，既有 HardStop 适用范围保持不变。
+
+只有 Merge owner 已成功合并且 StateManager 留存 `merging → merged` 事件后，才能追加已消费记录。该事件必须绑定合并前完整必需验证历史、成功 Merge Report 原始哈希及结果规格 Manifest 哈希；归档时再次核对候选物理身份和完整字节，失败或无回执不得清除要求。已消费记录仅结束该次已完成合并的前置证明生命周期，保留全部失败和证明，不能替代后续 Gate。若在成功状态事件后、归档追加前重启，只由 Merge owner 核验同一回执后完成归档，不重复写入业务产物；回执缺失或漂移继续停住。
+
+既有 Candidate 不补造历史证明，不改写旧 Attempt 或已冻结 Task。部署后原件审查与必要的补充证明须区分当前新增证据和当时执行事实；不能用事后哈希一致抹除 Agent 曾越过停点的历史。
 
 ## 6.6 验证证据完整性与已关闭 Work Item 的普通补偿恢复
 

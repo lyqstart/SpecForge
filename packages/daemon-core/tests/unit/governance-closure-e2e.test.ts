@@ -1,3 +1,4 @@
+import { recordUserDecisionForFixture as recordUserDecision } from '../helpers/required-verification-fixture';
 /**
  * governance-closure-e2e.test.ts — WI 完整生命周期关闭治理验收测试
  *
@@ -21,10 +22,7 @@ import { checkWrite, type WriteGuardContext } from '../../src/tools/lib/write-gu
 import { ACTOR_ROLES } from '@specforge/types/actor-roles';
 import { isSealTransition, getSealTransition } from '@specforge/types/seal-transitions';
 import { captureSemanticClosureProvenance } from '../../src/tools/lib/semantic-closure-provenance.js';
-import {
-  recordUserDecision,
-  type UserDecisionStatus,
-} from '../../src/tools/lib/user-decision-recorder-v11.js';
+import { type UserDecisionStatus } from '../../src/tools/lib/user-decision-recorder-v11.js';
 
 // ---------------------------------------------------------------------------
 // Test Helpers

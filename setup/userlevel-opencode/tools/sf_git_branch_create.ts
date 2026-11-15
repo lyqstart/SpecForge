@@ -15,7 +15,7 @@ export default tool({
     bootstrap_confirmation_quote: tool.schema.string().optional().describe("用户明确接受计划中两条新分支名的原话；不接受 Candidate 批准冒充该确认；不得手工补分支或使用伪 base_branch"),
   },
   async execute(args, context) {
-    const result = await daemon.invokeTool(TOOL_NAME, args, {
+    const result = await daemon.invokeTool(TOOL_NAME, args, { callID: Reflect.get(context, "callID"),
       sessionID: context.sessionID,
       agent: context.agent,
       directory: context.directory,

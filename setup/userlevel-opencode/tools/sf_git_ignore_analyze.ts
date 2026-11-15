@@ -10,7 +10,7 @@ export default tool({
     write_assessment: tool.schema.boolean().optional().describe("是否写入 .specforge/runtime/git_ignore_assessment.json，默认 true"),
   },
   async execute(args, context) {
-    const result = await daemon.invokeTool(TOOL_NAME, args, {
+    const result = await daemon.invokeTool(TOOL_NAME, args, { callID: Reflect.get(context, "callID"),
       sessionID: context.sessionID,
       agent: context.agent,
       directory: context.directory,

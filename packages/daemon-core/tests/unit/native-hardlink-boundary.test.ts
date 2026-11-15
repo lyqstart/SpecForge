@@ -1,3 +1,4 @@
+import { requiredVerificationDepsForFixture } from '../helpers/required-verification-fixture';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
@@ -30,13 +31,13 @@ describe('native hardlink enforcement through actual HTTP and pre-tool hook', ()
         await state.transition('WI-0001', 'created', 'implementation_running');
         const wiDir = path.join(root, '.specforge/work-items/WI-0001'); fs.mkdirSync(wiDir, { recursive: true });
         fs.writeFileSync(path.join(wiDir, 'work_item.json'), JSON.stringify({ schema_version: '1.1', work_item_id: 'WI-0001', workflow_type: 'feature_spec', code_change_allowed: true, code_permission_revoked: false, allowed_write_files: [{ path: 'allowed.txt', operation: 'modify' }, { path: 'new.txt', operation: 'create' }] }));
-        const server = new HTTPServer({ config: new DaemonConfig([]), projectManager: manager } as any);
+        const server = new HTTPServer(requiredVerificationDepsForFixture({ config: new DaemonConfig([]), projectManager: manager }) as any);
         server.setToken('fixture-token'); const { port } = await server.start();
         const handshakePath = path.join(base, 'handshake.json'); fs.writeFileSync(handshakePath, JSON.stringify(currentHandshake(port, 'fixture-token')));
         const client = new Client({ handshakePath });
         const hooks = await createSpecForgeThinPlugin({ directory: root }, { client: { register: async () => ({ sessionId: 'fixture', projectId: 'fixture', mode: 'personal' }), postEvent: async () => ({ ok: true, dropped: false, reason: 'success' }), checkNativeTool: client.checkNativeTool.bind(client) }, notify: () => {} });
         const target = path.join(root, 'allowed.txt');
-        const execute = async (filePath: string) => { await hooks['tool.execute.before']({ tool }, { args: { filePath } }); fs.writeFileSync(filePath, 'MODIFIED'); };
+        const execute = async (filePath: string) => { await hooks['tool.execute.before']({ tool, sessionID: 'ses_fixture', callID: 'call_fixture' }, { args: { filePath } }); fs.writeFileSync(filePath, 'MODIFIED'); };
         try {
           for (const protectedPath of [path.join(base, 'outside.txt'), path.join(root, 'protected.txt')]) {
             fs.writeFileSync(protectedPath, 'PROTECTED'); fs.linkSync(protectedPath, target);

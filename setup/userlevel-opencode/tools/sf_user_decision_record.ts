@@ -1,8 +1,6 @@
 import { tool } from "@opencode-ai/plugin"
 import { daemon } from "./lib/thin-client"
 
-type Payload = Record<string, unknown>
-
 /**
  * 记录用户决策，生成 user_decision.json。
  *
@@ -53,22 +51,9 @@ export default tool({
     reason: tool.schema.string().optional().describe("invalidate / rejected 时的原因或普通说明"),
   },
   async execute(args, context) {
-    const payload: Payload = { ...args }
-
-    if (!payload.action) payload.action = "record"
-
-    if (payload.action === "record" && !payload.decision_status && typeof payload.approved === "boolean") {
-      payload.decision_status = payload.approved ? "approved" : "rejected"
-      payload.decision_type = payload.approved ? "user_approved" : "rejected"
-    }
-
-    if (payload.action === "record" && !payload.decision_type && payload.decision_status === "waived") {
-      payload.decision_type = "waived"
-    }
-
     // 明确禁止 wrapper 从 comments/reason 中解析结构化审批证据。
     // 缺 user_response_quote / auto_approval_policy_id 时必须让 daemon fail-closed。
-    const result = await daemon.invokeTool("sf_user_decision_record", payload, {
+    const result = await daemon.invokeTool("sf_user_decision_record", args, { callID: Reflect.get(context, "callID"),
       sessionID: context.sessionID,
       agent: context.agent,
       directory: context.directory,

@@ -11,7 +11,7 @@ export default tool({
     workflow_path:tool.schema.string().optional().describe('可省略；提供时必须与当前 WI 元数据一致，不能据此切换工作流'),
   },
   async execute(args,context){
-    const result=await daemon.invokeTool('sf_contract_register',args,{sessionID:context.sessionID,agent:context.agent,directory:context.directory,worktree:context.worktree});
+    const result=await daemon.invokeTool('sf_contract_register',args,{ callID: Reflect.get(context, "callID"),sessionID:context.sessionID,agent:context.agent,directory:context.directory,worktree:context.worktree});
     return typeof result==='string'?result:JSON.stringify(result,null,2);
   },
 });

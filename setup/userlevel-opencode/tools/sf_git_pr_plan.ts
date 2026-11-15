@@ -13,7 +13,7 @@ export default tool({
     write_plan: tool.schema.boolean().optional().describe("是否写入 .specforge/runtime/git_pr_plan.json，默认 true"),
   },
   async execute(args, context) {
-    const result = await daemon.invokeTool(TOOL_NAME, args, { sessionID: context.sessionID, agent: context.agent, directory: context.directory, worktree: context.worktree })
+    const result = await daemon.invokeTool(TOOL_NAME, args, { callID: Reflect.get(context, "callID"), sessionID: context.sessionID, agent: context.agent, directory: context.directory, worktree: context.worktree })
     if (typeof result === 'string') return result
     return JSON.stringify(result, null, 2)
   },

@@ -11,7 +11,7 @@ export default tool({
       .describe("当前固定 standard；旧 gate_mode 不可用"),
   },
   async execute(args, context) {
-    const result = await daemon.invokeTool("sf_requirements_gate", args, {
+    const result = await daemon.invokeTool("sf_requirements_gate", args, { callID: Reflect.get(context, "callID"),
       sessionID: context.sessionID,
       agent: context.agent,
       directory: context.directory,

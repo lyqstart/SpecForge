@@ -33,7 +33,7 @@ export default tool({
       .describe("stdout/stderr 截断长度（字符），默认 4096。超出部分丢弃但 truncated 字段为 true。"),
   },
   async execute(args, context) {
-    const result = await daemon.invokeTool("sf_safe_bash", args, {
+    const result = await daemon.invokeTool("sf_safe_bash", args, { callID: Reflect.get(context, "callID"),
       sessionID: context.sessionID,
       agent: context.agent,
       directory: context.directory,

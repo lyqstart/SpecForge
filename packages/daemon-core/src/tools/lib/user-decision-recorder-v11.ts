@@ -78,6 +78,8 @@ export async function readCurrentUserDecision(
 // ---------------------------------------------------------------------------
 
 export interface RecordDecisionInput {
+  requiredVerification?: RequiredVerificationConsumer;
+  projectRoot: string;
   workItemDir: string;
   workItemId: string;
   workflowPath: string;
@@ -106,6 +108,14 @@ export interface RecordDecisionInput {
  * 只有此函数可以生成 user_decision.json。
  */
 export async function recordUserDecision(input: RecordDecisionInput): Promise<UserDecisionV11> {
+  const requiredProof =
+    input.decisionStatus === 'rejected'
+      ? null
+      : await assertRequiredVerificationReady(
+          input.requiredVerification,
+          input.projectRoot,
+          input.workItemId
+        );
   const schemaPrecheck = await precheckUserDecisionSchema(input.workItemDir, input.workItemId);
   const schemaBlockCode = userDecisionSchemaBlockCode(schemaPrecheck);
   if (schemaBlockCode) {
@@ -152,6 +162,13 @@ export async function recordUserDecision(input: RecordDecisionInput): Promise<Us
   };
 
   // 写入 user_decision.json
+  if (requiredProof)
+    await assertRequiredVerificationReady(
+      input.requiredVerification,
+      input.projectRoot,
+      input.workItemId,
+      requiredProof.history_sha256
+    );
   const decisionPath = path.join(input.workItemDir, 'user_decision.json');
   const tempPath = `${decisionPath}.tmp-${process.pid}-${Date.now()}`;
   await fs.writeFile(tempPath, JSON.stringify(decision, null, 2) + '\n', 'utf-8');
@@ -249,3 +266,7 @@ async function walkDir(dir: string): Promise<string[]> {
 // ---------------------------------------------------------------------------
 
 export * from './waiver.js';
+import {
+  assertRequiredVerificationReady,
+  type RequiredVerificationConsumer,
+} from './required-verification-consumer';

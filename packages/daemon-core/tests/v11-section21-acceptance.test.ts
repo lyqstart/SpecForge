@@ -1,3 +1,4 @@
+import { recordUserDecisionForFixture as recordUserDecision, runGateForFixture as runGate, runRequiredGatesForFixture as runProductionRequiredGates, executeMergeForFixture as executeMerge } from './helpers/required-verification-fixture';
 /**
  * v11-section21-acceptance.test.ts — §21 Acceptance Scenarios
  *
@@ -26,18 +27,12 @@ import type {
 } from '../src/tools/lib/workflow-path-selector-v11';
 import { checkWrite, performChangedFilesAudit } from '../src/tools/lib/write-guard-v11';
 import type { WriteGuardContext, AuditResult } from '../src/tools/lib/write-guard-v11';
-import {
-  recordUserDecision,
-  invalidateUserDecision,
-} from '../src/tools/lib/user-decision-recorder-v11';
+import { invalidateUserDecision } from '../src/tools/lib/user-decision-recorder-v11';
 import type { UserDecisionV11 } from '../src/tools/lib/user-decision-recorder-v11';
-import {
-  runGate,
-  runRequiredGates as runProductionRequiredGates,
-} from '../src/tools/lib/gate-runner-v11';
+
 import { UnitExecutionConsumer } from './helpers/unit-execution-consumer';
 import type { GateContext, GateReportV11 } from '../src/tools/lib/gate-runner-v11';
-import { executeMerge } from '../src/tools/lib/merge-runner-v11';
+
 import {
   validateTraceDelta,
   validateVerificationReport,

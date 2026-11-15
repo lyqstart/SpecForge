@@ -17,7 +17,7 @@ export default tool({
       .describe("检查模式数组"),
   },
   async execute(args, context) {
-    const result = await daemon.invokeTool("sf_batch_verify", args, {
+    const result = await daemon.invokeTool("sf_batch_verify", args, { callID: Reflect.get(context, "callID"),
       sessionID: context.sessionID,
       agent: context.agent,
       directory: context.directory,

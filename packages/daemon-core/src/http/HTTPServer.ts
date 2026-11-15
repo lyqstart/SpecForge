@@ -44,7 +44,7 @@ import { JsonlAppender } from '../logs/JsonlAppender';
 import * as path from 'path';
 import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
 import { readWorkItemMetadata } from '../tools/lib/work-item-metadata';
-import { checkNativeTool } from '../tools/lib/native-write-boundary';
+import { checkNativeTool, checkNativeWritePermission } from '../tools/lib/native-write-boundary';
 import { readAuthoritativeWorkItems } from '../tools/lib/authoritative-work-items';
 import type { LLMKernelAdapter, UserMessage } from '@specforge/types/llm-kernel-contract';
 import { VERIFICATION_REQUEST_ABORT } from '../verification/request-context';
@@ -398,7 +398,11 @@ export class HTTPServer {
           !isHttpRecord(request) ||
           typeof request.projectPath !== 'string' ||
           typeof request.tool !== 'string' ||
-          !isHttpRecord(request.args)
+          !isHttpRecord(request.args) ||
+          (request.invocation !== undefined &&
+            (!isHttpRecord(request.invocation) ||
+              typeof request.invocation.sessionID !== 'string' ||
+              typeof request.invocation.callID !== 'string'))
         ) {
           this.sendJsonResponse(
             res,
@@ -411,7 +415,13 @@ export class HTTPServer {
           res,
           200,
           this.successBody(
-            await checkNativeTool(this.deps, request.projectPath, request.tool, request.args)
+            await checkNativeTool(
+              this.deps,
+              request.projectPath,
+              request.tool,
+              request.args,
+              request.invocation as { sessionID?: string; callID?: string } | undefined
+            )
           )
         );
       } catch {
@@ -2513,10 +2523,10 @@ export class HTTPServer {
         );
         return;
       }
-      const result = await checkNativeTool(this.deps, request.projectPath, 'write', {
+      const result = await checkNativeWritePermission(this.deps, request.projectPath, 'write', {
         filePath: request.targetPath,
       });
-      this.sendJsonResponse(res, 200, this.successBody(result));
+      this.sendJsonResponse(res, 200, this.successBody({ ...result, invocation_verified: false }));
     } catch {
       this.sendJsonResponse(
         res,

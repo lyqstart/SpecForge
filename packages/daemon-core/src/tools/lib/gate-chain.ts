@@ -541,6 +541,11 @@ export async function runRequiredGates(
     );
   }
 
+  const requiredProof = await assertRequiredVerificationReady(
+    ctx.requiredVerification,
+    ctx.projectRoot,
+    ctx.workItemId
+  );
   const attempt = await createGateAttempt(ctx, gateIds);
   return withGateExecutionScope(attempt.attemptPath, async () => {
     const wantsSummaryGate = gateIds.includes('gate_summary_gate');
@@ -579,6 +584,12 @@ export async function runRequiredGates(
       }
 
       if (requirementBinding) await assertRequirementsInputBinding(ctx, requirementBinding);
+      await assertRequiredVerificationReady(
+        ctx.requiredVerification,
+        ctx.projectRoot,
+        ctx.workItemId,
+        requiredProof.history_sha256
+      );
       const finalSummary = await writeGateSummary(ctx, reports);
       await finalizeGateAttempt({
         ctx,
@@ -602,3 +613,4 @@ export async function runRequiredGates(
     }
   });
 }
+import { assertRequiredVerificationReady } from './required-verification-consumer';

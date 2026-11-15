@@ -9,7 +9,7 @@ export default tool({
     default_branch: tool.schema.string().optional().describe("默认主线分支，默认 main"),
   },
   async execute(args, context) {
-    const result = await daemon.invokeTool(TOOL_NAME, args, {
+    const result = await daemon.invokeTool(TOOL_NAME, args, { callID: Reflect.get(context, "callID"),
       sessionID: context.sessionID,
       agent: context.agent,
       directory: context.directory,

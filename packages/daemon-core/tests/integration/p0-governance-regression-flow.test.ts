@@ -1,3 +1,6 @@
+import { StateManager } from '../../src/state/StateManager';
+import { PersonalPathResolver } from '../../src/daemon/path-resolver';
+import { requiredVerificationDepsForFixture } from '../helpers/required-verification-fixture';
 /**
  * p0-governance-regression-flow.test.ts
  *
@@ -38,6 +41,7 @@ const DEFAULT_WORKFLOW_PATH: WorkflowPath = 'requirement_change_path';
 let projectRoot: string;
 let dispatcher: ToolDispatcher;
 let unitExecution: UnitExecutionConsumer;
+let runtimeOwner: StateManager;
 
 async function git(args: string[]): Promise<void> {
   await execFileAsync('git', args, { cwd: projectRoot });
@@ -115,81 +119,13 @@ function makeGateSummary(workItemId: string, status: string): string {
   ].join('\n');
 }
 
-async function setRuntimeState(
-  workItemId: string,
-  state: string,
-  workflowPath: WorkflowPath = DEFAULT_WORKFLOW_PATH
-): Promise<void> {
-  const now = new Date().toISOString();
-  await writeJson(runtimeStatePath(), {
-    schema_version: '1.0',
-    work_item_id: workItemId,
-    current_work_item_id: workItemId,
-    current_state: state,
-    status: state,
-    workflow_type: 'feature_spec',
-    workflow_path: workflowPath,
-    updated_at: now,
-    workItems: [
-      {
-        work_item_id: workItemId,
-        current_state: state,
-        status: state,
-        workflow_type: 'feature_spec',
-        workflow_path: workflowPath,
-        updated_at: now,
-      },
-    ],
-    events: [],
-  });
-}
-
-async function transitionRuntimeState(
-  workItemId: string,
-  fromState: string,
-  toState: string,
-  actor: string,
-  workflowType: string,
-  metadata: Record<string, unknown> = {}
-): Promise<void> {
-  const statePath = runtimeStatePath();
-  const now = new Date().toISOString();
-  const runtime = (await readJsonIfExists<Record<string, any>>(statePath)) ?? {};
-  runtime.work_item_id = workItemId;
-  runtime.current_work_item_id = workItemId;
-  runtime.current_state = toState;
-  runtime.status = toState;
-  runtime.workflow_type = workflowType;
-  runtime.workflow_path = runtime.workflow_path ?? DEFAULT_WORKFLOW_PATH;
-  runtime.updated_at = now;
-
-  if (!Array.isArray(runtime.workItems)) runtime.workItems = [];
-  const index = runtime.workItems.findIndex((item: any) => item?.work_item_id === workItemId);
-  const nextItem = {
-    ...(index >= 0 ? runtime.workItems[index] : {}),
-    work_item_id: workItemId,
-    current_state: toState,
-    status: toState,
-    workflow_type: workflowType,
-    workflow_path: runtime.workflow_path,
-    updated_at: now,
-    last_transition_actor: actor,
-    last_transition_evidence: metadata?.evidence,
-  };
-  if (index >= 0) runtime.workItems[index] = nextItem;
-  else runtime.workItems.push(nextItem);
-
-  if (!Array.isArray(runtime.events)) runtime.events = [];
-  runtime.events.push({
-    timestamp: now,
-    work_item_id: workItemId,
-    from_state: fromState,
-    to_state: toState,
-    actor,
-    ...metadata,
-  });
-
-  await writeJson(statePath, runtime);
+// Isolated synthetic setup uses the actual StateManager/WAL. These seed
+// transitions do not claim real OpenCode execution or a user Candidate approval.
+async function setRuntimeState(workItemId: string, state: string,
+  workflowPath: WorkflowPath = DEFAULT_WORKFLOW_PATH): Promise<void> {
+  await runtimeOwner.rebuildState();
+  const previous = runtimeOwner.getState(workItemId)?.current_state ?? '';
+  await runtimeOwner.transition(workItemId, previous, state, 'fixture', 'feature_spec', { workflow_path: workflowPath });
 }
 
 function makeDeps(): ToolDeps {
@@ -199,30 +135,7 @@ function makeDeps(): ToolDeps {
     workflowEngine: {
       transitionFull: async (input: Record<string, unknown>) => ({ success: true, ...input }),
     },
-    projectManager: {
-      getProjectStateManager: async () => ({
-        rebuildFromEventsFile: async () => {},
-        getState: async () => readJsonIfExists(runtimeStatePath()),
-        transition: async (
-          workItemId: string,
-          fromState: string,
-          toState: string,
-          actor: string,
-          workflowType: string,
-          metadata: Record<string, unknown> = {}
-        ) => {
-          await transitionRuntimeState(
-            workItemId,
-            fromState,
-            toState,
-            actor,
-            workflowType,
-            metadata
-          );
-          return { success: true };
-        },
-      }),
-    },
+    projectManager: { getProjectStateManager: async () => runtimeOwner },
     eventLogger: {},
     eventBus: {},
     permissionEngine: {},
@@ -242,7 +155,7 @@ async function invoke(
     context: {
       directory: projectRoot,
       agent,
-      sessionID: `p0-governance-${agent}`,
+      sessionID: 'ses_fixture', callID: 'call_fixture',
     },
   });
 }
@@ -449,7 +362,7 @@ async function approveAndMergeFixture(workItemId: string): Promise<void> {
     gateSummaryStatus: 'passed',
   });
   const approval = await approveFixture(workItemId);
-  expect(approval.success).toBe(true);
+  expect(approval.success, JSON.stringify(approval)).toBe(true);
 
   const merge = await invoke('sf_merge_run', { work_item_id: workItemId });
   expect(merge.success, JSON.stringify(merge, null, 2)).toBe(true);
@@ -464,6 +377,8 @@ describe('SpecForge v1.1 Post-P0 governance regression flow', () => {
   beforeEach(async () => {
     projectRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'sf-p0-governance-'));
     unitExecution = new UnitExecutionConsumer(projectRoot);
+    runtimeOwner = new StateManager(new PersonalPathResolver(), projectRoot);
+    await runtimeOwner.initialize();
     await git(['init', '-b', 'main']);
     await git(['config', 'user.name', 'SpecForge Test']);
     await git(['config', 'user.email', 'specforge-test@example.invalid']);
@@ -471,7 +386,7 @@ describe('SpecForge v1.1 Post-P0 governance regression flow', () => {
     await git(['add', '--', 'README.md']);
     await git(['commit', '-m', 'test: establish P0 governance baseline']);
     await git(['switch', '-c', 'feature/p0-governance']);
-    dispatcher = new ToolDispatcher(makeDeps());
+    dispatcher = new ToolDispatcher(requiredVerificationDepsForFixture(makeDeps()));
   });
 
   afterEach(async () => {
@@ -494,7 +409,7 @@ describe('SpecForge v1.1 Post-P0 governance regression flow', () => {
     expect(fsSync.existsSync(path.join(wiDir(workItemId), 'user_decision.json'))).toBe(false);
 
     const runtime = await readJson(runtimeStatePath());
-    expect(runtime.current_state).toBe('gates_failed');
+    expect(runtime.workItems[0].current_state).toBe('gates_failed');
   });
 
   it('rejects user_approved while gates are still running', async () => {
@@ -521,7 +436,7 @@ describe('SpecForge v1.1 Post-P0 governance regression flow', () => {
 
     const result = await approveFixture(workItemId);
 
-    expect(result.success).toBe(true);
+    expect(result.success, JSON.stringify(result)).toBe(true);
     expect(result.decision_status).toBe('approved');
     expect(result.decision_type).toBe('user_approved');
     expect(result.decided_by).toBe('user');
@@ -533,8 +448,8 @@ describe('SpecForge v1.1 Post-P0 governance regression flow', () => {
     expect(decision.recorded_by).toBe('sf-orchestrator');
 
     const runtime = await readJson(runtimeStatePath());
-    expect(runtime.current_state).toBe('approved');
-    expect(runtime.status).toBe('approved');
+    expect(runtime.workItems[0].current_state).toBe('approved');
+    expect(runtimeOwner.getState(workItemId)?.current_state).toBe('approved');
 
     const workItem = await readJson(path.join(wiDir(workItemId), 'work_item.json'));
     expect(workItem).not.toHaveProperty('status');
@@ -552,7 +467,7 @@ describe('SpecForge v1.1 Post-P0 governance regression flow', () => {
       gate_ids: ['all'],
     });
 
-    expect(result.success).toBe(true);
+    expect(result.success, JSON.stringify(result)).toBe(true);
     const workflowGate = await readJsonIfExists(
       path.join(wiDir(workItemId), 'gates', 'workflow_specific_gate.json')
     );
@@ -565,7 +480,7 @@ describe('SpecForge v1.1 Post-P0 governance regression flow', () => {
     expect(result.state_auto_advance?.to_state).toBe('approval_required');
 
     const runtime = await readJson(runtimeStatePath());
-    expect(runtime.current_state).toBe('approval_required');
+    expect(runtime.workItems[0].current_state).toBe('approval_required');
     expect(runtime.workItems[0].current_state).toBe('approval_required');
 
     const workItem = await readJson(path.join(wiDir(workItemId), 'work_item.json'));
@@ -762,9 +677,9 @@ describe('SpecForge v1.1 Post-P0 governance regression flow', () => {
     expect(closeResult.close_gate?.allChecksPassed).toBe(true);
 
     const finalRuntime = await readJson(runtimeStatePath());
-    expect(finalRuntime.current_state).toBe('closed');
     expect(finalRuntime.workItems[0].current_state).toBe('closed');
-    expect(finalRuntime.workItems[0].status).toBe('closed');
+    expect(finalRuntime.workItems[0].current_state).toBe('closed');
+    expect(runtimeOwner.getState(workItemId)?.current_state).toBe('closed');
 
     const finalWorkItem = await readJson(path.join(dir, 'work_item.json'));
     expect(finalWorkItem).not.toHaveProperty('status');

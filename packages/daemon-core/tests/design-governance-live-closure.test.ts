@@ -1,3 +1,4 @@
+import { getHandlerForFixture as getHandler } from './helpers/required-verification-fixture';
 import { existsSync } from 'node:fs';
 import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
@@ -14,7 +15,7 @@ import '../src/tools/handlers/sf-artifact-write.js';
 import '../src/tools/handlers/sf-v11-gate-run.js';
 import '../src/tools/handlers/sf-changed-files-audit.js';
 import '../src/tools/handlers/sf-design-gate.js';
-import { getHandler } from '../src/tools/ToolDispatcher.js';
+
 import { getRequiredGates } from '../src/tools/lib/required-gates.js';
 import { ensureProjectInit } from '../src/tools/lib/sf_project_init_core.js';
 import { readCurrentProjectSpecBinding } from '../src/tools/lib/candidate-generation-integrity.js';

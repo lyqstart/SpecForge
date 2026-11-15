@@ -1,3 +1,5 @@
+import { requiredVerificationDepsForFixture } from '../helpers/required-verification-fixture';
+import { getHandlerForFixture as getHandler } from '../helpers/required-verification-fixture';
 import { afterEach, describe, expect, it } from 'vitest';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
@@ -9,7 +11,7 @@ import { CONTROLLED_HTTP_TOOLS } from '../../src/tools/lib/controlled-http-tools
 import { bindWriteGuardAudit, inspectWriteGuardAuditBinding, inspectClosedWriteGuardAudit } from '../../src/tools/lib/write-guard-audit-binding';
 import { runCloseGate } from '../../src/tools/lib/close-gate';
 import { evaluateVerificationGovernanceContract } from '../../src/tools/lib/verification-governance-contract';
-import { getHandler } from '../../src/tools/ToolDispatcher';
+
 import '../../src/tools/handlers/sf-changed-files-audit';
 import '../../src/tools/handlers/sf-hard-stop-resolve';
 
@@ -29,11 +31,11 @@ function decision(wi: string, allowed: boolean, file = 'sentinel.txt', timestamp
 
 describe('acceptance-discovered guard and audit gaps', () => {
   it('allows the exact official initialization tool through the real HTTP guard, then initializes idempotently', async () => {
-    const { root } = fixture(); const server = new HTTPServer(new DaemonConfig([])); server.setToken('test-token');
+    const { root } = fixture(); const server = new HTTPServer(requiredVerificationDepsForFixture({ config: new DaemonConfig([]) }) as any); server.setToken('test-token');
     const { port } = await server.start();
     const post = async (route: string, body: unknown) => fetch(`http://127.0.0.1:${port}${route}`, { method: 'POST', headers: { Authorization: 'Bearer test-token', 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
     try {
-      const guard = await post('/api/v1/v11/write-guard/native', { projectPath: root, tool: 'sf_project_init', args: {} });
+      const guard = await post('/api/v1/v11/write-guard/native', { projectPath: root, tool: 'sf_project_init', args: {}, invocation: { sessionID: 'ses_fixture', callID: 'call_fixture' } });
       expect((await guard.json() as any).data.allowed).toBe(true);
       const target = CONTROLLED_HTTP_TOOLS.sf_project_init.path;
       expect((await (await post(target, { projectPath: root })).json() as any).success).toBe(true);

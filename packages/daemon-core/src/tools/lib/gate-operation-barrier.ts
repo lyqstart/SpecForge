@@ -15,7 +15,19 @@ export async function withGateOperationBarrier<T>(
     ? fs.realpathSync.native(projectRoot)
     : path.resolve(projectRoot);
   const key = process.platform === 'win32' ? resolved.toLowerCase() : resolved;
-  const gate = ['sf_gate_run', 'sf_v11_gate_run'].includes(tool.toLowerCase().replace(/-/g, '_'));
+  const gate = [
+    'sf_gate_run',
+    'sf_v11_gate_run',
+    'sf_required_verification_capture',
+    'sf_required_verification_proof',
+    'sf_state_transition',
+    'sf_handoff',
+    'sf_v11_handoff',
+    'sf_user_decision_record',
+    'sf_v11_decision',
+    'sf_merge_run',
+    'sf_v11_merge',
+  ].includes(tool.toLowerCase().replace(/-/g, '_'));
   const current = operations.get(key) ?? { gate: false, writers: 0 };
   if (current.gate || (gate && current.writers > 0))
     return {

@@ -11,7 +11,10 @@ import type {
   TrustedToolInvocationProof,
   GateRepairAuthorizationRequest,
   GateRepairAuthorizationProof,
+  RequiredVerificationSourceRequest,
+  RequiredVerificationSourceProof,
 } from '@specforge/types/trusted-tool-invocation';
+import { readRequiredVerificationSource } from './required-verification-source';
 
 export type OpenCodeToolInvocationRequest = TrustedToolInvocationRequest;
 export type OpenCodeToolInvocationProof = TrustedToolInvocationProof;
@@ -285,6 +288,14 @@ export class OpenCodeHttpRuntimeClient implements OpenCodeRuntimeClient {
       attemptId: input.attemptId,
       historySha256: input.historySha256,
     };
+  }
+
+  async readRequiredVerificationSource(
+    input: RequiredVerificationSourceRequest
+  ): Promise<RequiredVerificationSourceProof> {
+    return readRequiredVerificationSource(input, async route =>
+      this.unwrap(await this.requestJson('GET', route))
+    );
   }
 
   async getModelCapabilities(model: string): Promise<OpenCodeModelCapabilities> {

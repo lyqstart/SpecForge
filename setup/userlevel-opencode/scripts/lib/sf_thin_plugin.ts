@@ -28,7 +28,7 @@ interface PostResult {
 export interface ThinPluginDaemonClient {
   register(projectPath: string): Promise<RegisterResponse>;
   postEvent(sessionId: string, type: string, data: unknown): Promise<PostResult>;
-  checkNativeTool?(projectPath: string, tool: string, args: Record<string, unknown>): Promise<void>;
+  checkNativeTool?(projectPath: string, tool: string, args: Record<string, unknown>, invocation?: { sessionID?: string; callID?: string }): Promise<void>;
 }
 
 export interface ThinPluginDependencies {
@@ -214,7 +214,14 @@ export async function createSpecForgeThinPlugin(
     'tool.execute.before': async (toolInput, output): Promise<void> => {
       if (!daemonClient.checkNativeTool) throw new Error('WRITE_GUARD_UNAVAILABLE: update the SpecForge daemon client');
       // OpenCode awaits this hook before execution; rejection must propagate.
-      await daemonClient.checkNativeTool(projectPath, toolInput.tool, output.args);
+      if (toolInput.sessionID !== undefined || toolInput.callID !== undefined) {
+        await daemonClient.checkNativeTool(projectPath, toolInput.tool, output.args, {
+          sessionID: toolInput.sessionID,
+          callID: toolInput.callID,
+        });
+      } else {
+        await daemonClient.checkNativeTool(projectPath, toolInput.tool, output.args);
+      }
     },
     async event({ event }): Promise<void> {
       if (!event?.type) return;

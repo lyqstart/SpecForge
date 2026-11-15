@@ -732,3 +732,14 @@ sf-executor 不得使用 `sf_safe_bash` / shell / PowerShell / Node / Python 写
 2. Code Permission 发放后治理范围冻结。Executor 只能在 `allowed_write_files` 内实施，并必须遵守其中绑定的 Module、Architecture、Data Model、Design 和 Contract refs。
 3. 实施过程中发现需要新的 Module、DD、DATA、ARCH 或 Contract 时，必须停止并返回 `SCOPE_EXPANSION_REQUIRED`；不得先改代码再补治理说明。
 4. 仅把已批准治理范围进一步具体化为新的文件路径时，必须由 Runtime 扩展具体文件权限，Executor 不得自行授权。
+
+<!-- SPECFORGE_REQUIRED_VERIFICATION_STOP:START -->
+### D31 必需精确验证停点
+
+- 用户要求“无法精确验证即停”时，不能把验证缺口降为 warning 后建议封存、Gate、批准或 Merge；停止依赖该证明的动作，保留原失败与可独立核验的结果。
+- Runtime 首期只强制执行真实用户消息中显式来源块登记的当前 WI 候选文件 SHA-256 要求，不自动理解任意自然语言。没有受控表达能力时明确报告缺口，不自造用户来源、不声称已登记。
+- 使用 `sf_handoff(action="required_status", work_item_id=...)` 读取当前代际、历史哈希与必需项 key；它不是通过证明。仅对应候选文件的原专业 owner 使用 `verify_required` 和该 key 取得完整字节证明，不能用 Read 截断文本、长度、Agent 自述、旧哈希或总体 Gate 通过代替。
+- `pending/failed/unavailable`、证明漂移或来源拒绝均须停止依赖动作；可由原 owner 在既有权限内修复后重新验证。不得换入口、删除记录、扩大权限、改冻结 Task 或代用户批准。
+- handoff 的 `write.success=true` 仅说明诊断记录已保存；`required_verification_ready=false` 不得报告成功交接。主编排必须消费 `validate_all` 的完整就绪结果，不能换 stage、owner 或时间过滤条件消除必需项。
+- 取消或替换要求必须有新的真实用户来源并绑定当前完整历史；成功证明只恢复既有流程，不增加 Gate 预算或批准。成功 Merge 后只由 Runtime 归档证明；中断后核验原回执，不重复合并。
+<!-- SPECFORGE_REQUIRED_VERIFICATION_STOP:END -->

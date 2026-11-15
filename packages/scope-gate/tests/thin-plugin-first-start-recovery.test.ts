@@ -1,6 +1,9 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import { createSpecForgeThinPlugin, type ThinPluginHooks } from '../../../setup/userlevel-opencode/scripts/lib/sf_thin_plugin';
+import {
+  createSpecForgeThinPlugin,
+  type ThinPluginHooks,
+} from '../../../setup/userlevel-opencode/scripts/lib/sf_thin_plugin';
 
 const registration = { sessionId: 'session-1', projectId: 'project-1', mode: 'personal' as const };
 const refusal = (): Error & { status: number; code: string } =>
@@ -9,7 +12,11 @@ const refusal = (): Error & { status: number; code: string } =>
     code: 'PROJECT_NOT_INITIALIZED',
   });
 const ordinary = { event: { type: 'message.updated' } };
-function completed(callID = 'init-1', status = 'completed', tool = 'sf_project_init'): Parameters<ThinPluginHooks['event']>[0] {
+function completed(
+  callID = 'init-1',
+  status = 'completed',
+  tool = 'sf_project_init'
+): Parameters<ThinPluginHooks['event']>[0] {
   return {
     event: {
       type: 'message.part.updated',
@@ -35,6 +42,18 @@ async function setup(register = vi.fn(async () => registration)): Promise<{
 }
 
 describe('uninitialized global plugin first-start and recovery', () => {
+  it('forwards host invocation identity separately from untrusted tool arguments', async () => {
+    const s = await setup();
+    const args = { sessionID: 'ses_forged', callID: 'call_forged' };
+    await s.hooks['tool.execute.before'](
+      { tool: 'task', sessionID: 'ses_actual', callID: 'call_actual' },
+      { args }
+    );
+    expect(s.checkNativeTool).toHaveBeenCalledWith('D:/owned/synthetic-project', 'task', args, {
+      sessionID: 'ses_actual',
+      callID: 'call_actual',
+    });
+  });
   it('emits one initialization notice and no registration/event storm for 100 concurrent ordinary events', async () => {
     const s = await setup(vi.fn().mockRejectedValue(refusal()));
     await Promise.all(Array.from({ length: 100 }, () => s.hooks.event(ordinary)));

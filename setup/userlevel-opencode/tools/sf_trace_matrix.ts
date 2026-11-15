@@ -7,7 +7,7 @@ export default tool({
     work_item_id: tool.schema.string().describe("Work Item ID"),
   },
   async execute(args, context) {
-    const result = await daemon.invokeTool("sf_trace_matrix", args, {
+    const result = await daemon.invokeTool("sf_trace_matrix", args, { callID: Reflect.get(context, "callID"),
       sessionID: context.sessionID,
       agent: context.agent,
       directory: context.directory,

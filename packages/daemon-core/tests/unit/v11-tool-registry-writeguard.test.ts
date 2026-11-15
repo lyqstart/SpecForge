@@ -1,3 +1,4 @@
+import { getHandlerForFixture as getHandler } from '../helpers/required-verification-fixture';
 /**
  * v11-tool-registry-writeguard.test.ts
  *
@@ -12,7 +13,7 @@ import { describe, it, expect } from 'vitest';
 
 // Import to trigger handler registration
 import '../../src/tools/index';
-import { getHandler, ToolDispatcher } from '../../src/tools/ToolDispatcher';
+import { ToolDispatcher } from '../../src/tools/ToolDispatcher';
 import { validateWorkItemId, isValidWorkItemId } from '../../src/tools/lib/work-item-id-validator';
 
 describe('v1.1 Tool Registry', () => {
@@ -237,7 +238,7 @@ describe('Work Item ID Validation', () => {
 });
 
 describe('v1.1 Tool Dispatch — real handler invocation', () => {
-  const dispatcher = new ToolDispatcher({
+  const dispatcher = new ToolDispatcher(requiredVerificationDepsForFixture({
     stateManager: undefined,
     workflowEngine: undefined,
     projectManager: undefined,
@@ -246,14 +247,14 @@ describe('v1.1 Tool Dispatch — real handler invocation', () => {
     permissionEngine: undefined,
     cas: undefined,
     sessionRegistry: undefined,
-  });
+  }));
 
   it('sf_gate_run dispatch does not throw UNKNOWN_TOOL', async () => {
     // Call with invalid args to get a structured error, NOT "Unknown tool"
     const result = await dispatcher.dispatch({
       tool: 'sf_gate_run',
       args: { work_item_id: 'blue-h1-hello-world' },
-      context: { directory: '/tmp/test' },
+      context: { directory: '/tmp/test', sessionID: 'ses_registry', callID: 'call_registry' },
     });
     // Should get ID validation error, not UNKNOWN_TOOL
     expect((result as any).success).toBe(false);
@@ -264,7 +265,7 @@ describe('v1.1 Tool Dispatch — real handler invocation', () => {
     const result = await dispatcher.dispatch({
       tool: 'sf_code_permission',
       args: { work_item_id: 'blue-h1-hello-world', action: 'check' },
-      context: { directory: '/tmp/test' },
+      context: { directory: '/tmp/test', sessionID: 'ses_registry', callID: 'call_registry' },
     });
     expect((result as any).success).toBe(false);
     expect((result as any).error).toContain('Invalid work_item_id');
@@ -274,7 +275,7 @@ describe('v1.1 Tool Dispatch — real handler invocation', () => {
     const result = await dispatcher.dispatch({
       tool: 'sf_changed_files_audit',
       args: { work_item_id: 'blue-h1-hello-world' },
-      context: { directory: '/tmp/test' },
+      context: { directory: '/tmp/test', sessionID: 'ses_registry', callID: 'call_registry' },
     });
     expect((result as any).success).toBe(false);
     expect((result as any).error).toContain('Invalid work_item_id');
@@ -322,3 +323,4 @@ describe('v1.1 Tool Dispatch — real handler invocation', () => {
     }
   });
 });
+import { requiredVerificationDepsForFixture } from '../helpers/required-verification-fixture';

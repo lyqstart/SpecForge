@@ -49,7 +49,7 @@ export default tool({
       ),
   },
   async execute(args, context) {
-    const result = await daemon.invokeTool("sf_changed_files_audit", args, {
+    const result = await daemon.invokeTool("sf_changed_files_audit", args, { callID: Reflect.get(context, "callID"),
       sessionID: context.sessionID,
       agent: context.agent,
       directory: context.directory,

@@ -14,7 +14,7 @@ export default tool({
     allow_ask_files: tool.schema.boolean().optional().describe("是否允许提交 ask 类文件；默认 false，需用户决策"),
   },
   async execute(args, context) {
-    const result = await daemon.invokeTool(TOOL_NAME, args, {
+    const result = await daemon.invokeTool(TOOL_NAME, args, { callID: Reflect.get(context, "callID"),
       sessionID: context.sessionID,
       agent: context.agent,
       directory: context.directory,

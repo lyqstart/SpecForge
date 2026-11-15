@@ -10,6 +10,7 @@
 import type { GateIdV11, GateStrictness } from './gate-runner-v11.js';
 import { ACTOR_ROLES } from '@specforge/types/actor-roles';
 import type { GateReport as SharedGateReport, GateReportCheck } from '@specforge/types';
+import { assertRequiredVerificationReady } from './required-verification-consumer';
 
 // ---------------------------------------------------------------------------
 // §9.4 Gate Report
@@ -25,6 +26,7 @@ export type GateReportV11 = SharedGateReport;
 export type CandidateGatePhaseV11 = 'design' | 'requirements' | 'tasks' | 'full';
 
 export interface GateContext {
+  requiredVerification?: import('./required-verification-consumer').RequiredVerificationConsumer;
   executionEvidenceConsumer?: import('../../verification/execution-evidence-consumer').ExecutionEvidenceConsumer;
   workItemId: string;
   workItemDir: string;
@@ -62,6 +64,11 @@ export function __injectRegistry(getter: (id: GateIdV11) => GateMetaLike | undef
  * 运行单个 Gate 并生成 Gate Report（§9.4）。
  */
 export async function runGate(gateId: GateIdV11, ctx: GateContext): Promise<GateReportV11> {
+  const requiredProof = await assertRequiredVerificationReady(
+    ctx.requiredVerification,
+    ctx.projectRoot,
+    ctx.workItemId
+  );
   if (!_getMeta) {
     return makeSkippedReport(ctx.workItemId, gateId, 'Gate chain not initialized');
   }
@@ -73,7 +80,14 @@ export async function runGate(gateId: GateIdV11, ctx: GateContext): Promise<Gate
 
   const startedAt = new Date().toISOString();
   try {
-    return await meta.checkFn(ctx);
+    const report = await meta.checkFn(ctx);
+    await assertRequiredVerificationReady(
+      ctx.requiredVerification,
+      ctx.projectRoot,
+      ctx.workItemId,
+      requiredProof.history_sha256
+    );
+    return report;
   } catch (err: any) {
     return {
       schema_version: '1.0',

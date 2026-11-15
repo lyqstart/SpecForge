@@ -30,7 +30,7 @@ export default tool({
       .describe("action=recover_legacy_filesystem_mode 时必填，记录旧模式恢复原因。"),
   },
   async execute(args, context) {
-    const result = await daemon.invokeTool("sf_code_permission", args, {
+    const result = await daemon.invokeTool("sf_code_permission", args, { callID: Reflect.get(context, "callID"),
       sessionID: context.sessionID,
       agent: context.agent,
       directory: context.directory,

@@ -9,7 +9,7 @@ export default tool({
       .describe("查询类型: state=工作流状态, agent_runs=Agent 执行记录"),
   },
   async execute(args, context) {
-    const result = await daemon.invokeTool("sf_state_read", args, {
+    const result = await daemon.invokeTool("sf_state_read", args, { callID: Reflect.get(context, "callID"),
       sessionID: context.sessionID,
       agent: context.agent,
       directory: context.directory,

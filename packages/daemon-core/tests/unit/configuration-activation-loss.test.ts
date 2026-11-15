@@ -1,3 +1,4 @@
+import { requiredVerificationDepsForFixture } from '../helpers/required-verification-fixture';
 import { buildProcessFixture } from '../fixtures/build-process-fixture';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import * as fs from 'node:fs';
@@ -106,11 +107,11 @@ describe('missing configuration activation at the actual consumer', () => {
     const state = await manager.getProjectStateManager(f.root);
     await state.transition('WI-0001', '', 'created');
     fs.unlinkSync(f.activation); f.write(10000);
-    const deps = { projectManager: manager } as any;
+    const deps = requiredVerificationDepsForFixture({ projectManager: manager }) as any;
     const result: any = await new ToolDispatcher(deps).dispatch({ tool: 'sf_state_read', args: { work_item_id: 'all' }, context: { directory: f.root } });
     expect(result.success).toBe(false);
     expect(result.error).toContain('CONFIGURATION_CHANGE_BLOCKED_ACTIVE_WORK');
-    await expect(checkNativeTool(deps, f.root, 'write', { filePath: path.join(f.root, 'must-not-exist.txt') })).rejects.toThrow('CONFIGURATION_CHANGE_BLOCKED_ACTIVE_WORK');
+    await expect(checkNativeTool(deps, f.root, 'write', { filePath: path.join(f.root, 'must-not-exist.txt') }, { sessionID: 'ses_fixture', callID: 'call_fixture' })).rejects.toThrow('CONFIGURATION_CHANGE_BLOCKED_ACTIVE_WORK');
     expect(fs.existsSync(f.activation)).toBe(false);
     expect(fs.existsSync(path.join(f.root, 'must-not-exist.txt'))).toBe(false);
   });

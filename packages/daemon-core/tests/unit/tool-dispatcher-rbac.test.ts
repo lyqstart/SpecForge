@@ -1,3 +1,4 @@
+import { getHandlerForFixture as getHandler } from '../helpers/required-verification-fixture';
 /**
  * tool-dispatcher-rbac.test.ts — v1.2 M3: Tool Dispatcher RBAC Gate 测试
  *
@@ -23,7 +24,7 @@ import {
   clearDecisionLog,
   type ToolPermissionParams,
 } from '../../src/tools/lib/tool-permissions';
-import { ToolDispatcher, getHandler } from '../../src/tools/ToolDispatcher';
+import { ToolDispatcher } from '../../src/tools/ToolDispatcher';
 import { ACTOR_ROLES } from '@specforge/types/actor-roles';
 
 // Import all handlers to register them via registerHandler side-effect

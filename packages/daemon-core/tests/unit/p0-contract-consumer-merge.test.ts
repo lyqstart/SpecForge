@@ -1,8 +1,9 @@
+import { executeMergeForFixture as executeMerge } from '../helpers/required-verification-fixture';
 import { afterEach, describe, expect, it } from 'vitest';
 import * as fs from 'node:fs/promises';
 import * as os from 'node:os';
 import * as path from 'node:path';
-import { executeMerge } from '../../src/tools/lib/merge-runner-v11';
+
 import { approveSealedCandidateFixture as approveCandidate } from '../helpers/candidate-generation-fixture';
 
 // Complete registered formal inputs before freezing the synthetic merge fixture.
