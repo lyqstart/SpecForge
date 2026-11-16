@@ -197,6 +197,30 @@ export class ToolDispatcher {
 
   async dispatch(req: ToolInvokeRequest): Promise<unknown> {
     const projectRoot = resolveProjectRoot(req.context);
+    if (req.tool === 'sf_verification_run' && req.args.action === 'run') {
+      // Only the isolated execution wait is outside the candidate mutation
+      // barrier. Admission and source capture remain exclusive, and the real
+      // VerificationRuntime still checks owner, state, permission and lease.
+      // Holding this barrier while waiting would prevent native cancellation
+      // from capturing its own source. Archive recovery stays excluded for
+      // the entire execution, including its cleanup and evidence commit.
+      const operation = async () => {
+        const deferred: { execute?: () => Promise<unknown> } = {};
+        const admitted = await withGateOperationBarrier(
+          projectRoot,
+          'sf_required_verification_capture',
+          false,
+          () =>
+            this.dispatchAvailableProject(req, execute => {
+              deferred.execute = execute;
+            })
+        );
+        return deferred.execute ? deferred.execute() : admitted;
+      };
+      return this.deps.projectManager?.withProjectOperation
+        ? this.deps.projectManager.withProjectOperation(projectRoot, operation)
+        : operation();
+    }
     return withGateOperationBarrier(
       projectRoot,
       // Admission, source capture and the dependent handler share one exclusive
@@ -221,7 +245,10 @@ export class ToolDispatcher {
     return this.dispatchAvailableProject(req);
   }
 
-  private async dispatchAvailableProject(req: ToolInvokeRequest): Promise<unknown> {
+  private async dispatchAvailableProject(
+    req: ToolInvokeRequest,
+    deferHandler?: (execute: () => Promise<unknown>) => void
+  ): Promise<unknown> {
     const ctx = req.context;
     const trace_id = getTraceIdFromContext(ctx) ?? createSfTraceId();
     const started = Date.now();
@@ -468,45 +495,52 @@ export class ToolDispatcher {
         };
       }
     }
-    try {
-      const result = await handler(
-        req.args,
-        { ...(ctx ?? {}), trace_id },
-        { ...this.deps, acceptedConfiguration }
-      );
-      recordDaemonObservation({
-        context: ctx,
-        category: 'dispatcher',
-        phase: 'dispatch.completed',
-        trace_id,
-        tool_name: req.tool,
-        handler_name: req.tool,
-        work_item_id,
-        status: 'success',
-        duration_ms: Date.now() - started,
-        payload: result,
-      });
-      return result;
-    } catch (err) {
-      recordDaemonObservation({
-        context: ctx,
-        category: 'dispatcher',
-        phase: 'dispatch.error',
-        trace_id,
-        tool_name: req.tool,
-        handler_name: req.tool,
-        work_item_id,
-        status: 'error',
-        duration_ms: Date.now() - started,
-        error: {
-          name: (err as Error).name,
-          message: (err as Error).message,
-          stack: (err as Error).stack,
-        },
-        force: true,
-      });
-      throw err;
+    const execute = async () => {
+      try {
+        const result = await handler(
+          req.args,
+          { ...(ctx ?? {}), trace_id },
+          { ...this.deps, acceptedConfiguration }
+        );
+        recordDaemonObservation({
+          context: ctx,
+          category: 'dispatcher',
+          phase: 'dispatch.completed',
+          trace_id,
+          tool_name: req.tool,
+          handler_name: req.tool,
+          work_item_id,
+          status: 'success',
+          duration_ms: Date.now() - started,
+          payload: result,
+        });
+        return result;
+      } catch (err) {
+        recordDaemonObservation({
+          context: ctx,
+          category: 'dispatcher',
+          phase: 'dispatch.error',
+          trace_id,
+          tool_name: req.tool,
+          handler_name: req.tool,
+          work_item_id,
+          status: 'error',
+          duration_ms: Date.now() - started,
+          error: {
+            name: (err as Error).name,
+            message: (err as Error).message,
+            stack: (err as Error).stack,
+          },
+          force: true,
+        });
+        throw err;
+      }
+    };
+    if (deferHandler) {
+      deferHandler(execute);
+      return undefined;
     }
+    return execute();
   }
 
   listRegisteredTools(): string[] {
