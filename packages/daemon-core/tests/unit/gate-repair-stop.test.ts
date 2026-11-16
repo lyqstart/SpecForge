@@ -8,7 +8,10 @@ import { createHash } from 'node:crypto';
 import { getRequiredGates } from '../../src/tools/lib/required-gates';
 import { readGateRepairStatus, GATE_REPAIR_ACTION } from '../../src/tools/lib/gate-repair-stop';
 import { guardHardStop, readWorkItemHardStop } from '../../src/tools/lib/hard-stop-latch';
-import { getHandler } from '../../src/tools/ToolDispatcher';
+import {
+  getRecoveryHandlerForFixture as getHandler,
+  seedRecoveryState,
+} from '../helpers/hard-stop-state-fixture';
 import '../../src/tools/handlers/sf-hard-stop-resolve';
 
 const roots: string[] = [];
@@ -18,6 +21,7 @@ afterEach(async () => {
 async function fixture() {
   const projectRoot = await fs.mkdtemp(path.join(tmpdir(), 'sf-repair-stop-'));
   roots.push(projectRoot);
+  await seedRecoveryState(projectRoot);
   const workItemId = 'WI-0001',
     workItemDir = path.join(projectRoot, '.specforge', 'work-items', workItemId);
   await fs.mkdir(workItemDir, { recursive: true });

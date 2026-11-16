@@ -1,3 +1,4 @@
+import { seedRecoveryState, recoveryStateDeps } from '../helpers/hard-stop-state-fixture';
 import { requiredVerificationDepsForFixture } from '../helpers/required-verification-fixture';
 import { getHandlerForFixture as getHandler } from '../helpers/required-verification-fixture';
 import { afterEach, describe, expect, it } from 'vitest';
@@ -59,7 +60,7 @@ describe('acceptance-discovered guard and audit gaps', () => {
   });
 
   it('uses the audit owner and existing recovery owner to retain and resolve a denied probe without expanding permissions', async () => {
-    const { root, wi } = fixture(); decision(wi, true, 'app.js'); decision(wi, false);
+    const { root, wi } = fixture(); await seedRecoveryState(root); decision(wi, true, 'app.js'); decision(wi, false);
     const before = fs.readFileSync(path.join(wi, 'write_guard_log.jsonl'), 'utf8');
     const context = { directory: root, agent: 'sf-orchestrator' };
     const run = () => getHandler('sf_changed_files_audit')!({ work_item_id: 'WI-0001' }, context, {} as any) as Promise<any>;
@@ -67,7 +68,7 @@ describe('acceptance-discovered guard and audit gaps', () => {
     expect(fs.existsSync(path.join(wi, 'hard_stop.json'))).toBe(true);
     const recovery: any = await getHandler('sf_hard_stop_resolve')!({ work_item_id: 'WI-0001', resolution_type: 'prohibited_action_replaced', reason: 'Expected sentinel probe was denied before writing. Abandon sentinel.txt write.',
       evidence: ['write_guard_log.jsonl: sentinel.txt denied; unchanged protected fixture'], blocked_action_disposition: 'abandon', retry_original_action: false,
-      safe_alternative_tool: 'sf_changed_files_audit', allowed_next_action: 'rerun audit without sentinel write', resume_from_step: 'audit' }, context, {} as any);
+      safe_alternative_tool: 'sf_changed_files_audit', allowed_next_action: 'rerun audit without sentinel write', resume_from_step: 'audit' }, context, recoveryStateDeps(root) as any);
     expect(recovery.success, JSON.stringify(recovery)).toBe(true);
     const resolved = await run(); expect(resolved.passed, JSON.stringify(resolved)).toBe(true);
     expect(resolved.blocked_write_attempts).toBeGreaterThanOrEqual(1); expect(resolved.unresolved_blocked_write_attempts).toBe(0);

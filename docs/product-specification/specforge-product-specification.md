@@ -4,7 +4,7 @@
 >
 > Specification ID: SPS-1.0
 >
-> Product release version: 1.0.40
+> Product release version: 1.0.41
 >
 > Product version epoch: 1
 >
@@ -824,6 +824,7 @@ HardStop 是 recoverable safety latch，不是“任务永久结束”。
 - 触发后危险动作及其依赖动作停止。
 - 不允许绕过或手工删除锁存事实。
 - 恢复必须记录 resolution evidence。
+- 解除 HardStop 前必须由 StateManager 重放保留事件并读取该 Work Item 的权威状态；不得以 state.json 或 status 字段替代。状态 owner 缺失、历史损坏或无法确认该 Work Item 状态时，保留停点且不得追加成功恢复记录。恢复记录和 resume context 使用该次读取的权威状态。
 - 恢复后重新读取 authoritative state 并从合法 resume point 继续。
 - 只有没有安全恢复路径时才进入 blocked。
 
@@ -941,6 +942,7 @@ Installer 必须：
 
 - 使用 release manifest 定义唯一安装集合。
 - 验证 source/install bytes 和哈希。
+- 升级是否跳过受管文件必须核对当前实际目标与已验证 release manifest 的大小和哈希，不得只比较新旧清单；缺失或漂移目标须由正常安装事务修复。生成安装清单前必须逐项核对完整目标集合，缺失、非唯一普通文件或字节不匹配时拒绝，不得漏项或将漂移字节登记为发布内容。
 - 将 OpenCode 侧资产安装到 OpenCode config root 的对应 agents/tools/plugins/skills 位置。
 - First-party Thin Plugin 只安装到 OpenCode config root 的 plugins 目录，不生成项目级副本。
 - 将 SpecForge 私有用户级资产安装到 sf-user。

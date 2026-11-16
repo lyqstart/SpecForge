@@ -4,7 +4,10 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import '../src/tools/handlers/sf-hard-stop-resolve.js';
-import { getHandler } from '../src/tools/ToolDispatcher.js';
+import {
+  getRecoveryHandlerForFixture as getHandler,
+  seedRecoveryState,
+} from './helpers/hard-stop-state-fixture';
 import { checkHardStop, guardHardStop, setHardStop } from '../src/tools/lib/hard-stop-latch.js';
 import { classifyProtectedSpecForgePathBashAccess } from '../src/tools/handlers/sf-safe-bash.js';
 
@@ -18,21 +21,7 @@ describe('Recoverable HardStop protocol', () => {
     await mkdir(path.join(projectRoot, '.specforge', 'work-items', workItemId), {
       recursive: true,
     });
-    await writeFile(
-      path.join(projectRoot, '.specforge', 'runtime', 'state.json'),
-      JSON.stringify(
-        {
-          workItems: [
-            {
-              work_item_id: workItemId,
-              current_state: 'candidate_preparing',
-            },
-          ],
-        },
-        null,
-        2
-      )
-    );
+    await seedRecoveryState(projectRoot, 'candidate_preparing');
   });
 
   afterEach(async () => {
@@ -84,22 +73,23 @@ describe('Recoverable HardStop protocol', () => {
       workItemId,
       'hard_stop.json'
     );
-    const unknown = JSON.stringify(
-      {
-        schema_version: '9.9',
-        hard_stop_id: 'HS-unknown',
-        scope: 'work_item',
-        work_item_id: workItemId,
-        blocked: true,
-        reason: 'unknown contract must remain blocking',
-        source_tool: 'test',
-        created_at: '2026-09-10T00:00:00.000Z',
-        resolved: false,
-        recovery_status: 'pending',
-      },
-      null,
-      2
-    ) + '\n';
+    const unknown =
+      JSON.stringify(
+        {
+          schema_version: '9.9',
+          hard_stop_id: 'HS-unknown',
+          scope: 'work_item',
+          work_item_id: workItemId,
+          blocked: true,
+          reason: 'unknown contract must remain blocking',
+          source_tool: 'test',
+          created_at: '2026-09-10T00:00:00.000Z',
+          resolved: false,
+          recovery_status: 'pending',
+        },
+        null,
+        2
+      ) + '\n';
     await writeFile(latchPath, unknown, 'utf8');
 
     expect(() => guardHardStop(projectRoot, workItemId, 'sf_artifact_write')).toThrow(

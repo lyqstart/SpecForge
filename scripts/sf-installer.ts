@@ -19,7 +19,7 @@ import { fileURLToPath, pathToFileURL } from "node:url"
 import { InstallerError, InstallerErrorCode, EXIT_CODES } from "./lib/errors"
 import { resolveSpecForgeInstallRoot } from "./lib/paths"
 import { acquireInstallLock, getInstallLockPath } from "./lib/install_lock"
-import { readUserManifest, writeUserManifest, buildUserManifest, getUserManifestPath } from "./lib/manifest"
+import { readUserManifest, writeUserManifest, buildUserManifest, getUserManifestPath, installedFileMatchesRelease } from "./lib/manifest"
 import { computeSHA256 } from "./lib/crypto"
 import { getAgentDefinitions } from "./lib/registry"
 import {
@@ -343,9 +343,10 @@ export async function cmdUpgrade(
       // 计算源文件 SHA-256
       const sourceHash = entry.sha256
 
-      // 如果目标文件存在且 hash 相同（非 --force），跳过
+      // 旧清单仅是历史回执；只有当前物理字节匹配发布清单才能跳过。
       const existingEntry = existingManifest?.files[registryPath]
-      if (!opts.force && existingEntry && existingEntry.sha256 === sourceHash) {
+      const targetMatches = await installedFileMatchesRelease(userLevelDir, entry)
+      if (!opts.force && targetMatches) {
         skippedCount++
         continue
       }

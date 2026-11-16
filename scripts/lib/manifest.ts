@@ -9,7 +9,7 @@
  *   Requirements: 5.1, 5.2, 5.3, 5.4
  */
 
-import { readFile, stat } from "node:fs/promises"
+import { readFile, lstat } from "node:fs/promises"
 import { existsSync } from "node:fs"
 import { join } from "node:path"
 import type {
@@ -390,6 +390,28 @@ export function validateUserManifest(data: unknown): data is UserLevelManifest {
 export interface InstalledManifestFile {
   targetPath: string
   type: ManagedComponentType
+  sha256: string
+  size: number
+}
+
+/** Compare physical installed bytes with the verified release, never an old receipt. */
+export async function installedFileMatchesRelease(
+  userLevelDir: string,
+  entry: InstalledManifestFile,
+): Promise<boolean> {
+  const fullPath = join(userLevelDir, ...entry.targetPath.split("/"))
+  let metadata
+  try {
+    metadata = await lstat(fullPath)
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === "ENOENT") return false
+    throw error
+  }
+  if (!metadata.isFile() || metadata.isSymbolicLink() || metadata.nlink !== 1) {
+    throw new InstallerError(InstallerErrorCode.E_CHECKSUM_MISMATCH,
+      `受管目标不是唯一普通文件: ${entry.targetPath}`)
+  }
+  return metadata.size === entry.size && await computeSHA256(fullPath) === entry.sha256
 }
 
 export async function buildUserManifest(
@@ -403,15 +425,14 @@ export async function buildUserManifest(
 
   const files: Record<string, FileEntry> = {}
   for (const entry of installFiles) {
-    const fullPath = join(userLevelDir, ...entry.targetPath.split("/"))
-    if (existsSync(fullPath)) {
-      const sha256 = await computeSHA256(fullPath)
-      const fileStat = await stat(fullPath)
-      files[entry.targetPath] = {
-        sha256,
-        size: fileStat.size,
-        type: entry.type,
-      }
+    if (!await installedFileMatchesRelease(userLevelDir, entry)) {
+      throw new InstallerError(InstallerErrorCode.E_CHECKSUM_MISMATCH,
+        `安装目标与发布清单不一致，拒绝生成安装清单: ${entry.targetPath}`)
+    }
+    files[entry.targetPath] = {
+      sha256: entry.sha256,
+      size: entry.size,
+      type: entry.type,
     }
   }
 

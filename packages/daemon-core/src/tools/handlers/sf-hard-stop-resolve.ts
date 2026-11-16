@@ -27,6 +27,7 @@ import {
 } from '../lib/gate-repair-stop';
 import { readHardStopResolutionLog } from '../lib/hard-stop-resolution-log';
 import { validateWorkItemId } from '../lib/work-item-id-validator';
+import { readAuthoritativeState } from '../lib/state-coordinator-v11';
 import {
   appendWriteGuardAuthorization,
   readWriteGuardAuthorizations,
@@ -59,15 +60,6 @@ const VALID_ACTION_DISPOSITIONS = new Set([
   'supersede',
 ]);
 
-function readJsonIfExists(filePath: string): any {
-  try {
-    if (!fs.existsSync(filePath)) return null;
-    return JSON.parse(fs.readFileSync(filePath, 'utf-8'));
-  } catch {
-    return null;
-  }
-}
-
 function optionalString(args: Record<string, unknown>, key: string): string | undefined {
   const value = args[key];
   if (typeof value !== 'string') return undefined;
@@ -93,14 +85,6 @@ function normalizeAgentName(value: unknown): string {
     .trim()
     .toLowerCase()
     .replace(/_/g, '-');
-}
-
-function currentAuthoritativeProjectionState(baseDir: string, workItemId: string): string | null {
-  const state = readJsonIfExists(path.join(baseDir, SPEC_DIR_NAME, 'runtime', 'state.json'));
-  const workItems = Array.isArray(state?.workItems) ? state.workItems : [];
-  const item = workItems.find((candidate: any) => candidate?.work_item_id === workItemId);
-  const value = item?.current_state ?? item?.status;
-  return typeof value === 'string' && value.trim().length > 0 ? value.trim() : null;
 }
 
 function strongSystemRecoveryPlan(args: Record<string, unknown>): {
@@ -257,7 +241,20 @@ registerHandler('sf_hard_stop_resolve', async (args, context, deps) => {
     };
   }
 
-  const currentState = currentAuthoritativeProjectionState(baseDir, workItemId);
+  let currentState: string;
+  try {
+    const state = await readAuthoritativeState({ deps, projectRoot: baseDir, workItemId });
+    if (state.source !== 'StateManager' || !state.rebuilt_from_events || !state.current_state) {
+      throw new Error('HARD_STOP_STATE_AUTHORITY_UNAVAILABLE');
+    }
+    currentState = state.current_state;
+  } catch {
+    return {
+      success: false,
+      error: 'HARD_STOP_STATE_AUTHORITY_UNAVAILABLE',
+      retry_allowed: false,
+    };
+  }
   let gateProof: GateRepairAuthorizationProof | undefined;
   if (active.policy_code === GATE_REPAIR_STOP) {
     // Presence checks above may trim a copy; Runtime provenance and the audit
