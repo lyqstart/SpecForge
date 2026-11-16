@@ -1,6 +1,7 @@
 import { CURRENT_RELEASE_WORKFLOW_TYPE } from '@specforge/types';
 import { access, readFile, rename, rm, writeFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
+import { withCheckpointFileAccess } from '../../state/checkpoint-file-access';
 import { registerHandler } from '../ToolDispatcher';
 import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
 import { join } from 'node:path';
@@ -59,7 +60,10 @@ async function readExistingWorkflowFacts(
   ];
 
   for (const filePath of candidates) {
-    const json = await readJsonIfExists(filePath);
+    const json =
+      filePath === candidates[2]
+        ? await withCheckpointFileAccess(filePath, () => readJsonIfExists(filePath))
+        : await readJsonIfExists(filePath);
     if (!json) continue;
 
     if (filePath.endsWith('state.json') && Array.isArray(json.workItems)) {

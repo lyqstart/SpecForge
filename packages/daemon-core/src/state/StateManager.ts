@@ -13,6 +13,7 @@ import { promiseFromSync } from '@specforge/types';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import { randomUUID } from 'crypto';
+import { readCheckpointFile, publishCheckpointFile } from './checkpoint-file-access';
 import { Event, ProjectState, WorkItemState } from '../types';
 import { WAL } from '../wal';
 import { IPathResolver } from '../daemon/path-resolver';
@@ -479,7 +480,7 @@ export class StateManager {
   private async assertHistoryWitnesses(events: Event[]): Promise<void> {
     let checkpoint: ProjectState | null = null;
     try {
-      const value: unknown = JSON.parse(await fs.readFile(this.statePath, 'utf-8'));
+      const value: unknown = JSON.parse(await readCheckpointFile(this.statePath));
       if (!RUNTIME_SCHEMA_DESCRIPTORS[0].validateCurrent(value))
         throw new Error('WAL_CHECKPOINT_INVALID');
       checkpoint = value as ProjectState;
@@ -712,7 +713,7 @@ export class StateManager {
         } finally {
           await handle.close();
         }
-        await fs.rename(temporaryPath, this.statePath);
+        await publishCheckpointFile(temporaryPath, this.statePath);
       } finally {
         await fs.rm(temporaryPath, { force: true });
       }
@@ -757,7 +758,7 @@ export class StateManager {
    */
   private async readDiskStateVersion(): Promise<number> {
     try {
-      const content = await fs.readFile(this.statePath, 'utf-8');
+      const content = await readCheckpointFile(this.statePath);
       const parsed = JSON.parse(content) as Partial<ProjectState>;
       return parsed.stateVersion ?? 0;
     } catch (error) {
@@ -773,7 +774,7 @@ export class StateManager {
    */
   private async readStateFile(): Promise<ProjectState> {
     try {
-      const content = await fs.readFile(this.statePath, 'utf-8');
+      const content = await readCheckpointFile(this.statePath);
       return JSON.parse(content) as ProjectState;
     } catch {
       return {

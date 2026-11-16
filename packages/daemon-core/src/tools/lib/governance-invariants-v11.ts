@@ -9,6 +9,7 @@ import * as fs from 'node:fs/promises';
 import * as fsSync from 'node:fs';
 import * as path from 'node:path';
 import * as crypto from 'node:crypto';
+import { withCheckpointFileAccess } from '../../state/checkpoint-file-access';
 import {
   SPEC_DIR_NAME,
   LAYOUT,
@@ -996,8 +997,9 @@ async function readWorkItemFacts(
   const manifest = await readJsonOrNull<Record<string, any>>(
     path.join(workItemDir, 'candidate_manifest.json')
   );
-  const runtime = await readJsonOrNull<Record<string, any>>(
-    path.join(projectRoot, SPEC_DIR_NAME, 'runtime', 'state.json')
+  const checkpointPath = path.join(projectRoot, SPEC_DIR_NAME, 'runtime', 'state.json');
+  const runtime = await withCheckpointFileAccess(checkpointPath, () =>
+    readJsonOrNull<Record<string, any>>(checkpointPath)
   );
   let runtimeItem: any = null;
   if (runtime?.work_item_id === workItemId) runtimeItem = runtime;

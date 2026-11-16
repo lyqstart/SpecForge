@@ -396,7 +396,15 @@ describe('bounded blocked verification recovery', () => {
         transitionWithEvidence(f.input),
         transitionWithEvidence(f.input),
       ]);
-    expect(result.filter(r => r.status === 'fulfilled')).toHaveLength(1);
+    const outcomes = result.map(r =>
+      r.status === 'rejected'
+        ? { status: r.status, reason: String(r.reason) }
+        : { status: r.status }
+    );
+    expect(
+      result.filter(r => r.status === 'fulfilled'),
+      JSON.stringify(outcomes)
+    ).toHaveLength(1);
     expect(result.filter(r => r.status === 'rejected')).toHaveLength(1);
     expect((await fs.readFile(f.events, 'utf8')).trim().split('\n')).toHaveLength(3);
     await expect(f.sm.rebuildState()).resolves.toBeDefined();

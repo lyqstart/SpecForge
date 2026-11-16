@@ -3,6 +3,7 @@ import * as fs from 'fs/promises';
 import * as path from 'path';
 import { v7 as uuidv7 } from 'uuid';
 import { Event } from '../types';
+import { readCheckpointFile } from '../state/checkpoint-file-access';
 import {
   isCurrentRuntimeEvent,
   RUNTIME_SCHEMA_DESCRIPTORS,
@@ -185,7 +186,7 @@ export class WAL {
     // A persisted cursor proves this is not a fresh project, including when
     // read/append is invoked by recovery or session owners without StateManager.
     try {
-      const checkpoint = JSON.parse(await fs.readFile(path.join(dir, 'state.json'), 'utf-8'));
+      const checkpoint = JSON.parse(await readCheckpointFile(path.join(dir, 'state.json')));
       if (!RUNTIME_SCHEMA_DESCRIPTORS[0].validateCurrent(checkpoint))
         throw new Error('WAL_CHECKPOINT_INVALID');
       if (checkpoint.lastEventId) {

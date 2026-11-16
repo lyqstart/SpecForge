@@ -27,6 +27,7 @@ import {
 } from '../types';
 import { WAL } from '../wal';
 import { StateManager } from '../state/StateManager';
+import { readCheckpointFile, withCheckpointFileAccess } from '../state/checkpoint-file-access';
 import { IPathResolver } from '../daemon/path-resolver';
 import { SessionRegistry } from '../session/SessionRegistry';
 import {
@@ -520,7 +521,7 @@ export class RecoverySubsystem {
    */
   async loadState(): Promise<ProjectState> {
     try {
-      const content = await fs.readFile(this.getStatePath(), 'utf-8');
+      const content = await readCheckpointFile(this.getStatePath());
       return deserializeRuntimeCheckpoint(JSON.parse(content) as unknown);
     } catch (error) {
       if ((error as NodeJS.ErrnoException).code === 'ENOENT') return this.createEmptyState();
@@ -538,15 +539,16 @@ export class RecoverySubsystem {
     }
     const statePath = this.getStatePath();
     await fs.mkdir(path.dirname(statePath), { recursive: true });
-    await fs.writeFile(statePath, JSON.stringify(serializeRuntimeCheckpoint(state), null, 2));
-
-    // fsync to ensure durability
-    const handle = await fs.open(statePath, 'a');
-    try {
-      await handle.sync();
-    } finally {
-      await handle.close();
-    }
+    await withCheckpointFileAccess(statePath, async () => {
+      await fs.writeFile(statePath, JSON.stringify(serializeRuntimeCheckpoint(state), null, 2));
+      // Close the fallback recovery writer before any checkpoint reader/publication.
+      const handle = await fs.open(statePath, 'a');
+      try {
+        await handle.sync();
+      } finally {
+        await handle.close();
+      }
+    });
   }
 
   /**
