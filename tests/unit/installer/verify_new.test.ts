@@ -37,6 +37,17 @@ function makeUserManifest(
   }
 }
 
+async function makeInstalledBaseline(root: string): Promise<UserLevelManifest> {
+  const content = "installed fixture baseline"
+  await mkdir(join(root, "sf-user"), { recursive: true })
+  await writeFile(join(root, "sf-user", "fixture.txt"), content)
+  return makeUserManifest({
+    files: {
+      "sf-user/fixture.txt": { sha256: computeHash(content), size: content.length, type: "other" },
+    },
+  })
+}
+
 // ============================================================
 // verifyInstallation
 // ============================================================
@@ -141,8 +152,8 @@ describe("verifyInstallation (new reconcile module)", () => {
     await mkdir(join(tempDir, "agents"), { recursive: true })
     await writeFile(join(tempDir, "agents", "sf-extra-agent.md"), content)
 
-    // Write empty manifest
-    const manifest = makeUserManifest({ files: {} })
+    // Extra-file checks require an independently valid nonempty installation.
+    const manifest = await makeInstalledBaseline(tempDir)
     await writeFile(
       join(tempDir, "specforge-manifest.json"),
       JSON.stringify(manifest, null, 2)
@@ -366,7 +377,7 @@ describe("findExtraFiles (integration)", () => {
     await mkdir(join(tempDir, "agents"), { recursive: true })
     await writeFile(join(tempDir, "agents", "sf-extra-agent.md"), content)
 
-    const manifest = makeUserManifest({ files: {} })
+    const manifest = await makeInstalledBaseline(tempDir)
     await writeFile(
       join(tempDir, "specforge-manifest.json"),
       JSON.stringify(manifest, null, 2)
@@ -383,7 +394,7 @@ describe("findExtraFiles (integration)", () => {
     await mkdir(join(tempDir, "tools"), { recursive: true })
     await writeFile(join(tempDir, "tools", "sf_extra_tool.ts"), content)
 
-    const manifest = makeUserManifest({ files: {} })
+    const manifest = await makeInstalledBaseline(tempDir)
     await writeFile(
       join(tempDir, "specforge-manifest.json"),
       JSON.stringify(manifest, null, 2)
@@ -400,7 +411,7 @@ describe("findExtraFiles (integration)", () => {
     await mkdir(join(tempDir, "tools", "lib"), { recursive: true })
     await writeFile(join(tempDir, "tools", "lib", "sf_extra_lib.ts"), content)
 
-    const manifest = makeUserManifest({ files: {} })
+    const manifest = await makeInstalledBaseline(tempDir)
     await writeFile(
       join(tempDir, "specforge-manifest.json"),
       JSON.stringify(manifest, null, 2)
@@ -417,7 +428,7 @@ describe("findExtraFiles (integration)", () => {
     await mkdir(join(tempDir, "plugins"), { recursive: true })
     await writeFile(join(tempDir, "plugins", "sf_extra_plugin.ts"), content)
 
-    const manifest = makeUserManifest({ files: {} })
+    const manifest = await makeInstalledBaseline(tempDir)
     await writeFile(
       join(tempDir, "specforge-manifest.json"),
       JSON.stringify(manifest, null, 2)
@@ -434,7 +445,7 @@ describe("findExtraFiles (integration)", () => {
     await mkdir(join(tempDir, "skills", "sf-extra-skill"), { recursive: true })
     await writeFile(join(tempDir, "skills", "sf-extra-skill", "SKILL.md"), content)
 
-    const manifest = makeUserManifest({ files: {} })
+    const manifest = await makeInstalledBaseline(tempDir)
     await writeFile(
       join(tempDir, "specforge-manifest.json"),
       JSON.stringify(manifest, null, 2)
@@ -451,7 +462,7 @@ describe("findExtraFiles (integration)", () => {
     await writeFile(join(tempDir, "agents", "custom-agent.md"), "custom")
     await writeFile(join(tempDir, "agents", "other.md"), "other")
 
-    const manifest = makeUserManifest({ files: {} })
+    const manifest = await makeInstalledBaseline(tempDir)
     await writeFile(
       join(tempDir, "specforge-manifest.json"),
       JSON.stringify(manifest, null, 2)
