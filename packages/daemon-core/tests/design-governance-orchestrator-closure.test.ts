@@ -1,3 +1,4 @@
+import { seedRecoveryState, getRecoveryHandlerForFixture } from './helpers/hard-stop-state-fixture';
 import { runGateForFixture as runGate, executeMergeForFixture as executeMerge } from './helpers/required-verification-fixture';
 import { codeContains } from '../../../tests/helpers/source-structure';
 import { authoritativeStateFixture } from './helpers/authoritative-state-fixture';
@@ -958,6 +959,7 @@ describe('Orchestrator governance execution closure', () => {
   });
 
   it('reserves HardStop resolution for sf-orchestrator at Dispatcher and Handler boundaries', async () => {
+    await seedRecoveryState(projectRoot);
     const workItemId = 'WI-0001';
     const hardStop = setHardStop(
       projectRoot,
@@ -966,7 +968,7 @@ describe('Orchestrator governance execution closure', () => {
       'sf_safe_bash'
     );
 
-    const handlerDenied = (await getHandler('sf_hard_stop_resolve')!(
+    const handlerDenied = (await getRecoveryHandlerForFixture('sf_hard_stop_resolve')!(
       {
         work_item_id: workItemId,
         hard_stop_id: hardStop.hard_stop_id,
@@ -994,7 +996,7 @@ describe('Orchestrator governance execution closure', () => {
     expect(dispatcherDenied.error).toBe('HARD_STOP_RESOLVE_ORCHESTRATOR_ONLY');
     expect(dispatcherDenied.required_agent).toBe('sf-orchestrator');
 
-    const resolved = (await getHandler('sf_hard_stop_resolve')!(
+    const resolved = (await getRecoveryHandlerForFixture('sf_hard_stop_resolve')!(
       {
         work_item_id: workItemId,
         hard_stop_id: hardStop.hard_stop_id,
@@ -1017,6 +1019,7 @@ describe('Orchestrator governance execution closure', () => {
   });
 
   it('audits resolution-only historical blocked writes and deduplicates by hard_stop_id', async () => {
+    await seedRecoveryState(projectRoot);
     const workItemId = 'WI-0001';
     const wiDir = path.join(projectRoot, '.specforge', 'work-items', workItemId);
 
@@ -1052,7 +1055,7 @@ describe('Orchestrator governance execution closure', () => {
       'sf_safe_bash'
     );
     const hardStopId = hardStop.hard_stop_id;
-    const resolved = (await getHandler('sf_hard_stop_resolve')!(
+    const resolved = (await getRecoveryHandlerForFixture('sf_hard_stop_resolve')!(
       {
         work_item_id: workItemId,
         hard_stop_id: hardStopId,
@@ -1108,9 +1111,7 @@ describe('Orchestrator governance execution closure', () => {
     const workItemId = 'WI-0001';
     const wiDir = path.join(projectRoot, '.specforge', 'work-items', workItemId);
 
-    await writeJson(path.join(projectRoot, '.specforge', 'runtime', 'state.json'), {
-      workItems: [{ work_item_id: workItemId, current_state: 'candidate_preparing' }],
-    });
+    await seedRecoveryState(projectRoot, 'candidate_preparing');
     await writeJson(path.join(wiDir, 'work_item.json'), {
       schema_version: '1.1',
       work_item_id: workItemId,
@@ -1157,7 +1158,7 @@ describe('Orchestrator governance execution closure', () => {
     expect(activeAudit.success).toBe(false);
     expect(activeAudit.error).toContain('HARD_STOP_ACTIVE');
 
-    const resolved = (await getHandler('sf_hard_stop_resolve')!(
+    const resolved = (await getRecoveryHandlerForFixture('sf_hard_stop_resolve')!(
       {
         work_item_id: workItemId,
         hard_stop_id: blocked.hard_stop_record.hard_stop_id,

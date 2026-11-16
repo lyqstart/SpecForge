@@ -1,3 +1,4 @@
+import { seedRecoveryState, advanceRecoveryState, recoveryStateDeps } from '../helpers/hard-stop-state-fixture';
 import { recordUserDecisionForFixture as recordUserDecision } from '../helpers/required-verification-fixture';
 /**
  * governance-closure-core.test.ts — Core layer governance tests
@@ -570,28 +571,6 @@ describe('C. Write Guard integration — real checkWrite → log → audit chain
 // ---------------------------------------------------------------------------
 
 
-function createMockDeps(initialState = 'verification_done') {
-  let currentState = initialState;
-  return {
-    projectManager: {
-      getProjectStateManager: async () => ({
-        rebuildFromEventsFile: async () => {},
-        getState: async () => ({ current_state: currentState }),
-        transition: async (workItemId: string, fromState: string, toState: string) => {
-          currentState = toState;
-          return {
-            source: 'StateManager',
-            workItemId,
-            previousState: fromState,
-            currentState: toState,
-            timestamp: new Date().toISOString(),
-          };
-        },
-      }),
-    },
-  };
-}
-
 async function writeSemanticClosure(wiDir: string, workItemId: string): Promise<void> {
   const closure = {
     schema_version: '1.0',
@@ -717,8 +696,9 @@ describe('D. Daemon-level E2E — code_only_fast_path lifecycle', () => {
       path.join(wiDir, 'gates', 'formal_version_gate.json'),
       JSON.stringify({ gate_id: 'formal_version_gate', status: 'passed' }),
     );
+    await seedRecoveryState(tmpDir, 'implementation_running', workItemId);
     await resolveAuditProbes(workItemId, (tool, args) => getHandler(tool)!(args,
-      { directory: tmpDir, agent: 'sf-orchestrator' }, createMockDeps('implementation_running')) as Promise<any>);
+      { directory: tmpDir, agent: 'sf-orchestrator' }, recoveryStateDeps(tmpDir)) as Promise<any>);
     await fs.writeFile(path.join(wiDir, 'verification_report.md'), '# Verification\nAll evidence reviewed.');
     await fs.writeFile(path.join(wiDir, 'merge_report.md'), `# Merge Report\n\nContract: merge-report/v1\nWork Item: ${workItemId}\nStatus: not_applicable\n\n## Summary\n- Total entries: 0\n- Successful: 0\n- Failed: 0\n`);
     await fs.writeFile(path.join(wiDir, 'evidence', 'evidence_manifest.json'), JSON.stringify({ schema_version: '1.0', work_item_id: workItemId, entries: [{ evidence_id: 'EV-1', type: 'log', path: 'test.log' }] }));
@@ -739,11 +719,12 @@ describe('D. Daemon-level E2E — code_only_fast_path lifecycle', () => {
     await writeSemanticClosure(wiDir, workItemId);
 
     // --- Phase 4: Execute close_gate ---
+    await advanceRecoveryState(tmpDir, 'verification_done', workItemId);
     const handler = getHandler('sf_close_gate')!;
     const result = await handler(
       { work_item_id: workItemId },
       { directory: tmpDir },
-      createMockDeps('verification_done'),
+      recoveryStateDeps(tmpDir),
     ) as Record<string, unknown>;
 
     // --- Phase 5: Verify closure ---

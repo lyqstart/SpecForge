@@ -1,3 +1,4 @@
+import { seedRecoveryState, advanceRecoveryState, recoveryStateDeps } from './helpers/hard-stop-state-fixture';
 import { recordUserDecisionForFixture as recordUserDecision } from './helpers/required-verification-fixture';
 /**
  * v11-governance-http-e2e.test.ts — HTTP Round-Trip Governance E2E
@@ -87,7 +88,6 @@ describe('v1.1 Governance HTTP Round-Trip E2E', () => {
   const token = `test-gov-e2e-${Date.now()}`;
   let tempDir: string;
   let gitBaseCommit: string;
-  let httpTestState = 'implementation_ready';
   const workItemId = 'WI-0001';
 
   beforeAll(async () => {
@@ -108,22 +108,8 @@ describe('v1.1 Governance HTTP Round-Trip E2E', () => {
     await git(tempDir, ['switch', '-c', 'feature/work-item-wi-0001']);
 
     // Create a real ToolDispatcher with real handlers
-    const mockProjectManager = {
-      getProjectStateManager: async () => ({
-        rebuildFromEventsFile: async () => {},
-        getState: async () => ({ current_state: httpTestState }),
-        transition: async (workItemId: string, fromState: string, toState: string) => {
-          httpTestState = toState;
-          return {
-            source: 'StateManager',
-            workItemId,
-            previousState: fromState,
-            currentState: toState,
-            timestamp: new Date().toISOString(),
-          };
-        },
-      }),
-    };
+    await seedRecoveryState(tempDir, 'implementation_ready');
+    const mockProjectManager = recoveryStateDeps(tempDir).projectManager;
 
     const dispatcher = new ToolDispatcher(requiredVerificationDepsForFixture({
       stateManager: {},
@@ -343,7 +329,7 @@ describe('v1.1 Governance HTTP Round-Trip E2E', () => {
     await fs.writeFile(path.join(wiDir, '.semantic_closure.json'), JSON.stringify(_closure, null, 2));
 
     // The implementation write phase is complete and its evidence has been verified.
-    httpTestState = 'verification_done';
+    await advanceRecoveryState(tempDir, 'verification_done');
 
     // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     // Step 6: Execute close_gate via HTTP (tool/invoke)
