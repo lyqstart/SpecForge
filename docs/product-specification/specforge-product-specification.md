@@ -1359,6 +1359,7 @@ Scope Gate 只能从本块读取 current release classification，并将 source 
         "tool:sf_doc_lint",
         "tool:sf_doctor",
         "tool:sf_gate_run",
+        "tool:sf_governance_read",
         "tool:sf_hard_stop_resolve",
         "tool:sf_knowledge_base",
         "tool:sf_merge_run",
