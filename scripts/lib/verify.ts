@@ -92,6 +92,14 @@ export async function verifyInstallation(targetDir: string): Promise<VerifyResul
     throw new Error(`Manifest 无效或不存在: ${manifestResult.error.reason}`)
   }
 
+  // Entry validation must not silently shrink the set being certified.
+  if (manifestResult.entryWarnings) {
+    throw new Error(`Manifest 无效: 存在无效条目 (${manifestResult.entryWarnings.invalidEntries.length})`)
+  }
+  if (Object.keys(manifestResult.data.files).length === 0) {
+    throw new Error("Manifest 无效: 安装文件集合为空")
+  }
+
   const manifest = manifestResult.data
   const mismatches: FileMismatch[] = []
   const missing: MissingFile[] = []
