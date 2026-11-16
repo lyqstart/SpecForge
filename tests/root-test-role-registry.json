@@ -57,6 +57,7 @@
         "tests/unit/installer/verify.test.ts",
         "tests/unit/installer/verify_new.test.ts",
         "tests/unit/verification-consumer-http.test.ts",
+        "tests/unit/thin-client-handshake-refresh.test.ts",
         "tests/unit/verifier-evidence-manifest-example.test.ts"
       ]
     },

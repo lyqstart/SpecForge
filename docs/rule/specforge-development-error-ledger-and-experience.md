@@ -33544,3 +33544,10 @@ Candidate 字节完整性不能替代内容事实完整性。进入候选编制�
 - D31 bc58afaa 本地与三平台完整 CI 通过后，真实安装 OpenCode 的首个声明 Gate 调用以 REQUIRED_VERIFICATION_SOURCE_UNAVAILABLE 拒绝。生产 Daemon 只向 ToolDispatcher 注入 OpenCodeHttpRuntimeClient，没有向独立 HTTPServer 写前入口传递；Runtime 拒绝符合合同，责任属于生产组合根接线。
 - 新增真实 Daemon/HTTP 回归，来源适配器明确为合成夹具。首轮误选免登记的 sf_state_read，失败保留且不当作产品反证；改用现场同类 sf_gate_run 后，修复前两项来源断言失败，最小共享依赖注入后四项通过。身份缺失和未认证拒绝未放宽。
 - 原 native-required-01、before-a01/a02/a03 和 after-a01 证据均保留于本阶段 archive；Bun 沙箱目录读取失败单列。该回归不代表真实 OpenCode/LPAC、默认部署或原 Candidate 验收完成。复用 EXP-004/007/008/011/282；增加生产工厂全部入口接线覆盖。
+
+
+### ERR-2255：重启后普通产物客户端沿用旧握手导致受控修复中断
+
+- 08ce4637 已完成本地七阶段和三平台完整/发行验收；native-required-04 真实链完成来源登记、错误 owner 拒绝、哈希失败、诊断未就绪及重启后仍阻断。随后普通 trace_delta 修复调用连接失败，未获得实际写入成功证据；本轮未部署。
+- 生产模板的普通工具复用 DaemonClient 单例，构造时缓存握手；Gate consumer 每次新建客户端。真实双 HTTP 监听器回归证明旧端点仍接收下一调用，以及当前握手缺失/合同非法仍被忽略；认证拒绝分支虽重载token却复用旧URL。四项在修复前失败。最小修正为发送前读取当前握手、认证重载后使用新URL，不新增自动业务重放。
+- 首次修复后 root 队列只跑旧753项，新测试未登记；补入正式 role registry 后52文件757项通过，不能用旧通过数证明新测试。原 failed native、before、未覆盖 after 与正式 after 均保留。适用 EXP-004/007/008/011/013/282；新原生完整链及部署仍待验收。

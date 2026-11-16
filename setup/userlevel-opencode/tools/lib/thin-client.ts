@@ -137,6 +137,9 @@ export class DaemonClient {
     },
     options?: { signal?: AbortSignal; retry?: boolean },
   ): Promise<T> {
+    // The daemon may have restarted since this retained client was constructed.
+    // Resolve current authority before sending, without replaying an owner operation.
+    this.reload();
     const url = `${this.baseUrl}${urlPath}`;
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), this.timeoutMs);
@@ -189,7 +192,7 @@ export class DaemonClient {
       if (resp.status === 401) {
         this.reload();
         (init.headers as Record<string, string>)["Authorization"] = `Bearer ${this.token}`;
-        const resp2 = await fetch(url, init);
+        const resp2 = await fetch(`${this.baseUrl}${urlPath}`, init);
         const parsed2 = await this.parseResponse<T>(resp2);
         recordSfObservation({
           projectRoot,
