@@ -1,11 +1,13 @@
+import { createHash } from 'node:crypto';
 import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
-import { createHash } from 'node:crypto';
+
 import { afterEach, describe, expect, it } from 'vitest';
-import { cmdInstall, cmdUpgrade } from '../../../scripts/sf-installer';
+
 import { buildUserManifest } from '../../../scripts/lib/manifest';
 import { loadVerifiedReleaseInstallSet } from '../../../scripts/lib/release-manifest-producer';
+import { cmdInstall, cmdUpgrade } from '../../../scripts/sf-installer';
 
 const candidateRoot = resolve(import.meta.dirname, '../../..');
 const roots: string[] = [];
