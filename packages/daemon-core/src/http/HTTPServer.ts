@@ -47,6 +47,7 @@ import { readWorkItemMetadata } from '../tools/lib/work-item-metadata';
 import { checkNativeTool, checkNativeWritePermission } from '../tools/lib/native-write-boundary';
 import { readAuthoritativeWorkItems } from '../tools/lib/authoritative-work-items';
 import type { LLMKernelAdapter, UserMessage } from '@specforge/types/llm-kernel-contract';
+import type { ToolInvocationVerifier } from '@specforge/types/trusted-tool-invocation';
 import { VERIFICATION_REQUEST_ABORT } from '../verification/request-context';
 
 interface HTTPWriteGuardContext extends WriteGuardContext {
@@ -143,6 +144,7 @@ export interface HTTPServerDeps {
   toolCallsLogger?: JsonlAppender;
   conversationsLogger?: JsonlAppender;
   llmKernelAdapter?: LLMKernelAdapter;
+  toolInvocationVerifier?: ToolInvocationVerifier;
   requestShutdown?: () => Promise<void>;
 }
 

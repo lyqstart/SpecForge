@@ -104,6 +104,7 @@ export class Daemon {
       projectManager: this.projectManager,
       recoverySubsystem: this.recoverySubsystem,
       llmKernelAdapter: this.llmKernelAdapter,
+      toolInvocationVerifier: openCodeRuntime,
       requestShutdown: () => this.stop(),
       toolDispatcher: new ToolDispatcher({
         toolInvocationVerifier: openCodeRuntime,

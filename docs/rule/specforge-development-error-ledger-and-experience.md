@@ -33537,3 +33537,10 @@ Candidate 字节完整性不能替代内容事实完整性。进入候选编制�
 - D31 源码四处无条件 toLowerCase，与 SPS §6.4(11) POSIX 不同大小写保留独立身份冲突；Linux 平台语义只读探针复现声明误拒绝，不冒充实际 Linux 文件系统验收。已停止原全量队列，保留非零退出和初始发行证据，不将中止计作通过。
 - 同一共享路径身份函数供声明、范围、历史重放和 Runtime 登记消费；Windows 折叠，POSIX 保留。Task 排除、物理身份、owner 和权限边界不变。增加真实宿主分支及三种平台函数回归，实际 Linux/macOS 完整链仍须 CI。
 - 本轮再次误用 PowerShell 花括号路径和猜测缓存脚本名，均只读失败；记录原始工具错误，改用目录库存和明确路径。适用 EXP-002/004/007/008/011/022/282；不得将函数模拟作为原生平台通过。
+
+
+### ERR-2254：真实 Daemon 的 HTTP 写前入口遗漏来源验证器依赖
+
+- D31 bc58afaa 本地与三平台完整 CI 通过后，真实安装 OpenCode 的首个声明 Gate 调用以 REQUIRED_VERIFICATION_SOURCE_UNAVAILABLE 拒绝。生产 Daemon 只向 ToolDispatcher 注入 OpenCodeHttpRuntimeClient，没有向独立 HTTPServer 写前入口传递；Runtime 拒绝符合合同，责任属于生产组合根接线。
+- 新增真实 Daemon/HTTP 回归，来源适配器明确为合成夹具。首轮误选免登记的 sf_state_read，失败保留且不当作产品反证；改用现场同类 sf_gate_run 后，修复前两项来源断言失败，最小共享依赖注入后四项通过。身份缺失和未认证拒绝未放宽。
+- 原 native-required-01、before-a01/a02/a03 和 after-a01 证据均保留于本阶段 archive；Bun 沙箱目录读取失败单列。该回归不代表真实 OpenCode/LPAC、默认部署或原 Candidate 验收完成。复用 EXP-004/007/008/011/282；增加生产工厂全部入口接线覆盖。
