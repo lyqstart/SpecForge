@@ -52,6 +52,21 @@ describe('typed governance refusal stops live work without widening permissions'
       cancellation: { acknowledged: true },
     });
     expect(f.stop).toHaveBeenCalledTimes(1);
+    const observations = (
+      await readFile(
+        path.join(f.root, '.specforge/logs/observability/daemon/hardstop.jsonl'),
+        'utf8'
+      )
+    )
+      .trim()
+      .split('\n')
+      .map(line => JSON.parse(line));
+    const receipt = observations.find(row => row.phase === 'governance.policy_refusal.stop');
+    expect(receipt.payload).toBeUndefined();
+    expect(receipt.metadata).toMatchObject({
+      policy_code: 'GOVERNANCE_READ_POLICY_REFUSAL',
+      cancellation: { acknowledged: true, stoppedSessionIds: ['ses_owner'] },
+    });
     expect(
       await checkNativeTool(
         f.deps,
@@ -83,6 +98,18 @@ describe('typed governance refusal stops live work without widening permissions'
       )
     ).toMatchObject({ hard_stop: true, cancellation: { acknowledged: false } });
     expect(checkHardStop(f.root, 'WI-0001').blocked).toBe(true);
+    const observations = (
+      await readFile(
+        path.join(f.root, '.specforge/logs/observability/daemon/hardstop.jsonl'),
+        'utf8'
+      )
+    )
+      .trim()
+      .split('\n')
+      .map(line => JSON.parse(line));
+    expect(
+      observations.find(row => row.phase === 'governance.policy_refusal.stop').metadata
+    ).toMatchObject({ cancellation: { acknowledged: false, error: 'runtime unavailable' } });
   });
   it('does not turn ordinary missing business files into policy stops', async () => {
     const f = await fixture();

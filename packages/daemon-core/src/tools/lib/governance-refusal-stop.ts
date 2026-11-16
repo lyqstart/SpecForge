@@ -125,6 +125,13 @@ export async function stopGovernanceReadFailure(
     work_item_id: workItemId,
     status: 'denied',
     payload: stopped,
+    // The cancellation result is a control decision, not optional debug content.
+    // Preserve its bounded receipt even with payload capture disabled.
+    metadata: {
+      hard_stop_id: record.hard_stop_id,
+      policy_code: policyCode,
+      cancellation,
+    },
     force: true,
   });
   return stopped;
