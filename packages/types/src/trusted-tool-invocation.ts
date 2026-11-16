@@ -24,6 +24,10 @@ export interface TrustedToolInvocationProof {
   runtimeProjectionSha256: string;
 }
 export interface ToolInvocationVerifier {
+  stopGovernanceInvocation?(
+    input: RequiredVerificationSourceRequest,
+    expected: RequiredVerificationSourceProof,
+  ): Promise<{ stoppedSessionIds: string[]; acknowledgedAt: string }>;
   verifyToolInvocation(
     input: TrustedToolInvocationRequest,
   ): Promise<TrustedToolInvocationProof>;

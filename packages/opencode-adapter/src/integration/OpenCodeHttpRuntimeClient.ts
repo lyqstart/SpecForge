@@ -376,6 +376,32 @@ export class OpenCodeHttpRuntimeClient implements OpenCodeRuntimeClient {
       throw new OpenCodeRuntimeError('OpenCode did not acknowledge session cancellation');
   }
 
+  async stopGovernanceInvocation(
+    input: import('@specforge/types/trusted-tool-invocation').RequiredVerificationSourceRequest,
+    expected: import('@specforge/types/trusted-tool-invocation').RequiredVerificationSourceProof
+  ): Promise<{ stoppedSessionIds: string[]; acknowledgedAt: string }> {
+    // Never accept a caller-provided parent ID as authority to cancel another session.
+    const current = await this.readRequiredVerificationSource(input);
+    if (
+      current.sessionId !== expected.sessionId ||
+      current.callId !== expected.callId ||
+      current.inputSha256 !== expected.inputSha256 ||
+      current.agent !== expected.agent ||
+      current.userSessionId !== expected.userSessionId ||
+      current.userMessageId !== expected.userMessageId ||
+      current.userTextSha256 !== expected.userTextSha256 ||
+      current.userCreatedAt !== expected.userCreatedAt ||
+      current.chainSha256 !== expected.chainSha256
+    )
+      throw new OpenCodeRuntimeError('Governance stop invocation changed');
+    const stoppedSessionIds: string[] = [];
+    for (const id of new Set([current.userSessionId, current.sessionId])) {
+      await this.abortSession(id, input.directory);
+      stoppedSessionIds.push(id);
+    }
+    return { stoppedSessionIds, acknowledgedAt: new Date().toISOString() };
+  }
+
   async sendPrompt(
     sessionId: string,
     prompt: OpenCodeRuntimePrompt,

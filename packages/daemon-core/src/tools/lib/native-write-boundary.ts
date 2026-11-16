@@ -15,6 +15,10 @@ import {
 } from './required-verification-owner';
 import { withGateOperationBarrier } from './gate-operation-barrier';
 import { isRequiredVerificationReadOnlyCall } from './required-verification-consumer';
+import {
+  checkGovernanceRefusalStop,
+  type GovernanceStopDependencies,
+} from './governance-refusal-stop';
 
 const NON_WRITING_TOOLS = new Set([
   'read',
@@ -40,6 +44,14 @@ export async function checkNativeTool(
   args: Record<string, unknown>,
   invocation?: { sessionID?: string; callID?: string }
 ) {
+  const terminalStop = await checkGovernanceRefusalStop(
+    deps as GovernanceStopDependencies,
+    projectRoot,
+    tool,
+    args,
+    invocation
+  );
+  if (!terminalStop.allowed) return terminalStop;
   if (
     !isHardStopRecoveryTool(tool) &&
     !isRequiredVerificationReadOnlyCall(tool, args) &&

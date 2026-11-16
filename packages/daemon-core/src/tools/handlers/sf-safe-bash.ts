@@ -3,6 +3,7 @@ import { appendShellAudit, parseReadOnlyCommand } from '../lib/sf_safe_bash_exec
 import { registerHandler } from '../ToolDispatcher';
 import { readAuthoritativeWorkItems } from '../lib/authoritative-work-items';
 import { safeBashExecute } from '../lib/sf_safe_bash_core';
+import { stopGovernanceReadRefusal } from '../lib/governance-refusal-stop';
 import { ACTOR_ROLES } from '@specforge/types/actor-roles';
 import { checkHardStop, setHardStop } from '../lib/hard-stop-latch';
 import { SPEC_DIR_NAME, workItemRoot } from '@specforge/types/directory-layout';
@@ -309,6 +310,7 @@ async function executeSafe(
 }
 
 registerHandler('sf_safe_bash', async (args, context, _deps) => {
+  const originalArgs = args;
   args = { timeoutMs: _deps.acceptedConfiguration?.merged.timeoutMs, ...args };
   const baseDir = (context?.directory as string) || (context?.worktree as string) || process.cwd();
   const callerRole = extractCallerRole(context?.agent);
@@ -324,7 +326,16 @@ registerHandler('sf_safe_bash', async (args, context, _deps) => {
 
   if (commandMentionsProtectedSpecForgePath(command)) {
     const access = classifyProtectedSpecForgePathBashAccess(command);
-    if (access === 'read') return executeSafe(args, baseDir, command, cwd, callerRole);
+    if (access === 'read') {
+      const result = await executeSafe(args, baseDir, command, cwd, callerRole);
+      const activeWiId = findSingleActiveWorkItemIdForGovernance(
+        baseDir,
+        originalArgs,
+        authoritativeItems
+      );
+      if (!activeWiId) return result;
+      return stopGovernanceReadRefusal(_deps, baseDir, activeWiId, originalArgs, context, result);
+    }
 
     const activeWiId = findSingleActiveWorkItemIdForGovernance(baseDir, args, authoritativeItems);
     const reason = 'SPEC_FORGE_RUNTIME_WRITE_FORBIDDEN';

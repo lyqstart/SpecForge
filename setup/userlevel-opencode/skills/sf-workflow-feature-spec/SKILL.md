@@ -833,3 +833,10 @@ user_response_quote="用户原话"
 - Contract 变化必须从 Prospective Trace 展开全部消费 Module，并在同一个 WI 中完成 Design、Task、Code Permission、Implementation 和 Verification 闭环。
 - Merge 保留 `trace_delta.md` 中完整的 REQ 追溯内容，并仅对正式 `trace_matrix.md` 的 Governance Relations 标记区段执行 `Current Governance Relations + ADD - REMOVE`；不得用治理 Delta 覆盖整个正式 Trace 文档。
 - Module `trace.md` 由正式 Project Trace 自动生成，不得独立编辑。
+
+### 治理原件完整读取与拒绝停机（SPS §9.2.9）
+
+- 当前 WI 已登记候选和 implementation_baseline.json 使用 `sf_governance_read`。从 offset=0 开始，后续严格携带返回的 version 和 next_offset，连续读到 eof=true；保留完整 sha256 与版本。不把单块、原生 Read 的长行截断、Grep 命中、Gate 回显或历史副本拼凑为完整当前原件。读取版本漂移或拒绝时停止依赖该原件的修复，不能猜测覆盖。
+- `sf_safe_bash` 仍不能读取治理文件。明确治理路径策略拒绝会由 Runtime 锁存 HardStop 并取消当前委派链生成；取消失败仍保留停点，不得换 read/grep/task 或其他入口继续本轮。恢复只由正式 owner 处理原拒绝和 resolution，不重发已保存指令，不扩大权限、不改冻结 Task。普通文件不存在、模型限流不等同这一特定策略拒绝。
+- 状态迁移及依赖其结果的读取必须串行：先等待迁移真实成功，再重新读取当前原件。相同 snapshot_id 不证明 captured_at、候选内容或全部未来路径均未变化。
+- 原始字节完整不证明业务语义通过，诊断 handoff 不等于 Candidate 就绪。原审查问题必须逐项给出真实修改、独立验证或未解决状态，不代用户批准。

@@ -1,6 +1,6 @@
 {
   "name": "@specforge/configuration",
-  "version": "1.0.41",
+  "version": "1.0.42",
   "description": "Configuration subsystem for SpecForge",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

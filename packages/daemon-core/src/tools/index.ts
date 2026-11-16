@@ -5,6 +5,7 @@ export type { ToolInvokeRequest, ToolDeps } from './ToolDispatcher';
 import './handlers/sf-state-read';
 import './handlers/sf-state-transition';
 import './handlers/sf-artifact-write';
+import './handlers/sf-governance-read';
 import './handlers/sf-project-config';
 import './handlers/sf-doc-lint';
 import './handlers/sf-requirements-gate';

@@ -58,6 +58,7 @@ export const SHARED_COMPONENT_REGISTRY: ComponentEntry[] = [
   { path: "tools/sf_verification_plan.ts", type: "tool" },
   { path: "tools/sf_verification_run.ts", type: "tool" },
   { path: "tools/sf_safe_bash.ts", type: "tool" },
+  { path: "tools/sf_governance_read.ts", type: "tool" },
   { path: "tools/sf_project_init.ts", type: "tool" },
   { path: "tools/sf_semantic_closure_run.ts", type: "tool" },
 
