@@ -14,6 +14,7 @@ import * as fs from 'fs/promises';
 import * as path from 'path';
 import { randomUUID } from 'crypto';
 import { readCheckpointFile, publishCheckpointFile } from './checkpoint-file-access';
+import { assertPreimplementationRecoveryCommit } from './preimplementation-recovery-guard';
 import { Event, ProjectState, WorkItemState } from '../types';
 import { WAL } from '../wal';
 import { IPathResolver } from '../daemon/path-resolver';
@@ -219,6 +220,25 @@ export class StateManager {
     }
 
     const previousTransition = this.lastWorkItemTransitions.get(workItemId);
+    if (
+      fromState === 'blocked' &&
+      toState === 'candidate_preparing' &&
+      previousTransition?.payload.from_state === 'implementation_ready'
+    ) {
+      const context = extraPayload.transition_context as Record<string, unknown> | undefined;
+      const recovery = context?.preimplementation_recovery as Record<string, unknown> | undefined;
+      if (
+        actor !== 'sf-orchestrator' ||
+        context?.source !== 'preimplementation_spec_recovery' ||
+        recovery?.blocked_event_id !== previousTransition.eventId ||
+        typeof recovery?.binding_sha256 !== 'string' ||
+        !/^[a-f0-9]{64}$/.test(recovery.binding_sha256) ||
+        typeof recovery.archive_manifest_sha256 !== 'string' ||
+        !/^[a-f0-9]{64}$/.test(recovery.archive_manifest_sha256)
+      )
+        throw new Error('PREIMPLEMENTATION_RECOVERY_PROVENANCE_REQUIRED');
+      await assertPreimplementationRecoveryCommit(this.projectPath, workItemId, recovery);
+    }
     if (fromState === 'blocked' && toState === 'verification_running') {
       const context = extraPayload.transition_context as Record<string, unknown> | undefined;
       const recovery = context?.verification_recovery as Record<string, unknown> | undefined;
@@ -340,6 +360,19 @@ export class StateManager {
     await this.rebuildState();
     const event = this.lastWorkItemTransitions.get(workItemId);
     return event ? structuredClone(event) : null;
+  }
+
+  /** Recovery consumes complete validated authority, never a caller-supplied state projection. */
+  async readWorkItemTransitionHistory(workItemId: string): Promise<Event[]> {
+    const { events } = await this.wal.readAllEvents();
+    await this.assertHistoryWitnesses(events);
+    this.assertTransitionHistory(events);
+    await this.rebuildValidatedEvents(events);
+    const history = events.filter(
+      event => event.action === 'state.transition' && event.payload.work_item_id === workItemId
+    );
+    if (history.length > 20000) throw new Error('PREIMPLEMENTATION_RECOVERY_HISTORY_BUDGET');
+    return structuredClone(history);
   }
 
   /** D31 consumes the same validated, retained history as workflow state. */

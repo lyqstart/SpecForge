@@ -613,6 +613,11 @@ function moduleDefinitionCandidateHasGovernedCodePathDelta(
   }
   const formalCodePaths = normalizeModuleCodePathsForMaterialization(formal?.code_paths ?? []);
   if (!formalCodePaths) return true;
+  if (
+    (candidate.implementation_kind ?? 'implementation') !==
+    (formal?.implementation_kind ?? 'implementation')
+  )
+    return true;
   return JSON.stringify(candidateCodePaths) !== JSON.stringify(formalCodePaths);
 }
 

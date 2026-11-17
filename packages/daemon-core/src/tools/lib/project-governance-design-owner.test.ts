@@ -2,7 +2,11 @@ import { afterEach, describe, expect, test } from 'vitest';
 import * as fs from 'node:fs/promises';
 import * as os from 'node:os';
 import * as path from 'node:path';
-import { inspectProjectGovernanceContractConsumers } from './project-governance-v2.js';
+import {
+  checkProjectGovernanceConsistency,
+  freezeGovernanceScopeForCodePermission,
+  inspectProjectGovernanceContractConsumers,
+} from './project-governance-v2.js';
 
 const roots: string[] = [];
 afterEach(async () => {
@@ -70,6 +74,7 @@ async function fixture(order: string[]) {
   }
   return {
     write,
+    root,
     inspect: () =>
       inspectProjectGovernanceContractConsumers({
         projectRoot: root,
@@ -80,6 +85,40 @@ async function fixture(order: string[]) {
 }
 
 describe('canonical design ownership across references', () => {
+  test.each([
+    ['AA', 'ZZ'],
+    ['ZZ', 'AA'],
+  ])(
+    'foreign references cannot satisfy the owner DD Gate for order %s, %s',
+    async (first, second) => {
+      const f = await fixture([first, second]);
+      await f.write('modules/ZZ/design.md', '# Global context\nReference: DD-AA-001.\n');
+      const input = {
+        projectRoot: f.root,
+        workItemDir: path.join(f.root, '.specforge', 'work-items', 'WI-0001'),
+        workItemId: 'WI-0001',
+      };
+      const gate = await checkProjectGovernanceConsistency(input);
+      expect(gate.checks.find(check => check.check_id === 'module_ZZ_design_ids')?.passed).toBe(
+        false
+      );
+      expect(gate.checks.find(check => check.check_id === 'module_AA_design_ids')?.passed).toBe(
+        true
+      );
+      const permission = await freezeGovernanceScopeForCodePermission({
+        ...input,
+        allowedWriteFiles: [{ path: 'src/ZZ/example.ts' }],
+      });
+      expect(
+        permission.checks.find(check => check.check_id === 'permission_design_ZZ')?.passed
+      ).toBe(false);
+      expect(permission.passed).toBe(false);
+      expect(
+        await fs.readFile(path.join(f.root, '.specforge/project/modules/ZZ/design.md'), 'utf8')
+      ).toBe('# Global context\nReference: DD-AA-001.\n');
+    }
+  );
+
   test.each([
     ['AA', 'ZZ'],
     ['ZZ', 'AA'],

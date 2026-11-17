@@ -33,6 +33,7 @@ import {
   type ImpactScope,
 } from './impact-analysis.js';
 import { validateCurrentEvidenceManifestJson } from './evidence-manifest.js';
+import { inspectModuleImplementationKind } from './documentation-module-policy.js';
 
 export interface SchemaValidationResult {
   valid: boolean;
@@ -455,7 +456,7 @@ export function validateModuleDefinitionCandidateJson(
       errors: ['MODULE_DEFINITION_SCHEMA_INVALID: <root>: must be an object'],
     };
   }
-  const errors: string[] = [];
+  const errors: string[] = [...inspectModuleImplementationKind(parsed).errors];
   const expected = String(expectedModuleCode ?? '')
     .trim()
     .toUpperCase();

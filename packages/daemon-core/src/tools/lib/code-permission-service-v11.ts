@@ -3,6 +3,7 @@ import * as path from 'node:path';
 import {
   freezeGovernanceScopeForCodePermission,
   persistGovernanceScope,
+  assertDocumentationBindingCurrent,
 } from './project-governance-v2.js';
 import { readWorkItemMetadata, writeWorkItemMetadata } from './work-item-metadata.js';
 export type WriteOperation = 'create' | 'modify' | 'delete';
@@ -201,6 +202,10 @@ export async function commitPreparedCodePermissionRelease(
     frozen,
   } = prepared;
   try {
+    await assertDocumentationBindingCurrent(
+      projectRootFromWorkItemDir(input.workItemDir),
+      frozen.snapshot
+    );
     await persistGovernanceScope(input.workItemDir, frozen.snapshot);
     const wi = await readWorkItemMetadata(input.workItemDir, input.workItemId);
     const now = new Date().toISOString();

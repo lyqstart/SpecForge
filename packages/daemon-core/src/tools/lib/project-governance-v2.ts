@@ -5,7 +5,12 @@ import * as path from 'node:path';
 import { createHash } from 'node:crypto';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
-import { inspectRequirementsAuthority } from './requirements-authority.js';
+import {
+  inspectRequirementsAuthority,
+  resolveRequirementsAuthority,
+} from './requirements-authority.js';
+import { parseRequirementDocument } from './requirements-generation.js';
+import { assertApprovedCandidateIdentity } from './approved-candidate-identity';
 import {
   ContractRegistrySchema,
   extractModuleFromDdId,
@@ -44,6 +49,16 @@ import {
 import { validateTaskArtifactContract } from './sf_markdown_verification_parser.js';
 import { sameResolvedPath } from './path-identity.js';
 import { inspectVerificationEvidenceIntegrity } from './verification-evidence-integrity.js';
+import {
+  DOCUMENTATION_CONTEXT,
+  inspectModuleImplementationKind,
+  inspectDocumentationTaskReferences,
+  isDocumentationFilePath,
+} from './documentation-module-policy.js';
+import {
+  assertVerificationPath,
+  readVerificationFileSnapshot,
+} from '../../verification/owner-store.js';
 
 const execFileAsync = promisify(execFile);
 const SPEC_DIR = SPEC_DIR_NAME;
@@ -90,6 +105,11 @@ export interface GovernanceScopeSnapshot {
   version_control_mode?: 'git' | 'filesystem';
   git_head_at_freeze?: string;
   git_branch_at_freeze?: string;
+  documentation_binding?: {
+    schema_version: 'documentation-scope/v1';
+    files: Array<{ module: string; path: string; task: string; design_refs: string[] }>;
+    inputs: Record<string, { sha256: string; dev: string; ino: string }>;
+  };
 }
 
 export interface VersionControlModeEvidence {
@@ -136,6 +156,8 @@ type ContractEntry = {
 
 type ModuleModel = {
   module_code: string;
+  implementation_kind: 'implementation' | 'documentation_context';
+  implementation_kind_errors: string[];
   code_paths_declared: boolean;
   contract_file_exists: boolean;
   contract_file_valid: boolean;
@@ -997,10 +1019,16 @@ async function loadProjectModel(
     const moduleTraceText = await readText(tracePath);
     const moduleTraceParse = parseGovernanceTrace(moduleTraceText, tracePath);
 
-    const designIds = extractIds(designText, 'DD');
+    // A reference in this document is not an owned design decision. All model
+    // consumers (Gate, permission, Trace and audit) must share canonical ownership.
+    const designIds = extractIds(designText, 'DD').filter(
+      id => extractModuleFromDdId(id) === moduleCode
+    );
     const declaredDesignIds = extractDeclaredGovernanceIds(designText, 'DD');
     modules.push({
       module_code: moduleCode,
+      implementation_kind: inspectModuleImplementationKind(moduleDefinition).kind,
+      implementation_kind_errors: inspectModuleImplementationKind(moduleDefinition).errors,
       code_paths_declared: codePathsDeclared,
       contract_file_exists: moduleContractJson !== null,
       contract_file_valid: parsedModuleContract !== null,
@@ -1297,6 +1325,164 @@ export async function inspectProjectGovernanceContractConsumers(input: {
   };
 }
 
+async function inspectDocumentationScope(
+  model: ProjectModel,
+  projectRoot: string,
+  workItemDir: string,
+  paths?: string[]
+) {
+  const modules = model.modules.filter(
+    module => module.implementation_kind === DOCUMENTATION_CONTEXT
+  );
+  if (modules.length === 0)
+    return {
+      valid: true,
+      errors: [] as string[],
+      refsByModule: {} as Record<string, string[]>,
+      files: [] as Array<{ module: string; path: string; task: string; design_refs: string[] }>,
+      taskPath: '',
+    };
+  const taskArtifact = await readFirstExistingText([
+    workItemCandidateTasks(projectRoot, path.basename(workItemDir)),
+    workItemTasks(projectRoot, path.basename(workItemDir)),
+  ]);
+  const tasks = validateTaskArtifactContract(taskArtifact?.content ?? '', {
+    requireAllowedWriteFiles: true,
+  });
+  const trigger = await readTrigger(workItemDir);
+  const selectedPaths =
+    paths ??
+    unique([
+      ...normalizeImpactScope(trigger?.impact_scope ?? trigger?.impact_summary).planned_code_paths,
+      ...tasks.tasks.flatMap(task => task.allowed_write_files),
+    ]);
+  const result = inspectDocumentationTaskReferences({
+    modules: model.modules,
+    tasks: tasks.tasks,
+    tasksValid: tasks.valid,
+    paths: selectedPaths,
+  });
+  try {
+    const authority = await resolveRequirementsAuthority({
+      projectRoot,
+      workItemId: path.basename(workItemDir),
+      formalOnly: model.already_merged,
+    });
+    model.inputFiles.push(...authority.inputFiles);
+    for (const module of modules) {
+      const documents = authority.artifacts.filter(
+        document => document.moduleCode === module.module_code
+      );
+      if (
+        documents.length !== 1 ||
+        documents.some(document => {
+          const parsed = parseRequirementDocument(document);
+          return (
+            parsed.role !== 'reference_context' ||
+            parsed.definitions.length > 0 ||
+            parsed.errors.length > 0
+          );
+        })
+      )
+        result.errors.push(`DOCUMENTATION_REQUIREMENTS_CONTEXT_REQUIRED:${module.module_code}`);
+    }
+  } catch (error) {
+    result.errors.push(`DOCUMENTATION_REQUIREMENTS_INVALID:${String(error)}`);
+  }
+  for (const module of modules) {
+    result.errors.push(...module.implementation_kind_errors);
+    for (const file of module.code_paths) {
+      if (module.implementation_kind_errors.length) continue;
+      try {
+        const target = path.join(projectRoot, file);
+        await assertVerificationPath(target, true);
+        const stat = await fs.lstat(target).catch((error: NodeJS.ErrnoException) => {
+          if (error.code === 'ENOENT') return null;
+          throw error;
+        });
+        if (stat && !stat.isFile()) throw new Error('DOCUMENTATION_TARGET_NOT_FILE');
+      } catch (error) {
+        result.errors.push(`DOCUMENTATION_PATH_INVALID:${file}:${String(error)}`);
+      }
+    }
+  }
+  return { ...result, valid: result.errors.length === 0, taskPath: taskArtifact?.path ?? '' };
+}
+
+async function readDocumentationInputs(projectRoot: string, files: string[]) {
+  const inputs: Record<string, { sha256: string; dev: string; ino: string }> = {};
+  let total = 0;
+  for (const file of unique(files)) {
+    const relative = slash(path.relative(projectRoot, file));
+    if (!relative || relative.startsWith('../') || path.isAbsolute(relative))
+      throw new Error('DOCUMENTATION_INPUT_OUTSIDE_PROJECT');
+    const { bytes, identity } = await readVerificationFileSnapshot(file);
+    total += bytes.length;
+    if (total > 32 * 1024 * 1024 || Object.keys(inputs).length >= 2048)
+      throw new Error('DOCUMENTATION_INPUT_BUDGET');
+    inputs[relative] = {
+      sha256: createHash('sha256').update(bytes).digest('hex'),
+      dev: identity.dev,
+      ino: identity.ino,
+    };
+  }
+  return inputs;
+}
+
+export async function assertDocumentationBindingCurrent(
+  projectRoot: string,
+  snapshot: GovernanceScopeSnapshot
+) {
+  const binding = snapshot.documentation_binding;
+  if (!binding) return;
+  if (
+    binding.schema_version !== 'documentation-scope/v1' ||
+    !binding.files?.length ||
+    !binding.inputs ||
+    Object.keys(binding.inputs).length === 0
+  )
+    throw new Error('DOCUMENTATION_BINDING_INVALID');
+  const actual = await readDocumentationInputs(
+    projectRoot,
+    Object.keys(binding.inputs).map(file => path.resolve(projectRoot, file))
+  );
+  if (digest(actual) !== digest(binding.inputs)) throw new Error('DOCUMENTATION_BINDING_STALE');
+  await assertApprovedCandidateIdentity(
+    projectRoot,
+    path.join(projectRoot, SPEC_DIR_NAME, 'work-items', snapshot.work_item_id),
+    snapshot.work_item_id
+  );
+  for (const entry of binding.files) {
+    if (
+      !isDocumentationFilePath(entry.path) ||
+      !snapshot.allowed_write_files.includes(entry.path) ||
+      !snapshot.affected_modules.includes(entry.module)
+    )
+      throw new Error('DOCUMENTATION_BINDING_PATH_INVALID');
+    await assertVerificationPath(path.join(projectRoot, entry.path), true);
+  }
+}
+
+/** Shared read-only guard for Verification plan/run and evidence reuse. */
+export async function assertDocumentationScopeCurrent(
+  projectRoot: string,
+  workItemDir: string,
+  snapshot: GovernanceScopeSnapshot
+) {
+  const model = await loadProjectModel(projectRoot, workItemDir, false);
+  const relevant = model.modules.some(
+    module =>
+      module.implementation_kind === DOCUMENTATION_CONTEXT &&
+      (snapshot.affected_modules?.includes(module.module_code) ||
+        module.code_paths.some(file => snapshot.allowed_write_files?.includes(file)))
+  );
+  if ((relevant || snapshot.documentation_binding) && !snapshot.active)
+    throw new Error('DOCUMENTATION_ACTIVE_SCOPE_REQUIRED');
+  if (relevant && !snapshot.documentation_binding)
+    throw new Error('DOCUMENTATION_BINDING_REQUIRED');
+  await assertDocumentationBindingCurrent(projectRoot, snapshot);
+}
+
 export async function checkProjectGovernanceConsistency(input: {
   projectRoot: string;
   workItemDir: string;
@@ -1337,6 +1523,20 @@ export async function checkProjectGovernanceConsistency(input: {
 
   checks.push(...governanceIdFormatChecks(model));
 
+  const documentation = await inspectDocumentationScope(
+    model,
+    input.projectRoot,
+    input.workItemDir
+  );
+  if (documentation.taskPath) model.inputFiles.push(documentation.taskPath);
+  addCheck(
+    checks,
+    'documentation_scope_valid',
+    'Documentation modules use explicit finite roles and real Task design bodies',
+    documentation.valid,
+    documentation.errors.join('; ')
+  );
+
   addCheck(
     checks,
     'architecture_ids_exist',
@@ -1351,6 +1551,13 @@ export async function checkProjectGovernanceConsistency(input: {
   );
 
   for (const module of model.modules) {
+    addCheck(
+      checks,
+      `module_${module.module_code}_implementation_kind`,
+      'Module implementation kind is explicitly valid',
+      module.implementation_kind_errors.length === 0,
+      module.implementation_kind_errors.join('; ')
+    );
     const governanceOnlyDefault =
       module.module_code === model.default_module &&
       module.code_paths_declared &&
@@ -1377,7 +1584,8 @@ export async function checkProjectGovernanceConsistency(input: {
       checks,
       `module_${module.module_code}_design_ids`,
       `Module ${module.module_code} Design contains stable DD-* decisions`,
-      module.design_ids.length > 0
+      module.design_ids.length > 0 ||
+        (module.implementation_kind === DOCUMENTATION_CONTEXT && documentation.valid)
     );
   }
 
@@ -1896,6 +2104,28 @@ export async function freezeGovernanceScopeForCodePermission(input: {
     frozen_at: new Date().toISOString(),
   };
   const checks: GovernanceCheck[] = [];
+  const documentation = await inspectDocumentationScope(
+    model,
+    input.projectRoot,
+    input.workItemDir,
+    allowedPaths
+  );
+  for (const module of model.modules) {
+    addCheck(
+      checks,
+      `permission_module_kind_${module.module_code}`,
+      'Module implementation kind is valid before permission',
+      module.implementation_kind_errors.length === 0,
+      module.implementation_kind_errors.join('; ')
+    );
+  }
+  addCheck(
+    checks,
+    'permission_documentation_scope',
+    'Documentation files have exact Task and design body coverage',
+    documentation.valid,
+    documentation.errors.join('; ')
+  );
   const projectSpecCoreVersion = await inspectProjectSpecCoreVersionCoherence(input.projectRoot);
   addCheck(
     checks,
@@ -2024,6 +2254,7 @@ export async function freezeGovernanceScopeForCodePermission(input: {
     ...scope.design_refs,
     ...(scope.design_refs.length === 0 && mergedGovernanceScope ? mergedModuleDesignRefs : []),
     ...scope.consumer_design_refs,
+    ...Object.values(documentation.refsByModule).flat(),
   ]);
 
   for (const moduleCode of snapshot.affected_modules) {
@@ -2035,7 +2266,9 @@ export async function freezeGovernanceScopeForCodePermission(input: {
       checks,
       `permission_design_${moduleCode}`,
       `Impact Scope declares applicable DD refs for Module ${moduleCode}`,
-      moduleRefs.length > 0 && moduleRefs.every(ref => module?.design_ids.includes(ref)),
+      module?.implementation_kind === DOCUMENTATION_CONTEXT
+        ? documentation.valid && (documentation.refsByModule[moduleCode]?.length ?? 0) > 0
+        : moduleRefs.length > 0 && moduleRefs.every(ref => module?.design_ids.includes(ref)),
       `refs=${moduleRefs.join(',') || 'none'}`
     );
   }
@@ -2133,10 +2366,96 @@ export async function freezeGovernanceScopeForCodePermission(input: {
     );
   }
 
+  if (documentation.files.length > 0) {
+    try {
+      const approvedIdentity = await assertApprovedCandidateIdentity(
+        input.projectRoot,
+        input.workItemDir,
+        input.workItemId
+      );
+      const { validateApprovedUserDecisionForClose, computeCandidateHash } =
+        await import('./governance-invariants-v11.js');
+      const decision = await readJson(path.join(input.workItemDir, 'user_decision.json'));
+      const approved = await validateApprovedUserDecisionForClose({
+        ...input,
+        candidateManifestPath: path.join(input.workItemDir, 'candidate_manifest.json'),
+        userDecisionPath: path.join(input.workItemDir, 'user_decision.json'),
+      });
+      const merge = await readSuccessfulProjectSpecMergeHistoryEvidence(input);
+      if (
+        !approved.valid ||
+        decision?.candidate_hash !== (await computeCandidateHash(input.workItemDir)) ||
+        !merge ||
+        merge.project_spec_version !== model.manifest?.project_spec_version ||
+        model.manifest?.last_merged_work_item !== input.workItemId
+      )
+        throw new Error('DOCUMENTATION_APPROVAL_OR_MERGE_INVALID');
+      const closure = await Promise.all([
+        checkProjectGovernanceConsistency(input),
+        checkProjectGovernanceContracts(input),
+        checkProjectGovernanceTrace(input),
+      ]);
+      if (closure.some(result => !result.passed))
+        throw new Error(
+          'DOCUMENTATION_GOVERNANCE_CLOSURE_INVALID:' +
+            closure
+              .flatMap(result =>
+                result.checks.filter(check => !check.passed).map(check => check.check_id)
+              )
+              .join(',')
+        );
+      const inputs = await readDocumentationInputs(input.projectRoot, [
+        ...model.inputFiles,
+        ...approvedIdentity.inputFiles,
+        documentation.taskPath,
+        ...closure.flatMap(result => result.inputFiles),
+        path.join(input.workItemDir, 'candidate_manifest.json'),
+        path.join(input.workItemDir, 'user_decision.json'),
+        path.join(input.workItemDir, 'merge_report.md'),
+        path.join(input.workItemDir, 'trigger_result.json'),
+      ]);
+      const reloaded = await loadProjectModel(input.projectRoot, input.workItemDir, false);
+      await inspectDocumentationScope(reloaded, input.projectRoot, input.workItemDir, allowedPaths);
+      if (digest(reloaded) !== digest(model)) throw new Error('DOCUMENTATION_MODEL_CHANGED');
+      snapshot.documentation_binding = {
+        schema_version: 'documentation-scope/v1',
+        files: documentation.files,
+        inputs,
+      };
+      await assertDocumentationBindingCurrent(input.projectRoot, snapshot);
+    } catch (error) {
+      addCheck(
+        checks,
+        'permission_documentation_binding',
+        'Documentation permission binds approved unchanged inputs and complete governance',
+        false,
+        String(error)
+      );
+    }
+  }
+
   const previous = (await readJson(
     path.join(input.workItemDir, 'governance_scope.json')
   )) as GovernanceScopeSnapshot | null;
   if (previous?.active) {
+    if (previous.documentation_binding || snapshot.documentation_binding) {
+      try {
+        await assertDocumentationBindingCurrent(input.projectRoot, previous);
+        if (
+          digest(previous.documentation_binding ?? null) !==
+          digest(snapshot.documentation_binding ?? null)
+        )
+          throw new Error('DOCUMENTATION_EXTENSION_REQUIRES_NEW_APPROVED_SCOPE');
+      } catch (error) {
+        addCheck(
+          checks,
+          'permission_documentation_extension',
+          'Documentation permission cannot expand or lose its original proof',
+          false,
+          String(error)
+        );
+      }
+    }
     addCheck(
       checks,
       'permission_extension_same_modules',
@@ -2339,6 +2658,22 @@ export async function auditActualGovernanceScope(input: {
   actualFiles = unique(actualFiles.filter(Boolean));
 
   if (!snapshot?.active) {
+    const model = await loadProjectModel(input.projectRoot, input.workItemDir, false);
+    const docs = model.modules.filter(
+      module => module.implementation_kind === DOCUMENTATION_CONTEXT
+    );
+    if (
+      snapshot?.documentation_binding ||
+      docs.some(module => module.code_paths.some(file => actualFiles.includes(file)))
+    ) {
+      return {
+        passed: false,
+        active: true,
+        violations: ['DOCUMENTATION_ACTIVE_SCOPE_REQUIRED'],
+        actual_modules: [],
+        actual_files: actualFiles,
+      };
+    }
     return {
       passed: true,
       active: false,
@@ -2371,6 +2706,11 @@ export async function auditActualGovernanceScope(input: {
   );
   const violations: string[] = [];
   const actualModules: string[] = [];
+  try {
+    await assertDocumentationScopeCurrent(input.projectRoot, input.workItemDir, snapshot);
+  } catch (error) {
+    violations.push(String(error));
+  }
 
   const approvedPermissionPaths = new Set(
     normalizeArray(snapshot.allowed_write_files).map(value => slash(value))

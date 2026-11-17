@@ -1,4 +1,5 @@
 import { PROFESSIONAL_ARTIFACT_OWNERS } from '../lib/professional-artifact-owners';
+import { assertPreservedRecoveryTask } from '../lib/preserved-recovery-task';
 import { diagnosticScalarText, scalarText } from '@specforge/types';
 /**
  * sf-artifact-write.ts — v1.1 Controlled Artifact Writer
@@ -1074,6 +1075,8 @@ registerHandler('sf_artifact_write', async (args, context, deps) => {
   const metadataWorkItemDir = workItemRoot(baseDir, workItemId);
   try {
     await readWorkItemMetadata(metadataWorkItemDir, workItemId);
+    if (fileType === 'tasks' || fileType === 'candidate_tasks')
+      await assertPreservedRecoveryTask(metadataWorkItemDir, content);
   } catch (error) {
     return {
       success: false,

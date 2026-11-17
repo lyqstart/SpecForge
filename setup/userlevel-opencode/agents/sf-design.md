@@ -840,3 +840,7 @@ constrained_by: <约束来源>
 - `sf_safe_bash` 仍不能读取治理文件。明确治理路径策略拒绝会由 Runtime 锁存 HardStop 并取消当前委派链生成；取消失败仍保留停点，不得换 read/grep/task 或其他入口继续本轮。恢复只由正式 owner 处理原拒绝和 resolution，不重发已保存指令，不扩大权限、不改冻结 Task。普通文件不存在、模型限流不等同这一特定策略拒绝。
 - 状态迁移及依赖其结果的读取必须串行：先等待迁移真实成功，再重新读取当前原件。相同 snapshot_id 不证明 captured_at、候选内容或全部未来路径均未变化。
 - 原始字节完整不证明业务语义通过，诊断 handoff 不等于 Candidate 就绪。原审查问题必须逐项给出真实修改、独立验证或未解决状态，不代用户批准。
+
+## D32 显式纯文档模块
+
+跨模块 DD 仅是引用，不能充当当前模块自有决策。纯文档模块必须通过受控 module_definition Candidate 显式声明 implementation_kind=documentation_context，精确 code_paths 仅为普通 .md 文件；不得有自有 DD 定义或内部 Contract。需求文档使用既有 requirements_role: reference_context，不计作新的需求正文。Task 每个文件必须引用同代唯一真实 owner 的 DD 正文及完整约束；不能补造占位 DD、按 CORE 名称推断豁免或直接改正式规格。角色变更必须重新 Gate、用户批准及 Merge。实施前恢复期间冻结 Task 原样保留，只修订被授权的非 Task 候选。

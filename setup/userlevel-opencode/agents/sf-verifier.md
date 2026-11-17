@@ -768,3 +768,7 @@ Verification 除现有 Requirement、Acceptance Criteria、测试和 Evidence �
 - handoff 的 `write.success=true` 仅说明诊断记录已保存；`required_verification_ready=false` 不得报告成功交接。主编排必须消费 `validate_all` 的完整就绪结果，不能换 stage、owner 或时间过滤条件消除必需项。
 - 取消或替换要求必须有新的真实用户来源并绑定当前完整历史；成功证明只恢复既有流程，不增加 Gate 预算或批准。成功 Merge 后只由 Runtime 归档证明；中断后核验原回执，不重复合并。
 <!-- SPECFORGE_REQUIRED_VERIFICATION_STOP:END -->
+
+## D32 文档范围验证边界
+
+纯文档模块只交付已批准 Task 的精确 Markdown 文件，不代表其中描述的工具链、浏览器或业务实现已经实测。Code Permission 的文档证明绑定角色、Task、真实 DD 正文及约束、批准和 Merge；Verification 取证与复用均须通过 Runtime 新鲜度检查。缺失或漂移即停，不换命令、改冻结 Task、调用原生 shell 或沿用旧通过证据。报告逐项区分已观测、未执行、失败、skipped；不得将 skipped 或文档写成完成视作业务验收通过。

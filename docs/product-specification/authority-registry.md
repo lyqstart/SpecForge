@@ -4,7 +4,7 @@
 >
 > Effective date: 2026-10-11
 >
-> Registry version: 1.18
+> Registry version: 1.19
 >
 > Product owner: SpecForge 产品负责人
 >
@@ -72,6 +72,7 @@ SPS-1.0
 | D21 | 仅授权自有合成环境的 `windows-lpac-node-readonly-registry-read-experiment/v1` 实验：在D20相同LPAC/Job/固定Node/无文件写入及无网络/COM边界上增加恰好registryRead一个capability，以真实token/SID、系统读取、假用户配置/凭据哨兵、继承和回收证据判定结果。该能力不是少数键白名单，拒绝或未知不能算通过；不追加其他能力或修改已有ACL。先正式合同后合成实验，不注册为业务profile，不部署，不运行原WI。采用进产品须基于完整实验和隔离矩阵另行裁决；D18及D20生产边界保持不变。对应SPS §9.2.2。 |
 | D22 | 用户选择“采用单进程首期方案”：首期候选收窄为 Windows x64 `windows-lpac-node-single-process-readonly/v1`，仅不创建子进程的只读 Node 内置测试和可证明原证据语义的冻结内联验收。固定 Node24.19、恰好 registryRead、真实 LPAC、创建前 child-process restriction 并读回1、DETACHED、禁止 native addons、Job进程1/总内存1GiB/每管道1MiB/墙钟至多120s；无应用写入和网络，不扩大系统权限。需要子进程或不能证明命令语义的测试明确拒绝/not_executed，不改封存Task、不降验收、不转普通宿主。先完成新的完整合成矩阵，旧多进程9/15超额和未验收结果保留，不能借旧较弱配置充数。该决定不批准产品执行；D21完整证据后的独立生产采用、public接线、共同消费者和部署门禁继续有效。对应SPS §9.2.3。 |
 | PO-001 | Migration 模块退出当前产品；schema validation 保留为文件 owner / contract 责任，不等同 Migration |
+| D32 | 用户于 2026-11-17 批准有限纯文档模块与实施前规格修复扩展。按 SPS §4.3、§6.5 和 §9.2：DD 归属由共同模型保证；显式 documentation_context 只承载冻结 Task 精确批准的普通 Markdown 文档，引用同代真实 DD 与约束，不转移对象或写权限。原已合并、未实施 WI 须经证据绑定、不可变旧代归档、审批失效与受控恢复，保留冻结 Task；新 Candidate 仍须用户单独批准。先完整验收部署再恢复业务，不放宽隔离/权限，不包含新公开发布授权。 |
 | D23 | 用户明确“批准两项，继续完成全部修复”：允许在Bootstrap的ENOBUFS阻断下仅修复自身32MiB有界输出及回归，恢复真实READY后继续；依据D22完整单进程合成矩阵采用 `windows-lpac-node-single-process-readonly/v1` 进入产品闭环实施。先正式合同，再sf-orchestrator拥有的plan与sf-verifier拥有的run、不可关闭真实身份/状态/HardStop/独立验证许可、受信producer与不可变回执、共同消费者SP-I01、固定资产安装部署SP-D01，全部通过后才由原WI owner恢复同一WI。限制沿用D22，sf_safe_bash仍只读；不自动放行代码权限、宣告状态或合并业务。该决定批准实施和验收后部署，不声称产品链路已通过。对应SPS §9.2.4。 |
 | D24 | 用户批准有限恢复方案：按 SPS §9.2.5 在 D23 固定单进程 LPAC 内新增精确同步调用的单调差值观测。仅字面量 perf_hooks 解构 performance 与无参数 now，源/绑定/测量区间严格证明，计时命令 v2 与专用证明配对，旧 v1 保持。先正式合同，再正反例、三平台回归、共同消费者、取消恢复及正式部署真实工具验收；不放宽权限/预算、不批准业务 Candidate 或业务实现，完成后恢复原 WI 候选与 Gate。 |
 | D25 | 用户明确“批准该有限扩展，继续完整修复”：按 SPS §9.2.6 补齐显式冻结 filesystem 的验证源身份，绑定既有 scope/baseline 与当前物理源清单和所选字节；保留 Git plan/v1，新 filesystem plan/v2 严格判别。先正式合同、完整实现、同等隔离与共同消费者验收、正式部署，再从原 WI 真实断点恢复。不 git init、不改已批准业务 Task、不扩大 LPAC、不重放既有审批或实施。 |

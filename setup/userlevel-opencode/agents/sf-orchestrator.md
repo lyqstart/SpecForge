@@ -457,3 +457,11 @@ Candidate/审批前取证不得为了展示 SHA-256 对 `.specforge/**` 调用 `
 - `sf_safe_bash` 仍不能读取治理文件。明确治理路径策略拒绝会由 Runtime 锁存 HardStop 并取消当前委派链生成；取消失败仍保留停点，不得换 read/grep/task 或其他入口继续本轮。恢复只由正式 owner 处理原拒绝和 resolution，不重发已保存指令，不扩大权限、不改冻结 Task。普通文件不存在、模型限流不等同这一特定策略拒绝。
 - 状态迁移及依赖其结果的读取必须串行：先等待迁移真实成功，再重新读取当前原件。相同 snapshot_id 不证明 captured_at、候选内容或全部未来路径均未变化。
 - 原始字节完整不证明业务语义通过，诊断 handoff 不等于 Candidate 就绪。原审查问题必须逐项给出真实修改、独立验证或未解决状态，不代用户批准。
+
+## D32 纯文档范围与实施前恢复
+
+仅显式 Module Definition 的 implementation_kind=documentation_context 可使用有限纯文档规则；普通模块的外部 DD 引用不能替代自己的 DD。拒绝 enable 后不得改用 extend 或虚构设计占位。
+
+已合并但从 implementation_ready 阻断、从未实施的原 WI：先以 sf_state_transition(from_state=blocked,to_state=candidate_preparing,preimplementation_recovery=inspect)取得只读证据和 authorization_line。向用户展示原失败、归档范围和新审批要求；只在当前真实用户消息明确包含该行时，用 recover 与完整 user_authorization_text 恢复。不得自行补造确认行、重放旧授权、手改批准/Manifest/Task 或用普通状态跳转代替。Runtime 校验原事件、未实施事实、撤权、当前 Merge、输入、归档与真实调用来源。
+
+恢复保持原 WI 和 Task，旧批准变为历史失效，新角色修订由原设计 owner 经 Candidate、Gate、用户明确批准、新 Merge 完成后才恢复原精确文件的 enable。inspect/recover 失败立即停；中断只凭原归档和 Runtime 真实状态恢复，不无条件重做已成功步骤。产品扩展批准不是 Candidate 批准。

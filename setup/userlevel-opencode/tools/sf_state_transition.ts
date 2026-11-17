@@ -13,6 +13,10 @@ export default tool({
       .string()
       .describe("当前状态，用于乐观锁验证；不得用空字符串创建 Work Item"),
     to_state: tool.schema.string().describe("目标状态"),
+    preimplementation_recovery: tool.schema.enum(["inspect", "recover"]).optional()
+      .describe("D32：仅 blocked→candidate_preparing 的已合并未实施规格修复。inspect 返回无副作用证明和精确授权行；recover 必须取得用户对该行的明确确认，归档旧代、使旧审批失效并保留冻结 Task。"),
+    user_authorization_text: tool.schema.string().optional()
+      .describe("D32 recover 的真实用户消息完整原文；Runtime 从宿主核验来源，不能用 Agent 转述或方案批准代替本次具体恢复确认。"),
     evidence: tool.schema
       .string()
       .optional()
@@ -33,7 +37,7 @@ export default tool({
 
   async execute(args, context) {
     const recovery =
-      args.from_state === "blocked" && args.to_state === "verification_running";
+      (args.from_state === "blocked" && args.to_state === "verification_running") || args.preimplementation_recovery !== undefined;
     const client = recovery ? new DaemonClient(180000) : daemon;
     const result = await client.invokeTool(
       "sf_state_transition",

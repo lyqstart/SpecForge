@@ -222,6 +222,29 @@ describe('greenfield pre-merge Project Governance', () => {
     });
 
     const input = { projectRoot, workItemDir, workItemId: 'WI-0001' };
+    const foreignOnly = await checkProjectGovernanceConsistency(input);
+    expect(foreignOnly.active).toBe(true);
+    expect(
+      foreignOnly.checks.find(check => check.check_id === 'module_CORE_design_ids')
+    ).toMatchObject({ passed: false, severity: 'error' });
+    // The ordinary module positive case must contain its own decision. Foreign
+    // references remain legal, but cannot stand in for CORE's missing object.
+    await writeText(
+      path.join(candidates, 'project', 'modules', 'CORE', 'design.candidate.md'),
+      '# CORE Governance Design\n\n#### DD-CORE-001 Project governance\nMaintain the project root under ARCH-WD-001.\nReference: DD-DOMAIN-001.\n'
+    );
+    await writeText(
+      path.join(candidates, 'trace_delta.md'),
+      '```json\n' +
+        JSON.stringify({
+          data_designs: [{ id: 'DATA-WD-001', constrained_by: ['ARCH-WD-001'] }],
+          module_designs: [
+            { id: 'DD-DOMAIN-001', constrained_by: ['DATA-WD-001'] },
+            { id: 'DD-CORE-001', constrained_by: ['ARCH-WD-001'] },
+          ],
+        }) +
+        '\n```\n'
+    );
     const consistency = await checkProjectGovernanceConsistency(input);
     const trace = await checkProjectGovernanceTrace(input);
 

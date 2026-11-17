@@ -407,6 +407,18 @@ export async function transitionWithEvidence(
 ): Promise<TransitionWithEvidenceResult> {
   if (!input.deps?.projectManager)
     throw new Error('STATE_COORDINATOR_TRANSITION_FAILED: ProjectManager not available');
+  if (input.fromState === 'blocked' && input.toState === 'candidate_preparing') {
+    const manifest = JSON.parse(
+      await fs.readFile(
+        path.join(input.projectRoot, SPEC_DIR_NAME, 'project', 'spec_manifest.json'),
+        'utf8'
+      )
+    );
+    if (manifest.last_merged_work_item === input.workItemId)
+      throw new Error(
+        'PREIMPLEMENTATION_RECOVERY_REQUIRED: merged specifications require the dedicated evidence-bound owner'
+      );
+  }
   await validateTransitionRequest(input);
   if (
     [

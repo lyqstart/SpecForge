@@ -10,6 +10,7 @@ import {
   validateCurrentGateAttemptResultValue,
 } from '@specforge/types';
 import { deduplicateResolvedPaths, resolvedPathIdentity } from './path-identity.js';
+import { assertPreservedRecoveryTask } from './preserved-recovery-task.js';
 
 const PROJECT_SPEC_VERSION_PATTERN = /^PSV-[0-9]{4,}$/;
 
@@ -67,6 +68,13 @@ export async function validateCandidateProjectSpecBinding(input: {
   const errors: string[] = [];
   let binding: CurrentProjectSpecBinding | undefined;
   try {
+    if (
+      typeof input.manifest?.work_item_id === 'string' &&
+      /^WI-\d{4,}$/.test(input.manifest.work_item_id)
+    )
+      await assertPreservedRecoveryTask(
+        path.join(input.projectRoot, SPEC_DIR_NAME, 'work-items', input.manifest.work_item_id)
+      );
     binding = await readCurrentProjectSpecBinding(input.projectRoot);
   } catch (error) {
     errors.push(error instanceof Error ? error.message : String(error));

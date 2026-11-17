@@ -4,7 +4,7 @@
 >
 > Specification ID: SPS-1.0
 >
-> Product release version: 1.0.42
+> Product release version: 1.0.43
 >
 > Product version epoch: 1
 >
@@ -360,6 +360,8 @@ Project Spec Core 的结构与版本必须保持原子一致：
 - `extension_registry.json` 存在时，其 `project_spec_version` 必须与 `spec_manifest.json` 完全一致；Post-Merge Gate、Formal Version Gate 与 Close Gate 必须失败关闭版本缺失或不一致，不能把成功的 merge report 当作一致性的替代证据。
 - Architecture ID 必须使用 `ARCH-<DOMAIN>-<NNN>`，Data ID 必须使用 `DATA-<DOMAIN>-<NNN>`，Module Design ID 必须使用 `DD-<MODULE_CODE>-<NNN>`；其中 `<DOMAIN>` / `<MODULE_CODE>` 必须为 2 至 12 位、以大写字母开头且其余字符只允许大写字母或数字，`<NNN>` 为三位十进制序号。
 - Module Design 的归属由规范 ID 中的 Module 标识与该 Module 自身 Design 中的对象共同确认；其他 Module 文中的引用不得转移归属，也不得补出所属 Module 中缺失的对象。模块枚举顺序不得改变 Contract consumer、Trace 合法性或模块投影的归属判断；真实跨 Module 的 Internal Contract 消费仍必须拒绝。
+- D32：上述归属必须由共同模型落实到 Gate、Code Permission、Trace 和实施后审计，不能在 Gate 将外部 DD 引用计为本模块对象、到权限阶段才过滤。普通实现模块须有自己的有效 DD。仅显式 Module Definition `implementation_kind: documentation_context` 可承载无自有 DD 的纯文档交付；未声明默认为普通实现，未知角色拒绝。首期该角色只允许项目内精确的普通 `.md` 文件路径，不允许通配符、目录、治理目录、链接、可执行文件、脚本或配置；不得有自有 DD 定义或内部 Contract。不得通过模块名、需求文档角色、文件后缀或 Agent 声明推断角色。
+- D32 纯文档角色不转移 DD 归属、不贡献自己的需求/设计对象或业务实现完成证据；其需求文档须显式采用既有 `requirements_role: reference_context`，不以空正文冒充需求。每个实施文件必须被当前批准且未改动的 Task 精确覆盖；该 Task 的 DD 引用须在同代唯一 owner 的正文中真实存在，并保留 Architecture/Data/Contract 约束闭包。缺引用、缺正文、错误归属、歧义、非法对象或漂移失败关闭。角色及其边界须经原设计 owner 的 Candidate、Gate、明确用户批准和 Atomic Spec Merge 生效；引用设计的模块不会因此获得任何文件写权限。
 - 一旦 Architecture、Data Model、Module Definition 或相应 Candidate 声明了正式治理对象，格式错误、对象缺失或治理闭包不完整必须失败关闭；不得因解析结果为空而降级到 compatibility mode。
 - compatibility mode 只适用于尚未声明或合并正式 Architecture/Data/Module 治理对象的历史项目；它不能用于掩盖已存在但无法解析的正式规格。
 
@@ -561,6 +563,14 @@ Candidate
 7. 恢复后必须使用当前 Project Spec Version 重新生成 Candidate，重新执行适用 Gate，重新取得针对新 Candidate 的显式用户批准，再执行新的 Atomic Spec Merge、Verification / Formal Version 与 Close；原审批、原 Gate 和原 Merge 不得作为新代通过证据；
 8. 必须复用原 Work Item，保留原状态事件、失败、HardStop、Merge 和 Close 历史；不得手改 `.specforge` 真相源、删除旧证据或创建替代 Work Item。
 
+### D32 已合并、未实施工作项的受控规格修复
+
+原 `sf-orchestrator` 可请求 Runtime 恢复同一 WI 的已合并无效规格，范围仅限完整事件历史证明当前为 `implementation_ready → blocked`、从未进入实施、代码权限撤销且未产生实施写入的情况。Runtime 必须核验当前 PSV/last_merged_work_item 仍为该 WI 的成功 Merge、原 Candidate/批准/合并完整绑定，且共享校验能直接证明正式规格无效；不能用 reason、自述、请求参数中的身份或升级版本代替证明。旧代批准尚有效只证明旧决策曾发生，不豁免缺陷。
+
+恢复须有当前操作者明确确认，绑定当前失败、当前全部证据身份和不可变旧代归档。先归档原 Task、Candidate、Gate、批准、Merge、状态与失败证据；正式 owner 再执行审批失效及受控候选恢复。写前复核输入、权威原状态事件与历史；漂移、并发、缺档、错误 owner、未撤权、已有实施或后续 WI Merge 均在状态推进前拒绝。中断只按原归档与已完成步骤幂等恢复，不补造证据或重复失效。普通通用 `blocked → candidate_preparing` 不得绕过此已合并场景的证明与归档。
+
+恢复复算原 implementation baseline 并绑定其相同 snapshot_id，保持原 baseline 原件而不刷新其历史时间；归档包含完整权威状态事件。恢复保留原 Task 字节和全部历史，不创建替代 WI、不直接修改正式 Project Spec、不自动授予权限。新 Candidate 的角色/规格修订仍须重新封存、Gate、用户明确批准及新 Atomic Spec Merge；旧批准不得沿用，也不得由 Agent 代批。产品扩展的批准不是业务 Candidate 批准。若保持冻结 Task 无法形成有效新 Candidate，继续阻断并说明冲突，不能暗改 Task。
+
 ## 6.5.1 D31 必需精确验证与持久停点
 
 必需验证不能由 Agent 的自然语言完成声明、handoff 结构有效、关键词命中、文件长度或 Gate 总体通过替代。首期仅支持显式来源绑定的 `candidate-exact-file-sha256/v1`：把当前 WI 候选文件的预期原始字节 SHA-256 登记为必需项。任意自然语言不得通过正则猜测为产品合同；说明性 unknowns 与必需验证项严格分离，未登记的自然语言承诺不宣称已获 Runtime 强制执行。
@@ -694,6 +704,8 @@ Daemon / Tool Handler / native write boundary 对 Permission 决策执行 fail-c
 ## 9.2 Code Permission 与 Write Guard
 
 Implementation 必须有明确的 allowed-write scope。
+
+D32 纯文档模块的 Code Permission 冻结必须共同绑定精确文件集合、原 Task、显式 Module Definition、引用 DD 正文及其约束、当前审批和合并身份。实际变更审计、Verification、Formal Version 和 Close 必须消费同一判据并复核新鲜度；缺失或变化不得沿用旧权限范围或旧通过证据。对未声明该角色的历史模块不自动迁移，不对 CORE 或单个 WI 硬编码例外。`extend` 不得将文档角色扩成普通代码权限；LPAC、Write Guard、路径与真实调用身份边界保持不变。
 
 Write Guard 必须覆盖真实写入口，并保证：
 

@@ -232,3 +232,11 @@ Business Project。现有能力不够时，先补齐最小但完整、可验证�
 新增恢复路径为 authenticated operator HTTP → ProjectManager 独占恢复租约 → RecoverySubsystem → ProjectArchiveRestore。此路径不进入 Agent Tool 表，不复用 Project Init。租约拒绝已有 context、StateManager、配置操作、锁及恢复期间的新项目访问；Recovery 另拒绝会话绑定。文件恢复在同卷 staging 内完成，Git 仅重建已证明提交的 detached HEAD/index；StateManager.rebuildState 只读检验原始 WAL 和 projection witness。不可变 plan、stage-ready、publish-intent、completed 与残留 quarantine 支持中断后重试，任何内容漂移均拒绝。只支持完整原路径归档与松散对象，外部 runtime 不适用。部署通过现有 daemon 二进制与安装器交付，无新增 Agent 或模板资产。
 
 项目访问互斥由 ToolDispatcher 的共同执行入口在任何项目级 observation/handler 前消费，覆盖普通 Tool HTTP、v11 HTTP 和 kernel 调用；Project Init 的独立 HTTP owner 另持有同一 ProjectManager 操作租约。不能只在 `/tool/invoke` 外包装一层而遗漏同一 dispatcher 的其他消费者。
+
+## 6. D32 有限文档范围与实施前规格恢复
+
+共同 Project Governance 模型按 canonical DD owner 计算模块对象，Gate 与权限不再对外部引用使用不同归属。显式 documentation_context 的精确 Markdown 范围经共享 policy 验证冻结 Task、Requirements 引用角色、唯一 DD 正文和 Architecture/Data/Contract 闭包。Code Permission 冻结全部输入哈希及文件身份；Verification authority capture、实际审计、Formal Version 与 Close 消费同一新鲜度边界。缺失或漂移失败关闭；扩权不能改变既有证明。
+
+现有 sf_state_transition 提供 inspect/recover 模式，由真实 sf-orchestrator 在共同 mutation barrier 下执行。Runtime 从完整 WAL 和当前正式规格取证，恢复确认绑定失败事件及全量输入 proof；先不可变归档，再由 User Decision 和 Candidate Manifest owner 失效旧批准、重绑定当前 formal base，最后通过 StateManager WAL 提交原 WI 的 blocked→candidate_preparing。prepared 记录支持逐步中断恢复，WAL 已提交时不得重放。Task 哈希共同约束产物写入、封存、Gate、审批、Merge 与验证，所有新代审批仍由用户明确作出。
+
+部署复用现有 daemon、sf_state_transition 工具模板及四个 Agent 资产，不增装权限或旁路执行入口。新版本必须通过完整验收、正式安装器和实际服务进程身份核验，才恢复业务 WI。

@@ -33,6 +33,10 @@ import {
 import { readUnresolvedHandoffValidationFailures } from '../lib/agent-handoff-v11';
 import { readCurrentProjectSpecBinding } from '../lib/candidate-generation-integrity.js';
 import {
+  handlePreimplementationSpecRecovery,
+  assertPreservedRecoveryTask,
+} from '../lib/preimplementation-spec-recovery.js';
+import {
   materializeImplementationBaseline,
   restoreImplementationBaseline,
   validateImplementationTruthBeforeSeal,
@@ -593,6 +597,64 @@ registerHandler('sf_state_transition', async (args, context, deps) => {
   }
 
   const workItemDir = join(projectPath, SPEC_DIR_NAME, 'work-items', workItemId);
+  if (args['preimplementation_recovery'] !== undefined) {
+    try {
+      return await handlePreimplementationSpecRecovery({
+        deps,
+        context,
+        args,
+        projectRoot: projectPath,
+        workItemId,
+      });
+    } catch (error) {
+      const current = await readAuthoritativeState({
+        deps,
+        projectRoot: projectPath,
+        workItemId,
+      }).catch(() => null);
+      return {
+        success: false,
+        state_advanced: current?.current_state ? current.current_state !== fromState : null,
+        current_state: current?.current_state ?? null,
+        error: error instanceof Error ? error.message : String(error),
+        remediation:
+          'Read the original recovery status and retry this owner only; do not replay approval/Merge or edit truth sources.',
+      };
+    }
+  }
+  if (fromState === 'blocked' && toState === 'candidate_preparing') {
+    const manager = await deps.projectManager.getProjectStateManager(projectPath);
+    const last = await manager.readLastWorkItemTransition(workItemId);
+    const manifest = await readJsonIfExists(
+      join(projectPath, SPEC_DIR_NAME, 'project', 'spec_manifest.json')
+    );
+    if (
+      last?.payload.from_state === 'implementation_ready' ||
+      manifest?.last_merged_work_item === workItemId
+    )
+      return {
+        success: false,
+        state_advanced: false,
+        error:
+          'PREIMPLEMENTATION_RECOVERY_REQUIRED: inspect the original merged specification through the evidence-bound recovery mode',
+      };
+  }
+  if (
+    [
+      'candidate_prepared',
+      'gates_running',
+      'approval_required',
+      'approved',
+      'merge_ready',
+      'merging',
+    ].includes(toState)
+  ) {
+    try {
+      await assertPreservedRecoveryTask(workItemDir);
+    } catch (error) {
+      return { success: false, state_advanced: false, error: String(error) };
+    }
+  }
   let implementationBaselineMaterialization: ImplementationBaselineWrite | undefined;
   if (toState === 'candidate_preparing' && fromState !== 'candidate_preparing') {
     try {

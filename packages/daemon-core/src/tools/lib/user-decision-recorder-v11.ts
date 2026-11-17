@@ -209,6 +209,65 @@ export async function invalidateUserDecision(
   return { before, after: decision };
 }
 
+/** Durable recovery intent is prepared before the approval owner changes bytes. */
+export async function prepareUserDecisionInvalidation(workItemDir: string, reason: string) {
+  const before = await fs.readFile(path.join(workItemDir, 'user_decision.json'), 'utf8');
+  const decision = await readCurrentUserDecision(workItemDir, path.basename(workItemDir));
+  if (!['approved', 'waived'].includes(decision.decision_status))
+    throw new Error('USER_DECISION_INVALIDATION_REQUIRES_ACTIVE_APPROVAL');
+  const after = {
+    ...decision,
+    previous_decision_status: decision.decision_status,
+    decision_status: 'invalidated',
+    invalidated_at: new Date().toISOString(),
+    invalidation_reason: reason,
+  };
+  return { before, after: JSON.stringify(after, null, 2) + '\n' };
+}
+
+export async function commitPreparedUserDecisionInvalidation(
+  workItemDir: string,
+  plan: { before: string; after: string }
+) {
+  const { assertVerificationPath, readVerificationFile } =
+    await import('../../verification/owner-store');
+  const target = path.join(workItemDir, 'user_decision.json');
+  const current = (await readVerificationFile(target)).toString('utf8');
+  if (current !== plan.before && current !== plan.after)
+    throw new Error('USER_DECISION_INVALIDATION_INPUT_CHANGED');
+  const before = validateCurrentUserDecisionJson(plan.before, path.basename(workItemDir));
+  const after = validateCurrentUserDecisionJson(plan.after, path.basename(workItemDir));
+  const prior = JSON.parse(plan.before) as Record<string, unknown>,
+    next = JSON.parse(plan.after);
+  const preserved = { ...next, decision_status: prior.decision_status };
+  delete preserved.previous_decision_status;
+  delete preserved.invalidated_at;
+  delete preserved.invalidation_reason;
+  if (
+    !before.valid ||
+    !after.valid ||
+    (prior.decision_status !== 'approved' && prior.decision_status !== 'waived') ||
+    next.decision_status !== 'invalidated' ||
+    next.previous_decision_status !== prior.decision_status ||
+    JSON.stringify(preserved) !== JSON.stringify(prior)
+  )
+    throw new Error('USER_DECISION_INVALIDATION_PLAN_INVALID');
+  if (current === plan.after) return;
+  const pending = path.join(workItemDir, 'recovery_generations');
+  await assertVerificationPath(pending, true);
+  await fs.mkdir(pending, { recursive: true });
+  const temporary = path.join(pending, '.invalidating-' + crypto.randomUUID());
+  const handle = await fs.open(temporary, 'wx');
+  try {
+    await handle.writeFile(plan.after);
+    await handle.sync();
+  } finally {
+    await handle.close();
+  }
+  await assertVerificationPath(target);
+  await fs.rename(temporary, target);
+}
+
 // ---------------------------------------------------------------------------
 // 辅助函数
 // ---------------------------------------------------------------------------

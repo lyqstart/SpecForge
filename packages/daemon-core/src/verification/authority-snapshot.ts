@@ -28,6 +28,11 @@ import {
   verificationId,
 } from './owner-store';
 import type { VerificationAuthoritySnapshot } from './verification-plan';
+import {
+  assertDocumentationScopeCurrent,
+  type GovernanceScopeSnapshot,
+} from '../tools/lib/project-governance-v2';
+import { assertPreservedRecoveryTask } from '../tools/lib/preserved-recovery-task';
 
 export interface VerificationTaskSelector {
   workItemId: string;
@@ -137,6 +142,8 @@ export async function captureVerificationAuthority(
   const scope = JSON.parse(
     (await read(path.join(wiRoot, 'governance_scope.json'))).toString('utf8')
   ) as Record<string, unknown>;
+  await assertPreservedRecoveryTask(wiRoot);
+  await assertDocumentationScopeCurrent(root, wiRoot, scope as unknown as GovernanceScopeSnapshot);
   if (scope.version_control_mode === 'filesystem')
     await read(path.join(wiRoot, 'filesystem_baseline.json'));
   const projectManifest = JSON.parse(
