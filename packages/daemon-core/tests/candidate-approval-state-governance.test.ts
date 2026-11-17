@@ -5,6 +5,7 @@ import * as os from 'node:os';
 import * as path from 'node:path';
 import { ToolDispatcher, type ToolDeps } from '../src/tools/ToolDispatcher';
 import { requiredVerificationDepsForFixture } from './helpers/required-verification-fixture';
+import { ensureProjectInit } from '../src/tools/lib/sf_project_init_core';
 import '../src/tools/index';
 import {
   isCandidateFrozenState,
@@ -221,7 +222,11 @@ describe('Candidate / approval / state governance', () => {
     expect(result.current_state).toBe('approved');
   });
 
-  it('atomically invalidates approval, records gate hashes, blocks, and recovers', async () => {
+  it.each(['unmerged', 'missing-manifest', 'corrupt-manifest', 'merged'] as const)(
+    'atomically invalidates approval and respects the %s recovery boundary', async (variant) => {
+    // An approved Candidate has an initialized Project Spec (SPS 6.4).
+    // Use the real initializer; do not bypass the production recovery check.
+    await ensureProjectInit(projectRoot, 'Synthetic approval recovery');
     const workItemId = 'WI-9901';
     const workItemDir = path.join(projectRoot, '.specforge', 'work-items', workItemId);
     await writeJson(path.join(workItemDir, 'work_item.json'), {
@@ -287,12 +292,28 @@ describe('Candidate / approval / state governance', () => {
       'gate_summary.md',
     ]);
 
+    const formalManifestPath = path.join(projectRoot, '.specforge', 'project', 'spec_manifest.json');
+    if (variant === 'missing-manifest') await fs.unlink(formalManifestPath);
+    if (variant === 'corrupt-manifest') await fs.writeFile(formalManifestPath, '{');
+    if (variant === 'merged') {
+      const formal = JSON.parse(await fs.readFile(formalManifestPath, 'utf8'));
+      await writeJson(formalManifestPath, { ...formal, last_merged_work_item: workItemId });
+    }
+    const decisionBeforeRecovery = await fs.readFile(path.join(workItemDir, 'user_decision.json'));
+    const candidateBeforeRecovery = await fs.readFile(path.join(workItemDir, 'candidate_manifest.json'));
+    const auditBeforeRecovery = await fs.readFile(path.join(workItemDir, 'approval_invalidation.json'));
     const recovered = await invoke('sf_user_decision_record', {
       work_item_id: workItemId,
       action: 'recover_after_invalidation',
     });
-    expect(recovered.success).toBe(true);
-    expect(currentState).toBe('candidate_preparing');
+    expect(recovered.success, recovered.error).toBe(variant === 'unmerged');
+    expect(currentState).toBe(variant === 'unmerged' ? 'candidate_preparing' : 'blocked');
+    if (variant === 'merged') expect(recovered.error).toContain('PREIMPLEMENTATION_RECOVERY_REQUIRED');
+    if (variant === 'missing-manifest') expect(recovered.error).toContain('ENOENT');
+    if (variant === 'corrupt-manifest') expect(typeof recovered.error).toBe('string');
+    expect(await fs.readFile(path.join(workItemDir, 'user_decision.json'))).toEqual(decisionBeforeRecovery);
+    expect(await fs.readFile(path.join(workItemDir, 'candidate_manifest.json'))).toEqual(candidateBeforeRecovery);
+    expect(await fs.readFile(path.join(workItemDir, 'approval_invalidation.json'))).toEqual(auditBeforeRecovery);
   });
 
   it('rejects generic approved to blocked transition', async () => {
