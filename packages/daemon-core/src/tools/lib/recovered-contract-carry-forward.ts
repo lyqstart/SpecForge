@@ -220,10 +220,22 @@ export async function checkRecoveredContractCarryForward(input: {
       'CANDIDATE_PATH_INVALID'
     );
     const registry = snapshot(REGISTRY);
+    const archivedCandidate = snapshot(wiRelative + entry.candidate_path);
     requireFact(
-      registry.equals(snapshot(wiRelative + entry.candidate_path)) &&
-        registry.equals(await read(path.join(wi, entry.candidate_path))),
+      archivedCandidate.equals(await read(path.join(wi, entry.candidate_path))),
       'REGISTRY_NOT_EXACT_CARRY_FORWARD'
+    );
+    const formalRegistry = object(JSON.parse(registry.toString('utf8')));
+    const candidateRegistry = object(JSON.parse(archivedCandidate.toString('utf8')));
+    // Atomic Merge updates the formal registry version after applying the candidate.
+    // Bind both original byte identities; permit only that established owner projection.
+    requireFact(
+      formalRegistry.project_spec_version === proof.project_spec_version &&
+        (candidateRegistry.project_spec_version === before.base_spec_version ||
+          candidateRegistry.project_spec_version === proof.project_spec_version) &&
+        canonical(formalRegistry) ===
+          canonical({ ...candidateRegistry, project_spec_version: proof.project_spec_version }),
+      'REGISTRY_MERGE_PROJECTION_INVALID'
     );
     requireFact(input.classificationFiles.length > 0, 'CLASSIFICATION_REQUIRED');
     for (const file of input.classificationFiles) {

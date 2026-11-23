@@ -31,7 +31,7 @@ async function write(file: string, value: string | object) {
     typeof value === 'string' ? value : JSON.stringify(value, null, 2) + '\n'
   );
 }
-async function fixture(contractCarryForward = false) {
+async function fixture(contractCarryForward = false, registryDifference = 'none') {
   const root = await fs.mkdtemp(path.join(os.tmpdir(), 'sf-preimplementation-'));
   roots.push(root);
   await ensureProjectInit(root, 'Synthetic preimplementation recovery fixture');
@@ -102,8 +102,22 @@ async function fixture(contractCarryForward = false) {
     ],
   };
   if (contractCarryForward) {
-    const registry = await fs.readFile(path.join(project, 'extension_registry.json'), 'utf8');
-    await write(path.join(wi, 'candidates/project/extension_registry.candidate.json'), registry);
+    const registry = JSON.parse(
+      await fs.readFile(path.join(project, 'extension_registry.json'), 'utf8')
+    );
+    await write(path.join(wi, 'candidates/project/extension_registry.candidate.json'), {
+      ...registry,
+      project_spec_version:
+        registryDifference === 'wrong-registry-version' ? 'PSV-9999' : 'PSV-0001',
+      ...(registryDifference === 'other-registry-metadata'
+        ? { unmerged_note: 'not part of the recorded Merge' }
+        : {}),
+    });
+    // Real Merge rewrites only the formal registry's version after applying the candidate.
+    await write(path.join(project, 'extension_registry.json'), {
+      ...registry,
+      project_spec_version: 'PSV-0002',
+    });
     candidate.entries.push({
       candidate_path: 'candidates/project/extension_registry.candidate.json',
       target_path: '.specforge/project/extension_registry.json',
@@ -241,13 +255,15 @@ describe('preimplementation merged specification recovery', () => {
     'candidate-drift',
     'formal-drift',
     'formal-addition',
+    'wrong-registry-version',
+    'other-registry-metadata',
     'task-drift',
     'classification-drift',
     'history-drift',
     'missing-event',
     'source-drift',
   ])('rejects inherited contract exception with %s', async variant => {
-    const f = await fixture(true);
+    const f = await fixture(true, variant);
     const inspected = await handlePreimplementationSpecRecovery(f.input);
     f.input.args.preimplementation_recovery = 'recover';
     f.input.args.user_authorization_text = inspected.authorization_line;
