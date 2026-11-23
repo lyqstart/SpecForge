@@ -327,7 +327,7 @@ registerHandler('sf_hard_stop_resolve', async (args, context, deps) => {
           tool: 'sf_hard_stop_resolve',
           args,
         },
-        userMessageId: args['diagnostic_user_message_id'] as string | undefined,
+        userMessageId: args['diagnostic_user_message_id'],
         userText: userQuote,
         workItemId,
         attemptId: status.attemptId,

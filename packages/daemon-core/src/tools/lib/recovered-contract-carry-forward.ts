@@ -2,6 +2,7 @@ import path from 'node:path';
 import * as fs from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { RequiredVerificationSourceSchema } from '@specforge/types/required-verification-contract';
+import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
 import {
   canonicalVerificationJson as canonical,
   assertVerificationPath,
@@ -10,7 +11,7 @@ import {
 import { PreimplementationRecoveryRecordSchema } from './preimplementation-recovery-contract';
 
 const hash = (bytes: Uint8Array | string) => createHash('sha256').update(bytes).digest('hex');
-const REGISTRY = '.specforge/project/extension_registry.json';
+const REGISTRY = `${SPEC_DIR_NAME}/project/extension_registry.json`;
 function requireFact(value: unknown, code: string): asserts value {
   if (!value) throw new Error('RECOVERED_CONTRACT_' + code);
 }
@@ -47,7 +48,7 @@ export async function checkRecoveredContractCarryForward(input: {
     const root = path.resolve(input.projectRoot),
       wi = path.resolve(input.workItemDir);
     const id = path.basename(wi);
-    requireFact(wi === path.join(root, '.specforge/work-items', id), 'WORK_ITEM_PATH_INVALID');
+    requireFact(wi === path.join(root, SPEC_DIR_NAME, 'work-items', id), 'WORK_ITEM_PATH_INVALID');
     const record = PreimplementationRecoveryRecordSchema.parse(
       JSON.parse(
         (await read(path.join(wi, 'preimplementation_spec_recovery.json'))).toString('utf8')
@@ -143,19 +144,19 @@ export async function checkRecoveredContractCarryForward(input: {
         }
       }
     };
-    await walkFormal(path.join(root, '.specforge/project'));
+    await walkFormal(path.join(root, SPEC_DIR_NAME, 'project'));
     requireFact(
       canonical(currentFormalFiles.sort()) ===
         canonical(
           Object.keys(proof.inputs)
-            .filter(name => name.startsWith('.specforge/project/'))
+            .filter(name => name.startsWith(`${SPEC_DIR_NAME}/project/`))
             .sort()
         ),
       'FORMAL_INPUT_SET_CHANGED'
     );
     for (const [name, identity] of Object.entries(proof.inputs)) {
       requireFact(
-        name.startsWith('.specforge/') &&
+        name.startsWith(SPEC_DIR_NAME + '/') &&
           !name.includes('\\') &&
           !name.includes(':') &&
           name.split('/').every(part => part && part !== '.' && part !== '..'),
@@ -168,7 +169,7 @@ export async function checkRecoveredContractCarryForward(input: {
       );
       snapshots.set(name, bytes);
       // The inherited classification applies only to this unchanged formal generation.
-      if (name.startsWith('.specforge/project/'))
+      if (name.startsWith(`${SPEC_DIR_NAME}/project/`))
         requireFact((await read(path.join(root, name))).equals(bytes), 'FORMAL_GENERATION_CHANGED');
     }
     const snapshot = (name: string) => {
@@ -176,8 +177,8 @@ export async function checkRecoveredContractCarryForward(input: {
       requireFact(bytes, 'ARCHIVED_INPUT_MISSING');
       return bytes;
     };
-    const wiRelative = `.specforge/work-items/${id}/`;
-    const specBytes = await read(path.join(root, '.specforge/project/spec_manifest.json'));
+    const wiRelative = `${SPEC_DIR_NAME}/work-items/${id}/`;
+    const specBytes = await read(path.join(root, SPEC_DIR_NAME, 'project/spec_manifest.json'));
     const spec = object(JSON.parse(specBytes.toString('utf8')));
     requireFact(
       hash(specBytes) === proof.spec_sha256 &&
