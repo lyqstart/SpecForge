@@ -10,7 +10,7 @@ export default tool({
       .string()
       .optional()
       .describe(
-        "Gate 单轮修复停点专用：本次真实用户诊断授权消息 ID。消息须包含独立行 gate_owner_repair_once <WI> <attempt> <history_sha256>；Runtime 核验来源、当前调用、时序及历史绑定，不能使用 Agent 转述。",
+        "Gate 单轮修复停点专用：可选的本次真实用户诊断授权消息 ID；省略时由 Runtime 从已核验当前运行调用的真实用户父消息定位，显式提供必须匹配。消息须包含独立行 gate_owner_repair_once <WI> <attempt> <history_sha256>；Runtime 核验来源、当前调用、时序及历史绑定，不能使用 Agent 转述。",
       ),
     hard_stop_id: tool.schema
       .string()
@@ -45,7 +45,9 @@ export default tool({
     allowed_next_action: tool.schema
       .string()
       .optional()
-      .describe("允许的下一步动作"),
+      .describe(
+        "允许的下一步动作；Gate 单轮诊断必须精确为 gate_owner_repair_once，说明放 reason",
+      ),
     evidence: tool.schema
       .array(tool.schema.string())
       .optional()
@@ -68,7 +70,9 @@ export default tool({
     resume_from_step: tool.schema
       .string()
       .optional()
-      .describe("解除后从哪个步骤继续，不得从头重复已完成步骤"),
+      .describe(
+        "解除后从哪个步骤继续，不得从头重复已完成步骤；Gate 单轮诊断必须精确为 gate_owner_repair_once",
+      ),
     retry_original_action: tool.schema
       .boolean()
       .optional()
@@ -133,12 +137,15 @@ export default tool({
       .describe("授权原因说明"),
   },
   async execute(args, context) {
-    const diagnostic = Boolean(args.diagnostic_user_message_id);
+    const diagnostic =
+      args.resolution_type === "user_authorized_retry" ||
+      Boolean(args.diagnostic_user_message_id);
     const client = diagnostic ? new DaemonClient(180000) : daemon;
     const result = await client.invokeTool(
       "sf_hard_stop_resolve",
       args,
-      { callID: Reflect.get(context, "callID"),
+      {
+        callID: Reflect.get(context, "callID"),
         sessionID: context.sessionID,
         messageID: context.messageID,
         agent: context.agent,

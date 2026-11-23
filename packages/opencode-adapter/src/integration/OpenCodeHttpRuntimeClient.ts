@@ -223,7 +223,7 @@ export class OpenCodeHttpRuntimeClient implements OpenCodeRuntimeClient {
   ): Promise<GateRepairAuthorizationProof> {
     if (
       input.invocation.tool !== 'sf_hard_stop_resolve' ||
-      !/^msg_[A-Za-z0-9]+$/.test(input.userMessageId) ||
+      (input.userMessageId !== undefined && !/^msg_[A-Za-z0-9]+$/.test(input.userMessageId)) ||
       !/^attempt-\d{4}$/.test(input.attemptId) ||
       !/^[a-f0-9]{64}$/.test(input.historySha256)
     )
@@ -236,27 +236,32 @@ export class OpenCodeHttpRuntimeClient implements OpenCodeRuntimeClient {
         this.withDirectory(base + encodeURIComponent(invocation.messageId), invocation.directory)
       )
     );
-    const user = this.unwrap(
-      await this.requestJson(
-        'GET',
-        this.withDirectory(base + encodeURIComponent(input.userMessageId), invocation.directory)
-      )
-    );
     if (
       !this.isRecord(assistant) ||
       !this.isRecord(assistant['info']) ||
-      assistant['info']['parentID'] !== input.userMessageId ||
-      !this.isRecord(user) ||
-      !this.isRecord(user['info']) ||
-      !Array.isArray(user['parts'])
+      assistant['info']['id'] !== invocation.messageId ||
+      assistant['info']['sessionID'] !== invocation.sessionId ||
+      assistant['info']['role'] !== 'assistant' ||
+      typeof assistant['info']['parentID'] !== 'string' ||
+      !/^msg_[A-Za-z0-9]+$/.test(assistant['info']['parentID']) ||
+      (input.userMessageId !== undefined && assistant['info']['parentID'] !== input.userMessageId)
     )
+      throw new OpenCodeRuntimeError('GATE_REPAIR_USER_PROVENANCE_REQUIRED');
+    const userMessageId = assistant['info']['parentID'];
+    const user = this.unwrap(
+      await this.requestJson(
+        'GET',
+        this.withDirectory(base + encodeURIComponent(userMessageId), invocation.directory)
+      )
+    );
+    if (!this.isRecord(user) || !this.isRecord(user['info']) || !Array.isArray(user['parts']))
       throw new OpenCodeRuntimeError('GATE_REPAIR_USER_PROVENANCE_REQUIRED');
     const info = user['info'];
     const time = info['time'];
     const texts = user['parts'].filter(part => this.isRecord(part) && part['type'] === 'text');
     const marker = `gate_owner_repair_once ${input.workItemId} ${input.attemptId} ${input.historySha256}`;
     if (
-      info['id'] !== input.userMessageId ||
+      info['id'] !== userMessageId ||
       info['sessionID'] !== invocation.sessionId ||
       info['role'] !== 'user' ||
       !this.isRecord(time) ||
@@ -268,7 +273,7 @@ export class OpenCodeHttpRuntimeClient implements OpenCodeRuntimeClient {
       texts.length !== 1 ||
       !this.isRecord(texts[0]) ||
       texts[0]['sessionID'] !== invocation.sessionId ||
-      texts[0]['messageID'] !== input.userMessageId ||
+      texts[0]['messageID'] !== userMessageId ||
       texts[0]['synthetic'] === true ||
       texts[0]['ignored'] === true ||
       texts[0]['text'] !== input.userText ||
@@ -282,7 +287,7 @@ export class OpenCodeHttpRuntimeClient implements OpenCodeRuntimeClient {
     return {
       source: 'gate-repair-diagnostic/v1',
       invocation: fresh,
-      userMessageId: input.userMessageId,
+      userMessageId,
       userTextSha256: createHash('sha256').update(input.userText).digest('hex'),
       userCreatedAt: time['created'],
       attemptId: input.attemptId,

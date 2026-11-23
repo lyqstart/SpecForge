@@ -92,6 +92,33 @@ function request(ctx: Awaited<ReturnType<typeof fixture>>) {
   return { args, context, proof };
 }
 describe('durable Gate repair stop from actual immutable producer', () => {
+  it('reports exact invalid boundary fields and preserves the stop', async () => {
+    const ctx = await stopped(),
+      input = request(ctx);
+    input.args.allowed_next_action = 'repair then continue';
+    input.args.resume_from_step = 'return to original owner';
+    const result = await getHandler('sf_hard_stop_resolve')!(input.args, input.context, {} as any);
+    expect(result.error).toBe('GATE_REPAIR_BOUND_DIAGNOSTIC_RECOVERY_REQUIRED');
+    expect(result.invalid_fields).toEqual(['allowed_next_action', 'resume_from_step']);
+    expect(result.required_fields.allowed_next_action).toBe(GATE_REPAIR_ACTION);
+    expect(readWorkItemHardStop(ctx.projectRoot, ctx.workItemId)).not.toBeNull();
+  });
+  it('leaves omitted user ID discovery to the Runtime owner', async () => {
+    const ctx = await stopped(),
+      input = request(ctx);
+    delete (input.args as Record<string, unknown>).diagnostic_user_message_id;
+    let observed: unknown = 'not-called';
+    const result = await getHandler('sf_hard_stop_resolve')!(input.args, input.context, {
+      toolInvocationVerifier: {
+        verifyGateRepairAuthorization: async (request: { userMessageId?: string }) => {
+          observed = request.userMessageId;
+          return input.proof;
+        },
+      },
+    } as any);
+    expect(observed).toBeUndefined();
+    expect(result.success).toBe(true);
+  });
   it('allows one repair then blocks aliases, writes, state, seal and retry after process-local state is discarded', async () => {
     const ctx = await stopped();
     for (const tool of [

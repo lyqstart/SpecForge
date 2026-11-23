@@ -26,6 +26,8 @@ export type GateReportV11 = SharedGateReport;
 export type CandidateGatePhaseV11 = 'design' | 'requirements' | 'tasks' | 'full';
 
 export interface GateContext {
+  /** Internal StateManager dependency, never supplied by tool arguments. */
+  readRecoveryHistory?: () => Promise<unknown[]>;
   requiredVerification?: import('./required-verification-consumer').RequiredVerificationConsumer;
   executionEvidenceConsumer?: import('../../verification/execution-evidence-consumer').ExecutionEvidenceConsumer;
   workItemId: string;

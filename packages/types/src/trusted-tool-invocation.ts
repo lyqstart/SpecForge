@@ -70,7 +70,8 @@ export interface RequiredVerificationSourceProof {
 
 export interface GateRepairAuthorizationRequest {
   invocation: TrustedToolInvocationRequest;
-  userMessageId: string;
+  /** Omission derives the verified current assistant's parent; explicit IDs must match it. */
+  userMessageId?: string;
   userText: string;
   workItemId: string;
   attemptId: string;

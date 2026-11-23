@@ -19,6 +19,8 @@ import {
 import { validateCandidateProjectSpecBinding } from '../../src/tools/lib/candidate-generation-integrity';
 import { setHardStop } from '../../src/tools/lib/hard-stop-latch';
 import { withGateOperationBarrier } from '../../src/tools/lib/gate-operation-barrier';
+import { checkContractIntegrity } from '../../src/tools/lib/contract-integrity';
+import { runGateForFixture } from '../helpers/required-verification-fixture';
 
 const roots: string[] = [];
 const id = 'WI-9501';
@@ -29,7 +31,7 @@ async function write(file: string, value: string | object) {
     typeof value === 'string' ? value : JSON.stringify(value, null, 2) + '\n'
   );
 }
-async function fixture() {
+async function fixture(contractCarryForward = false) {
   const root = await fs.mkdtemp(path.join(os.tmpdir(), 'sf-preimplementation-'));
   roots.push(root);
   await ensureProjectInit(root, 'Synthetic preimplementation recovery fixture');
@@ -67,7 +69,7 @@ async function fixture() {
     work_item_id: id,
     workflow_type: 'feature_spec',
     workflow_path: 'requirement_change_path',
-    classification: { design_changed: true },
+    classification: { design_changed: true, api_contract_changed: contractCarryForward },
     impact_scope: {
       affected_modules: ['CORE'],
       planned_code_paths: ['docs/readiness.md'],
@@ -99,6 +101,17 @@ async function fixture() {
       },
     ],
   };
+  if (contractCarryForward) {
+    const registry = await fs.readFile(path.join(project, 'extension_registry.json'), 'utf8');
+    await write(path.join(wi, 'candidates/project/extension_registry.candidate.json'), registry);
+    candidate.entries.push({
+      candidate_path: 'candidates/project/extension_registry.candidate.json',
+      target_path: '.specforge/project/extension_registry.json',
+      operation: 'replace',
+      type: 'extension_registry',
+      module_id: 'CORE',
+    });
+  }
   await write(path.join(wi, 'candidate_manifest.json'), candidate);
   await write(path.join(wi, 'user_decision.json'), {
     schema_version: '1.0',
@@ -125,6 +138,16 @@ async function fixture() {
     `# Merge Report\nContract: merge-report/v1\nWork Item: ${id}\nStatus: success\n\n- Total entries: 1\n- Successful: 1\n- Failed: 0\n- Spec Manifest Updated: true\n- Project Spec Version: PSV-0002\n\n| Status | Operation | Candidate | Target | Hash Match |\n|---|---|---|---|---|\n| success | replace | candidates/project/modules/CORE/design.candidate.md | .specforge/project/modules/CORE/design.md | true |\n`
   );
   const sm = new StateManager(new PersonalPathResolver(), root);
+  if (contractCarryForward) {
+    const report = await fs.readFile(path.join(wi, 'merge_report.md'), 'utf8');
+    await write(
+      path.join(wi, 'merge_report.md'),
+      report
+        .replace('Total entries: 1', 'Total entries: 2')
+        .replace('Successful: 1', 'Successful: 2') +
+        '| success | replace | candidates/project/extension_registry.candidate.json | .specforge/project/extension_registry.json | true |\n'
+    );
+  }
   await sm.initialize();
   await sm.transition(id, '', 'merging', 'synthetic-upstream', 'feature_spec');
   await sm.transition(id, 'merging', 'merged', 'merge_runner', 'feature_spec');
@@ -209,6 +232,102 @@ afterEach(async () => {
 });
 
 describe('preimplementation merged specification recovery', () => {
+  test.each([
+    'absent-owner',
+    'ordinary-noop',
+    'prepared',
+    'archive-tamper',
+    'wrong-base',
+    'candidate-drift',
+    'formal-drift',
+    'formal-addition',
+    'task-drift',
+    'classification-drift',
+    'history-drift',
+    'missing-event',
+    'source-drift',
+  ])('rejects inherited contract exception with %s', async variant => {
+    const f = await fixture(true);
+    const inspected = await handlePreimplementationSpecRecovery(f.input);
+    f.input.args.preimplementation_recovery = 'recover';
+    f.input.args.user_authorization_text = inspected.authorization_line;
+    await handlePreimplementationSpecRecovery(f.input);
+    const recordFile = path.join(f.wi, 'preimplementation_spec_recovery.json');
+    const record = JSON.parse(await fs.readFile(recordFile, 'utf8'));
+    let reader: (() => Promise<unknown[]>) | undefined = () =>
+      f.sm.readWorkItemTransitionHistory(id);
+    if (variant === 'absent-owner') reader = undefined;
+    if (variant === 'ordinary-noop') await fs.unlink(recordFile);
+    if (variant === 'prepared') {
+      record.status = 'prepared';
+      await write(recordFile, record);
+    }
+    if (variant === 'archive-tamper')
+      await fs.appendFile(
+        path.join(f.wi, record.archive, 'snapshot/.specforge/project/extension_registry.json'),
+        ' '
+      );
+    if (variant === 'wrong-base') {
+      const manifestFile = path.join(f.wi, 'candidate_manifest.json');
+      const manifest = JSON.parse(await fs.readFile(manifestFile, 'utf8'));
+      manifest.base_spec_version = 'PSV-9999';
+      await write(manifestFile, manifest);
+    }
+    if (variant === 'candidate-drift')
+      await fs.appendFile(
+        path.join(f.wi, 'candidates/project/extension_registry.candidate.json'),
+        ' '
+      );
+    if (variant === 'formal-drift')
+      await fs.appendFile(path.join(f.root, '.specforge/project/extension_registry.json'), ' ');
+    if (variant === 'formal-addition')
+      await write(path.join(f.root, '.specforge/project/unregistered.md'), 'new formal input');
+    if (variant === 'task-drift') await fs.appendFile(path.join(f.wi, 'candidates/tasks.md'), ' ');
+    if (variant === 'classification-drift')
+      await fs.appendFile(path.join(f.wi, 'trigger_result.json'), ' ');
+    if (variant === 'history-drift')
+      reader = async () => (await f.sm.readWorkItemTransitionHistory(id)).slice(1);
+    if (variant === 'missing-event')
+      reader = async () => (await f.sm.readWorkItemTransitionHistory(id)).slice(0, -1);
+    if (variant === 'source-drift') {
+      record.source.directory = path.join(f.root, 'other');
+      await write(recordFile, record);
+    }
+    const result = await checkContractIntegrity({
+      projectRoot: f.root,
+      workItemDir: f.wi,
+      readRecoveryHistory: reader,
+    });
+    expect(
+      result.checks.find(c => c.check_id === 'contract_registry_semantic_change_required')?.passed
+    ).toBe(false);
+  });
+  test('accepts only authenticated D32 carry-forward of the already merged registry', async () => {
+    const f = await fixture(true);
+    const inspected = await handlePreimplementationSpecRecovery(f.input);
+    f.input.args.preimplementation_recovery = 'recover';
+    f.input.args.user_authorization_text = inspected.authorization_line;
+    await handlePreimplementationSpecRecovery(f.input);
+    const result = await checkContractIntegrity({
+      projectRoot: f.root,
+      workItemDir: f.wi,
+      readRecoveryHistory: () => f.sm.readWorkItemTransitionHistory(id),
+    });
+    expect(
+      result.checks.find(c => c.check_id === 'contract_registry_semantic_change_required')?.passed
+    ).toBe(true);
+    expect(await fs.readFile(path.join(f.wi, 'candidates/tasks.md'), 'utf8')).toBe(f.task);
+    const report = await runGateForFixture('contract_integrity_gate', {
+      projectRoot: f.root,
+      workItemDir: f.wi,
+      workItemId: id,
+      readRecoveryHistory: () => f.sm.readWorkItemTransitionHistory(id),
+    });
+    expect(
+      report.checks.find(c => c.check_id === 'contract_registry_semantic_change_required')?.passed
+    ).toBe(true);
+    expect(report.input_files).toContain(path.join(f.wi, 'preimplementation_spec_recovery.json'));
+  });
   test('inspection is read-only; recovery archives, invalidates, rebases and preserves Task', async () => {
     const f = await fixture();
     const beforeEvents = await fs.readFile(f.events);

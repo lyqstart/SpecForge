@@ -1644,6 +1644,7 @@ registerGate('contract_integrity_gate', 'hard_gate', true, async ctx => {
   const result = await checkContractIntegrity({
     projectRoot: ctx.projectRoot,
     workItemDir: ctx.workItemDir,
+    readRecoveryHistory: ctx.readRecoveryHistory,
   });
   return makeReport(
     ctx.workItemId,

@@ -244,7 +244,7 @@ permission:
 → 先修治理链
 ```
 
-Gate 停点必须按 Runtime 返回的不可变历史绑定执行。`GATE_REPAIR_STOP` 不得用普通 `repaired`、`false_positive` 或旧“继续”解除。取得晚于失败、绑定 WI/Attempt/历史摘要的真实用户诊断授权后，才可调用 `sf_hard_stop_resolve`：`user_authorized_retry`、`retry_after_authorization`、`allowed_next_action=resume_from_step=gate_owner_repair_once`、`retry_original_action=true`、精确 `hard_stop_id` 与 `diagnostic_user_message_id`。授权消息须含独立行 `gate_owner_repair_once <WI> <attempt> <history_sha256>`；由 Runtime 核验真实用户父消息和当前运行调用。只允许一轮责任 owner 修复再验证，不安装权限、不批准 Candidate；保留部分产物，解除后从权威状态真实断点恢复。
+Gate 停点必须按 Runtime 返回的不可变历史绑定执行。`GATE_REPAIR_STOP` 不得用普通 `repaired`、`false_positive` 或旧“继续”解除。取得晚于失败、绑定 WI/Attempt/历史摘要的真实用户诊断授权后，才可调用 `sf_hard_stop_resolve`：`user_authorized_retry`、`retry_after_authorization`、`allowed_next_action=resume_from_step=gate_owner_repair_once`、`retry_original_action=true`、精确 `hard_stop_id`；`diagnostic_user_message_id` 可省略，由 Runtime 从已核验当前调用的真实用户父消息定位，显式提供时必须一致。授权消息须含独立行 `gate_owner_repair_once <WI> <attempt> <history_sha256>`；由 Runtime 核验真实用户父消息和当前运行调用。只允许一轮责任 owner 修复再验证，不安装权限、不批准 Candidate；保留部分产物，解除后从权威状态真实断点恢复。
 
 Gate 诊断的 `user_response_quote` 必须包含当前用户消息的完整正文，包括首尾空白和末尾 LF/CRLF；不得 trim、改换行或只引用绑定行。无法确定逐字原文时停止并报告，不猜测补齐，也不把被拒绝的引用视为已经取得恢复授权。
 
@@ -465,3 +465,5 @@ Candidate/审批前取证不得为了展示 SHA-256 对 `.specforge/**` 调用 `
 已合并但从 implementation_ready 阻断、从未实施的原 WI：先以 sf_state_transition(from_state=blocked,to_state=candidate_preparing,preimplementation_recovery=inspect)取得只读证据和 authorization_line。向用户展示原失败、归档范围和新审批要求；只在当前真实用户消息明确包含该行时，用 recover 与完整 user_authorization_text 恢复。不得自行补造确认行、重放旧授权、手改批准/Manifest/Task 或用普通状态跳转代替。Runtime 校验原事件、未实施事实、撤权、当前 Merge、输入、归档与真实调用来源。
 
 恢复保持原 WI 和 Task，旧批准变为历史失效，新角色修订由原设计 owner 经 Candidate、Gate、用户明确批准、新 Merge 完成后才恢复原精确文件的 enable。inspect/recover 失败立即停；中断只凭原归档和 Runtime 真实状态恢复，不无条件重做已成功步骤。产品扩展批准不是 Candidate 批准。
+
+Gate 诊断省略 `diagnostic_user_message_id` 时，Runtime 只可从已核验的当前运行 assistant 调用读取真实 parentID，再独立核验该同会话用户消息；显式提供的 ID 必须逐字匹配该父消息，不得从无效 ID 回退。完整原文、时序、owner、当前 Attempt/历史摘要和二次调用校验保持不变。`allowed_next_action` 与 `resume_from_step` 必须为精确常量 `gate_owner_repair_once`，说明文字放入 reason；错误字段返回固定诊断，不产生恢复授权或重试。

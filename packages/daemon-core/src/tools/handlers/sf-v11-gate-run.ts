@@ -1245,6 +1245,10 @@ registerHandler('sf_v11_gate_run', async (args, context, deps) => {
     }
     const ctx = {
       requiredVerification,
+      readRecoveryHistory: async () => {
+        const manager = await deps.projectManager.getProjectStateManager(projectRoot);
+        return manager.readWorkItemTransitionHistory(workItemId);
+      },
       executionEvidenceConsumer: deps.verificationRuntime,
       workItemId,
       workItemDir,

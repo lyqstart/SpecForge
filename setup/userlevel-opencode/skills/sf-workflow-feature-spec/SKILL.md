@@ -202,7 +202,7 @@ Orchestrator 不手工写 `candidate_manifest.json`，不猜 `candidate_path`、
 
 一次 Gate Attempt 正常完成但未通过后，只允许基于其 immutable blocking issues 做一轮责任 Agent 修复并产生下一 Attempt；下一 Attempt 仍失败时停止并报告 blocker，交回产品/用户诊断，不连续试错。终态 execution_status=error 立即进入诊断停点；缺少终态回执仍失败关闭，不得补造结果。
 
-Runtime 从不可变 Attempt 历史执行 `GATE_REPAIR_STOP`。重启、改 Gate 别名、部分通过、重新封存或换工具均不能补给预算；不得用 `repaired`、`false_positive` 或泛化“继续”解除。保留当前部分产物和历史失败，停止业务写入。仅当新的真实用户诊断授权绑定当前 WI、失败 Attempt 与历史摘要时，由 sf-orchestrator 调用 `sf_hard_stop_resolve`，使用 `user_authorized_retry`、`retry_after_authorization`、`allowed_next_action=resume_from_step=gate_owner_repair_once`、`retry_original_action=true`、精确 `hard_stop_id` 与 `diagnostic_user_message_id`。授权消息包含独立绑定行 `gate_owner_repair_once <WI> <attempt> <history_sha256>`；Runtime 独立读取消息和当前运行调用验证来源。该授权只允许一轮 owner 修复再验证，不是 Candidate 批准，不安装权限。解除后重读权威状态，从真实断点恢复；再次失败必须重新停住。
+Runtime 从不可变 Attempt 历史执行 `GATE_REPAIR_STOP`。重启、改 Gate 别名、部分通过、重新封存或换工具均不能补给预算；不得用 `repaired`、`false_positive` 或泛化“继续”解除。保留当前部分产物和历史失败，停止业务写入。仅当新的真实用户诊断授权绑定当前 WI、失败 Attempt 与历史摘要时，由 sf-orchestrator 调用 `sf_hard_stop_resolve`，使用 `user_authorized_retry`、`retry_after_authorization`、`allowed_next_action=resume_from_step=gate_owner_repair_once`、`retry_original_action=true`、精确 `hard_stop_id`；`diagnostic_user_message_id` 可省略，由 Runtime 从已核验当前调用的真实用户父消息定位，显式提供时必须一致。授权消息包含独立绑定行 `gate_owner_repair_once <WI> <attempt> <history_sha256>`；Runtime 独立读取消息和当前运行调用验证来源。该授权只允许一轮 owner 修复再验证，不是 Candidate 批准，不安装权限。解除后重读权威状态，从真实断点恢复；再次失败必须重新停住。
 
 Gate 诊断的 `user_response_quote` 必须包含当前用户消息的完整正文，包括首尾空白和末尾 LF/CRLF；不得 trim、改换行或只引用绑定行。无法确定逐字原文时停止并报告，不猜测补齐，也不把被拒绝的引用视为已经取得恢复授权。
 <!-- SPECFORGE_PHASE11_CURRENT_AUTHORITY_ALIGNMENT:END -->
@@ -840,3 +840,5 @@ user_response_quote="用户原话"
 - `sf_safe_bash` 仍不能读取治理文件。明确治理路径策略拒绝会由 Runtime 锁存 HardStop 并取消当前委派链生成；取消失败仍保留停点，不得换 read/grep/task 或其他入口继续本轮。恢复只由正式 owner 处理原拒绝和 resolution，不重发已保存指令，不扩大权限、不改冻结 Task。普通文件不存在、模型限流不等同这一特定策略拒绝。
 - 状态迁移及依赖其结果的读取必须串行：先等待迁移真实成功，再重新读取当前原件。相同 snapshot_id 不证明 captured_at、候选内容或全部未来路径均未变化。
 - 原始字节完整不证明业务语义通过，诊断 handoff 不等于 Candidate 就绪。原审查问题必须逐项给出真实修改、独立验证或未解决状态，不代用户批准。
+
+Gate 诊断省略 `diagnostic_user_message_id` 时，Runtime 只可从已核验的当前运行 assistant 调用读取真实 parentID，再独立核验该同会话用户消息；显式提供的 ID 必须逐字匹配该父消息，不得从无效 ID 回退。完整原文、时序、owner、当前 Attempt/历史摘要和二次调用校验保持不变。`allowed_next_action` 与 `resume_from_step` 必须为精确常量 `gate_owner_repair_once`，说明文字放入 reason；错误字段返回固定诊断，不产生恢复授权或重试。

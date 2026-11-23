@@ -9,6 +9,7 @@ import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
  */
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
+import { checkRecoveredContractCarryForward } from './recovered-contract-carry-forward';
 import {
   ContractRegistrySchema,
   extractModuleFromDdId,
@@ -367,6 +368,7 @@ function consumerModules(
 export async function checkContractIntegrity(input: {
   projectRoot: string;
   workItemDir: string;
+  readRecoveryHistory?: () => Promise<unknown[]>;
 }): Promise<ContractIntegrityResult> {
   const manifestPath = path.join(input.workItemDir, 'candidate_manifest.json');
   let manifest: Record<string, unknown>;
@@ -499,13 +501,22 @@ export async function checkContractIntegrity(input: {
   if (declaredProjectContractChange) {
     const semanticChange =
       registryTargeted && hasProjectContractSemanticChange(beforeRegistry, afterRegistry);
+    const carryForward =
+      !semanticChange && registryTargeted
+        ? await checkRecoveredContractCarryForward({
+            ...input,
+            classificationFiles: contractClassification.files,
+          })
+        : undefined;
+    inputFiles.push(...(carryForward?.inputFiles ?? []));
+    const satisfied = semanticChange || carryForward?.passed === true;
     checks.push({
       check_id: 'contract_registry_semantic_change_required',
       description:
-        'Declared Project Contract change must alter namespaces or contracts, not metadata only',
-      passed: semanticChange,
-      severity: semanticChange ? undefined : 'error',
-      details: `classification=${JSON.stringify(contractClassification.values)}; registry_targeted=${registryTargeted}`,
+        'Declared Project Contract change alters semantics or is authenticated exact D32 carry-forward',
+      passed: satisfied,
+      severity: satisfied ? undefined : 'error',
+      details: `classification=${JSON.stringify(contractClassification.values)}; registry_targeted=${registryTargeted}; ${carryForward?.details ?? 'new semantic change required'}`,
     });
   }
 

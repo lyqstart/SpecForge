@@ -72,6 +72,14 @@ function fixture(
   };
 }
 describe('Gate diagnostic authorization from actual Runtime projections', () => {
+  it('discovers an omitted user ID from the verified current assistant parent', async () => {
+    const { client, request } = fixture();
+    const { userMessageId: _explicit, ...derived } = request;
+    delete (derived.invocation.args as Record<string, unknown>).diagnostic_user_message_id;
+    const proof = await client.verifyGateRepairAuthorization(derived);
+    expect(proof.userMessageId).toBe('msg_user');
+    expect(proof.invocation.callId).toBe('call_actual');
+  });
   it('binds fresh user parent, directory, exact text, history and running orchestrator call', async () => {
     const { client, request } = fixture();
     const proof = await client.verifyGateRepairAuthorization(request);
@@ -91,6 +99,52 @@ describe('Gate diagnostic authorization from actual Runtime projections', () => 
     expect(proof.userTextSha256).not.toBe(
       createHash('sha256').update(request.userText.trim()).digest('hex')
     );
+  });
+  it.each(exactTextCases)(
+    'discovers the parent while retaining complete $name text',
+    async ({ wrap }) => {
+      const { client, request } = fixture(undefined, wrap);
+      const { userMessageId: _explicit, ...derived } = request;
+      delete (derived.invocation.args as Record<string, unknown>).diagnostic_user_message_id;
+      const proof = await client.verifyGateRepairAuthorization(derived);
+      expect(proof.userTextSha256).toBe(
+        createHash('sha256').update(request.userText).digest('hex')
+      );
+    }
+  );
+  it.each(['', 'user', 'msg_other'])(
+    'never replaces an invalid explicit ID %s with the parent',
+    async userMessageId => {
+      const { client, request } = fixture();
+      request.userMessageId = userMessageId;
+      await expect(client.verifyGateRepairAuthorization(request)).rejects.toThrow();
+    }
+  );
+  it.each([
+    'missing',
+    'invalid',
+    'other-user',
+    'stale',
+    'synthetic',
+    'ignored',
+    'wrong-role',
+    'other-session',
+    'wrong-owner',
+  ])('rejects %s with omitted ID', async variant => {
+    const { client, request } = fixture((u, a) => {
+      if (variant === 'missing') delete a.info.parentID;
+      if (variant === 'invalid') a.info.parentID = '../msg_user';
+      if (variant === 'other-user') a.info.parentID = 'msg_other';
+      if (variant === 'stale') u.info.time.created = 1;
+      if (variant === 'synthetic') u.parts[0].synthetic = true;
+      if (variant === 'ignored') u.parts[0].ignored = true;
+      if (variant === 'wrong-role') u.info.role = 'assistant';
+      if (variant === 'other-session') u.info.sessionID = 'ses_other';
+      if (variant === 'wrong-owner') a.info.agent = 'sf-executor';
+    });
+    const { userMessageId: _explicit, ...derived } = request;
+    delete (derived.invocation.args as Record<string, unknown>).diagnostic_user_message_id;
+    await expect(client.verifyGateRepairAuthorization(derived)).rejects.toThrow();
   });
   it.each(exactTextCases)('rejects normalized $name despite the same marker', async ({ wrap }) => {
     const { client, request } = fixture(undefined, wrap);

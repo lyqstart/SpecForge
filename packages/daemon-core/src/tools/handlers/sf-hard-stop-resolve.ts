@@ -263,6 +263,16 @@ registerHandler('sf_hard_stop_resolve', async (args, context, deps) => {
     try {
       const status = readGateRepairStatus(baseDir, workItemId);
       const target = `${status.attemptId}:${status.historySha256}`;
+      const requiredFields = {
+        resolution_type: 'user_authorized_retry',
+        blocked_action_disposition: 'retry_after_authorization',
+        allowed_next_action: GATE_REPAIR_ACTION,
+        resume_from_step: GATE_REPAIR_ACTION,
+        retry_original_action: true,
+      };
+      const invalidFields = Object.entries(requiredFields)
+        .filter(([key, value]) => args[key] !== value)
+        .map(([key]) => key);
       if (
         active.blocked_target !== target ||
         requestedHardStopId !== active.hard_stop_id ||
@@ -273,7 +283,14 @@ registerHandler('sf_hard_stop_resolve', async (args, context, deps) => {
         args['retry_original_action'] !== true ||
         shouldInstallAuthorization(args)
       )
-        throw new Error('GATE_REPAIR_BOUND_DIAGNOSTIC_RECOVERY_REQUIRED');
+        return {
+          success: false,
+          denied: true,
+          retry_allowed: false,
+          error: 'GATE_REPAIR_BOUND_DIAGNOSTIC_RECOVERY_REQUIRED',
+          invalid_fields: invalidFields,
+          required_fields: requiredFields,
+        };
       // A previously committed valid grant may have been interrupted before unlink.
       // Completing only that unlink is idempotent and does not grant another round.
       if (!status.blocked && status.failures === 1) {
@@ -297,6 +314,11 @@ registerHandler('sf_hard_stop_resolve', async (args, context, deps) => {
         typeof context.messageID !== 'string'
       )
         throw new Error('GATE_REPAIR_RUNTIME_PROVENANCE_REQUIRED');
+      if (
+        args['diagnostic_user_message_id'] !== undefined &&
+        typeof args['diagnostic_user_message_id'] !== 'string'
+      )
+        throw new Error('GATE_REPAIR_AUTHORIZATION_IDENTITY_REQUIRED');
       gateProof = await deps.toolInvocationVerifier.verifyGateRepairAuthorization({
         invocation: {
           sessionId: context.sessionID,
@@ -305,7 +327,7 @@ registerHandler('sf_hard_stop_resolve', async (args, context, deps) => {
           tool: 'sf_hard_stop_resolve',
           args,
         },
-        userMessageId: scalarText(args['diagnostic_user_message_id'] ?? ''),
+        userMessageId: args['diagnostic_user_message_id'] as string | undefined,
         userText: userQuote,
         workItemId,
         attemptId: status.attemptId,
